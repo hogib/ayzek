@@ -26,6 +26,12 @@ struct CatalogEvent {
 // Depth, Rms, Type, Magnitude, ... Only events in [t0, t1] are kept.
 std::vector<CatalogEvent> load_afad_catalog(const std::string& path, double t0, double t1);
 
+// A place for which the S-wave warning time is reported, e.g. a city.
+struct Site {
+    std::string name;
+    double lat = 0, lon = 0;
+};
+
 struct NetworkConfig {
     std::size_t min_stations = 2;      // detections needed to declare an event
     double slack_seconds = 3.0;        // tolerance added to the inter-station P travel time
@@ -36,6 +42,8 @@ struct NetworkConfig {
     double min_pick_prob = 0.5;        // minimum P and S pick probability
     std::vector<CatalogEvent> catalog; // reference events for evaluation (optional)
     double catalog_radius_km = 250;    // evaluation radius around the station centroid
+    std::vector<Site> sites;           // additional places for the warning-time report
+    bool verbose = false;              // per-station detection, pick and magnitude lines
 };
 
 struct Location {
@@ -73,7 +81,10 @@ public:
     void on(const Detection& d);
     void on(const Pick& p);
     void on(const MagnitudeEstimate& m);
-    void summary() const;
+    // Final report: one block per declared event (magnitude, alarm, location,
+    // catalogue comparison, S-wave warning time at each station and site), the
+    // catalogue events not detected, and totals.
+    void report(double t_first, double t_last) const;
     [[nodiscard]] std::vector<CatalogScore> score() const;
     [[nodiscard]] const std::vector<Event>& events() const noexcept { return events_; }
     [[nodiscard]] std::size_t declared_count() const;
@@ -86,6 +97,18 @@ private:
     [[nodiscard]] const CatalogEvent* match(const Event& e) const;
     void report_location(Event& e);
     void report_magnitude(Event& e, double now);
+
+    struct Warning {
+        std::string name;
+        double distance_km;
+        double s_time;
+        bool picked;          // S time from this event's S pick, otherwise predicted
+        bool site;
+    };
+    // S arrival at each station and site for event `e`, using the catalogue
+    // hypocentre if `c` is given, otherwise ayzek's location. Empty if neither
+    // is available. Sorted by distance.
+    [[nodiscard]] std::vector<Warning> warnings(const Event& e, const CatalogEvent* c) const;
 
     std::map<std::string, StationInfo> stations_;
     NetworkConfig cfg_;

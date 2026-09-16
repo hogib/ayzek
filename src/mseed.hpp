@@ -8,9 +8,10 @@
 //   11  Steim2 (big-endian frames)
 //    3  32-bit integers, byte order from blockette 1000
 //    1  16-bit integers, byte order from blockette 1000
-// AFAD dataloggers write Steim2 normally and switch to uncompressed 32-bit
-// integers during strong shaking (seen at CATL and ARNA during the 2025-04-23
-// Mw 6.2 Marmara earthquake). Other layouts return an error.
+// The dataloggers at ARNA and CATL switched from Steim2 to uncompressed 32-bit
+// integers during the 2025-04-23 Mw 6.2 Marmara earthquake and its aftershocks;
+// these are the only non-Steim2 records among 398 million in the archive
+// (tools/scan_encodings.py). Other layouts return an error.
 //
 // All encodings are lossless, so decoding is validated by exact comparison with
 // ObsPy/libmseed (tools/validate_mseed.py).

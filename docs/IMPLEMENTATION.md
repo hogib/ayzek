@@ -87,7 +87,46 @@ ayzek [options] STATION.mseed...
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
   --record FILE         write all station outputs, for tools/network_subsets
+  --site NAME,LAT,LON   also report the S-wave warning time at this place (repeatable)
+  --verbose             print every station detection, pick and magnitude estimate
 ```
+
+## Output
+
+While running, one line per alarm and one per magnitude or location update:
+
+```
+ALARM    #1   18:21:09.00  earthquake detected by DEMI, MANT  (AFAD MW 4.9 at 18:20:51.00, 18.0 s ago)
+MAG      #1   18:21:09.00  magnitude M4.3 from 1 station (DEMI 4.3)
+LOCATE   #1   18:22:05.50  located at 39.221N 28.093E, origin 18:20:52.08, rms 0.17 s from 3 stations
+```
+
+At the end, a report with one block per alarm, a summary, and station
+processing statistics:
+
+```
+Event #3: detected M4.6 earthquake at 39.221N 28.093E, origin 18:20:52.08 UTC
+  alarm      18:21:09.00 UTC by DEMI, MANT; later BAND
+  magnitude  M4.3 at the alarm, M4.6 final from 3 stations
+  location   rms 0.17 s from 3 stations
+  AFAD       MW 4.9 at 18:20:51.00 UTC: alarm 18.0 s after origin, magnitude -0.3, epicentre 4.9 km off, origin +1.1 s
+  S wave     had travelled 62 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          54 km   18:21:08.76 UTC (picked)      -0.2 s  after S
+             MANT          91 km   18:21:17.92 UTC (picked)      +8.9 s  before S
+             BAND         124 km   18:21:28.18 UTC (picked)     +19.2 s  before S
+             Istanbul     209 km   18:21:50.80 UTC (predicted)   +41.8 s  before S
+```
+
+The warning time is the S-wave arrival minus the alarm time: positive means
+the alarm came before the S wave. At stations with an S pick for the event the
+picked time is used, otherwise the arrival is predicted from the AFAD
+hypocentre (or ayzek's location without a catalogue) with Vs = 3.5 km/s.
+
+The summary counts alarms that match an AFAD event (correct) and alarms without
+one (false; some may be real earthquakes too small for the catalogue), AFAD
+events detected and missed, detection by magnitude band, and lists each missed
+event and each false alarm.
 
 ## Layout
 

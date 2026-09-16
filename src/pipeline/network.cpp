@@ -1,9 +1,11 @@
 #include "network.hpp"
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <fstream>
+#include <numeric>
 #include <numbers>
 #include <ranges>
 #include <sstream>
@@ -70,13 +72,15 @@ void Network::on(const Detection& d) {
         if (e.declared && it != e.detections.end() && d.window_start > it->second.window_start &&
             d.window_start - it->second.window_start <= cfg_.coda_seconds) {
             ++e.coda;
-            Log::get().line("detect", "2", "{:<5} p={:.2f}  window {}  -- coda of {}", d.station, d.probability,
-                            hms(d.window_start), std::format("#{}", e.id));
+            if (cfg_.verbose)
+                Log::get().line("detect", "2", "{:<5} p={:.2f}  window {}  -- coda of #{}", d.station, d.probability,
+                                hms(d.window_start), e.id);
             return;
         }
     }
-    Log::get().line("detect", "36", "{:<5} p={:.2f}  window {}  ({:.1f} ms)", d.station, d.probability,
-                    hms(d.window_start), d.compute_ms);
+    if (cfg_.verbose)
+        Log::get().line("detect", "36", "{:<5} p={:.2f}  window {}  ({:.1f} ms)", d.station, d.probability,
+                        hms(d.window_start), d.compute_ms);
 
     Event* ev = nullptr;
     for (auto& e : events_) {
@@ -98,13 +102,13 @@ void Network::on(const Detection& d) {
         ev->declared_at = std::ranges::max(ev->detections | std::views::values, {}, &Detection::declared_at).declared_at;
         std::string names;
         for (const auto& [code, _] : ev->detections) names += (names.empty() ? "" : ", ") + code;
-        Log::get().line("EVENT", "1;31", "#{} declared at {} by {}", ev->id, hms(ev->declared_at), names);
-        if (const auto* c = match(*ev)) {
-            Log::get().line("EVENT", "31", "#{} catalogue: {}{:.1f} at {}, alert {:.1f} s after origin", ev->id, c->type,
-                            c->magnitude, hms(c->time), ev->declared_at - c->time);
-        }
+        const auto* c = match(*ev);
+        Log::get().line("ALARM", "1;31", "#{:<3} {}  earthquake detected by {}{}", ev->id, hms(ev->declared_at), names,
+                        c ? std::format("  (AFAD {} {:.1f} at {}, {:.1f} s ago)", c->type, c->magnitude, hms(c->time),
+                                        ev->declared_at - c->time)
+                          : "");
         report_magnitude(*ev, ev->declared_at);    // estimates received before the event was declared
-    } else if (ev->declared) {
+    } else if (ev->declared && cfg_.verbose) {
         Log::get().line("EVENT", "31", "#{} joined by {}", ev->id, d.station);
     }
 }
@@ -121,12 +125,13 @@ void Network::on(const Pick& p) {
     else if (sp <= 0 || sp > 60) reject = "S not after P";
     else if (p.p_time < p.trigger_window - 3 || p.p_time > p.trigger_window + 9) reject = "P outside the trigger window";
     if (!reject.empty()) {
-        Log::get().line("pick", "2", "{:<5} P {} ({:.2f})  S {} ({:.2f})  -- not used: {}", p.station, hms(p.p_time), p.p_prob,
+        if (cfg_.verbose) Log::get().line("pick", "2", "{:<5} P {} ({:.2f})  S {} ({:.2f})  -- not used: {}", p.station, hms(p.p_time), p.p_prob,
                         hms(p.s_time), p.s_prob, reject);
         return;
     }
-    Log::get().line("pick", "35", "{:<5} P {} ({:.2f})  S {} ({:.2f})  S-P {:.2f} s ~ {:.0f} km  ({:.0f} ms)", p.station,
-                    hms(p.p_time), p.p_prob, hms(p.s_time), p.s_prob, sp, km, p.compute_ms);
+    if (cfg_.verbose)
+        Log::get().line("pick", "35", "{:<5} P {} ({:.2f})  S {} ({:.2f})  S-P {:.2f} s ~ {:.0f} km  ({:.0f} ms)", p.station,
+                        hms(p.p_time), p.p_prob, hms(p.s_time), p.s_prob, sp, km, p.compute_ms);
     for (auto& e : events_) {
         auto it = e.detections.find(p.station);
         if (it == e.detections.end() || it->second.window_start != p.trigger_window) continue;
@@ -142,7 +147,7 @@ void Network::on(const Pick& p) {
 // arrival travels through the upper mantle, so distant stations are the ones
 // typically removed.
 void Network::on(const MagnitudeEstimate& m) {
-    Log::get().line("mag", "34", "{:<5} M{:.2f}  {}  noise baseline {}  ({:.0f} ms)", m.station, m.magnitude,
+    if (cfg_.verbose) Log::get().line("mag", "34", "{:<5} M{:.2f}  {}  noise baseline {}  ({:.0f} ms)", m.station, m.magnitude,
                     m.at_pick ? "at picked P" : "early      ",
                     m.noise_windows ? std::format("{} windows", m.noise_windows) : std::string("not ready, per-window"),
                     m.compute_ms);
@@ -177,12 +182,8 @@ void Network::report_magnitude(Event& e, double now) {
         e.first_magnitude_at = now;
     }
     if (!changed) return;
-    const auto* c = match(e);
-    Log::get().line("MAG", "1;34", "#{} M{:.1f} at {} from {} station{} ({}){}", e.id, med, hms(now), v.size(),
-                    v.size() == 1 ? "" : "s", parts,
-                    c ? std::format("  catalogue {}{:.1f}: {:+.1f}, {:.0f} s after origin", c->type, c->magnitude,
-                                    med - c->magnitude, now - c->time)
-                      : "");
+    Log::get().line("MAG", "1;34", "#{:<3} {}  magnitude M{:.1f} from {} station{} ({})", e.id, hms(now), med, v.size(),
+                    v.size() == 1 ? "" : "s", parts);
 }
 
 std::optional<Location> Network::locate(const Event& e) const {
@@ -261,7 +262,8 @@ void Network::report_location(Event& e) {
     auto loc = locate(e);
     if (!loc) return;
     if (loc->rms > cfg_.max_rms) {
-        Log::get().line("LOCATE", "33", "#{} rejected: best fit rms {:.1f} s from {} stations", e.id, loc->rms, loc->n_stations);
+        if (cfg_.verbose)
+            Log::get().line("LOCATE", "33", "#{} rejected: best fit rms {:.1f} s from {} stations", e.id, loc->rms, loc->n_stations);
         return;
     }
     // Do not print an unchanged solution.
@@ -271,13 +273,9 @@ void Network::report_location(Event& e) {
     if (same) return;
     std::string left_out;
     for (const auto& d : loc->dropped) left_out += (left_out.empty() ? ", left out " : " ") + d;
-    Log::get().line("LOCATE", "1;32", "#{} {:.3f}N {:.3f}E  origin {}  rms {:.2f} s  ({} stations, P+S{})", e.id, loc->lat,
-                    loc->lon, hms(loc->origin), loc->rms, loc->n_stations, left_out);
-    if (const auto* c = match(e)) {
-        Log::get().line("LOCATE", "32", "#{} catalogue {}{:.1f} {:.3f}N {:.3f}E: {:.1f} km off, origin {:+.1f} s", e.id,
-                        c->type, c->magnitude, c->lat, c->lon, distance_km(loc->lat, loc->lon, c->lat, c->lon),
-                        loc->origin - c->time);
-    }
+    const double now = std::ranges::max(e.picks | std::views::values, {}, &Pick::declared_at).declared_at;
+    Log::get().line("LOCATE", "1;32", "#{:<3} {}  located at {:.3f}N {:.3f}E, origin {}, rms {:.2f} s from {} stations{}", e.id,
+                    hms(now), loc->lat, loc->lon, hms(loc->origin), loc->rms, loc->n_stations, left_out);
 }
 
 // Matching catalogue event, if any. A catalogue event matches if the location
@@ -342,34 +340,201 @@ std::size_t Network::unmatched_count() const {
     return n;
 }
 
-void Network::summary() const {
-    const std::size_t declared = declared_count();
-    Log::get().line("summary", "1", "{} events declared, {} single-station detections not confirmed", declared,
-                    events_.size() - declared);
-    if (cfg_.catalog.empty()) return;
+std::vector<Network::Warning> Network::warnings(const Event& e, const CatalogEvent* c) const {
+    std::vector<Warning> out;
+    double lat = 0, lon = 0, depth = cfg_.depth_km, origin = 0;
+    if (c) {
+        lat = c->lat;
+        lon = c->lon;
+        depth = c->depth;
+        origin = c->time;
+    } else if (e.location) {
+        lat = e.location->lat;
+        lon = e.location->lon;
+        origin = e.location->origin;
+    } else {
+        return out;
+    }
+    auto add = [&](const std::string& name, double slat, double slon, bool site) {
+        const double km = distance_km(lat, lon, slat, slon);
+        Warning w{name, km, origin + std::hypot(km, depth) / cfg_.vs, false, site};
+        if (!site)
+            if (auto it = e.picks.find(name); it != e.picks.end()) {
+                w.s_time = it->second.s_time;
+                w.picked = true;
+            }
+        out.push_back(w);
+    };
+    for (const auto& [code, s] : stations_) add(code, s.lat, s.lon, false);
+    for (const auto& site : cfg_.sites) add(site.name, site.lat, site.lon, true);
+    std::ranges::sort(out, {}, &Warning::distance_km);
+    return out;
+}
 
-    Log::get().line("catalog", "1", "{:<11} {:>6} {:>7}   ayzek", "origin", "mag", "dist");
-    std::size_t n = 0, found = 0, located = 0;
-    for (const auto& sc : score()) {
-        const auto& c = *sc.event;
-        const Event* hit = sc.detected;
-        ++n;
-        std::string what = "missed";
-        if (hit) {
-            ++found;
-            what = std::format("#{} alert +{:.1f} s", hit->id, hit->declared_at - c.time);
-            if (hit->magnitude) what += std::format(", M{:.1f} ({:+.1f})", *hit->magnitude, *hit->magnitude - c.magnitude);
-            if (hit->location) {
-                ++located;
-                what += std::format(", located {:.1f} km off, origin {:+.1f} s", distance_km(hit->location->lat, hit->location->lon, c.lat, c.lon),
-                                    hit->location->origin - c.time);
+void Network::report(double t_first, double t_last) const {
+    auto& log = Log::get();
+    const std::string rule(78, '-');
+    log.plain(false, "");
+    log.plain(true, "{}", rule);
+    log.plain(true, "REPORT  {} stations, {} to {} UTC", stations_.size(), ymd_hms(t_first), hms(t_last));
+    log.plain(true, "{}", rule);
+
+    const auto scores = score();
+    std::vector<const Event*> declared;
+    for (const auto& e : events_)
+        if (e.declared) declared.push_back(&e);
+    std::ranges::sort(declared, {}, &Event::declared_at);
+
+    std::vector<double> alarm_delays, magnitude_errors, positive_warnings;
+    std::size_t arrivals = 0, warned = 0;
+    for (const Event* e : declared) {
+        const CatalogEvent* c = nullptr;
+        for (const auto& sc : scores)
+            if (sc.detected == e) c = sc.event;
+
+        // Headline.
+        std::string headline = std::format("Event #{}: detected ", e->id);
+        headline += e->magnitude ? std::format("M{:.1f} earthquake", *e->magnitude) : std::string("earthquake (no magnitude)");
+        if (e->location)
+            headline += std::format(" at {:.3f}N {:.3f}E, origin {} UTC", e->location->lat, e->location->lon, hms(e->location->origin));
+        else
+            headline += ", not located";
+        log.plain(false, "");
+        log.plain(true, "{}", headline);
+
+        std::string first, later;
+        for (const auto& [code, d] : e->detections)
+            (d.declared_at <= e->declared_at ? first : later) += std::format("{}{}", (d.declared_at <= e->declared_at ? first : later).empty() ? "" : ", ", code);
+        log.plain(false, "  alarm      {} UTC by {}{}", hms(e->declared_at), first, later.empty() ? "" : std::format("; later {}", later));
+        if (e->magnitude) {
+            const double lag = e->first_magnitude_at - e->declared_at;
+            log.plain(false, "  magnitude  M{:.1f} {}, M{:.1f} final from {} station{}", *e->first_magnitude,
+                      lag < 0.05 ? std::string("at the alarm") : std::format("{:.1f} s after the alarm", lag),
+                      *e->magnitude, e->magnitude_stations, e->magnitude_stations == 1 ? "" : "s");
+        }
+        if (e->location)
+            log.plain(false, "  location   rms {:.2f} s from {} stations", e->location->rms, e->location->n_stations);
+
+        const double origin = c ? c->time : (e->location ? e->location->origin : NAN);
+        if (c) {
+            std::string cmp = std::format("  AFAD       {} {:.1f} at {} UTC: alarm {:.1f} s after origin", c->type, c->magnitude,
+                                          hms(c->time), e->declared_at - c->time);
+            // Rounded before formatting, so that a difference below 0.05 prints as +0.0.
+            if (e->magnitude) cmp += std::format(", magnitude {:+.1f}", std::round((*e->magnitude - c->magnitude) * 10) / 10 + 0.0);
+            if (e->location)
+                cmp += std::format(", epicentre {:.1f} km off, origin {:+.1f} s",
+                                   distance_km(e->location->lat, e->location->lon, c->lat, c->lon), e->location->origin - c->time);
+            log.plain(false, "{}", cmp);
+            alarm_delays.push_back(e->declared_at - c->time);
+            if (e->magnitude) magnitude_errors.push_back(std::abs(*e->magnitude - c->magnitude));
+        } else {
+            log.plain(false, "  AFAD       no matching catalogue event");
+        }
+
+        const auto ws = warnings(*e, c);
+        if (ws.empty()) continue;
+        const double depth = c ? c->depth : cfg_.depth_km;
+        const double blind = std::sqrt(std::max(cfg_.vs * cfg_.vs * (e->declared_at - origin) * (e->declared_at - origin) - depth * depth, 0.0));
+        log.plain(false, "  S wave     had travelled {:.0f} km from the epicentre when the alarm sounded ({})", blind,
+                  c ? "AFAD hypocentre" : "ayzek location");
+        log.plain(false, "  warning    {:<10} {:>8}   {:<24} {:>8}", "", "distance", "S wave arrives", "warning");
+        for (const auto& w : ws) {
+            const double lead = w.s_time - e->declared_at;
+            log.plain(false, "             {:<10} {:>5.0f} km   {} UTC {:<10} {:>+7.1f} s  {}", w.name, w.distance_km, hms(w.s_time),
+                      w.picked ? "(picked)" : "(predicted)", lead, lead > 0 ? "before S" : "after S");
+            if (c && !w.site) {
+                ++arrivals;
+                if (lead > 0) {
+                    ++warned;
+                    positive_warnings.push_back(lead);
+                }
             }
         }
-        Log::get().line("catalog", hit ? "32" : "33", "{:<11} {:>2}{:>4.1f} {:>4.0f} km   {}", hms(c.time), c.type, c.magnitude,
-                        sc.distance_km, what);
     }
-    Log::get().line("catalog", "1", "{} of {} catalogue events within {:.0f} km declared, {} located; {} declared events not in the catalogue",
-                    found, n, cfg_.catalog_radius_km, located, unmatched_count());
+
+    auto median = [](std::vector<double> v) -> double {
+        if (v.empty()) return NAN;
+        std::ranges::sort(v);
+        return v.size() % 2 ? v[v.size() / 2] : 0.5 * (v[v.size() / 2 - 1] + v[v.size() / 2]);
+    };
+    auto pct = [](std::size_t a, std::size_t b) { return b ? std::format("{:.0f}%", 100.0 * static_cast<double>(a) / static_cast<double>(b)) : std::string("-"); };
+
+    std::size_t located = 0;
+    std::vector<const Event*> unmatched;
+    for (const Event* e : declared) {
+        located += e->location.has_value();
+        if (std::ranges::none_of(scores, [&](const CatalogScore& sc) { return sc.detected == e; })) unmatched.push_back(e);
+    }
+    std::vector<const CatalogScore*> missed;
+    for (const auto& sc : scores)
+        if (!sc.detected) missed.push_back(&sc);
+
+    log.plain(false, "");
+    log.plain(true, "{}", rule);
+    log.plain(true, "SUMMARY");
+    log.plain(true, "{}", rule);
+    log.plain(false, "  Alarms raised                        {:>4}", declared.size());
+    log.plain(false, "  single-station detections, no alarm  {:>4}", events_.size() - declared.size());
+    if (cfg_.catalog.empty()) {
+        log.plain(false, "  (no catalogue given: correct, false and missed alarms not evaluated)");
+        log.plain(true, "{}", rule);
+        return;
+    }
+    const std::size_t correct = declared.size() - unmatched.size();
+    log.plain(false, "");
+    log.plain(false, "  Alarms compared with the AFAD catalogue");
+    log.plain(false, "    correct  (match an AFAD event)     {:>4}  {:>4}", correct, pct(correct, declared.size()));
+    log.plain(false, "    false    (no AFAD event)           {:>4}  {:>4}", unmatched.size(), pct(unmatched.size(), declared.size()));
+    log.plain(false, "");
+    log.plain(false, "  AFAD events within {:.0f} km             {:>4}", cfg_.catalog_radius_km, scores.size());
+    log.plain(false, "    detected                           {:>4}  {:>4}", scores.size() - missed.size(), pct(scores.size() - missed.size(), scores.size()));
+    log.plain(false, "    missed                             {:>4}  {:>4}", missed.size(), pct(missed.size(), scores.size()));
+
+    // Detection rate by magnitude.
+    log.plain(false, "");
+    log.plain(false, "  By magnitude      AFAD events   detected   missed");
+    const std::array<std::pair<double, double>, 5> bands{{{-10, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 10}}};
+    for (auto [lo, hi] : bands) {
+        std::size_t n = 0, hit = 0;
+        for (const auto& sc : scores)
+            if (sc.event->magnitude >= lo && sc.event->magnitude < hi) {
+                ++n;
+                hit += sc.detected != nullptr;
+            }
+        if (!n) continue;
+        const std::string label = lo < 0 ? "M < 2" : hi > 9 ? std::format("M {:.0f}+", lo) : std::format("M {:.0f}-{:.0f}", lo, hi);
+        log.plain(false, "    {:<14} {:>10} {:>10} {:>8}", label, n, hit, n - hit);
+    }
+
+    if (!alarm_delays.empty()) {
+        log.plain(false, "");
+        log.plain(false, "  Correct alarms");
+        log.plain(false, "    alarm after origin time             median {:.1f} s", median(alarm_delays));
+        if (!magnitude_errors.empty())
+            log.plain(false, "    magnitude error                     mean {:.2f} units",
+                      std::accumulate(magnitude_errors.begin(), magnitude_errors.end(), 0.0) / static_cast<double>(magnitude_errors.size()));
+        log.plain(false, "    located                             {} of {}", located - static_cast<std::size_t>(std::ranges::count_if(unmatched, [](const Event* e) { return e->location.has_value(); })), correct);
+        if (arrivals)
+            log.plain(false, "    alarm before the S wave             at {} of {} station arrivals, median warning {:.1f} s, max {:.1f} s",
+                      warned, arrivals, median(positive_warnings), positive_warnings.empty() ? NAN : std::ranges::max(positive_warnings));
+    }
+
+    if (!missed.empty()) {
+        log.plain(false, "");
+        log.plain(false, "  Missed AFAD events");
+        for (const auto* sc : missed)
+            log.plain(false, "    {} UTC  {} {:.1f}  {:>4.0f} km from the network centre", hms(sc->event->time), sc->event->type,
+                      sc->event->magnitude, sc->distance_km);
+    }
+    if (!unmatched.empty()) {
+        log.plain(false, "");
+        log.plain(false, "  False alarms (no AFAD event; small uncatalogued earthquakes are possible)");
+        for (const Event* e : unmatched)
+            log.plain(false, "    {} UTC  #{}  {}{}", hms(e->declared_at), e->id,
+                      e->magnitude ? std::format("M{:.1f}", *e->magnitude) : std::string("no magnitude"),
+                      e->location ? std::format(", located {:.2f}N {:.2f}E", e->location->lat, e->location->lon) : std::string(", not located"));
+    }
+    log.plain(true, "{}", rule);
 }
 
 }  // namespace ayzek::pipeline

@@ -20,13 +20,15 @@ if ! "$AYZEK" --help >/dev/null 2>&1; then
 fi
 out=$($RUN --speed 0 --no-color --models "$ROOT/models" --from 2025-11-10T18:19:00 --catalog "$CATALOG" \
       "$ROOT/data/demo/DEMI.mseed" "$ROOT/data/demo/MANT.mseed" "$ROOT/data/demo/BAND.mseed")
-echo "$out" | grep -E 'EVENT|LOCATE|MAG|^catalog'
-line=$(echo "$out" | grep -E '^catalog +18:20:51' || true)
-echo "$line" | grep -q 'alert' || { echo "FAIL: M4.9 not declared"; exit 1; }
-km=$(echo "$line" | sed -n 's/.*located \([0-9.]*\) km off.*/\1/p')
+echo "$out" | grep -E '^(ALARM|MAG|LOCATE)|detected|AFAD|SUMMARY|correct|false|missed'
+# The report block for the M4.9: the headline gives ayzek's magnitude, the AFAD
+# line gives the epicentre error.
+block=$(echo "$out" | awk '/^Event #/ {head=$0} /AFAD .* at 18:20:51/ {print head; print $0}')
+echo "$block" | grep -q 'AFAD' || { echo "FAIL: M4.9 not detected"; exit 1; }
+km=$(echo "$block" | sed -n 's/.*epicentre \([0-9.]*\) km off.*/\1/p')
 [ -n "$km" ] || { echo "FAIL: M4.9 not located"; exit 1; }
 awk -v k="$km" 'BEGIN { exit !(k < 10) }' || { echo "FAIL: M4.9 located $km km off"; exit 1; }
-mag=$(echo "$line" | sed -n 's/.*, M\([0-9.]*\) (.*/\1/p')
+mag=$(echo "$block" | sed -n 's/.*detected M\([0-9.]*\) earthquake.*/\1/p')
 [ -n "$mag" ] || { echo "FAIL: M4.9 has no magnitude"; exit 1; }
 awk -v m="$mag" 'BEGIN { exit !(m > 3.9 && m < 5.9) }' || { echo "FAIL: M4.9 estimated M$mag"; exit 1; }
-echo "PASS: M4.9 declared, located $km km from the catalogue epicentre, magnitude M$mag"
+echo "PASS: M4.9 detected, located $km km from the catalogue epicentre, magnitude M$mag"

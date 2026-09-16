@@ -26,13 +26,16 @@
   Each record is released when the stream clock reaches that time. A SeedLink
   client would replace this class and nothing downstream changes.
 - **Decoding.** `src/mseed.hpp` decodes Steim2 and uncompressed 16- and 32-bit
-  integer records, the latter in either byte order. AFAD dataloggers switch
-  from Steim2 to 32-bit integer records during strong shaking. The first
-  version accepted only Steim2, so during the 2025-04-23 Mw 6.2 Marmara
-  earthquake CATL (57 km) and ARNA (68 km) lost every record written during
+  integer records, the latter in either byte order. During the 2025-04-23
+  Mw 6.2 Marmara earthquake the dataloggers at CATL (57 km) and ARNA (68 km)
+  switched from Steim2 to 32-bit integer records; ELBA (38 km) did not. The
+  first version accepted only Steim2, so CATL and ARNA lost every record of
   the strongest shaking and produced no detection. Records that cannot be
   decoded are now reported with the reason. CATL (little-endian integer
   records) and ARNA (big-endian) decode bit-exactly against ObsPy.
+  `tools/scan_encodings.py` over the whole archive (13 stations, 286 chunks,
+  398 million records, 2024–2026) found 304 non-Steim2 records, all at ARNA
+  and CATL on 2025-04-23 between 09:49 and 12:13 UTC.
 - **Reordering.** Each component has its own `Reorderer` at
   `max_lateness = 0` (`DESIGN.md`): a hole is a gap at once and a late record
   is stale.
@@ -93,6 +96,10 @@
   - While rms exceeds 2 s, the worst-fitting station is dropped and the event
     relocated. Stations beyond ~150 km are the usual casualties, because a
     half-space ignores the faster upper-mantle P path.
+- **Report.** At the end, `Network::report` prints one block per alarm
+  (magnitude, alarm time, location, AFAD comparison, S-wave warning time per
+  station and `--site`) and a summary of correct and false alarms and detected
+  and missed catalogue events; see `IMPLEMENTATION.md`, "Output".
 - **Scoring.** `--catalog` takes an AFAD CSV export. A declared event matches a
   catalogue event if its location agrees (≤ 30 km, origin ≤ 5 s). Otherwise it
   matches if a detecting window fired where that event's P should have arrived

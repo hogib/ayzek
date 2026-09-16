@@ -179,6 +179,17 @@ public:
         else std::println("{:<8} {}", tag, body);
         std::fflush(stdout);
     }
+    // A line without a tag, for the final report.
+    template <typename... Args>
+    void plain(bool bold, std::format_string<Args...> fmt, Args&&... args) {
+        if (quiet) return;
+        std::string body = std::format(fmt, std::forward<Args>(args)...);
+        std::lock_guard lk(mu_);
+        if (color && bold) std::println("\x1b[1m{}\x1b[0m", body);
+        else std::println("{}", body);
+        std::fflush(stdout);
+    }
+
 private:
     std::mutex mu_;
 };

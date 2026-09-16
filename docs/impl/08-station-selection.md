@@ -94,11 +94,13 @@ events. Replay of the three hours for eight stations took 3 minutes.
 
 ### Decoder defect found by this replay
 
-In the first run, CATL and ARNA produced no detection of the Mw 6.2. During
-strong shaking their dataloggers write uncompressed 32-bit integer records
+In the first run, CATL and ARNA produced no detection of the Mw 6.2. From the
+Mw 6.2 onwards their dataloggers wrote some uncompressed 32-bit integer records
 (encoding 3; CATL little-endian, ARNA big-endian) instead of Steim2, and the
-decoder rejected every such record: 104 at CATL and 155 at ARNA, at 09:49–09:51
-and 10:02–10:03. The decoder now supports integer records
+decoder rejected every such record: 104 at CATL and 155 at ARNA in the replay
+window, at 09:49–09:51 and 10:02–10:03. ELBA, closer to the epicentre, wrote
+only Steim2. A scan of the whole archive found no integer records at any other
+station or time. The decoder now supports integer records
 (`05-pipeline.md`); both files decode bit-exactly against ObsPy. The results
 below are from the corrected run.
 
@@ -106,14 +108,31 @@ below are from the corrected run.
 
 | | |
 |---|---|
-| catalogue events within 250 km | 57 |
-| declared | 38 |
-| located | 30 |
-| declared, not in catalogue | 11 |
+| alarms | 49: 38 matching an AFAD event, 11 without one |
+| AFAD events within 250 km | 57: 38 detected, 19 missed |
+| located | 30 of the 38 |
 | **Mw 6.2 alert** | **11.0 s after origin** (ARNA, ELBA), S-wave blind zone 38 km |
 | Mw 6.2 location | 11.8 km from AFAD's epicentre, origin +0.4 s |
 | Mw 6.2 magnitude | M4.5 at +15 s, at most M4.9 at +32 s, final M4.6 |
 | Mw 5.9 | alert +12.5 s, M4.3 |
+
+S-wave warning time for the Mw 6.2 (S arrival minus alarm time; picked S at
+stations with a pick, otherwise predicted from the AFAD hypocentre with
+Vs = 3.5 km/s; `--site` for the three cities):
+
+| place | distance | warning |
+|---|---:|---:|
+| Silivri | 26 km | −3.5 s (S wave before the alarm) |
+| ELBA | 38 km | +2.1 s |
+| BAND | 55 km | +6.6 s |
+| CATL | 57 km | +7.0 s |
+| Istanbul (Fatih) | 67 km | +8.1 s |
+| ARNA | 68 km | +8.0 s |
+| Bursa | 103 km | +18.4 s |
+
+Over all 38 correctly detected events, the alarm preceded the S wave at 257 of
+304 station arrivals (median warning 25 s). This count is dominated by the
+distant stations.
 
 The magnitude estimates are 1.3–1.7 units low for the Mw 6.2 and Mw 5.9. The
 regressor's training data has 160 windows of M ≥ 5.5 among 13,150, and a 10 s

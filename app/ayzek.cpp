@@ -47,6 +47,8 @@ const char* kUsage = R"(usage: ayzek [options] STATION.mseed...
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
   --record FILE         write all station outputs for tools/network_subsets
+  --site NAME,LAT,LON   report the S-wave warning time at this place (repeatable)
+  --verbose             print every station detection, pick and magnitude estimate
   --no-color
 )";
 
@@ -109,6 +111,18 @@ int main(int argc, char** argv) try {
         else if (a == "--no-magnitude") pcfg.magnitude = false;
         else if (a == "--scores") scores_dir = next();
         else if (a == "--no-color") Log::get().color = false;
+        else if (a == "--verbose") ncfg.verbose = true;
+        else if (a == "--site") {
+            std::stringstream ss(next());
+            Site site;
+            std::string lat, lon;
+            std::getline(ss, site.name, ',');
+            std::getline(ss, lat, ',');
+            std::getline(ss, lon, ',');
+            site.lat = std::stod(lat);
+            site.lon = std::stod(lon);
+            ncfg.sites.push_back(site);
+        }
         else if (a == "--catalog") catalog_path = next();
         else if (a == "--record") record_path = next();
         else if (a == "-h" || a == "--help") {
@@ -227,9 +241,15 @@ int main(int argc, char** argv) try {
     threads.clear();
     const double wall = clock.wall_seconds();
 
-    // --- summary ------------------------------------------------------------------
-    Log::get().line("summary", "1", "{:<5} {:>8} {:>6} {:>7} {:>6} {:>5} {:>5} {:>6}   window ms: {:>5} {:>5} {:>5}   pick ms  mag ms",
-                    "sta", "windows", "gaps", "stale", "detect", "picks", "mags", "noise", "mean", "p99", "max");
+    // --- report -----------------------------------------------------------------
+    const double stream_seconds = t_last - std::max(start, t_first);
+    net.report(std::max(start, t_first), t_last);
+
+    auto& log = Log::get();
+    log.plain(false, "");
+    log.plain(true, "Station processing ({} backend)", simd::kBackend);
+    log.plain(false, "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>10}   {:>16} {:>9} {:>14}", "", "windows", "with gap", "triggers", "picks",
+              "magnitudes", "ms/window (p99)", "ms/pick", "ms/magnitude");
     std::uint64_t windows = 0;
     for (std::size_t i = 0; i < stations.size(); ++i) {
         const auto& s = procs[i]->stats();
@@ -243,14 +263,11 @@ int main(int argc, char** argv) try {
         }
         if (dropped) Log::get().line("warn", "33", "{}: {} samples dropped by the ring", stations[i]->code, dropped);
         windows += s.windows;
-        Log::get().line("summary", "1", "{:<5} {:>8} {:>6} {:>7} {:>6} {:>5} {:>5} {:>6}   {:>15.2f} {:>5.2f} {:>5.2f}   {:>7.0f} {:>7.0f}",
-                        stations[i]->code, s.windows, s.gap_windows, stale, s.detections, s.picks, s.magnitudes,
-                        s.noise_windows, w.mean, w.p99, w.max, pk.mean, mg.mean);
+        if (stale) log.line("warn", "33", "{}: {} late records discarded", stations[i]->code, stale);
+        log.plain(false, "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>10}   {:>8.1f} ({:>5.1f}) {:>9.0f} {:>14.0f}", stations[i]->code, s.windows,
+                  s.gap_windows, s.detections, s.picks, s.magnitudes, w.mean, w.p99, pk.mean, mg.mean);
     }
-    const double stream_seconds = t_last - std::max(start, t_first);
-    net.summary();
-    Log::get().line("summary", "1", "{} windows in {:.1f} s wall: {:.0f} station-seconds per second ({:.0f}x real time per station)",
-                    windows, wall, stream_seconds * static_cast<double>(stations.size()) / wall, stream_seconds / wall);
+    log.plain(false, "  {} windows in {:.1f} s: {:.0f}x real time per station", windows, wall, stream_seconds / wall);
     return 0;
 } catch (const std::exception& e) {
     std::println(stderr, "ayzek: {}", e.what());
