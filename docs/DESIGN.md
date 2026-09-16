@@ -194,7 +194,9 @@ against 25 on HHZ, losing about 0.3% of the horizontal data. They are not short:
 late run blanks the horizontals for a median of 10 s (90th percentile 14.5 s,
 longest 85 s), and only 13% last 5 s or less. A three-component detector loses
 every window those gaps touch -- with the detector's 6 s window, about 16 s of
-windows per gap. A Z-only detector would recover that ~0.3%,
+windows per gap. Merged across all three channels that is **0.85% of detector
+windows** (15,362 s in 21 days, about 12 minutes a day), not the 0.3% the data
+loss alone suggests. A Z-only detector would recover nearly all of it,
 at the cost of retraining -- worth doing only if the loss turns out to matter, so
 it is deferred until measured.
 
@@ -213,13 +215,25 @@ Consequences:
    **counted**. That count, set against real detections, is what decides whether
    a Z-only detector is worth building.
 
-   Bridging gaps with interpolated samples instead was considered. Bridging a
-   gap costs no latency -- its far edge is known the moment it is declared -- but
-   a typical gap is longer than the detector's whole window. A bridged window
-   is really a Z-only window with fabricated horizontals, and the detector was
-   trained with no gap augmentation. Whether it tolerates that is measurable on
-   its existing test set without retraining, and is worth measuring before
-   either bridging or a Z-only model.
+   **Bridging short horizontal gaps and skipping long ones** was measured with
+   `tools/replay_check`. Bridging costs no latency -- a gap's far edge is known
+   the moment it is declared -- but it buys little until the threshold passes
+   the detector's window:
+
+   | bridge gaps up to | bridged | windows lost | fabricated horizontal data |
+   |---:|---:|---:|---:|
+   | never | 0 | 0.847% | 0 s |
+   | 5 s | 130 | 0.779% | 584 s |
+   | 10 s | 475 | 0.536% | 3,450 s |
+   | 15 s | 914 | 0.126% | 8,485 s |
+   | all | 998 | 0.015% | 10,506 s |
+
+   Z gaps are never bridged. Most of the recovery comes from gaps of 5-15 s,
+   which are longer than a whole window, so windows inside them are Z-only
+   windows with fabricated horizontals. The detector was trained with no gap
+   augmentation. How long a bridge it tolerates is measurable on its existing
+   test set without retraining; that sets the threshold, if there is one worth
+   having.
 4. **Late records are not lost to offline use.** Training data and the coda work
    keep reading the time-sorted archive; only the real-time path drops them.
 

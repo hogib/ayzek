@@ -65,7 +65,48 @@ double pct(std::vector<std::uint64_t>& v, double q) {
     return static_cast<double>(v[k]) / 100.0;    // samples -> seconds
 }
 
-void run_channel(const std::string& cha, const std::vector<Rec>& recs, std::uint64_t lateness) {
+using Gaps = std::vector<std::pair<std::uint64_t, std::uint64_t>>;
+
+// What bridging short horizontal gaps would buy the three-component detector.
+//
+// A window is lost if it overlaps a skipped gap on *any* channel, so blocked
+// window starts are merged across channels: bridging a short hole on HHE buys
+// nothing while HHN has a long one at the same moment. Z gaps are never bridged
+// -- P arrives on Z, and fabricating the channel the trigger depends on is a
+// different decision from fabricating a horizontal.
+void fill_policy(const std::map<std::string, Gaps>& gaps, std::uint64_t span_begin, std::uint64_t span_end) {
+    constexpr std::uint64_t kWindow = 600;           // the detector's 6 s at 100 Hz
+    const double starts = static_cast<double>(span_end - span_begin - kWindow);
+
+    std::println("bridging horizontal gaps up to a length, skipping longer ones ({} s windows):",
+                 kWindow / 100);
+    for (std::uint64_t fill : {0, 100, 200, 300, 400, 500, 800, 1000, 1500, 9000}) {
+        Gaps blocked;                                // window starts that would overlap a skipped gap
+        std::uint64_t bridged = 0, skipped = 0, fabricated = 0;
+        for (const auto& [cha, gs] : gaps) {
+            for (auto [a, b] : gs) {
+                if (cha != "HHZ" && b - a <= fill) { ++bridged; fabricated += b - a; continue; }
+                ++skipped;
+                blocked.emplace_back(std::max(span_begin, (a + 1 > kWindow) ? a + 1 - kWindow : 0), b);
+            }
+        }
+        std::ranges::sort(blocked);
+        std::uint64_t lost = 0, cur_a = 0, cur_b = 0;
+        for (auto [a, b] : blocked) {
+            if (a > cur_b) { lost += cur_b - cur_a; cur_a = a; }
+            cur_b = std::max(cur_b, b);
+        }
+        lost += cur_b - cur_a;
+
+        std::println("  up to {:>4.1f}s   bridged {:>4}  skipped {:>4}   windows lost {:>5.3f}% ({:>5.0f} s)"
+                     "   fabricated {:>5.0f} s",
+                     static_cast<double>(fill) / 100.0, bridged, skipped,
+                     100.0 * static_cast<double>(lost) / starts, static_cast<double>(lost) / 100.0,
+                     static_cast<double>(fabricated) / 100.0);
+    }
+}
+
+Gaps run_channel(const std::string& cha, const std::vector<Rec>& recs, std::uint64_t lateness) {
     // Sorted once, and used both for the genuine holes and to look up the expected
     // value at each position -- an exact comparison without holding a second
     // 180M-sample copy of the channel.
@@ -141,6 +182,7 @@ void run_channel(const std::string& cha, const std::vector<Rec>& recs, std::uint
     std::println("     gap length min {:>5.2f}s p50 {:>5.1f}s p90 {:>5.1f}s max {:>6.1f}s   <=1s {}  <=5s {}  <=10s {}  <=30s {}",
                  pct(gap_len, 0.0), pct(gap_len, 0.50), pct(gap_len, 0.90), pct(gap_len, 1.0),
                  under(100), under(500), under(1000), under(3000));
+    return gaps;
 }
 
 }  // namespace
@@ -167,6 +209,15 @@ int main(int argc, char** argv) {
     }
     std::println("decoded; {} records off the 10 ms grid\n", misaligned);
 
+    std::map<std::string, Gaps> realtime;            // what each channel shows at max_lateness = 0
+    std::uint64_t span_begin = ~std::uint64_t{0}, span_end = 0;
+    for (const auto& [cha, recs] : by_channel) {
+        for (const Rec& rec : recs) {
+            span_begin = std::min(span_begin, rec.pos);
+            span_end = std::max(span_end, rec.pos + rec.s.size());
+        }
+    }
+
     for (const auto& [cha, recs] : by_channel) {
         const std::array<std::uint64_t, 6> settings = cha == "HHZ"
             ? std::array<std::uint64_t, 6>{0, 0, 0, 0, 0, 0}
@@ -175,8 +226,10 @@ int main(int argc, char** argv) {
         for (std::uint64_t L : settings) {
             if (L == last) continue;
             last = L;
-            run_channel(cha, recs, L);
+            Gaps g = run_channel(cha, recs, L);
+            if (L == 0) realtime[cha] = std::move(g);
         }
         std::println("");
     }
+    fill_policy(realtime, span_begin, span_end);
 }
