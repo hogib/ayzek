@@ -16,8 +16,6 @@ torch, scipy and obspy:
     uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_models.py
 """
 import hashlib
-import json
-import struct
 import sys
 from pathlib import Path
 
@@ -35,34 +33,14 @@ from archive_pipeline.archive import clean_block, taper_vector  # noqa: E402
 from archive_pipeline.products.detector import WaveformDetector, find_checkpoints  # noqa: E402
 from sphase.model import PhasePicker  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ayzw import write_ayzw  # noqa: E402
+
 DETECTOR_DIR = SISMO / "cnn_earthquake/trained_model_perwindow_6s"
 PICKER_CKPT = SPHASE / "runs/wave_n250.pt"
 STATIONS_CSV = SISMO / "data_downloader/catalogs/istasyon_katalog.csv"
 DEMO = Path("data/demo")
 FS, FMIN, FMAX = 100.0, 1.0, 45.0
-
-DTYPES = {np.dtype(np.float32): 0, np.dtype(np.float64): 1, np.dtype(np.int64): 2, np.dtype(np.uint8): 3}
-
-
-def write_ayzw(path, tensors, meta):
-    """magic, version, count, then (name, dtype, dims, bytes) per tensor."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    items = dict(tensors)
-    items["__meta__"] = np.frombuffer(json.dumps(meta, indent=1).encode(), dtype=np.uint8)
-    with open(path, "wb") as f:
-        f.write(b"AYZW" + struct.pack("<II", 1, len(items)))
-        for name, arr in items.items():
-            arr = np.ascontiguousarray(arr)
-            if arr.dtype not in DTYPES:
-                arr = arr.astype(np.float32)
-            nb = name.encode()
-            f.write(struct.pack("<H", len(nb)) + nb)
-            f.write(struct.pack("<BB", DTYPES[arr.dtype], arr.ndim))
-            f.write(struct.pack(f"<{arr.ndim}I", *arr.shape))
-            f.write(struct.pack("<Q", arr.nbytes))
-            f.write(arr.astype(arr.dtype.newbyteorder("<")).tobytes())
-    print(f"  {path}  ({len(items)} tensors, {path.stat().st_size / 1e3:.0f} kB)")
-
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()[:16]

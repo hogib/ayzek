@@ -2,7 +2,8 @@
 
 A real-time earthquake early-warning pipeline in C++23 with hand-written
 inference. It replays AFAD miniSEED through a trained detector, a P/S picker,
-network association and location, and it runs on a Raspberry Pi.
+a magnitude regressor, network association and location, and it runs on a
+Raspberry Pi.
 
 `DESIGN.md` is the reasoning behind the architecture. The documents here
 describe what was built.
@@ -15,6 +16,7 @@ describe what was built.
 | [04 · Models](impl/04-models.md) | the layers, the 3-seed detector, the picker, and their agreement with PyTorch |
 | [05 · Pipeline](impl/05-pipeline.md) | threads, rings, trigger, association, location, the M4.9 demo and its results |
 | [06 · Raspberry Pi](impl/06-raspberry-pi.md) | cross-compiling with zig, running under qemu, deploying |
+| [07 · Magnitude](impl/07-magnitude.md) | the regressor, station noise baselines, spectrogram, results |
 
 ## In one screen
 
@@ -24,23 +26,28 @@ AFAD miniSEED ─> decode (Steim2) ─> reorder ─> ring Z/N/E ─┐   one pai
                                                            │   detrend · taper · 1–45 Hz · z-score
                                                            │   3-seed CNN-BiLSTM-attention (NEON)
                                                            │   trigger ─> 60 s P/S picker (NEON)
-                                                           └─> network: associate ─> declare ─> locate
+                                                           │   trigger ─> 10 s magnitude, station noise baseline (NEON)
+                                                           └─> network: associate ─> declare ─> locate ─> median M
 ```
 
 On the 2025-11-10 Sındırgı M4.9, from DEMI, MANT and BAND:
 
-- **Declared** 18.0 s after origin. That is the second station's P travel
-  time, not compute.
+- **Declared** 18.0 s after origin, carrying **M4.3**. That is the second
+  station's P travel time, not compute.
+- **Magnitude** refined to **M4.6** once the picks are in, 63 s after origin.
 - **Located** 4.9 km from AFAD's epicentre, origin within 1.1 s, rms 0.17 s.
 - **Aftershocks:** four of them (ML 1.4, 1.9, 3.6, 2.7) located 4–6 km from
-  AFAD.
+  AFAD. Magnitude error averages 0.40 units over all five, and 0.17 over the
+  three inside the model's training range (M ≥ 2).
 - **False alarms:** one declared event in 30 minutes is not in the catalogue,
   at threshold 0.9.
-- **Speed:** 5.2 ms per window for three models on x86, 75× real time per
-  station with seven stations.
-- **Agreement with training:** the models match PyTorch to about 1e-6 on the
-  logits, the conditioning matches scipy to float rounding, and the NEON build
-  passes the same tests under qemu.
+- **Speed:** 5.2 ms per detector window (three models) and 300 ms per
+  magnitude estimate on x86. Seven stations with everything on run at 67× real
+  time per station.
+- **Agreement with training:** all three networks match PyTorch to about 1e-6
+  on their outputs, the conditioning matches scipy to float rounding, the
+  spectrogram matches torchaudio to 2e-3 dB, and the NEON build passes the same
+  tests under qemu.
 
 ## First run
 
@@ -53,6 +60,7 @@ python3 tools/make_demo_data.py --out data/demo \
 
 # 2. weights and test fixtures from the PyTorch checkpoints
 uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_models.py
+uv run --project ~/Projects/sismokaos/data_downloader python tools/export_magnitude.py
 
 # 3. build and test
 meson setup build-release --buildtype=release
@@ -74,6 +82,7 @@ ayzek [options] STATION.mseed...
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2)
   --no-pick             detector only
+  --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
 ```
@@ -81,11 +90,11 @@ ayzek [options] STATION.mseed...
 ## Layout
 
 ```
-src/            ring, mseed, reorder (stages 1–2); simd, nn, models, dsp, weights
+src/            ring, mseed, reorder (stages 1–2); simd, nn, models, dsp, weights, spectrogram, magnitude
 src/pipeline/   ingest, processor, network
 app/            the ayzek binary
 tests/          unit tests, PyTorch/scipy agreement, end-to-end demo check
-tools/          export_models.py, make_demo_data.py, demo.sh, mseed_dump, replay_check
+tools/          export_models.py, export_magnitude.py, make_demo_data.py, demo.sh, mseed_dump, replay_check
 cross/          zig toolchain wrappers and the Raspberry Pi cross file
 ```
 
@@ -100,5 +109,5 @@ cross/          zig toolchain wrappers and the Raspberry Pi cross file
 | 5 kernels | done, NEON + scalar |
 | 6 detector | done, matches PyTorch |
 | 7 live SeedLink | not started; `ReplaySource` is the seam |
-| 8 cascade | detector → picker → location done; magnitude not yet |
+| 8 cascade | detector → picker → magnitude → location, done |
 | 9 location | done: grid search, P+S, uniform half-space, drops ill-fitting stations |

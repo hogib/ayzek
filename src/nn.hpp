@@ -38,6 +38,21 @@ struct Conv1d {
     void forward(const float* x, std::size_t L, float* y) const;   // (cin, L) -> (cout, out_len)
 };
 
+// (cin, H, W) -> (cout, H', W'), square kernel, zero padding, no dilation.
+struct Conv2d {
+    std::size_t cin = 0, cout = 0, k = 0, stride = 1, pad = 0;
+    std::vector<float> w;                         // (cout, cin * k * k)
+    std::vector<float> b;
+    mutable std::vector<float> col;
+
+    Conv2d() = default;
+    Conv2d(const Weights& W, const std::string& prefix, std::size_t stride, std::size_t pad, bool bias);
+    [[nodiscard]] std::size_t out_len(std::size_t L) const noexcept { return (L + 2 * pad - k) / stride + 1; }
+    void forward(const float* x, std::size_t H, std::size_t W, float* y) const;
+};
+
+// BatchNorm1d and BatchNorm2d are the same per-channel affine in eval mode; for
+// 2D pass L = H * W.
 struct BatchNorm1d {
     std::vector<float> scale, shift;              // folded: w / sqrt(var + eps), b - mean * scale
 

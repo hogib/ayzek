@@ -51,6 +51,9 @@ struct Event {
     std::map<std::string, Detection> detections;
     std::map<std::string, Pick> picks;
     std::size_t coda = 0;               // later detections absorbed as S waves and coda
+    std::map<std::string, MagnitudeEstimate> magnitudes;   // latest per station; a pick-anchored one wins
+    std::optional<double> magnitude;    // median over stations
+    std::size_t magnitude_stations = 0;
     std::optional<Location> location;
 };
 
@@ -59,6 +62,7 @@ public:
     Network(std::map<std::string, StationInfo> stations, NetworkConfig cfg);
     void on(const Detection& d);
     void on(const Pick& p);
+    void on(const MagnitudeEstimate& m);
     void summary() const;
 
 private:
@@ -67,6 +71,7 @@ private:
     [[nodiscard]] std::optional<Location> locate(const std::map<std::string, Pick>& picks, std::string* worst) const;
     [[nodiscard]] const CatalogEvent* match(const Event& e) const;
     void report_location(Event& e);
+    void report_magnitude(Event& e, double now);
 
     std::map<std::string, StationInfo> stations_;
     NetworkConfig cfg_;

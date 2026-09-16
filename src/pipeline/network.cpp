@@ -103,6 +103,7 @@ void Network::on(const Detection& d) {
             Log::get().line("EVENT", "31", "#{} catalogue: {}{:.1f} at {}, alert {:.1f} s after origin", ev->id, c->type,
                             c->magnitude, hms(c->time), ev->declared_at - c->time);
         }
+        report_magnitude(*ev, ev->declared_at);    // estimates that arrived before a second station agreed
     } else if (ev->declared) {
         Log::get().line("EVENT", "31", "#{} joined by {}", ev->id, d.station);
     }
@@ -138,6 +139,46 @@ void Network::on(const Pick& p) {
 // uniform half-space is a fair model to ~150 km; beyond that the first P wave
 // travels through the upper mantle and arrives early, so distant stations are
 // the usual casualties.
+void Network::on(const MagnitudeEstimate& m) {
+    Log::get().line("mag", "34", "{:<5} M{:.2f}  {}  noise baseline {}  ({:.0f} ms)", m.station, m.magnitude,
+                    m.at_pick ? "at picked P" : "early      ",
+                    m.noise_windows ? std::format("{} windows", m.noise_windows) : std::string("not ready, per-window"),
+                    m.compute_ms);
+    for (auto& e : events_) {
+        auto it = e.detections.find(m.station);
+        if (it == e.detections.end() || it->second.window_start != m.trigger_window) continue;
+        auto have = e.magnitudes.find(m.station);
+        if (have != e.magnitudes.end() && have->second.at_pick && !m.at_pick) return;
+        e.magnitudes.insert_or_assign(m.station, m);
+        if (e.declared) report_magnitude(e, m.declared_at);
+        return;
+    }
+}
+
+// Network magnitude: the median of the station estimates, robust to one station
+// with a poor baseline or a clipped window. Printed only when it changes.
+void Network::report_magnitude(Event& e, double now) {
+    if (e.magnitudes.empty()) return;
+    std::vector<double> v;
+    std::string parts;
+    for (const auto& [code, sm] : e.magnitudes) {
+        v.push_back(sm.magnitude);
+        parts += std::format("{}{} {:.1f}", parts.empty() ? "" : ", ", code, sm.magnitude);
+    }
+    std::ranges::sort(v);
+    const double med = v.size() % 2 ? v[v.size() / 2] : 0.5 * (v[v.size() / 2 - 1] + v[v.size() / 2]);
+    const bool changed = !e.magnitude || std::abs(*e.magnitude - med) >= 0.05 || e.magnitudes.size() != e.magnitude_stations;
+    e.magnitude = med;
+    e.magnitude_stations = e.magnitudes.size();
+    if (!changed) return;
+    const auto* c = match(e);
+    Log::get().line("MAG", "1;34", "#{} M{:.1f} at {} from {} station{} ({}){}", e.id, med, hms(now), v.size(),
+                    v.size() == 1 ? "" : "s", parts,
+                    c ? std::format("  catalogue {}{:.1f}: {:+.1f}, {:.0f} s after origin", c->type, c->magnitude,
+                                    med - c->magnitude, now - c->time)
+                      : "");
+}
+
 std::optional<Location> Network::locate(const Event& e) const {
     auto picks = e.picks;
     std::vector<std::string> dropped;
@@ -287,6 +328,7 @@ void Network::summary() const {
             ++found;
             matched.push_back(hit);
             what = std::format("#{} alert +{:.1f} s", hit->id, hit->declared_at - c.time);
+            if (hit->magnitude) what += std::format(", M{:.1f} ({:+.1f})", *hit->magnitude, *hit->magnitude - c.magnitude);
             if (hit->location) {
                 ++located;
                 what += std::format(", located {:.1f} km off, origin {:+.1f} s", distance_km(hit->location->lat, hit->location->lon, c.lat, c.lon),

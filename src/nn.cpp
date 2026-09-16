@@ -67,6 +67,44 @@ void Conv1d::forward(const float* x, std::size_t L, float* y) const {
     }
 }
 
+// --- Conv2d --------------------------------------------------------------------
+
+Conv2d::Conv2d(const Weights& W, const std::string& prefix, std::size_t stride_, std::size_t pad_, bool bias)
+    : stride(stride_), pad(pad_) {
+    const auto& t = W.at(prefix + ".weight");
+    if (t.shape.size() != 4 || t.shape[2] != t.shape[3]) throw std::runtime_error(prefix + ".weight is not (cout, cin, k, k)");
+    cout = t.shape[0];
+    cin = t.shape[1];
+    k = t.shape[2];
+    w.assign(t.f32().begin(), t.f32().end());
+    if (bias) b = W.vec(prefix + ".bias", {cout});
+    col.resize(cin * k * k);
+}
+
+void Conv2d::forward(const float* x, std::size_t H, std::size_t Wd, float* y) const {
+    const std::size_t Ho = out_len(H), Wo = out_len(Wd), patch = cin * k * k;
+    const auto sH = static_cast<std::ptrdiff_t>(H), sW = static_cast<std::ptrdiff_t>(Wd);
+    for (std::size_t oy = 0; oy < Ho; ++oy) {
+        for (std::size_t ox = 0; ox < Wo; ++ox) {
+            const std::ptrdiff_t y0 = static_cast<std::ptrdiff_t>(oy * stride) - static_cast<std::ptrdiff_t>(pad);
+            const std::ptrdiff_t x0 = static_cast<std::ptrdiff_t>(ox * stride) - static_cast<std::ptrdiff_t>(pad);
+            float* dst = col.data();
+            for (std::size_t c = 0; c < cin; ++c) {
+                const float* plane = x + c * H * Wd;
+                for (std::size_t i = 0; i < k; ++i) {
+                    const std::ptrdiff_t yy = y0 + static_cast<std::ptrdiff_t>(i);
+                    for (std::size_t j = 0; j < k; ++j) {
+                        const std::ptrdiff_t xx = x0 + static_cast<std::ptrdiff_t>(j);
+                        *dst++ = (yy >= 0 && yy < sH && xx >= 0 && xx < sW) ? plane[yy * sW + xx] : 0.0f;
+                    }
+                }
+            }
+            for (std::size_t oc = 0; oc < cout; ++oc)
+                y[oc * Ho * Wo + oy * Wo + ox] = simd::dot(w.data() + oc * patch, col.data(), patch) + (b.empty() ? 0.0f : b[oc]);
+        }
+    }
+}
+
 // --- BatchNorm1d ----------------------------------------------------------------
 
 BatchNorm1d::BatchNorm1d(const Weights& W, const std::string& prefix, float eps) {

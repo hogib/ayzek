@@ -11,6 +11,16 @@ uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_model
 It needs `data/demo/DEMI.mseed` for the fixtures, so run
 `tools/make_demo_data.py` first (see `05-pipeline.md`).
 
+The magnitude regressor's inputs come from seismic_cli's encoder, which needs
+torchaudio, so its export runs in the data_downloader environment:
+
+```bash
+uv run --project ~/Projects/sismokaos/data_downloader python tools/export_magnitude.py
+```
+
+It writes `models/magnitude_p{0,1,2}.ayzw` and `data/fixtures/magnitude.ayzw`.
+Both scripts share the writer in `tools/ayzw.py`.
+
 ## What it writes
 
 | file | contents | source |

@@ -1,6 +1,7 @@
 #!/bin/sh
 # End to end: replay the demo stations through the built ayzek and require the
-# 2025-11-10 M4.9 to be declared and located within 10 km of the AFAD epicentre.
+# 2025-11-10 M4.9 to be declared, located within 10 km of the AFAD epicentre,
+# and sized within one magnitude unit.
 # Skips (77) without the demo data, models or catalogue.
 set -eu
 AYZEK=$1
@@ -19,10 +20,13 @@ if ! "$AYZEK" --help >/dev/null 2>&1; then
 fi
 out=$($RUN --speed 0 --no-color --models "$ROOT/models" --from 2025-11-10T18:19:00 --catalog "$CATALOG" \
       "$ROOT/data/demo/DEMI.mseed" "$ROOT/data/demo/MANT.mseed" "$ROOT/data/demo/BAND.mseed")
-echo "$out" | grep -E 'EVENT|LOCATE|^catalog'
+echo "$out" | grep -E 'EVENT|LOCATE|MAG|^catalog'
 line=$(echo "$out" | grep -E '^catalog +18:20:51' || true)
 echo "$line" | grep -q 'alert' || { echo "FAIL: M4.9 not declared"; exit 1; }
 km=$(echo "$line" | sed -n 's/.*located \([0-9.]*\) km off.*/\1/p')
 [ -n "$km" ] || { echo "FAIL: M4.9 not located"; exit 1; }
 awk -v k="$km" 'BEGIN { exit !(k < 10) }' || { echo "FAIL: M4.9 located $km km off"; exit 1; }
-echo "PASS: M4.9 declared and located $km km from the catalogue epicentre"
+mag=$(echo "$line" | sed -n 's/.*, M\([0-9.]*\) (.*/\1/p')
+[ -n "$mag" ] || { echo "FAIL: M4.9 has no magnitude"; exit 1; }
+awk -v m="$mag" 'BEGIN { exit !(m > 3.9 && m < 5.9) }' || { echo "FAIL: M4.9 estimated M$mag"; exit 1; }
+echo "PASS: M4.9 declared, located $km km from the catalogue epicentre, magnitude M$mag"

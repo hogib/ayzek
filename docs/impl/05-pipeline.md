@@ -51,6 +51,9 @@
 - **Picker.** The picker runs as soon as its 60 s of data is in. The P and S
   picks therefore arrive about a minute after P. They serve location, not the
   alert.
+- **Magnitude.** An early estimate runs 11.5 s after the trigger, and another
+  at the picked P. Quiet windows keep the station's noise baseline current
+  (`07-magnitude.md`).
 - **Ring floor.** Each loop raises the floor to whatever no future window or
   pending pick can need. That floor is what lets ingest write.
 - **Progress.** Every processor also sends `Progress`: a promise that nothing
@@ -112,14 +115,14 @@ and 124 km from the M4.9. Threshold 0.9, full-speed replay:
 
 | AFAD catalogue | ayzek |
 |---|---|
-| 18:07:17 ML 1.4 | alert +17.0 s, located 6.1 km off, origin +1.9 s |
+| 18:07:17 ML 1.4 | alert +17.0 s, M2.3, located 6.1 km off, origin +1.9 s |
 | 18:10:29 ML 1.0 | missed |
-| 18:16:19 ML 1.9 | alert +17.5 s, located 5.9 km off, origin +1.8 s |
-| **18:20:51 Mw 4.9** | **alert +18.0 s, located 4.9 km off, origin +1.1 s** |
+| 18:16:19 ML 1.9 | alert +17.5 s, M2.5, located 5.9 km off, origin +1.8 s |
+| **18:20:51 Mw 4.9** | **alert +18.0 s with M4.3, final M4.6, located 4.9 km off, origin +1.1 s** |
 | 18:23:21 ML 3.1 | missed |
-| 18:25:51 ML 3.6 | alert +18.0 s, located 4.7 km off, origin +1.2 s |
+| 18:25:51 ML 3.6 | alert +18.0 s, M3.6, located 4.7 km off, origin +1.2 s |
 | 18:29:11 ML 2.4 | missed |
-| 18:30:02 ML 2.7 | alert +18.0 s, located 4.0 km off, origin +1.7 s |
+| 18:30:02 ML 2.7 | alert +18.0 s, M2.9, located 4.0 km off, origin +1.7 s |
 | 18:32:40 ML 2.4 | missed |
 
 That is 5 of 9 declared, all 5 located within 6.1 km. One declared event is
@@ -160,9 +163,13 @@ refractory period.
 ### Scaling
 
 All seven stations (up to 296 km) at full speed on a 12-thread x86 laptop:
-25,924 windows in 24.6 s wall. That is 528 station-seconds per second, 75×
-real time per station, at 5.2–6.6 ms per window (three models) and 13–16 ms
-per 60 s pick. The M4.9 was detected at all seven.
+
+- **Detector and picker only:** 25,924 windows in 24.6 s wall. That is 528
+  station-seconds per second, 75× real time per station, at 5.2–6.6 ms per
+  window (three models) and 13–16 ms per 60 s pick.
+- **With magnitude:** 27.8 s wall, 67× real time per station.
+
+The M4.9 was detected at all seven.
 
 ## A mistake worth recording
 
@@ -175,8 +182,8 @@ minute, and determinism is checked by diffing two runs.
 
 ## Not done yet
 
-- **Magnitude.** The regressor in `cnn_earthquake` takes a spectrogram branch
-  as well as the waveform, so it needs an STFT and 2D convolutions first.
+- **Magnitude off the detector thread.** A 300 ms estimate pauses that
+  station's windows. It should be its own worker (`07-magnitude.md`).
 - **Live SeedLink.** `ReplaySource` is the seam.
 - **Velocity model.** A 1D model with Moho and Pn would keep distant stations
   in the location instead of dropping them.

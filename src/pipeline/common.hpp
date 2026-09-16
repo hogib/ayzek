@@ -101,6 +101,17 @@ struct Pick {
     double compute_ms;
 };
 
+struct MagnitudeEstimate {
+    std::string station;
+    double trigger_window;    // window_start of the Detection this follows
+    bool at_pick;             // false: early, P assumed from the trigger; true: window at the picked P
+    double window_start;
+    float magnitude;
+    std::size_t noise_windows; // 0 = no station baseline yet, per-window normalisation used
+    double declared_at;
+    double compute_ms;
+};
+
 struct StationDone {
     std::string station;
 };
@@ -114,11 +125,12 @@ struct Progress {
     double until;
 };
 
-using Message = std::variant<Detection, Pick, StationDone, Progress>;
+using Message = std::variant<Detection, Pick, MagnitudeEstimate, StationDone, Progress>;
 
 inline double declared_at(const Message& m) {
     if (auto* d = std::get_if<Detection>(&m)) return d->declared_at;
     if (auto* p = std::get_if<Pick>(&m)) return p->declared_at;
+    if (auto* g = std::get_if<MagnitudeEstimate>(&m)) return g->declared_at;
     return 0;
 }
 

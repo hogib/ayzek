@@ -42,6 +42,7 @@ const char* kUsage = R"(usage: ayzek [options] STATION.mseed...
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2)
   --no-pick             detector only
+  --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
   --no-color
@@ -103,6 +104,7 @@ int main(int argc, char** argv) try {
         else if (a == "--step") pcfg.step = std::stoul(next());
         else if (a == "--min-stations") ncfg.min_stations = std::stoul(next());
         else if (a == "--no-pick") pcfg.pick = false;
+        else if (a == "--no-magnitude") pcfg.magnitude = false;
         else if (a == "--scores") scores_dir = next();
         else if (a == "--no-color") Log::get().color = false;
         else if (a == "--catalog") catalog_path = next();
@@ -126,6 +128,17 @@ int main(int argc, char** argv) try {
     std::vector<Weights> detector;
     for (int seed : {42, 43, 44}) detector.push_back(Weights::load(std::format("{}/detector_s{}.ayzw", models, seed)));
     const Weights picker = Weights::load(models + "/spicker.ayzw");
+    std::vector<Weights> magnitude;
+    if (pcfg.magnitude) {
+        for (int p = 0; p < 3; ++p) {
+            const auto path = std::format("{}/magnitude_p{}.ayzw", models, p);
+            if (std::ifstream(path).good()) magnitude.push_back(Weights::load(path));
+        }
+        if (magnitude.empty()) {
+            Log::get().line("warn", "33", "no magnitude models in {} (tools/export_magnitude.py); magnitude off", models);
+            pcfg.magnitude = false;
+        }
+    }
     const auto bp = dsp::Bandpass::load(Weights::load(models + "/bandpass.ayzw"));
     auto coords = load_stations(models + "/stations.csv");
 
@@ -151,8 +164,9 @@ int main(int argc, char** argv) try {
     }
 
     const double start = pcfg.from > 0 ? pcfg.from - 70.0 : t_first;   // 70 s: a picker window of history
-    Log::get().line("ayzek", "1", "{} stations, {} backend, 3-seed detector{}, replay {} to {} UTC at {}",
-                    stations.size(), simd::kBackend, pcfg.pick ? " + picker" : "", ymd_hms(t_first), hms(t_last),
+    Log::get().line("ayzek", "1", "{} stations, {} backend, 3-seed detector{}{}, replay {} to {} UTC at {}",
+                    stations.size(), simd::kBackend, pcfg.pick ? " + picker" : "",
+                    pcfg.magnitude ? std::format(" + {}-model magnitude", magnitude.size()) : "", ymd_hms(t_first), hms(t_last),
                     speed > 0 ? std::format("{:g}x", speed) : std::string("full speed"));
     if (!catalog_path.empty()) {
         // Only events whose waves could reach the stations inside the detection span.
@@ -166,7 +180,7 @@ int main(int argc, char** argv) try {
     std::vector<std::unique_ptr<Processor>> procs;
     for (auto& st : stations) {
         const std::string path = scores_dir.empty() ? "" : scores_dir + "/" + st->code + ".csv";
-        procs.push_back(std::make_unique<Processor>(*st, detector, picker, bp, pcfg, bus, path));
+        procs.push_back(std::make_unique<Processor>(*st, detector, picker, magnitude, bp, pcfg, bus, path));
     }
     std::vector<std::jthread> threads;
     for (std::size_t i = 0; i < stations.size(); ++i) {
@@ -188,6 +202,7 @@ int main(int argc, char** argv) try {
             held.pop();
             if (auto* d = std::get_if<Detection>(&m)) net.on(*d);
             else if (auto* p = std::get_if<Pick>(&m)) net.on(*p);
+            else if (auto* g = std::get_if<MagnitudeEstimate>(&m)) net.on(*g);
         }
     };
     while (!watermark.empty()) {
@@ -207,13 +222,14 @@ int main(int argc, char** argv) try {
     const double wall = clock.wall_seconds();
 
     // --- summary ------------------------------------------------------------------
-    Log::get().line("summary", "1", "{:<5} {:>8} {:>6} {:>7} {:>6} {:>5}   window ms: {:>5} {:>5} {:>5}   pick ms", "sta",
-                    "windows", "gaps", "stale", "detect", "picks", "mean", "p99", "max");
+    Log::get().line("summary", "1", "{:<5} {:>8} {:>6} {:>7} {:>6} {:>5} {:>5} {:>6}   window ms: {:>5} {:>5} {:>5}   pick ms  mag ms",
+                    "sta", "windows", "gaps", "stale", "detect", "picks", "mags", "noise", "mean", "p99", "max");
     std::uint64_t windows = 0;
     for (std::size_t i = 0; i < stations.size(); ++i) {
         const auto& s = procs[i]->stats();
         const auto w = percentiles(s.window_ms);
         const auto pk = percentiles(s.pick_ms);
+        const auto mg = percentiles(s.magnitude_ms);
         std::uint64_t stale = 0, dropped = 0;
         for (auto& c : stations[i]->comp) {
             stale += c.stale.load();
@@ -221,9 +237,9 @@ int main(int argc, char** argv) try {
         }
         if (dropped) Log::get().line("warn", "33", "{}: {} samples dropped by the ring", stations[i]->code, dropped);
         windows += s.windows;
-        Log::get().line("summary", "1", "{:<5} {:>8} {:>6} {:>7} {:>6} {:>5}   {:>15.2f} {:>5.2f} {:>5.2f}   {:>7.0f}",
-                        stations[i]->code, s.windows, s.gap_windows, stale, s.detections, s.picks, w.mean, w.p99, w.max,
-                        pk.mean);
+        Log::get().line("summary", "1", "{:<5} {:>8} {:>6} {:>7} {:>6} {:>5} {:>5} {:>6}   {:>15.2f} {:>5.2f} {:>5.2f}   {:>7.0f} {:>7.0f}",
+                        stations[i]->code, s.windows, s.gap_windows, stale, s.detections, s.picks, s.magnitudes,
+                        s.noise_windows, w.mean, w.p99, w.max, pk.mean, mg.mean);
     }
     const double stream_seconds = t_last - std::max(start, t_first);
     net.summary();
