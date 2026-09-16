@@ -162,26 +162,62 @@ before a window can be emitted -- up to ~7.7 s here. **Early-warning budgets are
 a few seconds.** A reorder buffer big enough to be correct is big enough to
 spend most of the warning.
 
-Open question, not yet decided:
+Three options were considered: reorder then align (simple, but the reorder
+window lands on every event); write late records into their slot (no buffer,
+but the ring's append-only `push` becomes positional); or split by what each
+model needs.
 
-1. **Reorder, then align.** Hold records in a bounded jitter buffer, emit in
-   time order, keep `Sample {z, n, e}`. Simple, correct, and costs the reorder
-   window in latency on every event.
-2. **Write late records into their slot.** The ring is already indexed by
-   absolute stream position, so a late record can be written where it belongs
-   rather than appended, provided the slot is still above the reader's floor.
-   The published watermark becomes "contiguous from the start" per component,
-   and the three-component watermark is their minimum. No reorder buffer,
-   but stage 1's append-only `push` becomes positional.
-3. **Split by what each model needs.** P is dominantly vertical and HHZ arrives
-   in order, so detection could run on Z the moment it lands, with the S picker
-   and magnitude -- which need horizontals, and whose target arrives seconds
-   later anyway -- waiting for the full window. Costs a retrained Z-only
-   detector, since the existing one takes three components.
+### Decided: split by what each model needs
 
-Whether live SeedLink delivers out of order like this archive does is itself
+**Detection runs on Z the moment it lands. The S picker and magnitude wait for
+the horizontals.**
+
+The reasoning is physical as much as architectural. P motion is dominantly
+vertical, and HHZ arrives in order, so the model whose output starts the clock
+gets the channel that never waits. S arrives seconds after P, so the models
+that need horizontals are waiting for their target anyway; a few seconds of
+reorder delay costs them little.
+
+Consequences, in order of how much they change:
+
+1. **`Sample {z, n, e}` is retired.** The original argument for keeping
+   components together -- one clock, and every stage consumes all three -- still
+   holds for the clock and no longer holds for consumption. Components now have
+   different latencies, so they cannot share a struct. Each station gets **one
+   ring per component**, all indexed by the same absolute position.
+   `SpscRing<float, N>` needs no change for this; it was already generic.
+2. **Horizontals pass through a bounded reorder buffer before their ring.** This
+   is not optional even ignoring latency: the continuous IIR filter feeding
+   RING 2 needs samples in time order.
+3. **Z bypasses reordering.** It has never been out of order in the archive. If a
+   late Z record ever arrives it is counted as an anomaly, not silently patched,
+   since a reordering step on Z would quietly reintroduce the latency this
+   design exists to avoid.
+4. **The detector must be retrained on Z alone.** The existing one takes three
+   components. That is Python work in `cnn_earthquake`, a dependency of stage 6,
+   and not something ayzek can do for itself.
+
+Whether live SeedLink delivers out of order like this archive does is still
 unverified until stage 7. The archive may reflect how AFAD assembled it from
-telemetry rather than how packets arrive.
+telemetry rather than how packets arrive. The decision holds either way: if live
+horizontals arrive in order, the reorder buffer simply never holds anything.
+
+### Measured: positions are exact
+
+Every record on every channel starts exactly on a 10 ms boundary -- one distinct
+phase, 0.000 ms, across all 1,484,074 records of the DEMI chunk. All three
+components share a sample clock locked to the epoch, so absolute position is
+integer arithmetic rather than an estimate:
+
+```cpp
+std::uint64_t position = start_ns / 10'000'000;   // samples since 1970 at 100 Hz
+```
+
+Indexing three rings by one position is therefore exact, a gap is a jump in
+position, and position times the sample period *is* the timestamp -- which
+satisfies the anchor rule above without storing anchors at all. Ingest verifies
+the alignment per record and counts violations, since other stations or live
+data may not be locked this way.
 
 ## Inference, hand-written
 
