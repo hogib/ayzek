@@ -130,6 +130,59 @@ Rules, adopted up front:
 
 ---
 
+## Measured: records arrive out of order, and it collides with latency
+
+A full 21-day DEMI chunk, decoded and sorted, shows three separate things.
+
+**The file is sorted by channel, not by time** -- all HHZ, then HHE, then HHN.
+Replay has to merge by time or it feeds the ring three weeks of Z before any N.
+
+**Within a channel, the horizontals are out of order; the vertical is not:**
+
+| channel | records | steps backwards in file order | largest jump back |
+|---|---:|---:|---:|
+| HHZ | 488,059 | 0 | 0 s |
+| HHE | 498,768 | 757 | 7.7 s |
+| HHN | 497,247 | 811 | 7.5 s |
+
+**Genuine gaps are rare once sorted:** 25 on HHZ, 41 on HHE, 58 on HHN, every
+one longer than a second, with no sub-sample jitter and no overlaps.
+
+ObsPy assembles 26, 2,052 and 2,176 traces from these channels because it
+builds traces in file order and every out-of-order record breaks the current
+one. An earlier commit message read those counts as the horizontals breaking
+about eighty times as often as the vertical. That reading was wrong; the
+horizontals are shuffled, not broken.
+
+### Why this matters
+
+If live packets arrive the way this archive stores them, aligning all three
+components into one `Sample {z, n, e}` means waiting for the latest horizontal
+before a window can be emitted -- up to ~7.7 s here. **Early-warning budgets are
+a few seconds.** A reorder buffer big enough to be correct is big enough to
+spend most of the warning.
+
+Open question, not yet decided:
+
+1. **Reorder, then align.** Hold records in a bounded jitter buffer, emit in
+   time order, keep `Sample {z, n, e}`. Simple, correct, and costs the reorder
+   window in latency on every event.
+2. **Write late records into their slot.** The ring is already indexed by
+   absolute stream position, so a late record can be written where it belongs
+   rather than appended, provided the slot is still above the reader's floor.
+   The published watermark becomes "contiguous from the start" per component,
+   and the three-component watermark is their minimum. No reorder buffer,
+   but stage 1's append-only `push` becomes positional.
+3. **Split by what each model needs.** P is dominantly vertical and HHZ arrives
+   in order, so detection could run on Z the moment it lands, with the S picker
+   and magnitude -- which need horizontals, and whose target arrives seconds
+   later anyway -- waiting for the full window. Costs a retrained Z-only
+   detector, since the existing one takes three components.
+
+Whether live SeedLink delivers out of order like this archive does is itself
+unverified until stage 7. The archive may reflect how AFAD assembled it from
+telemetry rather than how packets arrive.
+
 ## Inference, hand-written
 
 No LibTorch, no ONNX. The models are small enough that writing the forward pass
