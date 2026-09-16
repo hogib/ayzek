@@ -241,6 +241,46 @@ Whether live SeedLink behaves like this archive is unverified until stage 7.
 The design holds either way: if live horizontals arrive on time, these gaps
 simply do not occur.
 
+### Measured: gaps are not tied to shaking, but their rate is not stable
+
+If telemetry lost packets while the ground shook, gaps would land on exactly the
+windows that matter and the averages above would understate the cost.
+`tools/gaps_vs_events.py` tests that against the AFAD catalogue and DEMI's own
+vertical amplitude, over the three weeks of Sındırgı aftershocks this chunk
+happens to cover.
+
+**The gap rate is not one number.** It jumps at 2025-11-06 22:59 UTC -- a fitted
+change point -- from 4.6 horizontal gaps a day to 74, and stays there:
+
+| period | gaps / day | detector windows lost |
+|---|---:|---:|
+| before | 4.6 | 0.07% |
+| after | 74 | 1.42% |
+| whole chunk | 47.5 | 0.85% |
+
+The 0.85% above describes neither regime. What changed is not visible in the
+data -- a link, a route, a datalogger setting. Other stations in the same pull
+over the same dates would say whether it was DEMI or something upstream.
+
+**No association with earthquakes**, tested within each regime so the change
+cannot masquerade as one, against circular time shifts that keep aftershock
+clustering intact:
+
+- Catalogue: after the change, 3 of 104 events M>=3 within 150 km had their
+  P-to-S window touch a gap, against 3.45% by chance (p = 0.70); 18 of 589 M>=2
+  within 100 km, against 3.46% (p = 0.72). That rules out gaps being about 2x
+  and 1.4x more likely during events, respectively. None of the 24 M>=4 events
+  within 300 km touched a gap, including an M4.9 at about 55 km.
+- Station: DEMI's vertical at gap times ranks 0.488 within its hour of day,
+  against 0.5 by chance, and falls in the loudest 1% as often as chance does.
+  Across the whole chunk gaps looked quieter than usual (p = 0.018). That was
+  the regime change -- loud early aftershock days with few gaps -- and it
+  vanishes within each period.
+
+Limits: one station, three weeks, and nothing larger than M4.9 nearby. The case
+early warning exists for -- an M6 at tens of kilometres -- is not in this chunk;
+the M6.1 of 27 Oct 2025 is a day before it starts.
+
 ### Measured: positions are exact
 
 Every record on every channel starts exactly on a 10 ms boundary -- one distinct
