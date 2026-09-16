@@ -172,6 +172,7 @@ public:
 
     template <typename... Args>
     void line(std::string_view tag, std::string_view tint, std::format_string<Args...> fmt, Args&&... args) {
+        if (quiet) return;
         std::string body = std::format(fmt, std::forward<Args>(args)...);
         std::lock_guard lk(mu_);
         if (color) std::println("\x1b[{}m{:<8}\x1b[0m {}", tint, tag, body);

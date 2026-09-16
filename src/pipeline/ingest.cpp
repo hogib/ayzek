@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstring>
 #include <fstream>
+#include <map>
 #include <memory>
 #include <stdexcept>
 #include <thread>
@@ -29,12 +30,12 @@ ReplaySource::ReplaySource(const std::string& path) {
     std::ifstream f(path, std::ios::binary);
     if (!f) throw std::runtime_error("cannot open " + path);
     std::array<std::byte, 512> raw{};
-    std::size_t skipped = 0;
+    std::map<std::string, std::size_t> skipped;     // reason -> records
     while (f.read(reinterpret_cast<char*>(raw.data()), raw.size())) {
         auto h = mseed::parse_header(raw);
-        if (!h) { ++skipped; continue; }
+        if (!h) { ++skipped[std::string(mseed::to_string(h.error()))]; continue; }
         const std::size_t comp = component_of(h->cha());
-        if (comp > E || h->cha().substr(0, 2) != "HH" || h->sample_rate != 100.0) { ++skipped; continue; }
+        if (comp > E || h->cha().substr(0, 2) != "HH" || h->sample_rate != 100.0) { ++skipped["not a 100 Hz HH? channel"]; continue; }
         if (station_.empty()) station_ = std::string(h->sta());
         const double start = static_cast<double>(h->start_ns) / 1e9;
         const double end = start + h->num_samples / h->sample_rate;
@@ -44,7 +45,8 @@ ReplaySource::ReplaySource(const std::string& path) {
     std::stable_sort(records_.begin(), records_.end(), [](const Record& a, const Record& b) { return a.end_time < b.end_time; });
     first_ = records_.front().end_time;
     last_ = records_.back().end_time;
-    if (skipped) Log::get().line("replay", "2", "{}: skipped {} non-HH or non-100 Hz records", station_, skipped);
+    for (const auto& [reason, count] : skipped)
+        Log::get().line("replay", "33", "{}: skipped {} records ({})", station_, count, reason);
 }
 
 void run_ingest(const ReplaySource& src, Station& st, const StreamClock& clock, const std::atomic<bool>& stop) {
@@ -62,7 +64,7 @@ void run_ingest(const ReplaySource& src, Station& st, const StreamClock& clock, 
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
         auto h = mseed::parse_header(rec.bytes);
-        auto n = mseed::decode_steim2(rec.bytes, *h, buf);
+        auto n = mseed::decode(rec.bytes, *h, buf);
         if (!n) continue;
         const auto pos = static_cast<std::uint64_t>(h->start_ns) / 10'000'000;
         auto& cs = st.comp[rec.comp];

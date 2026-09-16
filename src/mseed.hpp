@@ -1,13 +1,18 @@
 #pragma once
 
-// miniSEED 2 record parsing and Steim2 decompression.
+// miniSEED 2 record parsing and decoding.
 //
-// Supported: 512-byte records, big-endian, blockette 1000 with encoding 11
-// (Steim2), optional blockette 1001 for microseconds. This is the structure of
-// every record in the TDVMS archive (checked on 1,484,074 DEMI records). Other
-// layouts return an error instead of being decoded approximately.
+// Supported: 512-byte records with a big-endian fixed header, blockette 1000,
+// optional blockette 1001 for microseconds, and the data encodings used in the
+// TDVMS archive:
+//   11  Steim2 (big-endian frames)
+//    3  32-bit integers, byte order from blockette 1000
+//    1  16-bit integers, byte order from blockette 1000
+// AFAD dataloggers write Steim2 normally and switch to uncompressed 32-bit
+// integers during strong shaking (seen at CATL and ARNA during the 2025-04-23
+// Mw 6.2 Marmara earthquake). Other layouts return an error.
 //
-// Steim2 is lossless, so the decoder is validated by exact comparison with
+// All encodings are lossless, so decoding is validated by exact comparison with
 // ObsPy/libmseed (tools/validate_mseed.py).
 
 #include <array>
@@ -25,6 +30,10 @@ namespace ayzek::mseed {
 
 inline constexpr std::size_t kRecordLength = 512;
 inline constexpr std::size_t kFrameLength = 64;
+
+inline constexpr std::uint8_t kInt16 = 1;
+inline constexpr std::uint8_t kInt32 = 3;
+inline constexpr std::uint8_t kSteim2 = 11;
 
 enum class Error : std::uint8_t {
     BadRecordLength,
@@ -75,6 +84,8 @@ struct Header {
     double sample_rate{};
     std::uint16_t num_samples{};
     std::uint16_t data_offset{};
+    std::uint8_t encoding{kSteim2};
+    std::uint8_t word_order{1};  // data byte order: 1 big-endian, 0 little-endian
 
     [[nodiscard]] std::string_view net() const noexcept { return trimmed(network); }
     [[nodiscard]] std::string_view sta() const noexcept { return trimmed(station); }
@@ -158,9 +169,12 @@ parse_header(std::span<const std::byte> rec) noexcept {
             const auto encoding = static_cast<std::uint8_t>(rec[off + 4u]);
             const auto word_order = static_cast<std::uint8_t>(rec[off + 5u]);
             const auto len_exp = static_cast<std::uint8_t>(rec[off + 6u]);
-            if (encoding != 11 || word_order != 1) {
+            if ((encoding != kSteim2 && encoding != kInt32 && encoding != kInt16) || word_order > 1 ||
+                (encoding == kSteim2 && word_order != 1)) {
                 return std::unexpected(Error::UnsupportedEncoding);
             }
+            h.encoding = encoding;
+            h.word_order = word_order;
             if (len_exp >= 16 || (std::size_t{1} << len_exp) != kRecordLength) {
                 return std::unexpected(Error::UnsupportedRecordLength);
             }
@@ -171,8 +185,9 @@ parse_header(std::span<const std::byte> rec) noexcept {
     }
     if (!have_1000) return std::unexpected(Error::MissingBlockette1000);
 
+    // Steim2 data must consist of whole 64-byte frames; integer data need not.
     if (h.data_offset < 48 || h.data_offset >= kRecordLength ||
-        (kRecordLength - h.data_offset) % kFrameLength != 0) {
+        (h.encoding == kSteim2 && (kRecordLength - h.data_offset) % kFrameLength != 0)) {
         return std::unexpected(Error::BadDataOffset);
     }
 
@@ -300,6 +315,36 @@ decode_steim2(std::span<const std::byte> rec, const Header& h,
     // Integrity check: the last decoded sample must equal the stored Xn.
     if (out[n - 1] != xn) return std::unexpected(Error::IntegrityMismatch);
     return n;
+}
+
+// Decodes 16- or 32-bit integer data (encodings 1 and 3) in the byte order given
+// by blockette 1000.
+[[nodiscard]] inline std::expected<std::size_t, Error>
+decode_integers(std::span<const std::byte> rec, const Header& h, std::span<std::int32_t> out) noexcept {
+    const std::size_t width = h.encoding == kInt16 ? 2 : 4;
+    const std::size_t n = h.num_samples;
+    if (n > out.size() || h.data_offset + n * width > kRecordLength) return std::unexpected(Error::TooManySamples);
+    const bool swap = (h.word_order == 1) != (std::endian::native == std::endian::big);
+    for (std::size_t i = 0; i < n; ++i) {
+        const std::size_t off = h.data_offset + i * width;
+        if (width == 4) {
+            std::uint32_t v;
+            std::memcpy(&v, rec.data() + off, 4);
+            out[i] = static_cast<std::int32_t>(swap ? std::byteswap(v) : v);
+        } else {
+            std::uint16_t v;
+            std::memcpy(&v, rec.data() + off, 2);
+            out[i] = static_cast<std::int16_t>(swap ? std::byteswap(v) : v);
+        }
+    }
+    return n;
+}
+
+// Decodes a record's samples with the decoder for its encoding.
+[[nodiscard]] inline std::expected<std::size_t, Error>
+decode(std::span<const std::byte> rec, const Header& h, std::span<std::int32_t> out) noexcept {
+    if (h.encoding == kSteim2) return decode_steim2(rec, h, out);
+    return decode_integers(rec, h, out);
 }
 
 }  // namespace ayzek::mseed

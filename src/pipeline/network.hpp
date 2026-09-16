@@ -54,7 +54,17 @@ struct Event {
     std::map<std::string, MagnitudeEstimate> magnitudes;   // per station; pick-based replaces early
     std::optional<double> magnitude;    // median over stations
     std::size_t magnitude_stations = 0;
+    std::optional<double> first_magnitude;   // first reported event magnitude
+    double first_magnitude_at = 0;           // and the stream time it was reported
     std::optional<Location> location;
+};
+
+// One catalogue event within the evaluation radius and the declared event
+// matched to it, if any.
+struct CatalogScore {
+    const CatalogEvent* event;
+    double distance_km;                 // from the station centroid
+    const Event* detected;              // nullptr if missed
 };
 
 class Network {
@@ -64,6 +74,10 @@ public:
     void on(const Pick& p);
     void on(const MagnitudeEstimate& m);
     void summary() const;
+    [[nodiscard]] std::vector<CatalogScore> score() const;
+    [[nodiscard]] const std::vector<Event>& events() const noexcept { return events_; }
+    [[nodiscard]] std::size_t declared_count() const;
+    [[nodiscard]] std::size_t unmatched_count() const;   // declared events with no catalogue match
 
 private:
     [[nodiscard]] bool compatible(const Detection& a, const Detection& b) const;

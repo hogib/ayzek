@@ -25,6 +25,14 @@
   time of their last sample, the earliest a datalogger could have sent them.
   Each record is released when the stream clock reaches that time. A SeedLink
   client would replace this class and nothing downstream changes.
+- **Decoding.** `src/mseed.hpp` decodes Steim2 and uncompressed 16- and 32-bit
+  integer records, the latter in either byte order. AFAD dataloggers switch
+  from Steim2 to 32-bit integer records during strong shaking. The first
+  version accepted only Steim2, so during the 2025-04-23 Mw 6.2 Marmara
+  earthquake CATL (57 km) and ARNA (68 km) lost every record written during
+  the strongest shaking and produced no detection. Records that cannot be
+  decoded are now reported with the reason. CATL (little-endian integer
+  records) and ARNA (big-endian) decode bit-exactly against ObsPy.
 - **Reordering.** Each component has its own `Reorderer` at
   `max_lateness = 0` (`DESIGN.md`): a hole is a gap at once and a late record
   is stale.

@@ -17,6 +17,7 @@ describe what was built.
 | [05 · Pipeline](impl/05-pipeline.md) | threads, rings, trigger, association, location, the M4.9 demo and its results |
 | [06 · Raspberry Pi](impl/06-raspberry-pi.md) | cross-compiling with zig, running under qemu, deploying |
 | [07 · Magnitude](impl/07-magnitude.md) | the regressor, station noise baselines, spectrogram, results |
+| [08 · Station selection](impl/08-station-selection.md) | recording and subset replay, geometry model, 2025-04-23 Mw 6.2 Marmara results |
 
 ## In one screen
 
@@ -85,6 +86,7 @@ ayzek [options] STATION.mseed...
   --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
+  --record FILE         write all station outputs, for tools/network_subsets
 ```
 
 ## Layout
@@ -94,7 +96,8 @@ src/            ring, mseed, reorder (stages 1–2); simd, nn, models, dsp, weig
 src/pipeline/   ingest, processor, network
 app/            the ayzek binary
 tests/          unit tests, PyTorch/scipy agreement, end-to-end demo check
-tools/          export_models.py, export_magnitude.py, make_demo_data.py, demo.sh, mseed_dump, replay_check
+tools/          export_models.py, export_magnitude.py, make_demo_data.py, demo.sh, mseed_dump, replay_check,
+                network_subsets, station_geometry.py, scan_encodings.py
 cross/          zig toolchain wrappers and the Raspberry Pi cross file
 ```
 

@@ -1,6 +1,6 @@
 ayzek_lib = static_library('ayzek',
   sources: files('weights.cpp', 'nn.cpp', 'models.cpp', 'dsp.cpp', 'spectrogram.cpp', 'magnitude.cpp',
-                'pipeline/ingest.cpp', 'pipeline/processor.cpp', 'pipeline/network.cpp'),
+                'pipeline/ingest.cpp', 'pipeline/processor.cpp', 'pipeline/network.cpp', 'pipeline/recording.cpp'),
   include_directories: inc,
   dependencies: [threads],
 )

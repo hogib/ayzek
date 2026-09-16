@@ -9,6 +9,7 @@
 #include "pipeline/ingest.hpp"
 #include "pipeline/network.hpp"
 #include "pipeline/processor.hpp"
+#include "pipeline/recording.hpp"
 #include "pipeline/station.hpp"
 #include "simd.hpp"
 
@@ -45,6 +46,7 @@ const char* kUsage = R"(usage: ayzek [options] STATION.mseed...
   --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
+  --record FILE         write all station outputs for tools/network_subsets
   --no-color
 )";
 
@@ -85,7 +87,7 @@ Percentiles percentiles(std::vector<float> v) {
 }  // namespace
 
 int main(int argc, char** argv) try {
-    std::string models = "models", scores_dir, catalog_path;
+    std::string models = "models", scores_dir, catalog_path, record_path;
     double speed = 1.0;
     ProcessorConfig pcfg;
     NetworkConfig ncfg;
@@ -108,6 +110,7 @@ int main(int argc, char** argv) try {
         else if (a == "--scores") scores_dir = next();
         else if (a == "--no-color") Log::get().color = false;
         else if (a == "--catalog") catalog_path = next();
+        else if (a == "--record") record_path = next();
         else if (a == "-h" || a == "--help") {
             std::print("{}", kUsage);
             return 0;
@@ -191,6 +194,8 @@ int main(int argc, char** argv) try {
     // Messages are held in a priority queue and processed in declared_at order,
     // up to the minimum Progress time over the stations still running.
     Network net(used, ncfg);
+    std::unique_ptr<Recorder> recorder;
+    if (!record_path.empty()) recorder = std::make_unique<Recorder>(record_path, used, t_first, t_last);
     std::map<std::string, double> watermark;
     for (auto& st : stations) watermark[st->code] = 0;
     auto later = [](const Message& a, const Message& b) { return declared_at(a) > declared_at(b); };
@@ -203,6 +208,7 @@ int main(int argc, char** argv) try {
             if (auto* d = std::get_if<Detection>(&m)) net.on(*d);
             else if (auto* p = std::get_if<Pick>(&m)) net.on(*p);
             else if (auto* g = std::get_if<MagnitudeEstimate>(&m)) net.on(*g);
+            if (recorder) recorder->write(m);
         }
     };
     while (!watermark.empty()) {

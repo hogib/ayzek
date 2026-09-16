@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
             if (n_bad++ < 10) std::println(stderr, "record {}: {}", idx, mseed::to_string(h.error()));
             continue;
         }
-        auto n = mseed::decode_steim2(rec, *h, buf);
+        auto n = mseed::decode(rec, *h, buf);
         if (!n) {
             if (n_bad++ < 10)
                 std::println(stderr, "record {} ({}): {}", idx, h->cha(), mseed::to_string(n.error()));

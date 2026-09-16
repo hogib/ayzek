@@ -172,6 +172,10 @@ void Network::report_magnitude(Event& e, double now) {
     const bool changed = !e.magnitude || std::abs(*e.magnitude - med) >= 0.05 || e.magnitudes.size() != e.magnitude_stations;
     e.magnitude = med;
     e.magnitude_stations = e.magnitudes.size();
+    if (!e.first_magnitude) {
+        e.first_magnitude = med;
+        e.first_magnitude_at = now;
+    }
     if (!changed) return;
     const auto* c = match(e);
     Log::get().line("MAG", "1;34", "#{} M{:.1f} at {} from {} station{} ({}){}", e.id, med, hms(now), v.size(),
@@ -302,32 +306,57 @@ const CatalogEvent* Network::match(const Event& e) const {
     return best;
 }
 
+std::vector<CatalogScore> Network::score() const {
+    std::vector<CatalogScore> out;
+    if (cfg_.catalog.empty() || stations_.empty()) return out;
+    double clat = 0, clon = 0;
+    for (const auto& [_, s] : stations_) {
+        clat += s.lat;
+        clon += s.lon;
+    }
+    clat /= static_cast<double>(stations_.size());
+    clon /= static_cast<double>(stations_.size());
+    for (const auto& c : cfg_.catalog) {
+        const double dist = distance_km(clat, clon, c.lat, c.lon);
+        if (dist > cfg_.catalog_radius_km) continue;
+        const Event* hit = nullptr;
+        for (const auto& e : events_)
+            if (e.declared && match(e) == &c) {
+                hit = &e;
+                break;
+            }
+        out.push_back({&c, dist, hit});
+    }
+    return out;
+}
+
+std::size_t Network::declared_count() const {
+    return static_cast<std::size_t>(std::ranges::count_if(events_, &Event::declared));
+}
+
+std::size_t Network::unmatched_count() const {
+    const auto scores = score();
+    std::size_t n = 0;
+    for (const auto& e : events_)
+        if (e.declared && std::ranges::none_of(scores, [&](const CatalogScore& s) { return s.detected == &e; })) ++n;
+    return n;
+}
+
 void Network::summary() const {
-    std::size_t declared = 0;
-    for (const auto& e : events_) declared += e.declared;
+    const std::size_t declared = declared_count();
     Log::get().line("summary", "1", "{} events declared, {} single-station detections not confirmed", declared,
                     events_.size() - declared);
     if (cfg_.catalog.empty()) return;
 
-    double clat = 0, clon = 0;
-    for (const auto& [_, s] : stations_) { clat += s.lat; clon += s.lon; }
-    clat /= static_cast<double>(stations_.size());
-    clon /= static_cast<double>(stations_.size());
-
     Log::get().line("catalog", "1", "{:<11} {:>6} {:>7}   ayzek", "origin", "mag", "dist");
     std::size_t n = 0, found = 0, located = 0;
-    std::vector<const Event*> matched;
-    for (const auto& c : cfg_.catalog) {
-        const double dist = distance_km(clat, clon, c.lat, c.lon);
-        if (dist > cfg_.catalog_radius_km) continue;
+    for (const auto& sc : score()) {
+        const auto& c = *sc.event;
+        const Event* hit = sc.detected;
         ++n;
-        const Event* hit = nullptr;
-        for (const auto& e : events_)
-            if (e.declared && match(e) == &c) { hit = &e; break; }
         std::string what = "missed";
         if (hit) {
             ++found;
-            matched.push_back(hit);
             what = std::format("#{} alert +{:.1f} s", hit->id, hit->declared_at - c.time);
             if (hit->magnitude) what += std::format(", M{:.1f} ({:+.1f})", *hit->magnitude, *hit->magnitude - c.magnitude);
             if (hit->location) {
@@ -336,13 +365,11 @@ void Network::summary() const {
                                     hit->location->origin - c.time);
             }
         }
-        Log::get().line("catalog", hit ? "32" : "33", "{:<11} {:>2}{:>4.1f} {:>4.0f} km   {}", hms(c.time), c.type, c.magnitude, dist, what);
+        Log::get().line("catalog", hit ? "32" : "33", "{:<11} {:>2}{:>4.1f} {:>4.0f} km   {}", hms(c.time), c.type, c.magnitude,
+                        sc.distance_km, what);
     }
-    std::size_t unmatched = 0;
-    for (const auto& e : events_)
-        if (e.declared && std::ranges::find(matched, &e) == matched.end()) ++unmatched;
     Log::get().line("catalog", "1", "{} of {} catalogue events within {:.0f} km declared, {} located; {} declared events not in the catalogue",
-                    found, n, cfg_.catalog_radius_km, located, unmatched);
+                    found, n, cfg_.catalog_radius_km, located, unmatched_count());
 }
 
 }  // namespace ayzek::pipeline

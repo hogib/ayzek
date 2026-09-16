@@ -190,7 +190,7 @@ int main(int argc, char** argv) {
     while (f.read(reinterpret_cast<char*>(raw.data()), raw.size())) {
         auto h = mseed::parse_header(raw);
         if (!h) { std::println(stderr, "header: {}", mseed::to_string(h.error())); return 1; }
-        auto n = mseed::decode_steim2(raw, *h, buf);
+        auto n = mseed::decode(raw, *h, buf);
         if (!n) { std::println(stderr, "decode: {}", mseed::to_string(n.error())); return 1; }
         if (h->start_ns < 0 || h->start_ns % kPeriodNs != 0) ++misaligned;
         const auto pos = static_cast<std::uint64_t>(h->start_ns) / kPeriodNs;

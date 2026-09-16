@@ -1,5 +1,5 @@
-// Unit tests for the Steim2 bit operations and BTIME conversion. Full decoding
-// is validated against ObsPy by tools/validate_mseed.py.
+// Unit tests for the Steim2 bit operations, integer record decoding and BTIME
+// conversion. Full decoding is validated against ObsPy by tools/validate_mseed.py.
 #include "mseed.hpp"
 
 #include <array>
@@ -54,6 +54,41 @@ int main() {
     auto d = btime_to_ns(2025, 1, 0, 0, 0, 0, 0);
     CHECK(c && d && *c - *d == 105'000);
     std::println("  btime + microseconds     ok");
+
+    // Uncompressed integer data (encodings 3 and 1), in both byte orders.
+    {
+        std::array<std::byte, kRecordLength> rec{};
+        Header h;
+        h.data_offset = 56;
+        h.num_samples = 3;
+        const std::array<std::uint8_t, 12> be32{0x00, 0x00, 0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFE, 0x7F, 0xFF, 0xFF, 0xFF};
+        std::array<std::int32_t, 3> out{};
+
+        h.encoding = kInt32;
+        h.word_order = 1;
+        for (std::size_t i = 0; i < be32.size(); ++i) rec[56 + i] = std::byte{be32[i]};
+        CHECK(decode(rec, h, out) && (out == std::array<std::int32_t, 3>{1, -2, 2147483647}));
+
+        h.word_order = 0;                            // the same values, little-endian
+        for (std::size_t w = 0; w < 3; ++w)
+            for (std::size_t b = 0; b < 4; ++b) rec[56 + w * 4 + b] = std::byte{be32[w * 4 + 3 - b]};
+        out = {};
+        CHECK(decode(rec, h, out) && (out == std::array<std::int32_t, 3>{1, -2, 2147483647}));
+
+        h.encoding = kInt16;
+        h.word_order = 1;
+        h.num_samples = 2;
+        const std::array<std::uint8_t, 4> be16{0xFF, 0xFF, 0x7F, 0xFF};
+        for (std::size_t i = 0; i < be16.size(); ++i) rec[56 + i] = std::byte{be16[i]};
+        std::array<std::int32_t, 2> out16{};
+        CHECK(decode(rec, h, out16) && (out16 == std::array<std::int32_t, 2>{-1, 32767}));
+
+        h.encoding = kInt32;
+        h.num_samples = 115;                         // (512 - 56) / 4 = 114 fit
+        std::array<std::int32_t, 200> big{};
+        CHECK(!decode(rec, h, big) && decode(rec, h, big).error() == Error::TooManySamples);
+    }
+    std::println("  int16 / int32 records    ok");
 
     std::println("all steim tests passed");
 }
