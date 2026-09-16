@@ -1,11 +1,12 @@
 #pragma once
 
-// Stage 1 per station: miniSEED records -> decode -> reorder -> component rings.
+// Ingest stage, one thread per station: miniSEED records -> Steim2 decoding ->
+// reordering -> component rings.
 //
-// The source is a file replayed against the stream clock: each record is
-// released when stream time reaches its last sample, which is the earliest a
-// datalogger could have sent it. A live SeedLink source would replace
-// `ReplaySource` and keep everything downstream.
+// ReplaySource reads records from a file. Each record is released when the
+// stream clock reaches the time of its last sample, the earliest time a
+// datalogger could transmit it. A real-time client (e.g. SeedLink) would take
+// the place of ReplaySource.
 
 #include "common.hpp"
 #include "station.hpp"
@@ -31,8 +32,8 @@ public:
         std::size_t comp;
         std::array<std::byte, 512> bytes;
     };
-    // In release order: by end time, which is delivery order for an on-time
-    // stream. The archive's own late records are not reproduced by default.
+    // Records sorted by end time, i.e. the delivery order of a stream without
+    // late records. Late arrivals present in the archive are not reproduced.
     [[nodiscard]] const std::vector<Record>& records() const noexcept { return records_; }
 
 private:
@@ -41,8 +42,9 @@ private:
     std::vector<Record> records_;
 };
 
-// Runs until the source is exhausted; sets st.ingest_done. Blocks on a full
-// ring rather than dropping, which is right for replay and would be wrong live.
+// Feeds all records of `src` into the station's rings, then sets
+// st.ingest_done. When a ring is full it waits for the processor (replay only;
+// see ingest.cpp).
 void run_ingest(const ReplaySource& src, Station& st, const StreamClock& clock, const std::atomic<bool>& stop);
 
 }  // namespace ayzek::pipeline

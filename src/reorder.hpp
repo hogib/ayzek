@@ -1,31 +1,25 @@
 #pragma once
 
-// Bounded reordering of out-of-order records into a contiguous sample stream.
+// Reorders records of one channel into a contiguous stream of samples.
 //
-// About 0.3% of horizontal records in the TDVMS archive arrive late -- by 7.7 s
-// to ~10 min, median ~40 s -- and the continuous IIR filter downstream needs
-// samples in time order. This sits
-// between decode and the ring: records go in in arrival order, contiguous runs
-// come out in strictly increasing position.
+// Input: records in arrival order, each with an absolute start position in
+// samples (start_ns / 10'000'000 at 100 Hz). Output: contiguous runs in strictly
+// increasing position, and explicit gaps.
 //
-// Positions are exact. Every record in the archive starts on a 10 ms boundary,
-// so position = start_ns / 10'000'000 with no rounding, and a hole is simply a
-// jump in position.
+// Rules:
+//   - a record starting at the frontier (next expected position) is emitted
+//     immediately without copying
+//   - a record starting beyond the frontier is held until the preceding hole
+//     is filled
+//   - a hole is declared a gap once data more than `max_lateness` samples
+//     beyond it has been received; the frontier then moves past it
+//   - a record arriving after its hole was declared a gap is counted as stale
+//     and discarded, because the samples after it have already been emitted
+//   - samples overlapping already-emitted data are trimmed
 //
-// Policy, all of it loud:
-//   - a record at the frontier is emitted immediately, without copying
-//   - a record ahead of the frontier is held until the hole before it fills
-//   - a hole left open for more than `max_lateness` samples of later data is
-//     declared a gap and the frontier moves past it
-//   - a record that arrives after its hole was given up on is counted as stale,
-//     never spliced in after the fact -- splicing would rewrite samples the
-//     filter has already consumed
-//
-// Every channel uses max_lateness = 0: never wait, any hole is an immediate
-// gap, any late record is counted as stale. Data late enough to be late here is
-// too late for early warning (docs/DESIGN.md), so the class earns its place by
-// declaring gaps, trimming overlaps and catching duplicates. A nonzero bound is
-// supported for offline replay.
+// About 0.3% of horizontal records in the TDVMS archive arrive 7.7 s to ~10 min
+// late (docs/DESIGN.md). The real-time pipeline uses max_lateness = 0; larger
+// values are used for offline replay analysis.
 
 #include <algorithm>
 #include <array>
@@ -46,13 +40,13 @@ struct ReorderStats {
     std::uint64_t gap_samples = 0;
     std::uint64_t forced_gaps = 0;       // declared early because the pool was full
     std::uint64_t rejected = 0;          // longer than a slot can hold
-    // How far a record's end trailed the newest data already received, in
-    // samples. The same quantity the constructor's max_lateness bounds.
+    // Largest amount, in samples, by which a record's end trailed the newest
+    // data already received. Same quantity as the max_lateness setting.
     std::uint64_t max_lateness = 0;
 };
 
-// `MaxHeld` records can wait at once; `MaxRecordSamples` bounds one record.
-// Storage is a fixed array, so offer() never allocates.
+// `MaxHeld`: records that can be held at once. `MaxRecordSamples`: samples per
+// record. Storage is a fixed array; offer() does not allocate.
 template <std::size_t MaxHeld, std::size_t MaxRecordSamples>
 class Reorderer {
     struct Slot {
@@ -66,9 +60,8 @@ class Reorderer {
     std::size_t count_ = 0;
     std::uint64_t max_lateness_;
 
-    // The frontier is unset until the stream has shown enough data to be sure
-    // which record is really first. Starting it at the first *arrival* would
-    // drop the start of any stream whose opening records were themselves late.
+    // The frontier is set once max_lateness worth of data has been seen, so that
+    // a late-arriving first record is not dropped.
     bool started_ = false;
     std::uint64_t next_ = 0;             // position of the next sample to emit
     std::uint64_t seen_end_ = 0;         // highest record end ever offered
@@ -76,9 +69,8 @@ class Reorderer {
     ReorderStats stats_{};
 
 public:
-    // `max_lateness_samples`: a record whose end trails the newest data already
-    // received by more than this is given up on, and its hole becomes a gap.
-    // Zero means never wait, which is the real-time policy on every channel.
+    // `max_lateness_samples`: how much later data may arrive before a hole is
+    // declared a gap. Zero declares every hole a gap immediately.
     explicit Reorderer(std::uint64_t max_lateness_samples) noexcept
         : max_lateness_(max_lateness_samples) {}
 
@@ -86,13 +78,9 @@ public:
     [[nodiscard]] std::size_t held() const noexcept { return count_; }
     [[nodiscard]] std::uint64_t frontier() const noexcept { return next_; }
 
-    // `sink(pos, samples)` receives contiguous runs in increasing position;
-    // `gap(from, to)` marks [from, to) as missing.
-    //
-    // These are templates constrained with `std::invocable`, which is how C++
-    // spells Rust's `impl FnMut(u64, &[i32])`: the call is monomorphised and
-    // inlined, with no allocation and no indirection. `std::function` would be
-    // the `Box<dyn Fn>` equivalent, and it can allocate.
+    // Offers one record. `sink(pos, samples)` receives contiguous runs in
+    // increasing position; `gap(from, to)` reports [from, to) as missing. The
+    // callbacks are template parameters, so calls are resolved at compile time.
     template <typename Sink, typename Gap>
         requires std::invocable<Sink&, std::uint64_t, std::span<const std::int32_t>> &&
                  std::invocable<Gap&, std::uint64_t, std::uint64_t>
@@ -124,8 +112,8 @@ public:
 
         // Ahead of the frontier, or frontier not yet established: hold it.
         if (n > MaxRecordSamples) {
-            // Unreachable while MaxRecordSamples matches the decoder's bound,
-            // but a record that cannot be stored is counted, not lost silently.
+            // Cannot happen while MaxRecordSamples matches the decoder's limit;
+            // counted if it does.
             ++stats_.rejected;
             return;
         }
@@ -141,7 +129,7 @@ public:
         resolve(sink, gap, false);
     }
 
-    // End of stream: release everything, declaring remaining holes as gaps.
+    // End of stream: emits all held records, declaring remaining holes as gaps.
     template <typename Sink, typename Gap>
     void flush(Sink&& sink, Gap&& gap) {
         while (count_ > 0) {
@@ -160,8 +148,7 @@ private:
         return pool_[0];   // guarded by the caller's count_ check
     }
 
-    // Linear scan. MaxHeld is tens of slots, and a scan over contiguous memory
-    // beats a heap's pointer-chasing at that size.
+    // Held record with the lowest position. Linear scan; MaxHeld is small.
     Slot* earliest() noexcept {
         Slot* best = nullptr;
         for (Slot& s : pool_)
@@ -187,7 +174,7 @@ private:
         next_ = to;
     }
 
-    // Emit every held record now reachable from the frontier, in order.
+    // Emits, in order, every held record that now starts at or before the frontier.
     template <typename Sink>
     void drain(Sink& sink) {
         for (;;) {
@@ -206,8 +193,8 @@ private:
         }
     }
 
-    // Give up on holes that have been open too long, or on the oldest hole when
-    // the pool has no room.
+    // Declares gaps for holes that have waited longer than max_lateness, or for
+    // the oldest hole when the pool is full.
     template <typename Sink, typename Gap>
     void resolve(Sink& sink, Gap& gap, bool pool_full) {
         while (count_ > 0) {
@@ -219,13 +206,10 @@ private:
                 continue;
             }
             Slot* m = earliest();
-            // Measured from where the hole *ends* (the next held record), not
-            // where it starts. From the start, a hole's own length counts as
-            // lateness: a 3.6 s record arriving 8 s late would read as ~11.6 s
-            // and be declared a gap despite arriving in time. From the end, this
-            // is the same quantity as stats().max_lateness -- how far the missing
-            // data's end trails the newest data received -- so the measured
-            // maximum on real data is directly the setting to use.
+            // Waiting time is measured from the end of the hole (the start of the
+            // next held record), which is the quantity stats().max_lateness
+            // reports. Measuring from the start of the hole would add the hole's
+            // own length to its lateness.
             const bool waited_out = seen_end_ - m->pos > max_lateness_;
             if (!waited_out && !pool_full) return;
             if (m->pos > next_) {
@@ -233,7 +217,7 @@ private:
                 declare_gap(gap, m->pos);
             }
             drain(sink);
-            pool_full = false;                               // one slot is enough
+            pool_full = false;                               // one freed slot suffices
         }
     }
 };

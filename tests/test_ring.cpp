@@ -1,4 +1,4 @@
-// A ring that is subtly wrong drops samples silently, so these are the point.
+// Tests for SpscRing: views, floors, wrap-around, bulk writes, and concurrent use.
 #include "ring.hpp"
 
 #include <print>
@@ -6,8 +6,7 @@
 #include <vector>
 #include <cstdlib>
 
-// CHECK() vanishes under NDEBUG; a test that stops checking in release builds
-// is not a test.
+// Aborting check that, unlike assert(), stays active in release builds.
 #define CHECK(cond)                                                                      \
     do {                                                                                 \
         if (!(cond)) {                                                                   \
@@ -44,19 +43,17 @@ void reads_past_the_end_are_refused() {
 
 void writer_drops_rather_than_overwriting() {
     SpscRing<Sample, 64> r;
-    // Floor at 0 means the reader still wants everything, so once 64 samples
-    // are in, the writer must refuse rather than overwrite.
+    // With the floor at 0 and 64 samples written, further writes must be dropped.
     for (int i = 0; i < 200; ++i) r.push(mk(i));
     CHECK(r.written() == 64);
     CHECK(r.dropped() == 136);
 
-    // Releasing the floor lets the writer proceed again.
+    // Raising the floor allows writes again.
     r.set_floor(64);
     CHECK(r.push(mk(1000)));
     CHECK(r.written() == 65);
 
-    // And the released range is now refused to the reader, as it may have
-    // been reclaimed.
+    // Positions below the floor are no longer readable.
     auto gone = r.view(0, 8);
     CHECK(!gone.has_value());
     CHECK(gone.error() == RingError::Expired);
@@ -64,25 +61,24 @@ void writer_drops_rather_than_overwriting() {
 
 void copy_out_crosses_the_wrap_seam() {
     SpscRing<Sample, 64> r;
-    // Keep the floor moving so the writer has room to pass the seam.
+    // Raise the floor so that writing can continue past the end of the array.
     for (int i = 0; i < 100; ++i) {
         if (i >= 64) r.set_floor(std::uint64_t(i) - 63);
         r.push(mk(i));
     }
 
-    // Position 60 sits at storage index 60, so 60..68 runs off the physical
-    // end of the array. A single span cannot describe two disjoint pieces.
+    // Positions 60..68 cross the end of the 64-element array, so view() fails.
     auto v = r.view(60, 8);
     CHECK(!v.has_value());
     CHECK(v.error() == RingError::Wrapped);
 
-    // copy_out stitches the two pieces together.
+    // copy_out copies both parts.
     std::array<Sample, 8> dst{};
     auto c = r.copy_out(60, dst);
     CHECK(c.has_value());
     for (int i = 0; i < 8; ++i) CHECK(dst[size_t(i)].z == float(60 + i));
 
-    // A range that happens not to straddle the seam still works as a view.
+    // A range that does not cross the end is available as a view.
     auto flat = r.view(40, 8);
     CHECK(flat.has_value());
     CHECK((*flat)[0].z == 40.0f);
@@ -103,17 +99,16 @@ void bulk_matches_single() {
     for (size_t i = 0; i < 300; ++i) CHECK((*va)[i].z == (*vb)[i].z);
 }
 
-// The real check: a producer and a consumer hammering it at once. Run under
-// ThreadSanitizer to make it meaningful.
+// Concurrent producer and consumer. Intended to be run under ThreadSanitizer
+// (build-tsan) as well as normally.
 void concurrent_producer_and_consumer() {
     constexpr int kTotal = 2'000'000;
     SpscRing<Sample, 8192> r;
 
     std::thread producer([&] {
         for (int i = 0; i < kTotal; ++i) {
-            // Spin until the reader releases room. Dropping here would be
-            // correct in production; for the test we want every sample, so
-            // that a torn read cannot hide as a drop.
+            // Retry until there is room, so that every sample is written and a
+            // corrupted read cannot be mistaken for a drop.
             while (!r.push(mk(i))) std::this_thread::yield();
         }
     });
@@ -123,20 +118,19 @@ void concurrent_producer_and_consumer() {
         std::array<Sample, 64> dst{};
         std::uint64_t pos = 0;
         while (pos + 64 <= kTotal) {
-            // Publish the floor before reading: this is what forbids the
-            // writer from touching [pos, pos+64) while the copy runs.
+            // Set the floor before reading, so the producer cannot overwrite
+            // [pos, pos + 64) during the copy.
             r.set_floor(pos);
             auto c = r.copy_out(pos, dst);
             if (!c) { std::this_thread::yield(); continue; }
-            // Every sample must be exactly the one written at that position.
-            // A torn read shows up here as a discontinuity.
+            // Each sample must equal the value written at its position.
             for (size_t i = 0; i < dst.size(); ++i) {
                 if (dst[i].z != float(pos + i)) { ++torn; break; }
             }
             ++reads;
             pos += 64;
         }
-        r.set_floor(kTotal);   // release everything so the producer can finish
+        r.set_floor(kTotal);   // allow the producer to finish
     });
 
     producer.join();

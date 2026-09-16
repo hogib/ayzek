@@ -1,13 +1,13 @@
-"""Export the magnitude regressor and its reference outputs for ayzek.
+"""Exports the magnitude regressor weights and reference outputs for the C++ tests.
 
-The regressor's inputs are built by seismic_cli's own encoder, so this runs in
-the data_downloader environment, which has torchaudio. It uses the very
-functions that generated the training corpus, not transcriptions of them:
+The reference inputs are computed with seismic_cli's encoder functions (the
+ones used to generate the training data), which require torchaudio; run in
+the data_downloader environment:
 
     uv run --project ~/Projects/sismokaos/data_downloader python tools/export_magnitude.py
 
 Writes:
-  models/magnitude_p{0,1,2}.ayzw   the three doubly-disjoint FDSN 10 s partitions
+  models/magnitude_p{0,1,2}.ayzw   the three station- and event-disjoint partition models
   data/fixtures/magnitude.ayzw     noise baselines, spectrograms, normalised
                                    inputs and model outputs on real windows
 """
@@ -72,7 +72,7 @@ def main():
                     "normalize": "station noise sigma (seq), station median noise dB profile (img)",
                     "partition": p, "source": str(ckpt), "reported_mae": "0.4203 +- 0.0165 over p0-p2"})
 
-    # --- a station's noise baseline, exactly as the corpus generator builds it --------
+    # --- noise baseline, computed as in seismic_cli's baseline functions --------------
     st = read("data/demo/DEMI.mseed")
     st.merge(method=1, fill_value=None)
     st = st.split()
@@ -95,7 +95,7 @@ def main():
     sigma = np.sqrt(np.maximum(ss_acc / n_acc - mu ** 2, 0))
     profiles = np.stack([torch.cat(frames[c], dim=1).median(dim=1).values.numpy() for c in range(3)])
 
-    # --- event and noise windows through the dual encoder's exact steps ------------------
+    # --- model inputs for an event window and a noise window (SpectrogramDualEncoder steps) ---
     starts = ["2025-11-10T18:20:59.80", "2025-11-10T18:16:30.00"]     # P at DEMI - 2 s; quiet
     raw = np.stack([cut(st, UTCDateTime(t), 1000) for t in starts])
     cleaned = np.stack([np.stack([clean_and_filter_1d(w[:, c].copy(), FS, FMIN, FMAX) for c in range(3)], -1)
@@ -108,7 +108,7 @@ def main():
     seq = np.stack([np.stack([standardize(w[:, c], mu=mu[c], sigma=sigma[c]) for c in range(3)], -1)
                     for w in cleaned]).astype(np.float32)
 
-    # --- corpus tensors with their catalogue labels ---------------------------------------
+    # --- training-corpus tensors with their catalogue magnitudes -------------------------
     man = pd.read_csv(DATASET / "manifest.csv")
     rows = man[man.split == "test"].sort_values("magnitude").iloc[[0, len(man[man.split == "test"]) // 2, -1]]
     corpus = [torch.load(DATASET / r.split / r.filename, weights_only=True) for r in rows.itertuples()]

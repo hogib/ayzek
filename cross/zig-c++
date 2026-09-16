@@ -1,7 +1,7 @@
 #!/bin/sh
-# zig as an aarch64 cross toolchain, fetched and cached by uv. See docs/impl/06-raspberry-pi.md.
-# Meson adds -Wl,--fatal-warnings (werror) and -Wl,-O1, which zig rejects or warns on;
-# compile warnings still fail the build.
+# zig used as an aarch64 cross compiler, installed through uv (docs/impl/06-raspberry-pi.md).
+# Removes -Wl,--fatal-warnings and -Wl,-O1, which Meson adds and zig's linker does
+# not accept; compiler warnings remain errors.
 for a in "$@"; do
     shift
     case "$a" in -Wl,--fatal-warnings|-Wl,-O1) ;; *) set -- "$@" "$a" ;; esac

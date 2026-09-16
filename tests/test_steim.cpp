@@ -1,14 +1,12 @@
-// The two bit-twiddling primitives Steim2 rests on, checked in isolation. The
-// real test is bit-exact agreement with ObsPy on archive data; these exist so
-// that when that fails, the failure can be localised.
+// Unit tests for the Steim2 bit operations and BTIME conversion. Full decoding
+// is validated against ObsPy by tools/validate_mseed.py.
 #include "mseed.hpp"
 
 #include <array>
 #include <print>
 #include <cstdlib>
 
-// CHECK() vanishes under NDEBUG; a test that stops checking in release builds
-// is not a test.
+// Aborting check that, unlike assert(), stays active in release builds.
 #define CHECK(cond)                                                                      \
     do {                                                                                 \
         if (!(cond)) {                                                                   \
@@ -41,14 +39,14 @@ int main() {
     CHECK((o7 == std::array<std::int32_t, 7>{1, -1, 7, -8, 0, 3, -2}));
     std::println("  seven 4-bit              ok");
 
-    // Two 15-bit values: 16383 and -16384, the extremes.
+    // Two 15-bit values at the limits of the range: 16383 and -16384.
     const std::uint32_t w2 = (0b10u << 30) | (0x3FFFu << 15) | 0x4000u;
     std::array<std::int32_t, 2> o2{};
     unpack(w2, 2, 15, o2);
     CHECK((o2 == std::array<std::int32_t, 2>{16383, -16384}));
     std::println("  two 15-bit extremes      ok");
 
-    // Day-of-year arithmetic across a leap year boundary.
+    // Day of year across 29 February in a leap year.
     auto a = btime_to_ns(2024, 60, 0, 0, 0, 0, 0);    // 29 Feb 2024
     auto b = btime_to_ns(2024, 61, 0, 0, 0, 0, 0);    //  1 Mar 2024
     CHECK(a && b && *b - *a == 86'400'000'000'000LL);

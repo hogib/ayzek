@@ -1,16 +1,14 @@
 #pragma once
 
-// Window conditioning, operation for operation what the detector was trained
-// on (archive_pipeline.archive.clean_block and the per-window standardisation
-// in products/scan.py):
+// Window preprocessing, the same sequence of operations as the detector's
+// training pipeline (archive_pipeline.archive.clean_block followed by the
+// per-window standardisation in products/scan.py):
 //
-//   detrend linear -> detrend constant -> 5% Hann taper each end
-//   -> zero-phase 4th-order Butterworth 1-45 Hz (scipy filtfilt, odd padding)
-//   -> subtract mean, divide by std (ddof 0)
+//   linear detrend -> mean removal -> 5% Hann taper at each end
+//   -> zero-phase 4th-order Butterworth band-pass 1-45 Hz (scipy filtfilt)
+//   -> subtract mean, divide by standard deviation (ddof 0)
 //
-// All in double, like scipy, and cast to float only at the end. The filter
-// recurrence is sequential by nature and costs about 1% of a window's compute;
-// the window statistics use the NEON sums in simd.hpp.
+// Computation is in double, as in scipy; the result is converted to float.
 
 #include "weights.hpp"
 
@@ -40,18 +38,18 @@ private:
     void lfilter(std::span<double> y, double x0);
 };
 
-// Mean/std standardisation, into float.
+// (x - mean) / max(std, 1e-12), converted to float.
 void standardize(std::span<const double> x, std::span<float> out) noexcept;
 
-// The whole chain for one (n, 3) interleaved window of raw counts.
+// The full preprocessing of one window of raw counts, per component.
 class Conditioner {
 public:
     Conditioner(const Bandpass& bp, std::size_t window);
     // raw: (n, C) interleaved counts; out: (n, C) interleaved standardised.
     void condition(std::span<const double> raw, std::size_t channels, std::span<float> out);
-    // Same, but writes (C, n) planar -- the layout the picker's convolutions take.
+    // Same, with (C, n) planar output, the picker's input layout.
     void condition_planar(std::span<const double> raw, std::size_t channels, std::span<float> out);
-    // Exposed for tests: the cleaned signal of the last channel processed per call.
+    // Filtered signal of the last call before standardisation, (n, C) interleaved.
     std::vector<double> cleaned;
 private:
     FiltFilt filt_;

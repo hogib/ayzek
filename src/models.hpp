@@ -1,11 +1,11 @@
 #pragma once
 
-// The trained networks, composed from nn.hpp. Each class mirrors one PyTorch
-// module tree exactly, so its constructor reads weights by the same names.
+// The detector and phase picker, built from the layers in nn.hpp. Each class
+// follows the structure of its PyTorch module, and the constructor reads
+// parameters by their state_dict names.
 //
-// A model instance holds scratch buffers and is used by one thread at a time.
-// Stations each own their models; weights are small enough that sharing them
-// would save little and cost locking.
+// Instances hold scratch buffers and must be used by one thread at a time; each
+// station processor owns its own instances.
 
 #include "nn.hpp"
 #include "weights.hpp"
@@ -30,7 +30,7 @@ public:
     // `x`: (600, 3) interleaved, already standardised and asinh-transformed.
     [[nodiscard]] float logit(std::span<const float> x);
 
-    // Kept from the last call, for tests that localise a mismatch.
+    // Intermediate activations of the last call, compared layer by layer in tests.
     std::vector<float> conv_out, lstm_out, attn_out;
     std::array<float, 96> pooled{};
 
@@ -45,11 +45,12 @@ private:
     std::vector<float> planar_, b1_, b2_, b3_;
 };
 
-// The seeds of one training run, probability-averaged.
+// Mean of the sigmoid outputs of several detectors (one per training seed).
 class DetectorEnsemble {
 public:
     explicit DetectorEnsemble(const std::vector<Weights>& seeds);
-    // `standardized`: (600, 3) interleaved. asinh is applied here, as in training.
+    // `standardized`: (600, 3) interleaved. Applies asinh before the models, as
+    // the training pipeline did.
     [[nodiscard]] float probability(std::span<const float> standardized);
     [[nodiscard]] std::size_t size() const noexcept { return members_.size(); }
 
@@ -58,7 +59,8 @@ private:
     std::vector<float> x_;
 };
 
-// sphase PhasePicker(arm="wave"): dense {noise, P, S} over 250 chunks of 60 s.
+// sphase PhasePicker(arm="wave"): class scores {noise, P, S} for each of 250
+// chunks (0.24 s) of a 60 s window.
 class Picker {
 public:
     static constexpr std::size_t kWindow = 6000;

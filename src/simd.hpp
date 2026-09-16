@@ -1,17 +1,13 @@
 #pragma once
 
-// The few dense kernels inference spends its time in, with a NEON path for
-// aarch64 (Raspberry Pi 4/5) and a portable scalar path everywhere else.
+// Dense vector kernels used by the neural network layers: dot products, matrix-
+// vector products and elementwise operations.
 //
-// Every model layer bottoms out in `dot`, `gemv` or an elementwise op, so this
-// is the only file that knows which instruction set is in use. The scalar path
-// is written so GCC and Clang auto-vectorise it at -O3 on x86; the NEON path is
-// explicit because the Pi is the deployment target and its speed should not
-// depend on what a compiler felt like doing.
-//
-// Both paths compute the same sums in a different association order, so they
-// agree to floating-point rounding, not bit for bit. tests/test_simd.cpp holds
-// them to that.
+// Two implementations: NEON intrinsics on aarch64 (Raspberry Pi 4/5), and
+// portable loops elsewhere, written so that GCC and Clang can auto-vectorise
+// them. The two sum in different orders, so results agree to floating-point
+// rounding rather than exactly. tests/test_models.cpp checks both builds against
+// PyTorch.
 
 #include <cstddef>
 
@@ -40,9 +36,8 @@ inline float dot(const float* a, const float* b, std::size_t n) noexcept {
     for (; i + 4 <= n; i += 4) s0 = vmlaq_f32(s0, vld1q_f32(a + i), vld1q_f32(b + i));
     float s = vaddvq_f32(vaddq_f32(vaddq_f32(s0, s1), vaddq_f32(s2, s3)));
 #else
-    // Four independent accumulators. A single `s += a[i] * b[i]` cannot be
-    // vectorised without -ffast-math, because that would reorder a float sum;
-    // separate sums have no order to preserve, so the compiler is free to.
+    // Four accumulators. The compiler may not reorder a single floating-point
+    // sum without -ffast-math, but four independent sums can be vectorised.
     float s0 = 0, s1 = 0, s2 = 0, s3 = 0;
     for (; i + 4 <= n; i += 4) {
         s0 += a[i] * b[i];

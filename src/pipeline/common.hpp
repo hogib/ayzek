@@ -1,7 +1,8 @@
 #pragma once
 
-// What the pipeline's threads share: the stream clock, the message bus between
-// stations and the network stage, and a line-atomic logger.
+// Types shared by the pipeline threads: time helpers, the replay clock, the
+// messages sent from station processors to the network stage, the message
+// queue, and the logger.
 
 #include <chrono>
 #include <condition_variable>
@@ -35,10 +36,10 @@ inline std::string ymd_hms(double epoch) {
     return std::format("{:%Y-%m-%d %H:%M:%S}", t).substr(0, 22);
 }
 
-// UTC epoch seconds from the first six integers in `s`, in the order given:
-// "ymdhms" for 2025-11-10T18:20:51, "dmyhms" for AFAD's 10/11/2025 18:20:51.
-// Hand-rolled because std::chrono::parse is missing from libc++, which the
-// Raspberry Pi build uses.
+// Parses a UTC date-time into epoch seconds, taking the first six integers in
+// `s` in the given order: "ymdhms" for 2025-11-10T18:20:51, "dmyhms" for the
+// AFAD format 10/11/2025 18:20:51. Written by hand because libc++ (used by the
+// Raspberry Pi build) does not provide std::chrono::parse.
 inline std::optional<double> parse_utc(std::string_view s, std::string_view order) {
     int v[6] = {};
     std::size_t n = 0, i = 0;
@@ -62,8 +63,9 @@ inline std::optional<double> parse_utc(std::string_view s, std::string_view orde
     return static_cast<double>(days) * 86400.0 + v[3] * 3600.0 + v[4] * 60.0 + v[5];
 }
 
-// Replay time. Stream time advances at `speed` times wall time from `start`;
-// speed 0 means as fast as the data can be processed.
+// Stream time for replay: `start` plus `speed` times the elapsed wall time.
+// With speed 0, now() returns a time beyond any data, so records are released
+// without delay.
 class StreamClock {
 public:
     StreamClock(double start_epoch, double speed)
@@ -87,7 +89,7 @@ private:
 struct Detection {
     std::string station;
     double window_start;      // epoch of the first window above threshold
-    double declared_at;       // stream time the decision could be made: that window's end
+    double declared_at;       // stream time at which the decision is available (window end)
     float probability;
     double compute_ms;        // conditioning + ensemble for that window
 };
@@ -97,17 +99,17 @@ struct Pick {
     double trigger_window;    // window_start of the Detection this pick follows
     double p_time, s_time;    // epoch
     double p_prob, s_prob;
-    double declared_at;       // stream time the 60 s window completed
+    double declared_at;       // stream time at the end of the 60 s picker window
     double compute_ms;
 };
 
 struct MagnitudeEstimate {
     std::string station;
     double trigger_window;    // window_start of the Detection this follows
-    bool at_pick;             // false: early, P assumed from the trigger; true: window at the picked P
+    bool at_pick;             // false: window placed from the trigger time; true: from the picked P
     double window_start;
     float magnitude;
-    std::size_t noise_windows; // 0 = no station baseline yet, per-window normalisation used
+    std::size_t noise_windows; // noise windows in the station baseline; 0 = per-window normalisation
     double declared_at;
     double compute_ms;
 };
@@ -116,10 +118,10 @@ struct StationDone {
     std::string station;
 };
 
-// A promise from one station: nothing it sends later is declared before `until`.
-// The network stage releases messages in stream-time order against the minimum
-// of these, so association does not depend on which thread happened to run
-// first -- replaying at full speed gives the same events as real time.
+// Sent by a station processor to state that none of its later messages has
+// declared_at earlier than `until`. The network stage processes messages in
+// declared_at order up to the minimum `until` over all stations, so the result
+// does not depend on thread scheduling or replay speed.
 struct Progress {
     std::string station;
     double until;
@@ -134,8 +136,8 @@ inline double declared_at(const Message& m) {
     return 0;
 }
 
-// Low-rate traffic -- a few messages per event -- so a mutex is the right tool;
-// the lock-free structure is the sample ring, where the rate is.
+// Mutex-protected message queue. Message rates are low (a few per event); the
+// sample data itself goes through the lock-free rings.
 class Bus {
 public:
     void send(Message m) {
@@ -158,7 +160,7 @@ private:
     std::deque<Message> q_;
 };
 
-// One mutex so lines from different threads never interleave.
+// Serialised line output, so that lines from different threads do not mix.
 class Log {
 public:
     static Log& get() {

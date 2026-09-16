@@ -1,12 +1,11 @@
-// Decode a miniSEED file record by record and dump what came out.
+// Decodes a miniSEED file record by record.
 //
 //   mseed_dump FILE.mseed OUT_DIR
 //
-// Writes OUT_DIR/<channel>.i32 (every sample, file order, native int32) and
-// OUT_DIR/index.csv (one row per record). A separate script compares both
-// against ObsPy. Any record that fails to parse or decode is reported by number
-// and counted, and a non-zero count fails the run -- a dump that quietly
-// skipped bad records would validate the decoder against a subset of reality.
+// Writes OUT_DIR/<channel>.i32 (all samples in file order, native int32) and
+// OUT_DIR/index.csv (one row per record), for comparison with ObsPy by
+// tools/validate_mseed.py. Records that fail to parse or decode are reported;
+// the exit status is non-zero if there are any.
 
 #include "mseed.hpp"
 

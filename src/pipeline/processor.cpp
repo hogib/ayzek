@@ -38,9 +38,9 @@ Processor::Processor(Station& st, const std::vector<Weights>& detector, const We
     }
 }
 
-// Copies [start, start + n) of all three components into `out`, (n, 3)
-// interleaved. False if any sample is a gap or already reclaimed; `resume` is
-// then the first position a window could start without that gap.
+// Copies positions [start, start + n) of the three components into `out`,
+// (n, 3) interleaved. Returns false if the range contains a gap or is no longer
+// in the ring; `resume` is then the first position after the problem.
 bool Processor::extract(std::uint64_t start, std::size_t n, std::vector<double>& out, std::uint64_t& resume) {
     for (std::size_t c = 0; c < 3; ++c) {
         auto& cs = st_.comp[c];
@@ -84,7 +84,7 @@ void Processor::score_window(std::uint64_t start) {
     while (recent_.size() > 64) recent_.pop_front();
     if (scores_.is_open()) scores_ << st_.code << ',' << std::format("{:.2f}", t_start) << ',' << p << '\n';
 
-    // Before --from, windows are scored only to learn the station's noise.
+    // Before `from`, windows only feed the noise baseline; no triggers.
     const bool warmup = cfg_.from > 0 && t_start < cfg_.from;
     if (warmup) {
         active_ = p >= cfg_.release;
@@ -99,8 +99,8 @@ void Processor::score_window(std::uint64_t start) {
                 pending_pick_ = start - static_cast<std::uint64_t>(cfg_.picker_lead * kFs);
                 pending_trigger_ = t_start;
             }
-            // Early magnitude: P is typically 3.5 s into the first window that
-            // fires, and the regressor's window starts 2 s before P.
+            // Early magnitude window: P is assumed 3.5 s after the start of the
+            // triggering window, and the regressor's window starts 2 s before P.
             if (cfg_.magnitude && early_mag_ == kUnset) {
                 early_mag_ = start + 150;
                 early_trigger_ = t_start;
@@ -135,8 +135,9 @@ void Processor::try_pick(std::uint64_t available) {
     const double p_time = t + pk.p_seconds, declared = t + Picker::kWindow / kFs;
     bus_.send(Pick{st_.code, pending_trigger_, p_time, t + pk.s_seconds, pk.p_prob, pk.s_prob, declared, ms});
 
-    // A confident P near the trigger gives the regressor the window it was
-    // trained on: 2 s before P, 10 s long. Its data is already in.
+    // If the P pick is confident and near the trigger, estimate the magnitude
+    // from the 10 s window starting 2 s before it (the training alignment). The
+    // data is already available at this point.
     if (cfg_.magnitude && pk.p_prob >= 0.5 && p_time >= pending_trigger_ - 3 && p_time <= pending_trigger_ + 9)
         run_magnitude(epoch_to_pos(p_time) - 200, pending_trigger_, true, declared);
 }
@@ -161,10 +162,10 @@ void Processor::run_magnitude(std::uint64_t start, double trigger, bool at_pick,
                                 declared_at, ms});
 }
 
-// Every `noise_every` seconds, the 10 s ending with the newest scored window
-// becomes noise if no detector window overlapping it scored `noise_below` or
-// more. The regressor divides by this sigma, so an earthquake leaking in would
-// shrink every later magnitude at that station; the strict gate is why.
+// At most every `noise_every` seconds, adds the 10 s ending at the newest scored
+// window to the noise baseline, provided every detector window overlapping it
+// scored below `noise_below`. Signal included in the baseline would inflate the
+// noise sigma and lower later magnitude estimates.
 void Processor::maybe_add_noise(std::uint64_t window_start) {
     const std::uint64_t end = window_start + Detector::kWindow;
     if (end < kMagWindow + Detector::kWindow || active_) return;
@@ -199,8 +200,8 @@ void Processor::run(const std::atomic<bool>& stop) {
             continue;
         }
         if (next_ == kUnset) {
-            // With --from, start where the data starts anyway: the windows before
-            // it build the noise baseline the magnitude regressor needs.
+            // Start at the beginning of the data even with `from`, so that the
+            // earlier windows build the noise baseline.
             std::uint64_t first = latest_base;
             if (cfg_.from > 0 && !cfg_.magnitude) first = std::max(first, epoch_to_pos(cfg_.from));
             next_ = align_up(first, cfg_.step);
@@ -210,16 +211,16 @@ void Processor::run(const std::atomic<bool>& stop) {
         while (next_ + Detector::kWindow <= available && !stop.load(std::memory_order_relaxed)) {
             score_window(next_);
             progressed = true;
-            // Jobs whose data is in run as the backlog is worked through, so their
-            // messages keep stream-time order with the detections around them.
+            // Run picker and magnitude jobs as soon as their data is available,
+            // so their messages stay in stream-time order with the detections.
             try_pick(available);
             if (cfg_.magnitude) try_early_magnitude(available);
         }
         try_pick(available);
         if (cfg_.magnitude) try_early_magnitude(available);
 
-        // Reclaim what nothing can still need: the picker's lead, a noise window
-        // ending at the newest scored window, and any pending job's window.
+        // Raise the ring floor, keeping the picker lead, one noise window before
+        // the next window, and the windows of scheduled jobs.
         const std::uint64_t history = std::max<std::uint64_t>(lead, kMagWindow);
         std::uint64_t keep = next_ > history ? next_ - history : 0;
         if (pending_pick_ != kUnset) keep = std::min(keep, pending_pick_);
@@ -229,8 +230,8 @@ void Processor::run(const std::atomic<bool>& stop) {
             if (keep > base) cs.ring.set_floor(std::min<std::uint64_t>(keep - base, cs.ring.written()));
         }
 
-        // Nothing sent from here on is declared before the next window ends or
-        // before any pending job's window ends.
+        // Lower bound on declared_at of any later message: the end of the next
+        // detector window or of a scheduled job's window.
         double until = pos_to_epoch(next_ + Detector::kWindow);
         if (pending_pick_ != kUnset) until = std::min(until, pos_to_epoch(pending_pick_ + Picker::kWindow));
         if (early_mag_ != kUnset) until = std::min(until, pos_to_epoch(early_mag_ + kMagWindow));
@@ -240,8 +241,8 @@ void Processor::run(const std::atomic<bool>& stop) {
         }
 
         if (!progressed) {
-            // `done` was read before `available`, so everything ingest will ever
-            // write was already counted: nothing more can arrive.
+            // `done` was read before `available`, so all ingested data has been
+            // processed.
             if (done) {
                 if (pending_pick_ != kUnset) {
                     ++stats_.abandoned_picks;

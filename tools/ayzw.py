@@ -1,4 +1,4 @@
-"""The AYZW tensor file writer, shared by the export scripts. See docs/impl/02-weights.md."""
+"""AYZW tensor file writer used by the export scripts. Format: docs/impl/02-weights.md."""
 import json
 import struct
 
@@ -8,7 +8,8 @@ DTYPES = {np.dtype(np.float32): 0, np.dtype(np.float64): 1, np.dtype(np.int64): 
 
 
 def write_ayzw(path, tensors, meta):
-    """magic, version, count, then (name, dtype, dims, bytes) per tensor."""
+    """Writes `tensors` and a JSON `meta` record: magic, version, count, then name,
+    dtype, shape and data for each tensor."""
     path.parent.mkdir(parents=True, exist_ok=True)
     items = dict(tensors)
     items["__meta__"] = np.frombuffer(json.dumps(meta, indent=1).encode(), dtype=np.uint8)

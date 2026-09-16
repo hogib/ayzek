@@ -1,9 +1,9 @@
 #pragma once
 
-// Stage 2 per station: sliding windows -> conditioning -> detector ensemble ->
-// trigger -> on trigger, an early magnitude, the 60 s picker window, and a
-// magnitude at the picked P. Quiet windows feed the station's noise baseline,
-// which the magnitude regressor normalises against.
+// Processing stage, one thread per station: sliding windows -> preprocessing ->
+// detector ensemble -> trigger. A trigger schedules an early magnitude estimate,
+// a 60 s picker window, and a magnitude estimate at the picked P. Windows scored
+// as noise update the station's noise baseline used by the magnitude regressor.
 
 #include "common.hpp"
 #include "dsp.hpp"
@@ -23,16 +23,16 @@ namespace ayzek::pipeline {
 
 struct ProcessorConfig {
     std::size_t step = 50;             // samples between window starts (0.5 s)
-    float threshold = 0.9f;            // trigger on; probabilities top out near 0.91 (label smoothing)
-    float release = 0.3f;              // trigger off, held for `release_windows`
+    float threshold = 0.9f;            // trigger threshold; outputs saturate near 0.91 (label smoothing 0.1/0.9)
+    float release = 0.3f;              // trigger resets after `release_windows` windows below this
     std::size_t release_windows = 2;
-    double retrigger_seconds = 15.0;   // ignore new triggers this soon after one
-    double picker_lead = 2.0;          // picker window starts this long before the triggering window
+    double retrigger_seconds = 15.0;   // minimum time between triggers
+    double picker_lead = 2.0;          // picker window start, seconds before the triggering window
     bool pick = true;
     bool magnitude = true;
     double noise_every = 30.0;         // seconds between noise-baseline windows
-    float noise_below = 0.3f;          // every detector window over a noise window must score under this
-    double from = 0;                   // no detections before this epoch; earlier windows only warm the noise baseline
+    float noise_below = 0.3f;          // max detector probability over a window accepted as noise
+    double from = 0;                   // no triggers before this epoch; earlier windows update the noise baseline only
 };
 
 struct ProcessorStats {
@@ -75,9 +75,9 @@ private:
     bool active_ = false;
     std::size_t below_ = 0;
     double last_trigger_ = -1e18;
-    std::uint64_t pending_pick_ = kUnset;   // absolute start of a picker window still waiting for data
-    double pending_trigger_ = 0;             // the detection window it belongs to
-    std::uint64_t early_mag_ = kUnset;      // absolute start of an early magnitude window still waiting
+    std::uint64_t pending_pick_ = kUnset;   // start position of a scheduled picker window
+    double pending_trigger_ = 0;             // window start of the detection that scheduled it
+    std::uint64_t early_mag_ = kUnset;      // start position of a scheduled early magnitude window
     double early_trigger_ = 0;
     std::deque<std::pair<std::uint64_t, float>> recent_;   // (window start, probability)
     std::uint64_t last_noise_end_ = 0;

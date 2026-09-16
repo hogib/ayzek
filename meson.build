@@ -7,11 +7,9 @@ project('ayzek', 'cpp',
     'b_ndebug=if-release',
   ])
 
-# C++23 modules were tested on this toolchain and do not work through Meson:
-# GCC 16.2 and Clang 22.1 both build modules correctly by hand, but Meson 1.12
-# only wires dyndep scanning for MSVC. Forcing it on via -fmodules in cpp_args
-# reaches ninja with a malformed dyndep ("inputs may not also have inputs").
-# Headers until that is fixed upstream; none of the code below depends on it.
+# C++23 modules are not used: Meson 1.12 supports module dependency scanning
+# only for MSVC, and enabling -fmodules with GCC 16.2 or Clang 22.1 produces an
+# invalid ninja dyndep file.
 
 cpp = meson.get_compiler('cpp')
 threads = dependency('threads')

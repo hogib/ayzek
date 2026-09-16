@@ -1,7 +1,7 @@
 #pragma once
 
-// Log-power spectrogram, matching torchaudio as the magnitude regressor's
-// training data used it:
+// Log-power spectrogram, equivalent to the torchaudio transforms used to build
+// the magnitude regressor's training data:
 //
 //   T.Spectrogram(n_fft=128, hop_length=32, power=2.0)
 //       periodic Hann window of n_fft, center=True with reflect padding,
@@ -9,9 +9,9 @@
 //   T.AmplitudeToDB(stype="power", top_db=80)
 //       10 log10(max(p, 1e-10)), then floored at (max over the whole tensor - 80)
 //
-// The top_db floor is taken over every channel passed in together, which is
-// why the noise profile (one component at a time) and the event window (three
-// at once) call `db` differently, exactly as seismic_cli does.
+// The top_db floor is computed over all channels passed to `db` together.
+// seismic_cli applies it per component for noise profiles and over all three
+// components for event windows; callers do the same.
 
 #include <cstddef>
 #include <span>
@@ -37,9 +37,8 @@ private:
     std::vector<double> window_, padded_, re_, im_;
 };
 
-// Median over frames, per bin, of (frames x bins) dB values gathered from many
-// noise windows. torch.median's convention: the lower middle value when the
-// count is even, not the mean of the two.
+// Per-bin median over frames of a (frames x bins) dB matrix. For an even number
+// of frames it returns the lower middle value, as torch.median does.
 std::vector<float> median_profile(std::span<const double> frames_by_bin, std::size_t bins);
 
 }  // namespace ayzek::dsp

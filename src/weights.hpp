@@ -1,7 +1,7 @@
 #pragma once
 
-// AYZW: the flat tensor file tools/export_models.py writes. See
-// docs/impl/02-weights.md for the layout.
+// Reader for AYZW tensor files written by tools/export_models.py and
+// tools/export_magnitude.py. Format: docs/impl/02-weights.md.
 
 #include <cstddef>
 #include <cstdint>
@@ -27,8 +27,7 @@ struct Tensor {
 
 class Weights {
 public:
-    // Throws std::runtime_error on a missing or malformed file. Loading happens
-    // once at startup, so an exception here costs nothing on the hot path.
+    // Reads all tensors. Throws std::runtime_error on a missing or malformed file.
     static Weights load(const std::string& path);
 
     [[nodiscard]] bool has(const std::string& name) const { return tensors_.contains(name); }

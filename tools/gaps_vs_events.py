@@ -1,30 +1,21 @@
-"""Do real-time gaps bunch up around earthquakes?
+"""Tests whether real-time data gaps at DEMI coincide with earthquakes.
 
-If telemetry drops or delays packets while the ground shakes -- Steim2
-compresses large signals worse, so shaking means more packets on the same link
--- then the detector windows lost to gaps would fall on exactly the windows that
-matter, and the average understates the cost.
+Real-time gaps are recomputed from mseed_dump's index.csv with the reorderer's
+max_lateness = 0 rule (the counts match tools/replay_check on the DEMI chunk).
 
-  1. catalogue  how often an event's P-to-S window at DEMI overlaps a real-time
-                gap, against the same catalogue shifted in time. Circular shifts
-                keep aftershock clustering intact, which a flat base rate would
-                not: gaps and aftershocks both cluster, and would look associated
-                through clustering alone.
-  2. station    DEMI's vertical amplitude at each horizontal gap, ranked within
-                its hour of day so daytime noise cannot pass for shaking. Z has no
-                late records, so it is intact exactly where the horizontals are
-                missing. Catches events the catalogue misses.
-  alignment     the catalogue lines up with the waveform at all. If it did not,
-                test 1 would return a null for the wrong reason.
+  1. catalogue  fraction of events whose P-to-S window at DEMI overlaps a gap,
+                compared with a null distribution from random circular time
+                shifts of the catalogue (shifts preserve the clustering of
+                aftershocks and of gaps)
+  2. station    DEMI vertical-component amplitude at the midpoint of each
+                horizontal gap, as a percentile within its UTC hour, compared
+                with circularly shifted gap times
+  alignment     amplitude ratio after the predicted P time for M >= 3.5 events,
+                to confirm that catalogue times are UTC
 
-Both tests run separately either side of a change in the gap rate. In this chunk
-gaps jump about fifteen-fold partway through while the aftershock rate decays, so
-a shift across the whole chunk moves early events into the gap-heavy late period
-and inflates "chance" -- which would hide a real association rather than invent
-one. The change point is fitted, not chosen.
-
-Real-time gaps are recomputed from index.csv under the reorderer's
-max_lateness = 0 policy; on the DEMI chunk they match replay_check's counts.
+The gap rate changes during the chunk. Tests 1 and 2 are therefore run
+separately before and after a change point, estimated by maximising a two-rate
+Poisson likelihood over hourly gap counts, and over the whole chunk.
 
     uv run --with numpy --with pandas python tools/gaps_vs_events.py DUMP_DIR CATALOG.csv
 """
@@ -38,12 +29,12 @@ DEMI_LON, DEMI_LAT = 28.7162, 39.0428
 FS = 100
 BIN = 10 * FS                       # amplitude bins, in samples
 BIN_S = BIN / FS
-VP, VS = 6.0, 3.5                   # km/s -- crude, so windows are padded
+VP, VS = 6.0, 3.5                   # km/s, uniform; windows are padded for the error
 PAD_BEFORE, PAD_AFTER = 5.0, 20.0   # seconds before P, after S
 N_SHIFTS = 10_000
 RNG = np.random.default_rng(20251028)
 
-# Fixed before any result was seen. The first is primary.
+# Event selections, defined before running the tests. The first is the primary one.
 TIERS = [
     ("M>=3.0 within 150 km *", 3.0, 150.0),
     ("M>=2.0 within 100 km", 2.0, 100.0),
@@ -111,7 +102,7 @@ t1 = (idx.pos + idx.num_samples).max() / FS
 span = t1 - t0
 lost = merge([(a / FS, b / FS) for g in gaps.values() for a, b in g])
 horiz = merge([(a / FS, b / FS) for c in ("HHE", "HHN") for a, b in gaps[c]])
-# On the 21-day DEMI chunk these match replay_check exactly: 485, 513 and 25.
+# DEMI chunk: 485, 513 and 25 gaps, the same as tools/replay_check.
 print(f"chunk {stamp(t0)} .. {stamp(t1)} UTC, {span / 86400:.1f} days; real-time gaps "
       + ", ".join(f"{c} {len(g)}" for c, g in gaps.items()))
 
@@ -166,7 +157,7 @@ BLOCK = 86400 * FS
 for s, e in zip(np.concatenate([[0], brk]), np.concatenate([brk, [len(zpos)]])):
     f_begin, f_end, p_begin = zoff[s], zoff[e - 1] + zn[e - 1], zpos[s]
     for f in range(int(f_begin), int(f_end), BLOCK):
-        x = np.diff(z[f:min(f + BLOCK + 1, f_end)].astype(np.float64))   # differencing = crude high-pass
+        x = np.diff(z[f:min(f + BLOCK + 1, f_end)].astype(np.float64))   # first difference as a high-pass
         bins = (p_begin + (f - f_begin) + 1 + np.arange(len(x))) // BIN - b0
         sumsq += np.bincount(bins, weights=x * x, minlength=nb)
         cnt += np.bincount(bins, minlength=nb)
@@ -200,12 +191,12 @@ def catalogue_test(lo, hi):
         obs = obs_hits / len(t)
         null = np.array([touches(lost, *windows(lo + (t - lo + s) % L, R)).mean()
                          for s in RNG.uniform(0, L, N_SHIFTS)])
-        # Whole-day shifts keep time of day, in case gaps follow a daily cycle.
+        # Shifts by whole days preserve time of day, controlling for a daily cycle.
         days = np.array([touches(lost, *windows(lo + (t - lo + d * 86400) % L, R)).mean()
                          for d in range(1, int(L // 86400))])
         ratio = f"{obs / null.mean():4.2f}" if null.mean() > 0 else " n/a"
         q95 = np.quantile(null, 0.95)
-        detect = f"{q95 / null.mean():4.1f}x" if q95 > 0 else "  n/a"      # too few events to detect anything
+        detect = f"{q95 / null.mean():4.1f}x" if q95 > 0 else "  n/a"      # undefined with too few events
         print(f"     {name:22s} {len(t):5d} events {obs_hits:3d} in a gap   "
               f"{100 * obs:5.2f}% vs chance {100 * null.mean():5.2f}%   ratio {ratio}   "
               f"p = {pvalue(obs, null):.3f}   day shifts beaten {int((obs > days).sum()):2d}/{len(days):<2d}   "
@@ -216,10 +207,9 @@ def amplitude_test(lo, hi):
     sel = np.flatnonzero((amp_t >= lo) & (amp_t < hi))
     pct = amp.iloc[sel].groupby("hour").amp.rank(pct=True).to_numpy()
     n = len(sel)
-    # One bin per gap, at its midpoint. Counting every bin inside a gap would
-    # weight long gaps more, and gap length depends on amplitude: Steim2 packs
-    # more samples into a record when the signal is quiet, so one late record
-    # blanks more time then. See the record-length correlation printed below.
+    # One bin per gap, at its midpoint. Using all bins inside gaps would weight
+    # gaps by length, and gap length depends on amplitude (Steim2 records hold
+    # more samples when the signal is quiet; see the correlation printed below).
     mids = (horiz[:, 0] + horiz[:, 1]) / 2
     mb = ((mids[(mids >= lo) & (mids < hi)] - amp_t[sel[0]]) // BIN_S).astype(int)
     mb = mb[(mb >= 0) & (mb < n)]

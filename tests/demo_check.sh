@@ -1,8 +1,8 @@
 #!/bin/sh
-# End to end: replay the demo stations through the built ayzek and require the
+# End-to-end test: replays DEMI, MANT and BAND through ayzek and requires the
 # 2025-11-10 M4.9 to be declared, located within 10 km of the AFAD epicentre,
-# and sized within one magnitude unit.
-# Skips (77) without the demo data, models or catalogue.
+# and assigned a magnitude between 3.9 and 5.9.
+# Exits 77 (skipped) if the demo data, models or catalogue are missing.
 set -eu
 AYZEK=$1
 ROOT=$2
@@ -11,8 +11,8 @@ for f in "$ROOT/data/demo/DEMI.mseed" "$ROOT/data/demo/MANT.mseed" "$ROOT/data/d
          "$ROOT/models/detector_s42.ayzw" "$CATALOG"; do
     [ -e "$f" ] || { echo "skipped: $f not found"; exit 77; }
 done
-# A cross build's binary cannot run here directly; Meson's exe_wrapper does not
-# reach binaries a script runs, so fall back to qemu the same way.
+# A cross-compiled binary cannot run natively. Meson's exe_wrapper applies only to
+# the test executable itself, so this script uses qemu-aarch64 directly.
 RUN="$AYZEK"
 if ! "$AYZEK" --help >/dev/null 2>&1; then
     command -v qemu-aarch64 >/dev/null || { echo "skipped: cannot run $AYZEK"; exit 77; }

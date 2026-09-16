@@ -24,7 +24,7 @@ template <typename T>
 T read_le(std::ifstream& f, const std::string& path) {
     T v{};
     if (!f.read(reinterpret_cast<char*>(&v), sizeof v)) throw std::runtime_error(path + ": truncated");
-    // The format is little-endian; every target this runs on is too.
+    // The file format is little-endian; swap on big-endian hosts.
     if constexpr (std::endian::native != std::endian::little) v = std::byteswap(v);
     return v;
 }
@@ -72,8 +72,8 @@ Weights Weights::load(const std::string& path) {
         for (int d = 0; d < ndim; ++d) t.shape.push_back(read_le<std::uint32_t>(f, path));
         const auto nbytes = read_le<std::uint64_t>(f, path);
         if (nbytes != t.numel() * item_size(t.dtype)) throw std::runtime_error(path + ": size mismatch in " + name);
-        // operator new returns storage aligned for every fundamental type, so the
-        // reinterpret in `typed` lands on correctly aligned float and double.
+        // Storage from operator new is aligned for any fundamental type, so the
+        // bytes can be read as float or double in `typed`.
         t.bytes.resize(nbytes);
         if (!f.read(reinterpret_cast<char*>(t.bytes.data()), static_cast<std::streamsize>(nbytes)))
             throw std::runtime_error(path + ": truncated in " + name);

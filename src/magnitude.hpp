@@ -1,16 +1,17 @@
 #pragma once
 
-// Magnitude from one station's 10 s window: the cnn_earthquake regressor
-// trained on FDSN (KO) windows starting 2 s before P, three station-and-event
-// disjoint partitions averaged. Reported MAE 0.42 +- 0.02 on unseen stations.
+// Magnitude estimation from one station's 10 s window starting 2 s before P.
+// Model: cnn_earthquake's waveform-only regressor trained on FDSN (KO) windows;
+// the three station- and event-disjoint partition models are averaged
+// (reported MAE 0.42 +- 0.02 on held-out stations).
 //
-// Unlike the detector, its inputs are normalised by the *station's* noise:
+// Inputs are normalised by the station's noise level:
 //   waveform     (cleaned - noise mean) / noise sigma, per component
-//   spectrogram  dB minus the station's median noise dB per frequency bin
-// So each station keeps a NoiseBaseline, built online from windows the
-// detector scored as quiet. Until it has a minute of noise, both inputs fall
-// back to per-window normalisation, as the training corpus did for stations
-// with no noise data.
+//   spectrogram  dB minus the median noise dB per frequency bin
+// NoiseBaseline estimates both online from windows the detector scored as
+// noise. With less than 60 s of noise, both inputs use per-window normalisation
+// instead, which is what the training data generator used for stations without
+// a noise baseline.
 
 #include "dsp.hpp"
 #include "nn.hpp"
@@ -58,7 +59,7 @@ struct StationNoise {
 class NoiseBaseline {
 public:
     explicit NoiseBaseline(const dsp::Bandpass& bp, std::size_t keep_windows = 30, std::size_t min_windows = 6);
-    // raw: (1000, 3) interleaved counts of a window believed to be noise.
+    // Adds one noise window: (1000, 3) interleaved raw counts.
     void add(std::span<const double> raw);
     [[nodiscard]] const StationNoise& noise() const noexcept { return noise_; }
 

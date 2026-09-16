@@ -1,14 +1,14 @@
 #pragma once
 
-// Inference-only layers, each matching its PyTorch counterpart in eval mode.
+// Neural network layers for inference, each equivalent to the PyTorch module of
+// the same name in eval mode and loaded from its state_dict tensors.
 //
-// Two memory layouts, chosen per layer to match how PyTorch indexes it, so no
-// weight ever needs reordering:
-//   planar       (channels, length)  -- Conv1d, BatchNorm1d
-//   interleaved  (steps, features)   -- Linear, LayerNorm, LSTM, attention
+// Memory layouts follow PyTorch's indexing, so weights are used unchanged:
+//   planar       (channels, length) or (channels, H, W)  -- Conv1d, Conv2d, BatchNorm
+//   interleaved  (steps, features)                       -- Linear, LayerNorm, LSTM, attention
 //
-// Layers own their scratch buffers, sized on first use and reused after, so a
-// model built for one input length does no allocation per call.
+// Scratch buffers are members, allocated on first use and reused. A layer
+// instance must therefore not be used from two threads at once.
 
 #include "weights.hpp"
 
@@ -51,8 +51,8 @@ struct Conv2d {
     void forward(const float* x, std::size_t H, std::size_t W, float* y) const;
 };
 
-// BatchNorm1d and BatchNorm2d are the same per-channel affine in eval mode; for
-// 2D pass L = H * W.
+// Batch normalisation in eval mode: a per-channel affine map. Serves as
+// BatchNorm2d with L = H * W.
 struct BatchNorm1d {
     std::vector<float> scale, shift;              // folded: w / sqrt(var + eps), b - mean * scale
 
@@ -80,7 +80,8 @@ struct LayerNorm {
     void forward(float* x, std::size_t T) const noexcept;          // (T, d) in place
 };
 
-// One direction of a single-layer PyTorch LSTM. Gate order i, f, g, o.
+// One direction of a single-layer PyTorch LSTM, zero initial state. Gate order
+// in the weight matrices: input, forget, cell, output.
 struct LstmDirection {
     std::size_t in = 0, hidden = 0;
     std::vector<float> w_ih, w_hh, bias;          // (4H, in), (4H, H), b_ih + b_hh

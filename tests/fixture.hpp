@@ -1,8 +1,9 @@
 #pragma once
 
-// Shared by the tests that compare against tools/export_models.py outputs.
-// Fixtures are generated, not committed; a test without them exits 77, which
-// Meson reports as skipped rather than passed.
+// Helpers for the tests that compare against reference outputs from
+// tools/export_models.py and tools/export_magnitude.py. The reference files are
+// generated, not committed; if one is missing the test exits with 77, which
+// Meson reports as skipped.
 
 #include "weights.hpp"
 

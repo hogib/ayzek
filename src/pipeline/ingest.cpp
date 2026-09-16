@@ -48,8 +48,8 @@ ReplaySource::ReplaySource(const std::string& path) {
 }
 
 void run_ingest(const ReplaySource& src, Station& st, const StreamClock& clock, const std::atomic<bool>& stop) {
-    // One reorderer per component, never waiting: a hole is a gap immediately
-    // and a late record is stale (DESIGN.md, "Decided").
+    // One reorderer per component with max_lateness 0: holes become gaps at once
+    // and late records are discarded as stale (docs/DESIGN.md).
     std::array<std::unique_ptr<Reorderer<8, mseed::kMaxDiffs>>, 3> reorder;
     for (auto& r : reorder) r = std::make_unique<Reorderer<8, mseed::kMaxDiffs>>(0);
     std::array<std::int32_t, mseed::kMaxDiffs> buf{};
@@ -70,12 +70,10 @@ void run_ingest(const ReplaySource& src, Station& st, const StreamClock& clock, 
         auto push = [&](std::span<const std::int32_t> s) {
             int waited_ms = 0;
             while (!s.empty()) {
-                // Replay backpressure: wait for the processor to raise its floor.
-                // Bounded, because the processor can only advance once every
-                // component has data -- a component silent for longer than the
-                // ring holds would otherwise stall its siblings forever. Past a
-                // minute of wall time, push_bulk drops and counts, as a live
-                // stream would, and says so.
+                // Ring full: wait for the processor to raise its floor. The wait
+                // is limited to 60 s of wall time, because the processor cannot
+                // advance while another component of the station has no data.
+                // After the limit the samples are dropped, counted and reported.
                 const auto room = kRingCapacity - (cs.ring.written() - cs.ring.floor());
                 if (room == 0 && waited_ms < 60'000) {
                     if (stop.load(std::memory_order_relaxed)) return;

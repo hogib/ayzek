@@ -1,12 +1,13 @@
-"""Cut a short replay out of each station's archive chunk.
+"""Extracts a time range from archive chunks into one miniSEED file per station.
 
-Records are copied byte for byte -- no decode, no re-encode -- so the replay is
-exactly what the archive holds, including its record order. Only HH? channels
-are kept. Standard library only.
+Records whose start time lies in [start - 60 s, end) are copied unchanged, in
+file order. Only HH? channels are kept. Uses the standard library only.
 
     python3 tools/make_demo_data.py --out data/demo \
         --start 2025-11-10T18:05:00 --end 2025-11-10T18:35:00 \
-        ~/Projects/sismokaos/tdvms/afad_raw/{DEMI,CMH,MANT}/*_2025-11-19.zip
+        ~/Projects/sismokaos/tdvms/afad_raw/{DEMI,MANT,BAND}/*_2025-10-29.zip
+
+Chunk files are named by their start date.
 """
 import argparse
 import datetime as dt
@@ -49,7 +50,7 @@ def main():
                     seen += 1
                     if rec[15:17] != b"HH":
                         continue
-                    # A record is ~4 s long; a 60 s margin keeps whole records at both edges.
+                    # Records are ~4 s long; the 60 s margin keeps complete records at the start.
                     if t0 - 60 <= record_time(rec) < t1:
                         dst.write(rec)
                         kept += 1

@@ -1,4 +1,4 @@
-// Detector and picker against PyTorch on real windows, layer by layer.
+// Compares the detector and picker with PyTorch on DEMI windows, layer by layer.
 
 #include "fixture.hpp"
 #include "models.hpp"
@@ -46,7 +46,7 @@ void detector(const std::string& root) {
     CHECK(conv.abs < 1e-4 && lstm.abs < 1e-4 && attn.abs < 1e-4 && pooled.abs < 1e-4);
     CHECK(logit.abs < 1e-3);
 
-    // The ensemble works from standardised input and applies asinh itself.
+    // The ensemble takes standardised input and applies asinh internally.
     DetectorEnsemble ens(seeds);
     std::vector<float> standardized(per);
     double worst = 0;

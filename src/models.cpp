@@ -50,7 +50,7 @@ float Detector::logit(std::span<const float> x) {
     attn_out.resize(lstm_out.size());
     attn_.forward(lstm_out.data(), T, attn_out.data());
 
-    // norm(lstm + attn), the transformer-style residual, then the mean over time.
+    // LayerNorm(lstm + attention), then the mean over time steps.
     const std::size_t E = lstm_.out_dim();
     thread_local std::vector<float> resid;
     resid.assign(lstm_out.begin(), lstm_out.end());
@@ -114,8 +114,8 @@ std::span<const float> Picker::logits(std::span<const float> x) {
     nn::relu(b3_.data(), c3_.cout * L);
     stem_out.assign(b3_.begin(), b3_.end());
 
-    // adaptive_avg_pool1d(750 -> 250): the length divides exactly, so a plain
-    // mean over 3.
+    // adaptive_avg_pool1d(750 -> 250). The length divides exactly, so this is a
+    // mean over non-overlapping groups of 3.
     const std::size_t C = c3_.cout;
     if (L % kChunks != 0) throw std::runtime_error("picker stem length does not divide into chunks");
     const std::size_t f = L / kChunks;

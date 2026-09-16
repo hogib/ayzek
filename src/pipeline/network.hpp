@@ -1,8 +1,8 @@
 #pragma once
 
-// Stage 3, once for the network: associate station detections into events,
-// declare an event when enough stations agree, locate it as picks arrive, and
-// -- when a catalogue is given -- score every event against it.
+// Network stage (one instance): associates station detections into events,
+// declares an event when enough stations detect it, locates it from the picks,
+// combines station magnitudes, and optionally compares events with a catalogue.
 
 #include "common.hpp"
 
@@ -28,20 +28,20 @@ std::vector<CatalogEvent> load_afad_catalog(const std::string& path, double t0, 
 
 struct NetworkConfig {
     std::size_t min_stations = 2;      // detections needed to declare an event
-    double slack_seconds = 3.0;        // beyond the P travel time between two stations
-    double coda_seconds = 40.0;        // a station's re-detections this soon after an event's first are its coda
+    double slack_seconds = 3.0;        // tolerance added to the inter-station P travel time
+    double coda_seconds = 40.0;        // later detections at a station within this time belong to the same event
     double vp = 6.0, vs = 3.5;         // km/s, uniform half-space
     double depth_km = 10.0;            // fixed during location
-    double max_rms = 2.0;              // locations worse than this are reported as rejected
-    double min_pick_prob = 0.5;        // P and S picks below this are not used
-    std::vector<CatalogEvent> catalog; // scored against when non-empty
-    double catalog_radius_km = 250;    // catalogue events farther from the network are not expected
+    double max_rms = 2.0;              // maximum accepted location rms, seconds
+    double min_pick_prob = 0.5;        // minimum P and S pick probability
+    std::vector<CatalogEvent> catalog; // reference events for evaluation (optional)
+    double catalog_radius_km = 250;    // evaluation radius around the station centroid
 };
 
 struct Location {
     double lat, lon, origin, rms;
     std::size_t n_stations;
-    std::vector<std::string> dropped;   // stations left out because they did not fit
+    std::vector<std::string> dropped;   // stations removed during relocation
 };
 
 struct Event {
@@ -50,8 +50,8 @@ struct Event {
     double declared_at = 0;
     std::map<std::string, Detection> detections;
     std::map<std::string, Pick> picks;
-    std::size_t coda = 0;               // later detections absorbed as S waves and coda
-    std::map<std::string, MagnitudeEstimate> magnitudes;   // latest per station; a pick-anchored one wins
+    std::size_t coda = 0;               // later detections assigned to this event
+    std::map<std::string, MagnitudeEstimate> magnitudes;   // per station; pick-based replaces early
     std::optional<double> magnitude;    // median over stations
     std::size_t magnitude_stations = 0;
     std::optional<Location> location;

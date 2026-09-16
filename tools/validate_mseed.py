@@ -1,8 +1,8 @@
-"""Check mseed_dump against ObsPy, which wraps libmseed, the reference decoder.
+"""Compares mseed_dump output with ObsPy (libmseed).
 
-Steim2 is lossless integer compression, so there is no tolerance: every sample
-must be identical. Also checks that sample counts per channel agree and that
-every trace ObsPy assembles begins at a record start we also saw.
+Steim2 is lossless, so every sample must be identical. Also checks the sample
+count per channel and that each ObsPy trace starts at a record start time in
+index.csv.
 
     uv run --with obspy --with numpy python tools/validate_mseed.py FILE.mseed DUMP_DIR
 """

@@ -59,7 +59,7 @@ void fft(std::vector<double>& re, std::vector<double>& im) {
 void Spectrogram::power(std::span<const double> x, std::span<double> out) {
     if (x.size() != samples_ || out.size() != bins() * frames()) throw std::invalid_argument("spectrogram: wrong size");
     const std::size_t half = n_fft_ / 2, F = frames(), B = bins();
-    // Reflect padding, torch's pad_mode="reflect": the edge sample is not repeated.
+    // Reflect padding (torch pad_mode="reflect"): the edge sample is not repeated.
     for (std::size_t i = 0; i < half; ++i) {
         padded_[i] = x[half - i];
         padded_[half + samples_ + i] = x[samples_ - 2 - i];

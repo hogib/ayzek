@@ -50,9 +50,9 @@ std::vector<CatalogEvent> load_afad_catalog(const std::string& path, double t0, 
 Network::Network(std::map<std::string, StationInfo> stations, NetworkConfig cfg)
     : stations_(std::move(stations)), cfg_(std::move(cfg)) {}
 
-// Two detections can belong to one event only if their time difference could
-// be a P wave's travel time between the two stations, plus slack for where in
-// its 6 s window each detector fired.
+// Two detections are compatible if their window times differ by no more than
+// the P travel time between the two stations plus `slack_seconds`, which allows
+// for the position of P within each 6 s window.
 bool Network::compatible(const Detection& a, const Detection& b) const {
     auto ia = stations_.find(a.station), ib = stations_.find(b.station);
     if (ia == stations_.end() || ib == stations_.end()) return std::abs(a.window_start - b.window_start) <= 30.0;
@@ -61,10 +61,10 @@ bool Network::compatible(const Detection& a, const Detection& b) const {
 }
 
 void Network::on(const Detection& d) {
-    // A detector trained on 6 s windows fires again on the S wave and on coda.
-    // Those re-detections are part of the event already under way at that
-    // station, not new events. The cost: a second quake within the coda window
-    // at the same station is absorbed too.
+    // The detector can trigger again on the S wave and coda of an event. A later
+    // detection at a station within `coda_seconds` of that station's detection
+    // of a declared event is assigned to that event. A separate event in that
+    // interval is therefore not declared from this station.
     for (auto& e : events_) {
         auto it = e.detections.find(d.station);
         if (e.declared && it != e.detections.end() && d.window_start > it->second.window_start &&
@@ -103,7 +103,7 @@ void Network::on(const Detection& d) {
             Log::get().line("EVENT", "31", "#{} catalogue: {}{:.1f} at {}, alert {:.1f} s after origin", ev->id, c->type,
                             c->magnitude, hms(c->time), ev->declared_at - c->time);
         }
-        report_magnitude(*ev, ev->declared_at);    // estimates that arrived before a second station agreed
+        report_magnitude(*ev, ev->declared_at);    // estimates received before the event was declared
     } else if (ev->declared) {
         Log::get().line("EVENT", "31", "#{} joined by {}", ev->id, d.station);
     }
@@ -113,8 +113,9 @@ void Network::on(const Pick& p) {
     const double sp = p.s_time - p.p_time;
     const double km = sp * cfg_.vp * cfg_.vs / (cfg_.vp - cfg_.vs);   // S-P lag to distance
 
-    // The picker always returns an argmax, even in noise or when its 60 s window
-    // has caught a later event, so a pick must earn its place.
+    // Pick quality control. The picker returns the most probable chunk even when
+    // there is no phase, so low-probability picks, S before P, and P far from the
+    // trigger window are not used.
     std::string reject;
     if (p.p_prob < cfg_.min_pick_prob || p.s_prob < cfg_.min_pick_prob) reject = "low confidence";
     else if (sp <= 0 || sp > 60) reject = "S not after P";
@@ -135,10 +136,11 @@ void Network::on(const Pick& p) {
     }
 }
 
-// Drops the worst-fitting station and relocates while the fit is poor. A
-// uniform half-space is a fair model to ~150 km; beyond that the first P wave
-// travels through the upper mantle and arrives early, so distant stations are
-// the usual casualties.
+// Locates the event; while rms exceeds max_rms and more than two stations
+// remain, removes the station with the largest residual and relocates. The
+// uniform velocity model underestimates P speed beyond ~150 km, where the first
+// arrival travels through the upper mantle, so distant stations are the ones
+// typically removed.
 void Network::on(const MagnitudeEstimate& m) {
     Log::get().line("mag", "34", "{:<5} M{:.2f}  {}  noise baseline {}  ({:.0f} ms)", m.station, m.magnitude,
                     m.at_pick ? "at picked P" : "early      ",
@@ -155,8 +157,8 @@ void Network::on(const MagnitudeEstimate& m) {
     }
 }
 
-// Network magnitude: the median of the station estimates, robust to one station
-// with a poor baseline or a clipped window. Printed only when it changes.
+// Event magnitude: median of the station estimates. Printed when the value
+// changes by 0.05 or more, or when the number of stations changes.
 void Network::report_magnitude(Event& e, double now) {
     if (e.magnitudes.empty()) return;
     std::vector<double> v;
@@ -214,8 +216,8 @@ std::optional<Location> Network::locate(const std::map<std::string, Pick>& picks
     clat /= static_cast<double>(n_st);
     clon /= static_cast<double>(n_st);
 
-    // Grid search over the epicentre. The best origin time at each node is the
-    // mean residual, so it needs no search of its own.
+    // Grid search over epicentre; depth fixed. For a given epicentre the least-
+    // squares origin time is the mean of (observed - predicted travel time).
     std::vector<double> r(obs.size());
     auto misfit = [&](double lat, double lon, double& origin) {
         double sum = 0, sq = 0;
@@ -258,7 +260,7 @@ void Network::report_location(Event& e) {
         Log::get().line("LOCATE", "33", "#{} rejected: best fit rms {:.1f} s from {} stations", e.id, loc->rms, loc->n_stations);
         return;
     }
-    // A new pick that was left out changes nothing worth printing again.
+    // Do not print an unchanged solution.
     const bool same = e.location && e.location->lat == loc->lat && e.location->lon == loc->lon &&
                       e.location->origin == loc->origin;
     e.location = loc;
@@ -274,11 +276,10 @@ void Network::report_location(Event& e) {
     }
 }
 
-// The catalogue event this one is, if any. Either the location agrees (origin
-// within 5 s, epicentre within 30 km), or some detecting station fired where
-// that event's P wave should have arrived: P is typically 2-5 s into the first
-// window above threshold. Detection alone suffices, so a detection still counts
-// when the location that followed was poor.
+// Matching catalogue event, if any. A catalogue event matches if the location
+// agrees (origin within 5 s, epicentre within 30 km), or if its predicted P
+// arrival at a detecting station is within 6 s of that detection's window start
+// plus 3.5 s. The second criterion does not require a location.
 const CatalogEvent* Network::match(const Event& e) const {
     const CatalogEvent* best = nullptr;
     double best_miss = 1e18;
@@ -286,7 +287,7 @@ const CatalogEvent* Network::match(const Event& e) const {
         double miss = 1e18;
         if (e.location && distance_km(e.location->lat, e.location->lon, c.lat, c.lon) <= 30.0 &&
             std::abs(e.location->origin - c.time) <= 5.0)
-            miss = std::abs(e.location->origin - c.time) / 100.0;   // a location match outranks a window match
+            miss = std::abs(e.location->origin - c.time) / 100.0;   // location matches rank first
         for (const auto& [code, d] : e.detections) {
             auto it = stations_.find(code);
             if (it == stations_.end()) continue;

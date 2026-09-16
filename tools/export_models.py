@@ -1,17 +1,18 @@
-"""Export weights and reference outputs for ayzek.
+"""Exports detector and picker weights, filter coefficients, the station table
+and reference outputs for the C++ tests.
 
-Writes, in the AYZW format (docs/impl/02-weights.md):
+Output files (AYZW format, docs/impl/02-weights.md):
 
   models/detector_s{42,43,44}.ayzw   the 3-seed per-window 6 s detector
   models/spicker.ayzw                the sphase `wave` S/P picker
-  models/bandpass.ayzw               butter(4, [1, 45] Hz) as b, a
-  models/stations.csv                code, lat, lon for the demo stations
+  models/bandpass.ayzw               butter(4, [1, 45] Hz) as b, a, and lfilter_zi
+  models/stations.csv                code, lat, lon, elevation of AFAD stations
   data/fixtures/dsp.ayzw             raw -> cleaned -> standardised windows (scipy)
   data/fixtures/detector.ayzw        inputs, per-seed logits, intermediates (torch)
   data/fixtures/picker.ayzw          inputs, logits, intermediates (torch)
 
-Run from the ayzek root with the archive pipeline's environment, which has
-torch, scipy and obspy:
+Run from the ayzek root in the archive_pipeline environment (torch, scipy,
+obspy). Requires data/demo/DEMI.mseed (tools/make_demo_data.py):
 
     uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_models.py
 """
@@ -120,7 +121,7 @@ def main():
     st = read(str(DEMO / "DEMI.mseed"))
     st.merge(method=1, fill_value=None)
     st = st.split()
-    # Noise, the P onset of the 2025-11-10 18:20:51 M4.9 at a few offsets, and the S coda.
+    # Windows: noise, the P onset of the 2025-11-10 18:20:51 M4.9 at several offsets, S coda.
     starts = ["2025-11-10T18:10:00", "2025-11-10T18:20:54", "2025-11-10T18:20:56",
               "2025-11-10T18:20:58", "2025-11-10T18:21:05", "2025-11-10T18:28:00"]
     raw, pos = [], []
@@ -147,7 +148,7 @@ def main():
         out[f"logit_s{seed}"] = logit.numpy()
         probs.append(torch.sigmoid(logit))
     out["prob"] = torch.stack(probs).mean(0).numpy()
-    # Intermediates of the first seed, for localising a mismatch.
+    # Intermediate activations of the first seed, for layer-by-layer comparison.
     m = dets[0][1]
     h = m.b1.conv(x.transpose(1, 2)).transpose(1, 2)
     out["conv"] = h.numpy()

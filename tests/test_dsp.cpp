@@ -1,4 +1,4 @@
-// Window conditioning against scipy, on real DEMI windows.
+// Compares dsp::Conditioner with scipy's preprocessing on DEMI windows.
 
 #include "dsp.hpp"
 #include "fixture.hpp"
@@ -28,9 +28,9 @@ int main(int argc, char** argv) {
         worst_clean.rel = std::max(worst_clean.rel, dc.rel);
         worst_std.abs = std::max(worst_std.abs, ds.abs);
     }
-    // An 8th-order IIR in transfer-function form amplifies rounding, so double
-    // agreement with scipy is ~1e-8 relative, not machine epsilon. What the
-    // model sees, the float32 standardised window, agrees to float rounding.
+    // Tolerances: the 8th-order filter in (b, a) form amplifies rounding error
+    // to ~1e-8 relative in double; the float32 standardised output is compared
+    // at float precision.
     CHECK(worst_clean.rel < 1e-7);
     CHECK(worst_std.abs < 1e-5);
     std::println("dsp matches scipy: cleaned {:.1e} relative, standardised {:.1e} absolute", worst_clean.rel, worst_std.abs);

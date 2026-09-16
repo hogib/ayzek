@@ -82,7 +82,7 @@ NoiseBaseline::NoiseBaseline(const dsp::Bandpass& bp, std::size_t keep_windows, 
 
 void NoiseBaseline::add(std::span<const double> raw) {
     thread_local std::vector<float> unused(kMagWindow * 3);
-    cond_.condition(raw, 3, unused);                  // for `cleaned`, as clean_and_filter_1d on each trace
+    cond_.condition(raw, 3, unused);                  // only `cleaned` is used (clean_and_filter_1d per trace)
 
     Entry e;
     std::vector<double> x(kMagWindow), p(kMagBins * kMagFrames);
@@ -91,7 +91,7 @@ void NoiseBaseline::add(std::span<const double> raw) {
         e.sum[c] = simd::sum(x.data(), x.size());
         e.sumsq[c] = simd::dot(x.data(), x.data(), x.size());
         spec_.power(x, p);
-        dsp::Spectrogram::db(p);                      // one trace at a time, as the profile builder does
+        dsp::Spectrogram::db(p);                      // top_db per component, as in the profile builder
         e.frames[c].resize(kMagFrames * kMagBins);
         for (std::size_t f = 0; f < kMagFrames; ++f)
             for (std::size_t k = 0; k < kMagBins; ++k) e.frames[c][f * kMagBins + k] = p[k * kMagFrames + f];
@@ -135,7 +135,7 @@ float MagnitudeEstimator::estimate(std::span<const double> raw, const StationNoi
     cond_.condition(raw, 3, scratch_);
     cleaned = cond_.cleaned;
 
-    // Waveform: the station's noise sigma, or the window's own moments without one.
+    // Waveform: station noise mean and sigma if available, else the window's own.
     for (std::size_t c = 0; c < 3; ++c) {
         for (std::size_t t = 0; t < kMagWindow; ++t) channel_[t] = cleaned[t * 3 + c];
         double mu = 0, sd = 0;
@@ -150,7 +150,7 @@ float MagnitudeEstimator::estimate(std::span<const double> raw, const StationNoi
         for (std::size_t t = 0; t < kMagWindow; ++t) seq[t * 3 + c] = static_cast<float>((channel_[t] - mu) / sd);
     }
 
-    // Spectrogram of all three components together, so one top_db floor spans them.
+    // Spectrogram of the three components; one top_db floor over all of them.
     const std::size_t plane = kMagBins * kMagFrames;
     for (std::size_t c = 0; c < 3; ++c) {
         for (std::size_t t = 0; t < kMagWindow; ++t) channel_[t] = cleaned[t * 3 + c];

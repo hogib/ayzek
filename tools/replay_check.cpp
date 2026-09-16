@@ -1,22 +1,21 @@
-// Replay an archive chunk through the reorderers exactly as its records are
-// stored, and check what comes out.
+// Feeds an archive file through Reorderer and evaluates the output.
 //
 //   replay_check FILE.mseed
 //
-// Records are fed per channel in *file order*, which preserves the archive's
-// shuffle -- HHE and HHN step backwards in time hundreds of times, HHZ never.
-// For each channel and each max_lateness setting it reports:
+// Records are offered per channel in file order, which contains the archive's
+// out-of-order records. For each channel and max_lateness setting it reports:
 //
-//   exact     emitted samples equal the time-sorted records, sample for sample,
-//             and every declared gap coincides with a genuine hole
-//   stale     records given up on because they were later than the setting
-//   delay     how far the stream had to advance past a record's arrival before
-//             it could be released -- the latency the buffer adds
+//   exact     whether the output equals the time-sorted records sample for
+//             sample, with gaps exactly at the holes in the data
+//   stale     records discarded as too late
+//   delay     how far the stream advanced between a record's arrival and its
+//             emission, i.e. the latency added by waiting
+//   gaps      the length distribution of the gaps in the output
 //
-// Delay is measured on a stream clock (newest sample position seen on that
-// channel), since the archive carries no arrival times. It is a model of
-// arrival, not a measurement of it: exactly as good as the assumption that file
-// order reflects the order records were received.
+// The archive has no arrival times. Arrival is modelled on a stream clock (the
+// newest sample position seen on the channel), assuming file order is arrival
+// order. A final table estimates detector windows lost when horizontal gaps up
+// to a given length are bridged.
 
 #include "mseed.hpp"
 #include "reorder.hpp"
@@ -46,7 +45,7 @@ struct Holes {
     std::uint64_t samples = 0;
 };
 
-// The genuine holes between records already sorted by position.
+// Holes between records sorted by position.
 Holes reference_holes(const std::vector<const Rec*>& sorted) {
     Holes h;
     std::uint64_t end = sorted.front()->pos;
@@ -67,13 +66,10 @@ double pct(std::vector<std::uint64_t>& v, double q) {
 
 using Gaps = std::vector<std::pair<std::uint64_t, std::uint64_t>>;
 
-// What bridging short horizontal gaps would buy the three-component detector.
-//
-// A window is lost if it overlaps a skipped gap on *any* channel, so blocked
-// window starts are merged across channels: bridging a short hole on HHE buys
-// nothing while HHN has a long one at the same moment. Z gaps are never bridged
-// -- P arrives on Z, and fabricating the channel the trigger depends on is a
-// different decision from fabricating a horizontal.
+// Fraction of detector window start positions lost to gaps when horizontal gaps
+// up to a given length are bridged and longer ones are not. A window is lost if
+// it overlaps an unbridged gap on any channel, so blocked intervals are merged
+// across channels. Vertical-component gaps are never bridged.
 void fill_policy(const std::map<std::string, Gaps>& gaps, std::uint64_t span_begin, std::uint64_t span_end) {
     constexpr std::uint64_t kWindow = 600;           // the detector's 6 s at 100 Hz
     const double starts = static_cast<double>(span_end - span_begin - kWindow);
@@ -107,14 +103,8 @@ void fill_policy(const std::map<std::string, Gaps>& gaps, std::uint64_t span_beg
 }
 
 Gaps run_channel(const std::string& cha, const std::vector<Rec>& recs, std::uint64_t lateness) {
-    // Sorted once, and used both for the genuine holes and to look up the expected
-    // value at each position -- an exact comparison without holding a second
-    // 180M-sample copy of the channel.
-    //
-    // An earlier version copied and sorted twice. Besides the waste, GCC 16 at
-    // -O3 raised -Wfree-nonheap-object on the second copy's destructor: after
-    // inlining std::sort it lost track of the buffer's start. Sorting once
-    // removed both problems without suppressing the warning.
+    // Record pointers sorted by position, used for the reference holes and to
+    // look up the expected value of every emitted sample without copying data.
     std::vector<const Rec*> sorted;
     sorted.reserve(recs.size());
     for (const Rec& r : recs) sorted.push_back(&r);
@@ -162,8 +152,7 @@ Gaps run_channel(const std::string& cha, const std::vector<Rec>& recs, std::uint
     }
     r.flush(sink, gap);
 
-    // Lengths of the gaps the real-time path would see, genuine or not -- what
-    // decides whether short ones could be bridged instead of skipped.
+    // Lengths of all gaps in the output, whether caused by missing or late data.
     std::vector<std::uint64_t> gap_len;
     for (auto [a, b] : gaps) gap_len.push_back(b - a);
     const auto under = [&](std::uint64_t n) { return std::ranges::count_if(gap_len, [n](auto g) { return g <= n; }); };
@@ -209,7 +198,7 @@ int main(int argc, char** argv) {
     }
     std::println("decoded; {} records off the 10 ms grid\n", misaligned);
 
-    std::map<std::string, Gaps> realtime;            // what each channel shows at max_lateness = 0
+    std::map<std::string, Gaps> realtime;            // gaps per channel at max_lateness = 0
     std::uint64_t span_begin = ~std::uint64_t{0}, span_end = 0;
     for (const auto& [cha, recs] : by_channel) {
         for (const Rec& rec : recs) {

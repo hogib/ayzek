@@ -2,16 +2,13 @@
 
 // miniSEED 2 record parsing and Steim2 decompression.
 //
-// Scope is deliberately narrow: exactly what the TDVMS archive contains, and an
-// explicit error for anything else. A scan of all 1,484,074 records in a
-// 21-day DEMI chunk found every one identical in structure -- quality D, 512
-// bytes, blockette 1000 at offset 48 and 1001 at 56, data at 64, Steim2,
-// big-endian, no time correction. A lenient decoder that guessed at the
-// unusual cases would convert a malformed record into plausible wrong samples,
-// which is the one failure a detector cannot recover from.
+// Supported: 512-byte records, big-endian, blockette 1000 with encoding 11
+// (Steim2), optional blockette 1001 for microseconds. This is the structure of
+// every record in the TDVMS archive (checked on 1,484,074 DEMI records). Other
+// layouts return an error instead of being decoded approximately.
 //
-// Steim2 is lossless integer compression, so the acceptance test is exact:
-// every decoded sample must equal what ObsPy (libmseed) produces, bit for bit.
+// Steim2 is lossless, so the decoder is validated by exact comparison with
+// ObsPy/libmseed (tools/validate_mseed.py).
 
 #include <array>
 #include <bit>
@@ -58,18 +55,9 @@ enum class Error : std::uint8_t {
     return "unknown";
 }
 
-// ---------------------------------------------------------------------------
-// Trap 1: reading integers out of a byte buffer.
-//
-// In C you might cast `(uint32_t*)buf` or pun through a union. In C++ both are
-// undefined behaviour (strict aliasing; C++ does not bless union punning the
-// way C does). `std::memcpy` into a local is the sanctioned route, and
-// compilers turn it into a single load -- it costs nothing. Rust's
-// `u32::from_be_bytes` is the same idea with nicer spelling.
-//
-// `std::byteswap` is new in C++23. The comparison against `std::endian::native`
-// is resolved at compile time, so on a little-endian machine this is a load and
-// a bswap, and on a big-endian one just the load.
+// Reads a big-endian integer at byte offset `off`. `memcpy` avoids the
+// strict-aliasing violation a pointer cast would cause; the byte swap is
+// skipped on big-endian hosts.
 template <std::integral T>
 [[nodiscard]] inline T read_be(std::span<const std::byte> s, std::size_t off) noexcept {
     T v;
@@ -93,8 +81,8 @@ struct Header {
     [[nodiscard]] std::string_view loc() const noexcept { return trimmed(location); }
     [[nodiscard]] std::string_view cha() const noexcept { return trimmed(channel); }
 
-    // SEED pads identifiers with spaces; the arrays carry one extra byte so a
-    // full-width field still has room, and trimming stops at either.
+    // SEED pads identifiers with spaces. Each array has one byte more than the
+    // field, and trimming stops at the first space or NUL.
     template <std::size_t N>
     [[nodiscard]] static std::string_view trimmed(const std::array<char, N>& a) noexcept {
         std::size_t n = 0;
@@ -103,11 +91,9 @@ struct Header {
     }
 };
 
-// SEED BTIME plus blockette 1001's microseconds -> epoch nanoseconds.
-//
-// std::chrono does the calendar arithmetic, including day-of-year, so there is
-// no hand-written days-from-civil to get wrong. A leap second (sec == 60) rolls
-// into the next minute, which matches ObsPy.
+// SEED BTIME (year, day of year, time, 1e-4 s fraction) plus blockette 1001
+// microseconds, as nanoseconds since the Unix epoch. A leap second (sec == 60)
+// carries into the next minute, as ObsPy does.
 [[nodiscard]] inline std::expected<std::int64_t, Error>
 btime_to_ns(std::uint16_t year, std::uint16_t doy, std::uint8_t hour, std::uint8_t min,
             std::uint8_t sec, std::uint16_t fract_1e4, std::int8_t micro) noexcept {
@@ -135,9 +121,9 @@ btime_to_ns(std::uint16_t year, std::uint16_t doy, std::uint8_t hour, std::uint8
 parse_header(std::span<const std::byte> rec) noexcept {
     if (rec.size() != kRecordLength) return std::unexpected(Error::BadRecordLength);
 
-    // Byte order is not flagged in the fixed header itself; the convention is
-    // to read the year and see whether it is sane. This archive is big-endian
-    // throughout, and anything else is refused rather than guessed at.
+    // The fixed header has no byte-order flag. The year and day of year are read
+    // big-endian and checked for plausible values; failure means another byte
+    // order, which is not supported.
     const auto year = read_be<std::uint16_t>(rec, 20);
     const auto doy = read_be<std::uint16_t>(rec, 22);
     if (year < 1900 || year > 2500 || doy < 1 || doy > 366) {
@@ -160,9 +146,8 @@ parse_header(std::span<const std::byte> rec) noexcept {
 
     bool have_1000 = false;
     std::int8_t micro = 0;
-    // Walk the blockette chain. Each carries the offset of the next, 0 ends it.
-    // The bound on iterations stops a corrupt self-referencing chain from
-    // looping forever.
+    // Blockette chain: each blockette stores the offset of the next, 0 ends the
+    // chain. The iteration limit guards against a corrupt, cyclic chain.
     std::uint16_t off = first_blk;
     for (int guard = 0; off != 0 && guard < 16; ++guard) {
         if (off + 8u > kRecordLength) return std::unexpected(Error::MissingBlockette1000);
@@ -196,8 +181,8 @@ parse_header(std::span<const std::byte> rec) noexcept {
                          read_be<std::uint16_t>(rec, 28), micro);
     if (!t) return std::unexpected(t.error());
     h.start_ns = *t;
-    // Activity flag 0x02 means the time correction is already folded into the
-    // start time. Otherwise it still has to be applied.
+    // Activity flag bit 0x02 set: the time correction is already included in the
+    // start time. Otherwise it is added here.
     if ((activity & 0x02) == 0) h.start_ns += std::int64_t{correction} * 100'000;
 
     return h;
@@ -206,12 +191,11 @@ parse_header(std::span<const std::byte> rec) noexcept {
 // ---------------------------------------------------------------------------
 // Steim2.
 //
-// Data is a run of 64-byte frames. Each frame is one control word holding 16
-// two-bit codes -- code i describes word i -- followed by 15 data words. The
-// first frame's words 1 and 2 are special: X0, the first sample, and Xn, the
-// last, stored so the decoder can check itself.
+// The data section is a sequence of 64-byte frames. A frame is one control word
+// with 16 two-bit codes (code i describes word i) followed by 15 data words. In
+// the first frame, words 1 and 2 hold X0 (first sample) and Xn (last sample).
 //
-// Everything else is first differences, packed at a width chosen per word:
+// The remaining words hold first differences, packed as follows:
 //
 //   code 01              four  8-bit
 //   code 10  dnib 01     one  30-bit
@@ -221,25 +205,20 @@ parse_header(std::span<const std::byte> rec) noexcept {
 //            dnib 01     six   5-bit
 //            dnib 10     seven 4-bit
 //
-// with dnib the word's top two bits and the values right-aligned below them.
+// where dnib is the word's top two bits and the values are right-aligned below.
 
 namespace detail {
 
-// Trap 2: sign extension from an arbitrary bit width.
-//
-// `(v ^ m) - m` with m the sign bit is branchless and exact. The subtraction
-// is done in *unsigned* arithmetic and only then converted, because signed
-// overflow in C++ is undefined behaviour -- not wrapping, as in Rust release
-// builds, and not a panic, as in Rust debug builds. Undefined. The conversion
-// from unsigned to signed, by contrast, has been defined as two's complement
-// since C++20.
+// Sign-extends the low `bits` bits of `v`: (v ^ m) - m, m being the sign bit.
+// The arithmetic is unsigned, so it cannot overflow; the final unsigned-to-signed
+// conversion is two's complement (defined since C++20).
 [[nodiscard]] constexpr std::int32_t sign_extend(std::uint32_t v, unsigned bits) noexcept {
     const std::uint32_t m = std::uint32_t{1} << (bits - 1);
     return static_cast<std::int32_t>((v ^ m) - m);
 }
 
-// Unpack `n` values of `bits` width, most significant first, from the low
-// `n * bits` bits of `word`.
+// Extracts `n` signed values of `bits` width from the low `n * bits` bits of
+// `word`, most significant first.
 constexpr void unpack(std::uint32_t word, unsigned n, unsigned bits,
                       std::span<std::int32_t> out) noexcept {
     const std::uint32_t mask = (std::uint32_t{1} << bits) - 1;
@@ -250,11 +229,11 @@ constexpr void unpack(std::uint32_t word, unsigned n, unsigned bits,
 
 }  // namespace detail
 
-// Worst case: 7 frames, 15 words, 7 differences per word.
+// Upper bound on samples per record: 7 frames x 15 words x 7 differences.
 inline constexpr std::size_t kMaxDiffs = 7 * 15 * 7;
 
-// Decode `h.num_samples` samples from `rec` into `out`, which must hold that
-// many. No allocation: differences go to a fixed scratch array on the stack.
+// Decodes `h.num_samples` samples from `rec` into `out`, which must hold that
+// many. Returns the sample count, or an error.
 [[nodiscard]] inline std::expected<std::size_t, Error>
 decode_steim2(std::span<const std::byte> rec, const Header& h,
               std::span<std::int32_t> out) noexcept {
@@ -307,12 +286,10 @@ decode_steim2(std::span<const std::byte> rec, const Header& h,
     }
     if (nd < n) return std::unexpected(Error::TooManySamples);
 
-    // Integrate. The first difference bridges from the *previous* record's last
-    // sample, so it is discarded here and X0 stands in for sample 0.
-    //
-    // Trap 3: accumulate in uint32. For valid data the running sum never
-    // overflows, but a decoder must not have undefined behaviour on malformed
-    // input, and signed overflow is exactly that.
+    // Integrate the differences. The first difference is relative to the
+    // previous record's last sample, so it is skipped and X0 is sample 0. The
+    // running sum is unsigned so that malformed input cannot cause signed
+    // overflow.
     std::uint32_t acc = static_cast<std::uint32_t>(x0);
     out[0] = x0;
     for (std::size_t i = 1; i < n; ++i) {
@@ -320,8 +297,7 @@ decode_steim2(std::span<const std::byte> rec, const Header& h,
         out[i] = static_cast<std::int32_t>(acc);
     }
 
-    // Trap 4, and the reason Xn exists: without this check a mis-decoded frame
-    // produces a smooth, plausible, entirely wrong waveform.
+    // Integrity check: the last decoded sample must equal the stored Xn.
     if (out[n - 1] != xn) return std::unexpected(Error::IntegrityMismatch);
     return n;
 }

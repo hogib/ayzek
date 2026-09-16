@@ -21,8 +21,8 @@ Bandpass Bandpass::load(const Weights& w) {
 }
 
 void detrend_linear(std::span<double> x) noexcept {
-    // scipy fits c0 * t + c1 with t = (i + 1) / N by least squares. The fitted
-    // line is independent of how t is scaled, so the closed form suffices.
+    // scipy fits c0 * t + c1, t = (i + 1) / N, by least squares. The fitted line
+    // does not depend on the scaling of t, so the closed-form regression is used.
     const std::size_t n = x.size();
     if (n < 2) return;
     const double N = static_cast<double>(n);

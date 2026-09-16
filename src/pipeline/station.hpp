@@ -1,10 +1,11 @@
 #pragma once
 
-// A station's live state: three component rings on one absolute sample clock.
+// Per-station state shared by its ingest and processor threads: one ring per
+// component, indexed by absolute sample position.
 //
-// Ring index i of a component holds absolute position `base + i`. Gaps are
-// written as kGap samples rather than skipped, so that mapping stays exact and
-// a window over a gap is recognisable by content (DESIGN.md, "gaps").
+// Ring index i of a component holds absolute position `base + i`. Missing data
+// is written as kGap samples, so this mapping holds across gaps and a window
+// containing a gap can be recognised from its samples.
 
 #include "common.hpp"
 #include "ring.hpp"

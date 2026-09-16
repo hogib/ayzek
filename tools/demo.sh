@@ -1,12 +1,12 @@
 #!/bin/sh
-# The ayzek demo: the 2025-11-10 Sındırgı M4.9 and its aftershocks, replayed
-# from three AFAD stations at 10x real time, scored against the AFAD catalogue.
+# Demo: replays the 2025-11-10 Sındırgı M4.9 and aftershocks from AFAD stations
+# and compares the results with the AFAD catalogue.
 #
 #   tools/demo.sh                 3 stations, 10x, from 18:20
 #   tools/demo.sh all             all 7 stations, full speed, whole 30 minutes
 #   BUILD=build-pi tools/demo.sh  the aarch64 binary (under qemu on x86)
 #
-# First run needs the data and weights; see docs/IMPLEMENTATION.md.
+# Requires data/demo and models/; see docs/IMPLEMENTATION.md.
 set -eu
 cd "$(dirname "$0")/.."
 BUILD=${BUILD:-build-release}

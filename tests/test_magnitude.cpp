@@ -1,5 +1,5 @@
-// Magnitude chain against seismic_cli's encoder and the PyTorch regressor:
-// noise baseline, spectrogram, both normalisations, and the model itself.
+// Compares the magnitude chain with seismic_cli and PyTorch: noise baseline,
+// spectrogram, input normalisation with and without a baseline, and the model.
 
 #include "fixture.hpp"
 #include "magnitude.hpp"
@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
     }
     std::println("noise baseline: sigma rel err {:.1e}, mu abs err {:.1e}, profile max abs err {:.1e} dB", sigma.rel, mu.abs, prof.abs);
     CHECK(sigma.rel < 1e-7 && mu.abs < 1e-6);
-    // torchaudio runs the STFT in float32 and this runs it in double; 1e-3 dB is
-    // float32 rounding seen through a logarithm, against values of tens of dB.
+    // torchaudio computes the STFT in float32 and this code in double; the
+    // resulting differences are about 1e-3 dB.
     CHECK(prof.abs < 1e-2);
 
     // --- inputs for two real windows, with and without a baseline ------------------------

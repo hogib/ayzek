@@ -1,5 +1,5 @@
-// ayzek: real-time earthquake detection, picking and location on replayed or
-// live miniSEED, one station per file.
+// ayzek: earthquake detection, phase picking, magnitude estimation and location
+// on miniSEED data replayed in real time, one file per station.
 //
 //   ayzek [options] STATION.mseed...
 //
@@ -66,7 +66,7 @@ std::map<std::string, StationInfo> load_stations(const std::string& path) {
         std::getline(ss, code, ',');
         std::getline(ss, lat, ',');
         std::getline(ss, lon, ',');
-        // The AFAD table repeats some codes; the first entry wins.
+        // Some station codes occur more than once in the AFAD table; the first is used.
         if (!code.empty() && !out.contains(code)) out[code] = {std::stod(lat), std::stod(lon)};
     }
     return out;
@@ -163,13 +163,13 @@ int main(int argc, char** argv) try {
         stations.push_back(std::move(st));
     }
 
-    const double start = pcfg.from > 0 ? pcfg.from - 70.0 : t_first;   // 70 s: a picker window of history
+    const double start = pcfg.from > 0 ? pcfg.from - 70.0 : t_first;   // 70 s covers a picker window before `from`
     Log::get().line("ayzek", "1", "{} stations, {} backend, 3-seed detector{}{}, replay {} to {} UTC at {}",
                     stations.size(), simd::kBackend, pcfg.pick ? " + picker" : "",
                     pcfg.magnitude ? std::format(" + {}-model magnitude", magnitude.size()) : "", ymd_hms(t_first), hms(t_last),
                     speed > 0 ? std::format("{:g}x", speed) : std::string("full speed"));
     if (!catalog_path.empty()) {
-        // Only events whose waves could reach the stations inside the detection span.
+        // Catalogue events whose waves can arrive within the replayed data.
         ncfg.catalog = load_afad_catalog(catalog_path, std::max(t_first, pcfg.from) - 30, t_last - 30);
         Log::get().line("ayzek", "1", "catalogue: {} events in the replay span", ncfg.catalog.size());
     }
@@ -188,8 +188,8 @@ int main(int argc, char** argv) try {
         threads.emplace_back([&, i] { procs[i]->run(g_stop); });
     }
 
-    // Messages are released in stream-time order: held until every station
-    // still running has promised nothing earlier is coming.
+    // Messages are held in a priority queue and processed in declared_at order,
+    // up to the minimum Progress time over the stations still running.
     Network net(used, ncfg);
     std::map<std::string, double> watermark;
     for (auto& st : stations) watermark[st->code] = 0;

@@ -1,5 +1,5 @@
-// A reorderer that is subtly wrong emits a plausible stream with one record in
-// the wrong place, so the checks here verify every sample against its position.
+// Tests for Reorderer. Each generated sample encodes its absolute position, so
+// the checks verify both contiguity and the value of every emitted sample.
 
 #include "reorder.hpp"
 
@@ -14,8 +14,7 @@
 
 using namespace ayzek;
 
-// assert() vanishes under NDEBUG; a test that stops checking in release builds
-// is not a test.
+// Aborting check that, unlike assert(), stays active in release builds.
 #define CHECK(cond)                                                                      \
     do {                                                                                 \
         if (!(cond)) {                                                                   \
@@ -26,9 +25,9 @@ using namespace ayzek;
 
 namespace {
 
-constexpr std::size_t kMaxRec = 735;          // the Steim2 decoder's per-record bound
+constexpr std::size_t kMaxRec = 735;          // mseed::kMaxDiffs
 
-// Every sample encodes its own position, so a misplaced one cannot pass.
+// Sample value derived from its position (Knuth multiplicative hash).
 std::int32_t value_at(std::uint64_t p) noexcept {
     return static_cast<std::int32_t>(static_cast<std::uint32_t>(p * 2654435761u));
 }
@@ -44,9 +43,8 @@ Record make(std::uint64_t pos, std::size_t n) {
     return r;
 }
 
-// Checks, on every call, that output is contiguous: each run or gap must begin
-// exactly where the last one ended, and every emitted sample must be the one
-// that belongs at its position.
+// Records the reorderer's output and checks that each run or gap starts where
+// the previous one ended and that every sample has the value for its position.
 struct Collector {
     static constexpr std::uint64_t kUnset = ~std::uint64_t{0};
     std::uint64_t first = kUnset, cursor = kUnset, emitted = 0;
@@ -113,8 +111,7 @@ void a_hole_never_filled_becomes_one_gap() {
     auto c = feed(r, recs);
     CHECK(c.ok);
     CHECK(c.gaps.size() == 1);
-    // Extra parentheses: the preprocessor splits macro arguments on commas and
-    // does not treat <> as brackets, so the comma inside pair<...> would.
+    // Extra parentheses keep the comma in pair<...> from splitting the macro argument.
     CHECK((c.gaps[0] == std::pair<std::uint64_t, std::uint64_t>(400, 600)));
     CHECK(c.emitted == 1200);
 }
@@ -127,9 +124,9 @@ void a_record_later_than_the_bound_is_stale_not_spliced() {
     Reorderer<16, kMaxRec> r(300);
     auto c = feed(r, recs);
     CHECK(c.ok);
-    CHECK(c.gaps.size() == 1);                                  // given up on...
-    CHECK(r.stats().stale == 1);                                // ...and counted when it finally came
-    CHECK(c.emitted == 1200);                                   // not spliced back in
+    CHECK(c.gaps.size() == 1);                                  // hole declared a gap
+    CHECK(r.stats().stale == 1);                                // late record counted as stale
+    CHECK(c.emitted == 1200);                                   // and not emitted
 }
 
 void duplicates_are_dropped_and_counted() {
@@ -158,18 +155,18 @@ void vertical_policy_never_waits() {
     auto a = make(0, 200), b = make(200, 200), d = make(600, 200), late = make(400, 200);
     r.offer(a.pos, a.data, sink, gap);
     r.offer(b.pos, b.data, sink, gap);
-    CHECK(c.emitted == 400);                                    // no holding back
+    CHECK(c.emitted == 400);                                    // in-order records emitted at once
     r.offer(d.pos, d.data, sink, gap);
-    CHECK(c.gaps.size() == 1 && c.emitted == 600);              // hole is a gap at once
+    CHECK(c.gaps.size() == 1 && c.emitted == 600);              // hole declared a gap immediately
     r.offer(late.pos, late.data, sink, gap);
-    CHECK(r.stats().stale == 1 && c.emitted == 600);            // late Z is an anomaly
+    CHECK(r.stats().stale == 1 && c.emitted == 600);            // late record discarded
     CHECK(r.held() == 0 && c.ok);
 }
 
 void a_full_pool_forces_the_oldest_hole() {
     auto recs = contiguous(0, {100, 100, 100, 100, 100, 100, 100, 100, 100});
     recs.erase(recs.begin() + 1);                               // hole at [100, 200)
-    Reorderer<4, kMaxRec> r(100'000);                           // lateness alone never gives up
+    Reorderer<4, kMaxRec> r(100'000);                           // lateness limit never reached
     auto c = feed(r, recs);
     CHECK(c.ok);
     CHECK(c.gaps.size() == 1);
@@ -179,7 +176,7 @@ void a_full_pool_forces_the_oldest_hole() {
 
 void a_late_opening_record_is_not_lost() {
     auto recs = contiguous(5000, {200, 200, 200, 200, 200, 200});
-    std::swap(recs[0], recs[1]);                                // the true first arrives second
+    std::swap(recs[0], recs[1]);                                // first record arrives second
     Reorderer<16, kMaxRec> r(500);
     auto c = feed(r, recs);
     CHECK(c.ok && c.first == 5000 && c.emitted == 1200 && c.gaps.empty());
@@ -187,10 +184,10 @@ void a_late_opening_record_is_not_lost() {
 
 // --- property test -----------------------------------------------------------
 
-// Arrival order is a sort on (end + jitter), jitter uniform in [0, J]. A record
-// can then only follow records whose end is at most J beyond its own, so its
-// lateness is bounded by J *by construction*, and a reorderer given that bound
-// must reproduce the stream exactly.
+// Randomised test. Arrival order is the sort order of (record end + jitter),
+// jitter uniform in [0, J]. Each record's lateness is then at most J, so a
+// reorderer with max_lateness J must reproduce the stream exactly, with gaps
+// only where records were dropped.
 void shuffled_streams_come_back_exactly(bool with_drops) {
     std::mt19937_64 rng(with_drops ? 0xA12EC : 0x5EED);
     const int trials = 2000;
@@ -206,8 +203,8 @@ void shuffled_streams_come_back_exactly(bool with_drops) {
         const std::size_t nrec = count(rng);
         for (std::size_t i = 0; i < nrec; ++i) { stream.push_back(make(p, len(rng))); p += stream.back().data.size(); }
 
-        // Drop a random interior subset. First and last are kept, so every
-        // dropped run lies strictly inside the stream and must become a gap.
+        // Drop random interior records; the first and last are kept, so each
+        // dropped run lies inside the stream and must be reported as a gap.
         std::vector<bool> drop(nrec, false);
         if (with_drops)
             for (std::size_t i = 1; i + 1 < nrec; ++i) drop[i] = (rng() % 5 == 0);

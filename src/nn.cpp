@@ -9,8 +9,7 @@
 namespace ayzek::nn {
 
 void gelu(float* x, std::size_t n) noexcept {
-    // erf has no NEON form. It is also a small share of the time: one call per
-    // activation against a dot product per weight row.
+    // Scalar: there is no NEON erf.
     for (std::size_t i = 0; i < n; ++i) x[i] = 0.5f * x[i] * (1.0f + std::erf(x[i] * 0.70710678118654752f));
 }
 
@@ -47,7 +46,7 @@ Conv1d::Conv1d(const Weights& W, const std::string& prefix, std::size_t stride_,
 void Conv1d::forward(const float* x, std::size_t L, float* y) const {
     const std::size_t Lo = out_len(L), ck = cin * k;
     for (std::size_t o = 0; o < Lo; ++o) {
-        // Gather the receptive field channel by channel, zero outside [0, L).
+        // Copy the receptive field into `col`, with zeros outside [0, L).
         const std::ptrdiff_t start = static_cast<std::ptrdiff_t>(o * stride) - static_cast<std::ptrdiff_t>(pad);
         const bool interior = start >= 0 && start + static_cast<std::ptrdiff_t>(k) <= static_cast<std::ptrdiff_t>(L);
         for (std::size_t c = 0; c < cin; ++c) {
@@ -115,8 +114,7 @@ BatchNorm1d::BatchNorm1d(const Weights& W, const std::string& prefix, float eps)
     scale.resize(g.size());
     shift.resize(g.size());
     for (std::size_t c = 0; c < g.size(); ++c) {
-        // Folded in double so the constant matches PyTorch's float32 result as
-        // closely as float32 arithmetic allows.
+        // Computed in double to limit rounding in the folded constants.
         const double s = g[c] / std::sqrt(static_cast<double>(var[c]) + eps);
         scale[c] = static_cast<float>(s);
         shift[c] = static_cast<float>(bb[c] - mean[c] * s);
