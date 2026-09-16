@@ -11,3 +11,8 @@ foreach t : ['test_dsp', 'test_models']
   exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
   test(t, exe, args: [meson.project_source_root()], timeout: 300)
 endforeach
+
+# End to end on real data: replay three stations, require the M4.9 to be
+# declared and located within 10 km. Skips without the demo data.
+test('demo_m49', find_program('demo_check.sh'),
+  args: [ayzek_exe, meson.project_source_root()], timeout: 600, is_parallel: false)

@@ -18,8 +18,11 @@ vectorises the whole of inference.
   which covers every 64-bit Raspberry Pi. It is written explicitly with
   intrinsics, so the Pi's speed does not depend on the compiler's
   auto-vectoriser.
-- **`scalar`** is plain loops, written so GCC and Clang auto-vectorise them at
-  `-O3` on x86. This is the development build.
+- **`scalar`** is plain loops for x86 development builds. `dot` keeps four
+  independent accumulators. A single `s += a[i] * b[i]` cannot be vectorised
+  without `-ffast-math`, because that would reorder a float sum; four separate
+  sums have no order to preserve, so GCC is free to vectorise them. That one
+  change took a detector window from **15 ms to 5.2 ms** (three models).
 
 `simd::kBackend` names the active backend at runtime. `test_models` prints it.
 

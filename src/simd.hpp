@@ -40,7 +40,17 @@ inline float dot(const float* a, const float* b, std::size_t n) noexcept {
     for (; i + 4 <= n; i += 4) s0 = vmlaq_f32(s0, vld1q_f32(a + i), vld1q_f32(b + i));
     float s = vaddvq_f32(vaddq_f32(vaddq_f32(s0, s1), vaddq_f32(s2, s3)));
 #else
-    float s = 0.0f;
+    // Four independent accumulators. A single `s += a[i] * b[i]` cannot be
+    // vectorised without -ffast-math, because that would reorder a float sum;
+    // separate sums have no order to preserve, so the compiler is free to.
+    float s0 = 0, s1 = 0, s2 = 0, s3 = 0;
+    for (; i + 4 <= n; i += 4) {
+        s0 += a[i] * b[i];
+        s1 += a[i + 1] * b[i + 1];
+        s2 += a[i + 2] * b[i + 2];
+        s3 += a[i + 3] * b[i + 3];
+    }
+    float s = (s0 + s1) + (s2 + s3);
 #endif
     for (; i < n; ++i) s += a[i] * b[i];
     return s;

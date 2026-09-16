@@ -18,5 +18,6 @@ threads = dependency('threads')
 
 inc = include_directories('src')
 subdir('src')
+subdir('app')
 subdir('tests')
 subdir('tools')
