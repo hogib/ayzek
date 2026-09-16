@@ -1,0 +1,3 @@
+#!/bin/sh
+# zig as an aarch64 cross toolchain, fetched and cached by uv. See docs/impl/06-raspberry-pi.md.
+exec uv run --quiet --with ziglang python -m ziglang ar  "$@"

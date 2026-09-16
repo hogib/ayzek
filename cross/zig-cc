@@ -1,0 +1,9 @@
+#!/bin/sh
+# zig as an aarch64 cross toolchain, fetched and cached by uv. See docs/impl/06-raspberry-pi.md.
+# Meson adds -Wl,--fatal-warnings (werror) and -Wl,-O1, which zig rejects or warns on;
+# compile warnings still fail the build.
+for a in "$@"; do
+    shift
+    case "$a" in -Wl,--fatal-warnings|-Wl,-O1) ;; *) set -- "$@" "$a" ;; esac
+done
+exec uv run --quiet --with ziglang python -m ziglang cc -target aarch64-linux-musl "$@"

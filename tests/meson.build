@@ -4,3 +4,10 @@ foreach t : ['test_ring', 'test_steim', 'test_reorder']
   exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
   test(t, exe)
 endforeach
+
+# Compared against PyTorch and scipy outputs from tools/export_models.py. They
+# skip (exit 77) until those files exist.
+foreach t : ['test_dsp', 'test_models']
+  exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
+  test(t, exe, args: [meson.project_source_root()], timeout: 300)
+endforeach

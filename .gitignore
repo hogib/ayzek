@@ -3,3 +3,5 @@ subprojects/*/
 !subprojects/*.wrap
 compile_commands.json
 .cache/
+data/
+models/

@@ -1,10 +1,20 @@
 // A ring that is subtly wrong drops samples silently, so these are the point.
 #include "ring.hpp"
 
-#include <cassert>
 #include <print>
 #include <thread>
 #include <vector>
+#include <cstdlib>
+
+// CHECK() vanishes under NDEBUG; a test that stops checking in release builds
+// is not a test.
+#define CHECK(cond)                                                                      \
+    do {                                                                                 \
+        if (!(cond)) {                                                                   \
+            std::println(stderr, "CHECK failed: {}  ({}:{})", #cond, __FILE__, __LINE__); \
+            std::abort();                                                                \
+        }                                                                                \
+    } while (0)
 
 using namespace ayzek;
 
@@ -15,21 +25,21 @@ Sample mk(int i) { return {float(i), float(i) + 0.5f, float(i) + 0.25f}; }
 void basic_append_and_view() {
     SpscRing<Sample, 1024> r;
     for (int i = 0; i < 100; ++i) r.push(mk(i));
-    assert(r.written() == 100);
+    CHECK(r.written() == 100);
 
     auto v = r.view(10, 20);
-    assert(v.has_value());
-    assert(v->size() == 20);
-    assert((*v)[0].z == 10.0f);
-    assert((*v)[19].z == 29.0f);
+    CHECK(v.has_value());
+    CHECK(v->size() == 20);
+    CHECK((*v)[0].z == 10.0f);
+    CHECK((*v)[19].z == 29.0f);
 }
 
 void reads_past_the_end_are_refused() {
     SpscRing<Sample, 1024> r;
     for (int i = 0; i < 10; ++i) r.push(mk(i));
     auto v = r.view(5, 20);                       // only 10 written
-    assert(!v.has_value());
-    assert(v.error() == RingError::NotYetWritten);
+    CHECK(!v.has_value());
+    CHECK(v.error() == RingError::NotYetWritten);
 }
 
 void writer_drops_rather_than_overwriting() {
@@ -37,19 +47,19 @@ void writer_drops_rather_than_overwriting() {
     // Floor at 0 means the reader still wants everything, so once 64 samples
     // are in, the writer must refuse rather than overwrite.
     for (int i = 0; i < 200; ++i) r.push(mk(i));
-    assert(r.written() == 64);
-    assert(r.dropped() == 136);
+    CHECK(r.written() == 64);
+    CHECK(r.dropped() == 136);
 
     // Releasing the floor lets the writer proceed again.
     r.set_floor(64);
-    assert(r.push(mk(1000)));
-    assert(r.written() == 65);
+    CHECK(r.push(mk(1000)));
+    CHECK(r.written() == 65);
 
     // And the released range is now refused to the reader, as it may have
     // been reclaimed.
     auto gone = r.view(0, 8);
-    assert(!gone.has_value());
-    assert(gone.error() == RingError::Expired);
+    CHECK(!gone.has_value());
+    CHECK(gone.error() == RingError::Expired);
 }
 
 void copy_out_crosses_the_wrap_seam() {
@@ -63,19 +73,19 @@ void copy_out_crosses_the_wrap_seam() {
     // Position 60 sits at storage index 60, so 60..68 runs off the physical
     // end of the array. A single span cannot describe two disjoint pieces.
     auto v = r.view(60, 8);
-    assert(!v.has_value());
-    assert(v.error() == RingError::Wrapped);
+    CHECK(!v.has_value());
+    CHECK(v.error() == RingError::Wrapped);
 
     // copy_out stitches the two pieces together.
     std::array<Sample, 8> dst{};
     auto c = r.copy_out(60, dst);
-    assert(c.has_value());
-    for (int i = 0; i < 8; ++i) assert(dst[size_t(i)].z == float(60 + i));
+    CHECK(c.has_value());
+    for (int i = 0; i < 8; ++i) CHECK(dst[size_t(i)].z == float(60 + i));
 
     // A range that happens not to straddle the seam still works as a view.
     auto flat = r.view(40, 8);
-    assert(flat.has_value());
-    assert((*flat)[0].z == 40.0f);
+    CHECK(flat.has_value());
+    CHECK((*flat)[0].z == 40.0f);
 }
 
 void bulk_matches_single() {
@@ -86,11 +96,11 @@ void bulk_matches_single() {
     a.push_bulk(batch);
     for (const auto& s : batch) b.push(s);
 
-    assert(a.written() == b.written());
+    CHECK(a.written() == b.written());
     auto va = a.view(0, 300);
     auto vb = b.view(0, 300);
-    assert(va && vb);
-    for (size_t i = 0; i < 300; ++i) assert((*va)[i].z == (*vb)[i].z);
+    CHECK(va && vb);
+    for (size_t i = 0; i < 300; ++i) CHECK((*va)[i].z == (*vb)[i].z);
 }
 
 // The real check: a producer and a consumer hammering it at once. Run under
@@ -132,7 +142,7 @@ void concurrent_producer_and_consumer() {
     producer.join();
     consumer.join();
     std::println("  concurrent: {} reads, {} torn, {} dropped", reads, torn, r.dropped());
-    assert(torn == 0);
+    CHECK(torn == 0);
 }
 
 }  // namespace
