@@ -17,13 +17,19 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace ayzek::pipeline {
 
 struct ProcessorConfig {
     std::size_t step = 50;             // samples between window starts (0.5 s)
-    float threshold = 0.9f;            // trigger threshold; outputs saturate near 0.91 (label smoothing 0.1/0.9)
+    // Outputs saturate at 0.90-0.91 (label smoothing 0.1/0.9), so a single-window
+    // threshold at 0.9 depends on the third decimal. A lower threshold held for
+    // several windows, or one window at the plateau, triggers (05-pipeline.md).
+    float threshold = 0.8f;            // threshold for the persistence rule
+    std::size_t trigger_windows = 8;   // consecutive windows at or above `threshold` required to trigger (3.5 s after the first)
+    float instant_threshold = 0.9f;    // a single window at or above this triggers (> 1 disables)
     float release = 0.3f;              // trigger resets after `release_windows` windows below this
     std::size_t release_windows = 2;
     double retrigger_seconds = 15.0;   // minimum time between triggers
@@ -46,7 +52,7 @@ class Processor {
 public:
     Processor(Station& st, const std::vector<Weights>& detector, const Weights& picker,
               const std::vector<Weights>& magnitude, const dsp::Bandpass& bp, ProcessorConfig cfg, Bus& bus,
-              const std::string& scores_path);
+              const std::string& scores_path, const std::string& scores_in_path = "");
     void run(const std::atomic<bool>& stop);
     [[nodiscard]] const ProcessorStats& stats() const noexcept { return stats_; }
 
@@ -62,6 +68,7 @@ private:
     ProcessorConfig cfg_;
     Bus& bus_;
     std::ofstream scores_;
+    std::unordered_map<std::uint64_t, float> cached_;   // window start -> probability, from --scores-in
     DetectorEnsemble detector_;
     std::unique_ptr<Picker> picker_;
     std::unique_ptr<MagnitudeEstimator> magnitude_;
@@ -74,6 +81,8 @@ private:
     std::uint64_t next_ = kUnset;
     bool active_ = false;
     std::size_t below_ = 0;
+    std::size_t above_ = 0;                  // consecutive windows at or above the threshold
+    std::uint64_t run_start_ = 0;            // start of the first of those windows
     double last_trigger_ = -1e18;
     std::uint64_t pending_pick_ = kUnset;   // start position of a scheduled picker window
     double pending_trigger_ = 0;             // window start of the detection that scheduled it

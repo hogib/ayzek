@@ -39,13 +39,17 @@ const char* kUsage = R"(usage: ayzek [options] STATION.mseed...
   --models DIR          weights directory (default: models)
   --speed X             replay speed; 1 = real time, 0 = as fast as possible (default 1)
   --from TIME           start detecting at this UTC time, e.g. 2025-11-10T18:19:00
-  --threshold P         detector trigger probability (default 0.9; outputs saturate near 0.91)
+  --threshold P         trigger when N consecutive windows reach P (default 0.8) ...
+  --trigger-windows N   ... (default 8, which adds 3.5 s)
+  --instant-threshold P or when one window reaches P (default 0.9; > 1 disables)
+  --release P           probability below which a trigger resets (default 0.3)
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2)
   --no-pick             detector only
   --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
+  --scores-in DIR       use probabilities from an earlier --scores run instead of the detector
   --record FILE         write all station outputs for tools/network_subsets
   --site NAME,LAT,LON   report the S-wave warning time at this place (repeatable)
   --verbose             print every station detection, pick and magnitude estimate
@@ -89,7 +93,7 @@ Percentiles percentiles(std::vector<float> v) {
 }  // namespace
 
 int main(int argc, char** argv) try {
-    std::string models = "models", scores_dir, catalog_path, record_path;
+    std::string models = "models", scores_dir, scores_in_dir, catalog_path, record_path;
     double speed = 1.0;
     ProcessorConfig pcfg;
     NetworkConfig ncfg;
@@ -105,11 +109,15 @@ int main(int argc, char** argv) try {
         else if (a == "--speed") speed = std::stod(next());
         else if (a == "--from") pcfg.from = parse_time(next());
         else if (a == "--threshold") pcfg.threshold = std::stof(next());
+        else if (a == "--trigger-windows") pcfg.trigger_windows = std::stoul(next());
+        else if (a == "--instant-threshold") pcfg.instant_threshold = std::stof(next());
+        else if (a == "--release") pcfg.release = std::stof(next());
         else if (a == "--step") pcfg.step = std::stoul(next());
         else if (a == "--min-stations") ncfg.min_stations = std::stoul(next());
         else if (a == "--no-pick") pcfg.pick = false;
         else if (a == "--no-magnitude") pcfg.magnitude = false;
         else if (a == "--scores") scores_dir = next();
+        else if (a == "--scores-in") scores_in_dir = next();
         else if (a == "--no-color") Log::get().color = false;
         else if (a == "--verbose") ncfg.verbose = true;
         else if (a == "--site") {
@@ -197,7 +205,8 @@ int main(int argc, char** argv) try {
     std::vector<std::unique_ptr<Processor>> procs;
     for (auto& st : stations) {
         const std::string path = scores_dir.empty() ? "" : scores_dir + "/" + st->code + ".csv";
-        procs.push_back(std::make_unique<Processor>(*st, detector, picker, magnitude, bp, pcfg, bus, path));
+        const std::string in_path = scores_in_dir.empty() ? "" : scores_in_dir + "/" + st->code + ".csv";
+        procs.push_back(std::make_unique<Processor>(*st, detector, picker, magnitude, bp, pcfg, bus, path, in_path));
     }
     std::vector<std::jthread> threads;
     for (std::size_t i = 0; i < stations.size(); ++i) {

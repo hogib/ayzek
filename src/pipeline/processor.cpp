@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <stdexcept>
 #include <thread>
 
 namespace ayzek::pipeline {
@@ -20,7 +21,7 @@ std::uint64_t align_up(std::uint64_t pos, std::size_t step) { return (pos + step
 
 Processor::Processor(Station& st, const std::vector<Weights>& detector, const Weights& picker,
                      const std::vector<Weights>& magnitude, const dsp::Bandpass& bp, ProcessorConfig cfg, Bus& bus,
-                     const std::string& scores_path)
+                     const std::string& scores_path, const std::string& scores_in_path)
     : st_(st), cfg_(cfg), bus_(bus), detector_(detector), noise_(bp),
       cond6_(bp, Detector::kWindow), cond60_(bp, Picker::kWindow) {
     if (cfg_.pick) picker_ = std::make_unique<Picker>(picker);
@@ -35,6 +36,20 @@ Processor::Processor(Station& st, const std::vector<Weights>& detector, const We
     if (!scores_path.empty()) {
         scores_.open(scores_path);
         scores_ << "station,window_start,probability\n";
+    }
+    // Detector probabilities from an earlier run with --scores. They do not
+    // depend on trigger settings, so re-using them makes a run with different
+    // settings give the same result as full inference, much faster.
+    if (!scores_in_path.empty()) {
+        std::ifstream in(scores_in_path);
+        if (!in) throw std::runtime_error("cannot open " + scores_in_path);
+        std::string line;
+        std::getline(in, line);
+        while (std::getline(in, line)) {
+            const auto a = line.find(','), b = line.rfind(',');
+            if (a == std::string::npos || b == a) continue;
+            cached_[epoch_to_pos(std::stod(line.substr(a + 1, b - a - 1)))] = std::stof(line.substr(b + 1));
+        }
     }
 }
 
@@ -69,12 +84,18 @@ void Processor::score_window(std::uint64_t start) {
     std::uint64_t resume = 0;
     if (!extract(start, Detector::kWindow, raw_, resume)) {
         ++stats_.gap_windows;
+        above_ = 0;                          // a gap interrupts a run of windows
         next_ = align_up(std::max(resume, start + 1), cfg_.step);
         return;
     }
     const auto t0 = Clock::now();
-    cond6_.condition(std::span<const double>(raw_.data(), Detector::kWindow * 3), 3, standardized_);
-    const float p = detector_.probability(standardized_);
+    float p = 0;
+    if (auto it = cached_.find(start); it != cached_.end()) {
+        p = it->second;
+    } else {
+        cond6_.condition(std::span<const double>(raw_.data(), Detector::kWindow * 3), 3, standardized_);
+        p = detector_.probability(standardized_);
+    }
     const double ms = ms_since(t0);
     ++stats_.windows;
     stats_.window_ms.push_back(static_cast<float>(ms));
@@ -82,28 +103,42 @@ void Processor::score_window(std::uint64_t start) {
     const double t_start = pos_to_epoch(start);
     recent_.emplace_back(start, p);
     while (recent_.size() > 64) recent_.pop_front();
-    if (scores_.is_open()) scores_ << st_.code << ',' << std::format("{:.2f}", t_start) << ',' << p << '\n';
+    // Shortest representation that reads back as the same float.
+    if (scores_.is_open()) scores_ << std::format("{},{:.2f},{}\n", st_.code, t_start, p);
 
     // Before `from`, windows only feed the noise baseline; no triggers.
     const bool warmup = cfg_.from > 0 && t_start < cfg_.from;
     if (warmup) {
         active_ = p >= cfg_.release;
     } else if (!active_) {
+        // Trigger when `trigger_windows` consecutive windows reach `threshold`,
+        // or at once when a window of the run reaches `instant_threshold`. The
+        // detection is dated by the first window of the run and declared at the
+        // end of the last. Windows within `retrigger_seconds` of the previous
+        // trigger do not start a run.
         if (p >= cfg_.threshold && t_start - last_trigger_ >= cfg_.retrigger_seconds) {
+            if (above_++ == 0) run_start_ = start;
+        } else {
+            above_ = 0;
+        }
+        const double run_t = pos_to_epoch(run_start_);
+        if (above_ > 0 && (above_ >= cfg_.trigger_windows || p >= cfg_.instant_threshold)) {
             active_ = true;
             below_ = 0;
-            last_trigger_ = t_start;
+            above_ = 0;
+            last_trigger_ = run_t;
             ++stats_.detections;
-            bus_.send(Detection{st_.code, t_start, t_start + Detector::kWindow / kFs, p, ms});
+            bus_.send(Detection{st_.code, run_t, t_start + Detector::kWindow / kFs, p, ms});
             if (cfg_.pick && pending_pick_ == kUnset) {
-                pending_pick_ = start - static_cast<std::uint64_t>(cfg_.picker_lead * kFs);
-                pending_trigger_ = t_start;
+                pending_pick_ = run_start_ - static_cast<std::uint64_t>(cfg_.picker_lead * kFs);
+                pending_trigger_ = run_t;
             }
             // Early magnitude window: P is assumed 3.5 s after the start of the
-            // triggering window, and the regressor's window starts 2 s before P.
+            // first window above the threshold; the regressor's window starts 2 s
+            // before P.
             if (cfg_.magnitude && early_mag_ == kUnset) {
-                early_mag_ = start + 150;
-                early_trigger_ = t_start;
+                early_mag_ = run_start_ + 150;
+                early_trigger_ = run_t;
             }
         }
     } else if (p < cfg_.release) {

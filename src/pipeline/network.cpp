@@ -280,8 +280,10 @@ void Network::report_location(Event& e) {
 
 // Matching catalogue event, if any. A catalogue event matches if the location
 // agrees (origin within 5 s, epicentre within 30 km), or if its predicted P
-// arrival at a detecting station is within 6 s of that detection's window start
-// plus 3.5 s. The second criterion does not require a location.
+// arrival at a station that raised the alarm is within 6 s of that detection's
+// window start plus 3.5 s. The second criterion does not require a location.
+// Detections that joined after the alarm are not used for it: they show that the
+// event was recorded, not that the alarm was raised by it.
 const CatalogEvent* Network::match(const Event& e) const {
     const CatalogEvent* best = nullptr;
     double best_miss = 1e18;
@@ -292,7 +294,7 @@ const CatalogEvent* Network::match(const Event& e) const {
             miss = std::abs(e.location->origin - c.time) / 100.0;   // location matches rank first
         for (const auto& [code, d] : e.detections) {
             auto it = stations_.find(code);
-            if (it == stations_.end()) continue;
+            if (it == stations_.end() || d.declared_at > e.declared_at) continue;
             const double p = c.time + std::hypot(distance_km(c.lat, c.lon, it->second.lat, it->second.lon), c.depth) / cfg_.vp;
             miss = std::min(miss, std::abs(p - (d.window_start + 3.5)));
         }

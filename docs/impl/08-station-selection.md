@@ -102,19 +102,28 @@ window, at 09:49–09:51 and 10:02–10:03. ELBA, closer to the epicentre, wrote
 only Steim2. A scan of the whole archive found no integer records at any other
 station or time. The decoder now supports integer records
 (`05-pipeline.md`); both files decode bit-exactly against ObsPy. The results
-below are from the corrected run.
+below are from the corrected run, with the default trigger rule (8 windows at
+p ≥ 0.8 or one at p ≥ 0.9, `05-pipeline.md`). The earlier rule, one window at
+p ≥ 0.9, is given for comparison where it differs.
 
 ### All eight stations
 
 | | |
 |---|---|
-| alarms | 49: 38 matching an AFAD event, 11 without one |
-| AFAD events within 250 km | 57: 38 detected, 19 missed |
-| located | 30 of the 38 |
-| **Mw 6.2 alert** | **11.0 s after origin** (ARNA, ELBA), S-wave blind zone 38 km |
-| Mw 6.2 location | 11.8 km from AFAD's epicentre, origin +0.4 s |
-| Mw 6.2 magnitude | M4.5 at +15 s, at most M4.9 at +32 s, final M4.6 |
-| Mw 5.9 | alert +12.5 s, M4.3 |
+| | default rule | earlier rule |
+|---|---|---|
+| alarms | 68: 45 matching an AFAD event, 23 without one | 49: 38 and 11 |
+| AFAD events within 250 km | 57: 45 detected, 12 missed | 38 detected, 19 missed |
+| located | 34 of the 45 | 30 of the 38 |
+| **Mw 6.2 alert** | **11.0 s after origin** (ARNA, ELBA), S-wave blind zone 38 km | the same |
+| Mw 6.2 location | 3.1 km from AFAD's epicentre, origin +1.3 s, 6 stations | 11.8 km, origin +0.4 s |
+| Mw 6.2 magnitude | M4.6 at +14 s, at most M4.9 at +31 s, final M4.8 | M4.5 at +15 s, final M4.6 |
+| Mw 5.9 | alert +12.5 s, M4.4, located 21.1 km off | alert +12.5 s, M4.3, 59.6 km off |
+
+Of the 23 alarms without an AFAD event, 5 were located within 15 km of the
+Mw 6.2 epicentre (four within 7 km) and are probably uncatalogued aftershocks. Two others follow a missed catalogue event by 7 and
+8.5 s (10:42:34 ML 2.8, 10:47:05 ML 3.2) and may be the same events. Only 2
+of the 23 fall before the Mw 6.2. None of this was checked on the waveforms.
 
 S-wave warning time for the Mw 6.2 (S arrival minus alarm time; picked S at
 stations with a pick, otherwise predicted from the AFAD hypocentre with
@@ -124,17 +133,18 @@ Vs = 3.5 km/s; `--site` for the three cities):
 |---|---:|---:|
 | Silivri | 26 km | −3.5 s (S wave before the alarm) |
 | ELBA | 38 km | +2.1 s |
-| BAND | 55 km | +6.6 s |
+| BAND | 55 km | +6.5 s |
 | CATL | 57 km | +7.0 s |
 | Istanbul (Fatih) | 67 km | +8.1 s |
-| ARNA | 68 km | +8.0 s |
+| ARNA | 68 km | +7.9 s |
 | Bursa | 103 km | +18.4 s |
 
-Over all 38 correctly detected events, the alarm preceded the S wave at 257 of
-304 station arrivals (median warning 25 s). This count is dominated by the
+Over all 45 detected events, the alarm preceded the S wave at 319 of 360
+station arrivals (median warning 25 s). This count is dominated by the
 distant stations.
 
-The magnitude estimates are 1.3–1.7 units low for the Mw 6.2 and Mw 5.9. The
+The final magnitude estimates are 1.4 and 1.5 units low for the Mw 6.2 and
+Mw 5.9. The
 regressor's training data has 160 windows of M ≥ 5.5 among 13,150, and a 10 s
 window saturates (`07-magnitude.md`).
 
@@ -144,30 +154,37 @@ Best subset per size, by the alert time for the Mw 6.2:
 
 | k | stations | Mw 6.2 alert | events declared | not in catalogue | subsets of this size that declare the Mw 6.2 |
 |---:|---|---:|---:|---:|---:|
-| 2 | ARNA+ELBA | 11.0 s | 16 | 0 | 21 of 28 |
-| 3 | ARNA+ELBA+SEMS | 11.0 s | 27 | 0 | 56 of 56 |
-| 4 | ARNA+CATL+ELBA+SEMS | 11.0 s | 35 | 8 | 70 of 70 |
-| 8 | all | 11.0 s | 38 | 11 | 1 of 1 |
+| 2 | ARNA+ELBA | 11.0 s | 18 | 1 | 28 of 28 |
+| 3 | ARNA+ELBA+SEMS | 11.0 s | 36 | 5 | 56 of 56 |
+| 4 | ARNA+ELBA+KIRK+SEMS | 11.0 s | 41 | 9 | 70 of 70 |
+| 5 | ARNA+BAND+ELBA+KIRK+SEMS | 11.0 s | 44 | 11 | 56 of 56 |
+| 8 | all | 11.0 s | 45 | 23 | 1 of 1 |
+
+With the earlier rule, 21 of the 28 pairs declared the Mw 6.2, and the best
+subsets of 2, 3 and 4 stations declared 16, 27 and 35 events.
 
 Marginal gain of adding a station to a subset without it (mean over the 120
 subsets of 2–7 stations that exclude it):
 
 | station | + events declared | + declared, not in catalogue | Mw 6.2 alert change |
 |---|---:|---:|---:|
-| ARNA | 2.94 | 0.04 | −7.9 s |
-| ELBA | 6.57 | 0.64 | −7.9 s |
-| CATL | 9.07 | 4.31 | −7.6 s |
-| BAND | 6.08 | 1.88 | −7.4 s |
-| SEMS | 10.49 | 4.34 | −2.0 s |
-| DEMI | 0.90 | 0.54 | −0.8 s |
-| KIRK | 1.65 | 1.08 | 0 |
-| MANT | 0.10 | 0.04 | 0 |
+| ARNA | 3.40 | 0.48 | −7.4 s |
+| ELBA | 7.36 | 2.11 | −7.4 s |
+| CATL | 7.93 | 8.53 | −7.1 s |
+| BAND | 7.20 | 2.54 | −6.9 s |
+| SEMS | 12.13 | 8.45 | −1.5 s |
+| KIRK | 4.49 | 3.17 | −0.9 s |
+| DEMI | 1.55 | 1.20 | −0.4 s |
+| MANT | 0.13 | 0.57 | 0 |
 
-- The four stations within 70 km each shorten the Mw 6.2 alert by 7–8 s.
-- CATL and SEMS add the most declared events, and also the most declared
+- The four stations within 70 km each shorten the Mw 6.2 alert by about 7 s.
+- SEMS and CATL add the most declared events, and also the most declared
   events that are not in the catalogue. This sequence is active, so some of
   these may be real uncatalogued events; this was not checked.
-- ARNA and ELBA add declarations with almost no unmatched events.
+- ARNA adds declarations with few unmatched events.
+- KIRK contributes with the default rule. With the earlier rule its highest
+  probability for the Mw 6.2 was 0.8992, below 0.9, and it added nothing to
+  the Mw 6.2 alert.
 
 ### Geometry model against the replay
 
@@ -177,18 +194,15 @@ second-nearest station:
 
 - observed alert − predicted P time: median **2.05 s**, IQR 0.6–2.8 s, which
   matches the model's `--latency` default of 2 s
-- rank correlation between predicted and observed alert times: 0.68
+- rank correlation between predicted and observed alert times: 0.71 (0.68
+  with the earlier rule)
 
-The largest residuals are subsets containing KIRK. KIRK's highest detector
-probability for the Mw 6.2 was 0.8992, below the 0.9 threshold, so it did not
-trigger and those subsets waited for a more distant station.
-
-**Threshold at the saturation level.** Because the detector was trained with
-label smoothing, its outputs saturate between 0.90 and 0.907 (the maximum at
-each of the eight stations over the three hours). A 0.9 threshold lies on this
-plateau, so whether a clearly recorded event triggers can depend on the third
-decimal. A threshold below the plateau, combined with a requirement for several
-consecutive windows above it, would avoid this; it has not been evaluated yet.
+The largest residuals (5.7 s) are subsets in which KIRK, at 140 km, is the
+second station. KIRK does not reach the 0.9 plateau for the Mw 6.2 and triggers
+through the 8-window rule, which adds 3.5 s. With the earlier rule KIRK did
+not trigger at all, and those subsets waited for a more distant station. The
+effect of the saturation plateau on the trigger is described in
+`05-pipeline.md`, *Threshold*.
 
 ### Geometry model over the region
 
