@@ -2,8 +2,9 @@
 
 // Bounded reordering of out-of-order records into a contiguous sample stream.
 //
-// Horizontal channels in the TDVMS archive arrive shuffled by up to ~7.7 s, and
-// the continuous IIR filter downstream needs samples in time order. This sits
+// About 0.3% of horizontal records in the TDVMS archive arrive late -- by 7.7 s
+// to ~10 min, median ~40 s -- and the continuous IIR filter downstream needs
+// samples in time order. This sits
 // between decode and the ring: records go in in arrival order, contiguous runs
 // come out in strictly increasing position.
 //
@@ -20,9 +21,11 @@
 //     never spliced in after the fact -- splicing would rewrite samples the
 //     filter has already consumed
 //
-// The vertical uses the same class with max_lateness = 0, which is exactly its
-// policy: it never waits, any hole is an immediate gap, and any late record is
-// an anomaly worth counting.
+// Every channel uses max_lateness = 0: never wait, any hole is an immediate
+// gap, any late record is counted as stale. Data late enough to be late here is
+// too late for early warning (docs/DESIGN.md), so the class earns its place by
+// declaring gaps, trimming overlaps and catching duplicates. A nonzero bound is
+// supported for offline replay.
 
 #include <algorithm>
 #include <array>
@@ -75,7 +78,7 @@ class Reorderer {
 public:
     // `max_lateness_samples`: a record whose end trails the newest data already
     // received by more than this is given up on, and its hole becomes a gap.
-    // Zero means never wait, which is the vertical's policy.
+    // Zero means never wait, which is the real-time policy on every channel.
     explicit Reorderer(std::uint64_t max_lateness_samples) noexcept
         : max_lateness_(max_lateness_samples) {}
 
@@ -218,7 +221,7 @@ private:
             Slot* m = earliest();
             // Measured from where the hole *ends* (the next held record), not
             // where it starts. From the start, a hole's own length counts as
-            // lateness: a 3.6 s record arriving 7.7 s late would read as ~11 s
+            // lateness: a 3.6 s record arriving 8 s late would read as ~11.6 s
             // and be declared a gap despite arriving in time. From the end, this
             // is the same quantity as stats().max_lateness -- how far the missing
             // data's end trails the newest data received -- so the measured

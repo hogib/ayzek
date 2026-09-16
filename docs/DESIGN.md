@@ -130,77 +130,102 @@ Rules, adopted up front:
 
 ---
 
-## Measured: records arrive out of order, and it collides with latency
+## Measured: a few horizontal records arrive very late
 
-A full 21-day DEMI chunk, decoded and sorted, shows three separate things.
+A full 21-day DEMI chunk, decoded and replayed.
 
-**The file is sorted by channel, not by time** -- all HHZ, then HHE, then HHN.
-Replay has to merge by time or it feeds the ring three weeks of Z before any N.
+**The file is sorted by channel, not by time** -- all HHZ, then HHE, then HHN --
+so replay feeds each channel's records in their own file order.
 
-**Within a channel, the horizontals are out of order; the vertical is not:**
+**The vertical is never late. The horizontals rarely are, but by a lot:**
 
-| channel | records | steps backwards in file order | largest jump back |
-|---|---:|---:|---:|
-| HHZ | 488,059 | 0 | 0 s |
-| HHE | 498,768 | 757 | 7.7 s |
-| HHN | 497,247 | 811 | 7.5 s |
+| channel | records | late | steps back | smallest | median | largest |
+|---|---:|---:|---:|---:|---:|---:|
+| HHZ | 488,059 | 0 | 0 | -- | -- | -- |
+| HHE | 498,768 | 1,528 (0.31%) | 757 | 7.7 s | 39.2 s | 615.9 s |
+| HHN | 497,247 | 1,585 (0.32%) | 811 | 7.5 s | 43.5 s | 609.2 s |
+
+"Steps back" are places where file order jumps backwards in time, sized in the
+last three columns. Of the late records, 3 of 3,113 trail the newest data by
+under 5 s, about 9% by
+5-10 s, 31% by 10-30 s, 21% by 30-120 s, and 40% by more than two minutes. They
+come in ~700 short runs (at most 18 records) spread over ~225 of the 504 hours.
+That shape is not network jitter, which would crowd near zero. It fits packets
+lost and recovered minutes later, then stored in the order they arrived -- an
+inference from the distribution, not something verified.
 
 **Genuine gaps are rare once sorted:** 25 on HHZ, 41 on HHE, 58 on HHN, every
-one longer than a second, with no sub-sample jitter and no overlaps.
+one at least a second long, with no sub-sample jitter and no overlaps.
 
 ObsPy assembles 26, 2,052 and 2,176 traces from these channels because it
-builds traces in file order and every out-of-order record breaks the current
-one. An earlier commit message read those counts as the horizontals breaking
-about eighty times as often as the vertical. That reading was wrong; the
-horizontals are shuffled, not broken.
+builds traces in file order, and each late record breaks the current trace.
 
-### Why this matters
+### Correction
 
-If live packets arrive the way this archive stores them, aligning all three
-components into one `Sample {z, n, e}` means waiting for the latest horizontal
-before a window can be emitted -- up to ~7.7 s here. **Early-warning budgets are
-a few seconds.** A reorder buffer big enough to be correct is big enough to
-spend most of the warning.
+An earlier version of this section gave the horizontals' **largest** backward
+jump as 7.7 s and 7.5 s. Those are the **smallest**: the analysis took the
+maximum of negative time differences, which is the one closest to zero. The
+largest are about ten minutes.
 
-Three options were considered: reorder then align (simple, but the reorder
-window lands on every event); write late records into their slot (no buffer,
-but the ring's append-only `push` becomes positional); or split by what each
-model needs.
+The argument built on the wrong number -- that aligning three components means
+waiting up to 7.7 s for the latest horizontal, against a warning budget of a
+few seconds -- led to a decision to run detection on Z alone. That decision is
+reversed below.
 
-### Decided: split by what each model needs
+### What the replay shows
 
-**Detection runs on Z the moment it lands. The S picker and magnitude wait for
-the horizontals.**
+`tools/replay_check` feeds each channel through the reorder buffer across a
+range of `max_lateness` settings and checks every emitted sample and gap against
+the time-sorted records.
 
-The reasoning is physical as much as architectural. P motion is dominantly
-vertical, and HHZ arrives in order, so the model whose output starts the clock
-gets the channel that never waits. S arrives seconds after P, so the models
-that need horizontals are waiting for their target anyway; a few seconds of
-reorder delay costs them little.
+- **HHZ at `max_lateness = 0` is exact:** all 181,427,887 samples match, all 25
+  declared gaps sit on genuine holes, and nothing is delayed.
+- **No usable window rescues late horizontals.** A 10 s window recovers about a
+  third of them (HHE stale records 1,528 -> 1,070); a lossless one would need
+  about ten minutes. Data that late is useless for early warning whatever the
+  design, so no design waits for it.
 
-Consequences, in order of how much they change:
+### Decided: keep the three-component detector, for now
 
-1. **`Sample {z, n, e}` is retired.** The original argument for keeping
-   components together -- one clock, and every stage consumes all three -- still
-   holds for the clock and no longer holds for consumption. Components now have
-   different latencies, so they cannot share a struct. Each station gets **one
-   ring per component**, all indexed by the same absolute position.
-   `SpscRing<float, N>` needs no change for this; it was already generic.
-2. **Horizontals pass through a bounded reorder buffer before their ring.** This
-   is not optional even ignoring latency: the continuous IIR filter feeding
-   RING 2 needs samples in time order.
-3. **Z bypasses reordering.** It has never been out of order in the archive. If a
-   late Z record ever arrives it is counted as an anomaly, not silently patched,
-   since a reordering step on Z would quietly reintroduce the latency this
-   design exists to avoid.
-4. **The detector must be retrained on Z alone.** The existing one takes three
-   components. That is Python work in `cnn_earthquake`, a dependency of stage 6,
-   and not something ayzek can do for itself.
+Since no design waits for late horizontals, the latency cost attributed to
+aligning three components does not exist. What late packets actually cost is
+**real-time gaps on the horizontals**: 485 on HHE and 513 on HHN over the 21 days,
+against 25 on HHZ, losing about 0.3% of the horizontal data. They are not short: a
+late run blanks the horizontals for a median of 10 s (90th percentile 14.5 s,
+longest 85 s), and only 13% last 5 s or less. A three-component detector loses
+every window those gaps touch -- with the detector's 6 s window, about 16 s of
+windows per gap. A Z-only detector would recover that ~0.3%,
+at the cost of retraining -- worth doing only if the loss turns out to matter, so
+it is deferred until measured.
 
-Whether live SeedLink delivers out of order like this archive does is still
-unverified until stage 7. The archive may reflect how AFAD assembled it from
-telemetry rather than how packets arrive. The decision holds either way: if live
-horizontals arrive in order, the reorder buffer simply never holds anything.
+Consequences:
+
+1. **One ring per component, all indexed by the same absolute position.** Kept
+   despite the reversal, on independent grounds: gaps are per component -- Z runs
+   on while E has a hole -- and a shared `Sample {z, n, e}` would force every hole
+   into all three. `SpscRing<float, N>` needs no change.
+2. **Every channel passes through the reorder buffer with `max_lateness = 0`.**
+   Never wait; any hole is an immediate gap; any late record is counted as stale.
+   The class still earns its place with no reordering to do, because it declares
+   gaps, trims overlaps and catches duplicates.
+3. **A three-component window is emitted only when all three components are
+   contiguous across it.** Windows touching a horizontal gap are skipped and
+   **counted**. That count, set against real detections, is what decides whether
+   a Z-only detector is worth building.
+
+   Bridging gaps with interpolated samples instead was considered. Bridging a
+   gap costs no latency -- its far edge is known the moment it is declared -- but
+   a typical gap is longer than the detector's whole window. A bridged window
+   is really a Z-only window with fabricated horizontals, and the detector was
+   trained with no gap augmentation. Whether it tolerates that is measurable on
+   its existing test set without retraining, and is worth measuring before
+   either bridging or a Z-only model.
+4. **Late records are not lost to offline use.** Training data and the coda work
+   keep reading the time-sorted archive; only the real-time path drops them.
+
+Whether live SeedLink behaves like this archive is unverified until stage 7.
+The design holds either way: if live horizontals arrive on time, these gaps
+simply do not occur.
 
 ### Measured: positions are exact
 
