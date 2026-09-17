@@ -1,14 +1,17 @@
 #pragma once
 
 // Processing stage, one thread per station: sliding windows -> preprocessing ->
-// detector ensemble -> trigger. A trigger schedules an early magnitude estimate,
-// a 60 s picker window, and a magnitude estimate at the picked P. Windows scored
-// as noise update the station's noise baseline used by the magnitude regressor.
+// detector ensemble (or STA/LTA) -> trigger. A trigger schedules an early
+// magnitude estimate and a 60 s picker window. A confident P pick carries the
+// 10 s window for a magnitude estimate at the picked P, which the network stage
+// runs only for declared events. Windows scored as noise update the station's
+// noise baseline used by the magnitude regressor.
 
 #include "common.hpp"
 #include "dsp.hpp"
 #include "magnitude.hpp"
 #include "models.hpp"
+#include "stalta.hpp"
 #include "station.hpp"
 
 #include <atomic>
@@ -22,7 +25,10 @@
 
 namespace ayzek::pipeline {
 
+enum class DetectorKind { Model, StaLta };
+
 struct ProcessorConfig {
+    DetectorKind detector = DetectorKind::Model;
     std::size_t step = 50;             // samples between window starts (0.5 s)
     // Outputs saturate at 0.90-0.91 (label smoothing 0.1/0.9), so a single-window
     // threshold at 0.9 depends on the third decimal. A lower threshold held for
@@ -39,13 +45,30 @@ struct ProcessorConfig {
     double noise_every = 30.0;         // seconds between noise-baseline windows
     float noise_below = 0.3f;          // max detector probability over a window accepted as noise
     double from = 0;                   // no triggers before this epoch; earlier windows update the noise baseline only
+
+    // STA/LTA (detector = StaLta): trigger when the ratio reaches `stalta_on`,
+    // re-arm when it falls below `stalta_off`. The P onset is taken to be the
+    // trigger sample. Defaults: the setting with the most detections at the
+    // model's number of unmatched alarms on the tuning data (09-sta-lta.md).
+    dsp::StaLtaConfig stalta{.sta_seconds = 1.0, .lta_seconds = 30.0, .f_lo = 2.0, .f_hi = 20.0, .three_component = false, .fs = 100.0};
+    double stalta_on = 8.0;
+    double stalta_off = 1.5;
+    double stalta_noise_below = 2.0;   // max ratio over a window accepted as noise
+};
+
+// The 10 s window starting 2 s before a picked P and the station's noise
+// baseline at that time, sent with the Pick (common.hpp).
+struct MagnitudeWindow {
+    double start = 0;                  // epoch of the first sample
+    std::vector<double> raw;           // (1000, 3) interleaved counts
+    StationNoise noise;
 };
 
 struct ProcessorStats {
     std::uint64_t windows = 0, gap_windows = 0, detections = 0, picks = 0, abandoned_picks = 0, magnitudes = 0;
     std::size_t noise_windows = 0;
-    std::vector<float> window_ms;      // conditioning + ensemble, per window
-    std::vector<float> pick_ms, magnitude_ms;
+    std::vector<float> window_ms;      // conditioning + ensemble (or STA/LTA update), per window
+    std::vector<float> pick_ms, magnitude_ms;   // magnitude_ms: early estimates only
 };
 
 class Processor {
@@ -59,9 +82,12 @@ public:
 private:
     bool extract(std::uint64_t start, std::size_t n, std::vector<double>& out, std::uint64_t& resume);
     void score_window(std::uint64_t start);
-    void try_pick(std::uint64_t available);
-    void try_early_magnitude(std::uint64_t available);
-    void run_magnitude(std::uint64_t start, double trigger, bool at_pick, double declared_at);
+    float score_model(std::uint64_t start, double& ms);
+    float score_stalta(std::uint64_t start, double& ms);
+    void trigger(std::uint64_t run_start, double declared_at, float p, double ms);
+    void run_jobs(std::uint64_t limit);
+    void run_pick(std::uint64_t start, double trigger);
+    void run_early_magnitude(std::uint64_t start, double trigger);
     void maybe_add_noise(std::uint64_t window_start);
 
     Station& st_;
@@ -72,6 +98,9 @@ private:
     DetectorEnsemble detector_;
     std::unique_ptr<Picker> picker_;
     std::unique_ptr<MagnitudeEstimator> magnitude_;
+    std::unique_ptr<dsp::StaLta> stalta_;
+    std::uint64_t stalta_next_ = kUnset;     // next sample to feed to the STA/LTA; kUnset after a gap
+    std::vector<std::pair<std::uint64_t, double>> stalta_triggers_;   // (sample, ratio) within one update
     NoiseBaseline noise_;
     dsp::Conditioner cond6_, cond60_;
     std::vector<double> raw_, noise_raw_;
@@ -84,10 +113,9 @@ private:
     std::size_t above_ = 0;                  // consecutive windows at or above the threshold
     std::uint64_t run_start_ = 0;            // start of the first of those windows
     double last_trigger_ = -1e18;
-    std::uint64_t pending_pick_ = kUnset;   // start position of a scheduled picker window
-    double pending_trigger_ = 0;             // window start of the detection that scheduled it
-    std::uint64_t early_mag_ = kUnset;      // start position of a scheduled early magnitude window
-    double early_trigger_ = 0;
+    // Scheduled picker and early magnitude windows: (start position, window start
+    // of the detection that scheduled it), in start order.
+    std::deque<std::pair<std::uint64_t, double>> picks_, early_;
     std::deque<std::pair<std::uint64_t, float>> recent_;   // (window start, probability)
     std::uint64_t last_noise_end_ = 0;
     double last_progress_ = 0;

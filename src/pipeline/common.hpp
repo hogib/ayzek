@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <deque>
 #include <format>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <print>
@@ -94,6 +95,8 @@ struct Detection {
     double compute_ms;        // conditioning + ensemble for that window
 };
 
+struct MagnitudeWindow;       // processor.hpp
+
 struct Pick {
     std::string station;
     double trigger_window;    // window_start of the Detection this pick follows
@@ -101,6 +104,9 @@ struct Pick {
     double p_prob, s_prob;
     double declared_at;       // stream time at the end of the 60 s picker window
     double compute_ms;
+    // Data for a magnitude estimate at the picked P, if P is confident and near
+    // the trigger. Not recorded.
+    std::shared_ptr<const MagnitudeWindow> magnitude_window;
 };
 
 struct MagnitudeEstimate {

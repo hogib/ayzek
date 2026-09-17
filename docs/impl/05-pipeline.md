@@ -61,16 +61,26 @@
     not start a run. The reasons for this rule are under *Threshold* below.
   - The detection is dated by the first window of the run.
   - It re-arms after two consecutive windows below 0.3.
-  - A trigger sends a `Detection` and schedules a picker window starting 2 s
-    before the first window of the run.
-- **Picker.** The picker runs as soon as its 60 s of data is in. The P and S
-  picks therefore arrive about a minute after P. They serve location, not the
-  alert.
-- **Magnitude.** An early estimate runs 11.5 s after the trigger, and another
-  at the picked P. Quiet windows keep the station's noise baseline current
-  (`07-magnitude.md`).
-- **Ring floor.** Each loop raises the floor to whatever no future window or
-  pending pick can need. That floor is what lets ingest write.
+  - A trigger sends a `Detection` and queues a picker window starting 2 s
+    before the first window of the run, and an early magnitude window.
+- **Picker.** Every trigger gets a pick. A queued job runs when the scored
+  windows reach the end of its data, which for the picker is about a minute
+  after P. The picks serve location, not the alert. Jobs are run by the
+  position of the scored windows rather than by how much data ingest has
+  written, because in a fast replay ingest can be far ahead, and the result
+  would then depend on thread timing (see *Two mistakes worth recording*).
+- **Magnitude.** An early estimate runs 11.5 s after every trigger. A
+  confident pick carries the 10 s window at its P, and the main thread
+  estimates the magnitude from it if the trigger belongs to a declared event.
+  Quiet windows keep the station's noise baseline current (`07-magnitude.md`).
+- **STA/LTA.** With `--detector stalta` the detector ensemble is replaced by a
+  recursive STA/LTA, for comparison (`09-sta-lta.md`). Everything after the
+  trigger is unchanged.
+- **Ring floor.** Every 256 windows the processor raises the floor to whatever
+  no future window or queued job can need. That floor is what lets ingest
+  write. (Raising it only after scoring everything buffered, up to 22 minutes
+  of data, blocked ingest past its one-minute limit whenever a processor ran
+  slower than about 20x real time, for example under a parallel sweep.)
 - **Progress.** Every processor also sends `Progress`: a promise that nothing
   it sends later is declared before a given stream time.
 
@@ -80,8 +90,11 @@
   them in stream-time order against the minimum of all stations' promises.
   Without this, at full replay speed stations race each other: one station's
   detection can reach the network after later detections from other stations,
-  which changes association. With it, a full-speed replay and a real-time
-  replay produce identical events. Two runs were diffed to check.
+  which changes association. Messages are released only for times strictly
+  before every station's promise, since a station may still send a message at
+  exactly the promised time. Messages with the same time, which are common
+  because detections end on the 0.5 s window grid, are ordered by station code
+  and then by the order the station sent them.
 - **Association.** Two detections can belong to one event only if their
   window times differ by at most the P travel time between the two stations
   plus 3 s.
@@ -216,15 +229,15 @@ without a catalogue event:
 | threshold | windows | instant | Sındırgı 30 min | Marmara | held out |
 |---:|---:|---:|---|---|---|
 | 0.9 | 1 | – | 5/9, 56%, 1 | 38/57, 62%, 11 | 24/66, 34%, 2 |
-| 0.85 | 4 | 0.9 | 6/9, 65%, 6 | 46/57, 75%, 51 | 48/66, 68%, 21 |
-| 0.85 | 6 | 0.9 | 6/9, 65%, 5 | 47/57, 79%, 28 | 42/66, 59%, 13 |
+| 0.85 | 4 | 0.9 | 6/9, 64%, 6 | 46/57, 75%, 51 | 48/66, 68%, 21 |
+| 0.85 | 6 | 0.9 | 6/9, 64%, 5 | 47/57, 79%, 28 | 42/66, 58%, 13 |
 | 0.85 | 8 | 0.9 | 6/9, 67%, 2 | 44/57, 74%, 17 | 32/66, 45%, 2 |
-| 0.8 | 4 | 0.9 | 7/9, 74%, 9 | 46/57, 72%, 81 | 51/66, 71%, 45 |
-| **0.8** | **8** | **0.9** | **7/9, 77%, 2** | **45/57, 75%, 23** | **37/66, 52%, 8** |
+| 0.8 | 4 | 0.9 | 7/9, 73%, 9 | 46/57, 72%, 81 | 51/66, 71%, 45 |
+| **0.8** | **8** | **0.9** | **7/9, 78%, 2** | **45/57, 75%, 23** | **37/66, 52%, 8** |
 | 0.8 | 12 | 0.9 | 5/9, 56%, 1 | 42/57, 70%, 10 | 25/66, 35%, 2 |
 | 0.7 | 12 | 0.9 | 6/9, 67%, 1 | 42/57, 70%, 16 | 25/66, 35%, 2 |
 
-(Full grid: `data/runs/sweep_trigger.csv`, not tracked.)
+(Full grid: `data/runs/v4/model_sweep.csv`, not tracked.)
 
 - **Choice.** 0.8 with 8 windows, plus the single-window rule at 0.9, was
   chosen on the two tuning datasets before the held-out run. (The correction
@@ -264,19 +277,39 @@ All seven stations (up to 296 km) at full speed on a 12-thread x86 laptop:
 
 The M4.9 was detected at all seven.
 
-## A mistake worth recording
+## Two mistakes worth recording
 
-An early threshold sweep ran four replays in parallel. Oversubscribed, the
-processors stalled past the backpressure cap of the time (2 s), and ingest
-silently dropped samples. The results changed from run to run. One of them
-showed the ML 3.6 with an origin 10 s off, which briefly read as an AFAD timing
-error. It was data loss. Since then drops are counted and printed, the cap is a
-minute, and determinism is checked by diffing two runs.
+**Dropped data in a parallel sweep.** An early threshold sweep ran four replays
+in parallel. Oversubscribed, the processors stalled past the backpressure cap
+of the time (2 s), and ingest silently dropped samples. The results changed
+from run to run. One of them showed the ML 3.6 with an origin 10 s off, which
+briefly read as an AFAD timing error. It was data loss. Since then drops are
+counted and printed, and the cap is a minute.
+
+**Results that depended on thread timing.** Two replays were diffed after that
+fix and agreed, which was taken as evidence of determinism. Much later, three
+identical Marmara replays gave three slightly different reports: the same alarm
+and detection counts, but different stations listed as raising some alarms,
+different picks, and so different locations. There were two causes:
+
+- Messages with equal times were released in the order they reached the main
+  thread, and messages were released at, not only before, the minimum promise.
+- A station kept a single pending picker window. Whether a trigger within 60 s
+  of the previous one got a pick depended on whether that pick had already run,
+  and picks ran as soon as ingest had written their data, which in a fast
+  replay depends on how far ingest is ahead of the detector.
+
+Both are fixed (*Network* and *Processor* above). Checked by five cached
+Marmara replays, three of them run concurrently, which now give identical
+reports, and by a full-inference replay of the Sındırgı demo that equals a
+replay from cached probabilities. With the second fix every trigger gets a
+pick; the results in this document were recomputed with it.
 
 ## Not done yet
 
-- **Magnitude off the detector thread.** A 300 ms estimate pauses that
-  station's windows. It should be its own worker (`07-magnitude.md`).
+- **Early magnitude off the detector thread.** The at-pick estimate runs in
+  the main thread, but the early estimate still pauses the station's windows
+  for 300 ms. It should be its own worker (`07-magnitude.md`).
 - **Live SeedLink.** `ReplaySource` is the seam.
 - **Velocity model.** A 1D model with Moho and Pn would keep distant stations
   in the location instead of dropping them.

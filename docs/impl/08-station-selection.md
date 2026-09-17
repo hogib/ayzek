@@ -118,7 +118,7 @@ p ≥ 0.9, is given for comparison where it differs.
 | **Mw 6.2 alert** | **11.0 s after origin** (ARNA, ELBA), S-wave blind zone 38 km | the same |
 | Mw 6.2 location | 3.1 km from AFAD's epicentre, origin +1.3 s, 6 stations | 11.8 km, origin +0.4 s |
 | Mw 6.2 magnitude | M4.6 at +14 s, at most M4.9 at +31 s, final M4.8 | M4.5 at +15 s, final M4.6 |
-| Mw 5.9 | alert +12.5 s, M4.4, located 21.1 km off | alert +12.5 s, M4.3, 59.6 km off |
+| Mw 5.9 | alert +12.5 s, M4.3, located 21.1 km off | alert +12.5 s, M4.3, 59.6 km off |
 
 Of the 23 alarms without an AFAD event, 5 were located within 15 km of the
 Mw 6.2 epicentre (four within 7 km) and are probably uncatalogued aftershocks. Two others follow a missed catalogue event by 7 and
@@ -155,9 +155,9 @@ Best subset per size, by the alert time for the Mw 6.2:
 | k | stations | Mw 6.2 alert | events declared | not in catalogue | subsets of this size that declare the Mw 6.2 |
 |---:|---|---:|---:|---:|---:|
 | 2 | ARNA+ELBA | 11.0 s | 18 | 1 | 28 of 28 |
-| 3 | ARNA+ELBA+SEMS | 11.0 s | 36 | 5 | 56 of 56 |
-| 4 | ARNA+ELBA+KIRK+SEMS | 11.0 s | 41 | 9 | 70 of 70 |
-| 5 | ARNA+BAND+ELBA+KIRK+SEMS | 11.0 s | 44 | 11 | 56 of 56 |
+| 3 | ARNA+ELBA+SEMS | 11.0 s | 37 | 4 | 56 of 56 |
+| 4 | ARNA+ELBA+KIRK+SEMS | 11.0 s | 41 | 8 | 70 of 70 |
+| 5 | ARNA+BAND+ELBA+KIRK+SEMS | 11.0 s | 44 | 10 | 56 of 56 |
 | 8 | all | 11.0 s | 45 | 23 | 1 of 1 |
 
 With the earlier rule, 21 of the 28 pairs declared the Mw 6.2, and the best
@@ -168,13 +168,13 @@ subsets of 2–7 stations that exclude it):
 
 | station | + events declared | + declared, not in catalogue | Mw 6.2 alert change |
 |---|---:|---:|---:|
-| ARNA | 3.40 | 0.48 | −7.4 s |
-| ELBA | 7.36 | 2.11 | −7.4 s |
-| CATL | 7.93 | 8.53 | −7.1 s |
+| ARNA | 3.43 | 0.38 | −7.4 s |
+| ELBA | 7.39 | 2.01 | −7.4 s |
+| CATL | 7.90 | 8.63 | −7.1 s |
 | BAND | 7.20 | 2.54 | −6.9 s |
-| SEMS | 12.13 | 8.45 | −1.5 s |
-| KIRK | 4.49 | 3.17 | −0.9 s |
-| DEMI | 1.55 | 1.20 | −0.4 s |
+| SEMS | 12.17 | 8.35 | −1.5 s |
+| KIRK | 4.46 | 3.21 | −0.9 s |
+| DEMI | 1.52 | 1.23 | −0.4 s |
 | MANT | 0.13 | 0.57 | 0 |
 
 - The four stations within 70 km each shorten the Mw 6.2 alert by about 7 s.

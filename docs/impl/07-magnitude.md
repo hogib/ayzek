@@ -61,13 +61,54 @@ still score the data before that time silently, to warm their baselines.
 
 ## Two estimates per station
 
-| | window | available at | why |
-|---|---|---|---|
-| early | trigger window + 1.5 s (P assumed 3.5 s in, minus 2 s) | trigger + 11.5 s | goes out with the alert |
-| at pick | picked P - 2 s | when the 60 s pick completes | the window the model was trained on |
+| | window | runs for | computed in | why |
+|---|---|---|---|---|
+| early | trigger window + 1.5 s (P assumed 3.5 s in, minus 2 s) | every station trigger | station thread, trigger + 11.5 s | goes out with the alert |
+| at pick | picked P - 2 s | triggers that belong to a declared event | main thread (network stage), when the 60 s pick completes | the window the model was trained on |
 
 The at-pick estimate replaces the early one for that station. The network
 magnitude is the median across stations, reprinted whenever it changes.
+
+**Why the two are gated differently.** A station trigger need not become an
+alarm: it can remain a single-station detection, or be an S-wave or coda
+re-trigger that the network assigns to an earlier event. The early estimate has
+to run before the network has decided, because the event is declared only when
+a second station detects it, and waiting would delay the first magnitude by
+about 10 s. The at-pick estimate comes about a minute after the trigger, when
+the decision is known, so it runs only for triggers that belong to a declared
+event.
+
+**Mechanism.** When a pick is confident and its P lies near the trigger, the
+station thread copies the 10 s window starting 2 s before P and the station's
+current noise baseline into the `Pick` message (`MagnitudeWindow`,
+`src/pipeline/processor.hpp`). The main thread releases messages in stream-time
+order; for a pick with a window it asks the network whether the trigger belongs
+to a declared event and, if so, runs the regressor and passes the estimate on
+with the pick's time. The estimate is the same as one made in the station
+thread, and the decision does not depend on thread timing. The regressor
+runtime moves from the station thread to the main thread.
+
+With `--record`, every pick with a window is estimated and written, and the
+network ignores at-pick estimates for events not declared at that time. A
+subset replay (`tools/network_subsets`) can then declare events that the full
+network did not and still has their at-pick estimates.
+
+**Effect.** Estimates computed with and without the gate:
+
+| replay | triggers (early estimates) | picks with a window | at-pick estimates made | skipped | all estimates |
+|---|---:|---:|---:|---:|---|
+| Sındırgı 30 min | 33 | 23 | 20 | 3 | 56 → 53 |
+| Marmara 3 h | 389 | 256 | 202 | 54 | 645 → 591 |
+| Sındırgı Mw 6.1 3 h | 188 | 125 | 96 | 29 | 313 → 284 |
+
+The saving is 5–9% of all estimates, much less than expected when this was
+proposed. Most picks with a confident P near the trigger belong to declared
+events, and the early estimate, which runs for every trigger, accounts for
+two thirds of the work. Gating the early estimate as well would save more but
+would delay the first magnitude until the second station detects the event.
+
+The event magnitudes do not change: the Marmara replay with `--record`, which
+estimates every pick, gives a report identical to the one without.
 
 ## The spectrogram
 

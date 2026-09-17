@@ -81,6 +81,9 @@ public:
     void on(const Detection& d);
     void on(const Pick& p);
     void on(const MagnitudeEstimate& m);
+    // True if the detection at `station` dated `trigger_window` belongs to a
+    // declared event. Magnitude estimates at the picked P are computed only then.
+    [[nodiscard]] bool declared(const std::string& station, double trigger_window) const;
     // Final report: one block per declared event (magnitude, alarm, location,
     // catalogue comparison, S-wave warning time at each station and site), the
     // catalogue events not detected, and totals.

@@ -154,12 +154,24 @@ void Network::on(const MagnitudeEstimate& m) {
     for (auto& e : events_) {
         auto it = e.detections.find(m.station);
         if (it == e.detections.end() || it->second.window_start != m.trigger_window) continue;
+        // Estimates at the picked P are made for declared events only
+        // (app/ayzek.cpp). A recording (--record) contains them for every pick;
+        // ignoring the others here makes a replay of the recording agree with a
+        // run on the same stations.
+        if (m.at_pick && !e.declared) return;
         auto have = e.magnitudes.find(m.station);
         if (have != e.magnitudes.end() && have->second.at_pick && !m.at_pick) return;
         e.magnitudes.insert_or_assign(m.station, m);
         if (e.declared) report_magnitude(e, m.declared_at);
         return;
     }
+}
+
+bool Network::declared(const std::string& station, double trigger_window) const {
+    return std::ranges::any_of(events_, [&](const Event& e) {
+        auto it = e.detections.find(station);
+        return e.declared && it != e.detections.end() && it->second.window_start == trigger_window;
+    });
 }
 
 // Event magnitude: median of the station estimates. Printed when the value

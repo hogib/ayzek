@@ -4,9 +4,10 @@ foreach t : ['test_ring', 'test_steim', 'test_reorder']
   test(t, exe)
 endforeach
 
-# Comparisons with reference outputs from tools/export_models.py and
-# tools/export_magnitude.py. Skipped (exit 77) if those files are missing.
-foreach t : ['test_dsp', 'test_models', 'test_magnitude']
+# Comparisons with reference outputs from tools/export_models.py,
+# tools/export_magnitude.py and tools/export_stalta.py. Skipped (exit 77) if
+# those files are missing.
+foreach t : ['test_dsp', 'test_models', 'test_magnitude', 'test_stalta']
   exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
   test(t, exe, args: [meson.project_source_root()], timeout: 300)
 endforeach

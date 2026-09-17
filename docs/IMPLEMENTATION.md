@@ -18,6 +18,7 @@ describe what was built.
 | [06 · Raspberry Pi](impl/06-raspberry-pi.md) | cross-compiling with zig, running under qemu, deploying |
 | [07 · Magnitude](impl/07-magnitude.md) | the regressor, station noise baselines, spectrogram, results |
 | [08 · Station selection](impl/08-station-selection.md) | recording and subset replay, geometry model, 2025-04-23 Mw 6.2 Marmara results |
+| [09 · STA/LTA benchmark](impl/09-sta-lta.md) | a recursive STA/LTA in place of the detector, tuned and compared on the same replays |
 
 ## In one screen
 
@@ -88,6 +89,12 @@ ayzek [options] STATION.mseed...
   --trigger-windows N   ... (default 8, which adds 3.5 s)
   --instant-threshold P or when one window reaches P (default 0.9; > 1 disables)
   --release P           probability below which a trigger resets (default 0.3)
+  --detector KIND       model (default) or stalta, the reference STA/LTA trigger
+  --sta S, --lta S      STA/LTA averaging lengths in seconds (default 1, 30)
+  --stalta-on R         STA/LTA ratio that triggers (default 8)
+  --stalta-off R        STA/LTA ratio below which a trigger resets (default 1.5)
+  --stalta-band LO,HI   STA/LTA pass band in Hz (default 2,20)
+  --stalta-3c           STA/LTA on the energy of all three components (default: vertical)
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2)
   --no-pick             detector only
@@ -141,12 +148,12 @@ event and each false alarm.
 ## Layout
 
 ```
-src/            ring, mseed, reorder (stages 1–2); simd, nn, models, dsp, weights, spectrogram, magnitude
+src/            ring, mseed, reorder (stages 1–2); simd, nn, models, dsp, weights, spectrogram, magnitude, stalta
 src/pipeline/   ingest, processor, network
 app/            the ayzek binary
 tests/          unit tests, PyTorch/scipy agreement, end-to-end demo check
-tools/          export_models.py, export_magnitude.py, make_demo_data.py, demo.sh, mseed_dump, replay_check,
-                network_subsets, station_geometry.py, scan_encodings.py
+tools/          export_models.py, export_magnitude.py, export_stalta.py, make_demo_data.py, demo.sh, mseed_dump,
+                replay_check, network_subsets, station_geometry.py, scan_encodings.py, sweep_trigger.py
 cross/          zig toolchain wrappers and the Raspberry Pi cross file
 ```
 
@@ -161,5 +168,5 @@ cross/          zig toolchain wrappers and the Raspberry Pi cross file
 | 5 kernels | done, NEON + scalar |
 | 6 detector | done, matches PyTorch |
 | 7 live SeedLink | not started; `ReplaySource` is the seam |
-| 8 cascade | detector → picker → magnitude → location, done |
+| 8 cascade | detector → picker → magnitude → location, done; the magnitude at the picked P runs only for declared events |
 | 9 location | done: grid search, P+S, uniform half-space, drops ill-fitting stations |

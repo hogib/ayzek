@@ -25,6 +25,7 @@ Processor::Processor(Station& st, const std::vector<Weights>& detector, const We
     : st_(st), cfg_(cfg), bus_(bus), detector_(detector), noise_(bp),
       cond6_(bp, Detector::kWindow), cond60_(bp, Picker::kWindow) {
     if (cfg_.pick) picker_ = std::make_unique<Picker>(picker);
+    if (cfg_.detector == DetectorKind::StaLta) stalta_ = std::make_unique<dsp::StaLta>(cfg_.stalta);
     if (cfg_.magnitude && !magnitude.empty()) magnitude_ = std::make_unique<MagnitudeEstimator>(magnitude, bp);
     else cfg_.magnitude = false;
     raw_.resize(Picker::kWindow * 3);
@@ -85,9 +86,25 @@ void Processor::score_window(std::uint64_t start) {
     if (!extract(start, Detector::kWindow, raw_, resume)) {
         ++stats_.gap_windows;
         above_ = 0;                          // a gap interrupts a run of windows
+        stalta_next_ = kUnset;               // and restarts the STA/LTA
         next_ = align_up(std::max(resume, start + 1), cfg_.step);
         return;
     }
+    double ms = 0;
+    const float p = stalta_ ? score_stalta(start, ms) : score_model(start, ms);
+    ++stats_.windows;
+    stats_.window_ms.push_back(static_cast<float>(ms));
+    recent_.emplace_back(start, p);
+    while (recent_.size() > 64) recent_.pop_front();
+    // Shortest representation that reads back as the same float.
+    if (scores_.is_open()) scores_ << std::format("{},{:.2f},{}\n", st_.code, pos_to_epoch(start), p);
+    if (cfg_.magnitude) maybe_add_noise(start);
+    next_ = start + cfg_.step;
+}
+
+// Detector ensemble on the window; returns its probability after applying the
+// trigger rule.
+float Processor::score_model(std::uint64_t start, double& ms) {
     const auto t0 = Clock::now();
     float p = 0;
     if (auto it = cached_.find(start); it != cached_.end()) {
@@ -96,16 +113,9 @@ void Processor::score_window(std::uint64_t start) {
         cond6_.condition(std::span<const double>(raw_.data(), Detector::kWindow * 3), 3, standardized_);
         p = detector_.probability(standardized_);
     }
-    const double ms = ms_since(t0);
-    ++stats_.windows;
-    stats_.window_ms.push_back(static_cast<float>(ms));
+    ms = ms_since(t0);
 
     const double t_start = pos_to_epoch(start);
-    recent_.emplace_back(start, p);
-    while (recent_.size() > 64) recent_.pop_front();
-    // Shortest representation that reads back as the same float.
-    if (scores_.is_open()) scores_ << std::format("{},{:.2f},{}\n", st_.code, t_start, p);
-
     // Before `from`, windows only feed the noise baseline; no triggers.
     const bool warmup = cfg_.from > 0 && t_start < cfg_.from;
     if (warmup) {
@@ -121,39 +131,92 @@ void Processor::score_window(std::uint64_t start) {
         } else {
             above_ = 0;
         }
-        const double run_t = pos_to_epoch(run_start_);
         if (above_ > 0 && (above_ >= cfg_.trigger_windows || p >= cfg_.instant_threshold)) {
             active_ = true;
             below_ = 0;
             above_ = 0;
-            last_trigger_ = run_t;
-            ++stats_.detections;
-            bus_.send(Detection{st_.code, run_t, t_start + Detector::kWindow / kFs, p, ms});
-            if (cfg_.pick && pending_pick_ == kUnset) {
-                pending_pick_ = run_start_ - static_cast<std::uint64_t>(cfg_.picker_lead * kFs);
-                pending_trigger_ = run_t;
-            }
-            // Early magnitude window: P is assumed 3.5 s after the start of the
-            // first window above the threshold; the regressor's window starts 2 s
-            // before P.
-            if (cfg_.magnitude && early_mag_ == kUnset) {
-                early_mag_ = run_start_ + 150;
-                early_trigger_ = run_t;
-            }
+            last_trigger_ = pos_to_epoch(run_start_);
+            trigger(run_start_, t_start + Detector::kWindow / kFs, p, ms);
         }
     } else if (p < cfg_.release) {
         if (++below_ >= cfg_.release_windows) active_ = false;
     } else {
         below_ = 0;
     }
-    if (cfg_.magnitude) maybe_add_noise(start);
-    next_ = start + cfg_.step;
+    return p;
 }
 
-void Processor::try_pick(std::uint64_t available) {
-    if (pending_pick_ == kUnset || pending_pick_ + Picker::kWindow > available) return;
-    const std::uint64_t start = pending_pick_;
-    pending_pick_ = kUnset;
+// Feeds the samples of the window not yet seen to the STA/LTA, one at a time,
+// and triggers at the first sample whose ratio reaches `stalta_on`. Returns the
+// largest ratio among those samples. Within a gap-free stretch each call adds
+// the last `step` samples of the window.
+float Processor::score_stalta(std::uint64_t start, double& ms) {
+    const std::uint64_t end = start + Detector::kWindow;
+    std::uint64_t from = stalta_next_;
+    if (from == kUnset || from < start) {
+        stalta_->reset();
+        from = start;
+    }
+    // Detections carry a window start 3.5 s before P, the convention of the
+    // detector windows, so that the picker and magnitude windows and the
+    // catalogue matching are placed as for the model.
+    const auto onset = static_cast<std::uint64_t>(3.5 * kFs);
+    const auto t0 = Clock::now();
+    double peak = 0;
+    stalta_triggers_.clear();
+    for (std::uint64_t pos = from; pos < end; ++pos) {
+        const double r = stalta_->step(std::span<const double, 3>(raw_.data() + (pos - start) * 3, 3));
+        peak = std::max(peak, r);
+        if (cfg_.from > 0 && pos_to_epoch(pos) < cfg_.from) {
+            active_ = r >= cfg_.stalta_off;
+        } else if (!active_) {
+            if (r >= cfg_.stalta_on && pos_to_epoch(pos - onset) - last_trigger_ >= cfg_.retrigger_seconds) {
+                stalta_triggers_.emplace_back(pos, r);
+                active_ = true;
+                last_trigger_ = pos_to_epoch(pos - onset);
+            }
+        } else if (r < cfg_.stalta_off) {
+            active_ = false;
+        }
+    }
+    ms = ms_since(t0);
+    stalta_next_ = end;
+    for (const auto& [pos, r] : stalta_triggers_) trigger(pos - onset, pos_to_epoch(pos + 1), static_cast<float>(r), ms);
+    return static_cast<float>(peak);
+}
+
+// Sends a detection dated `run_start` (P assumed 3.5 s later) and schedules the
+// picker window and the early magnitude window for it. The caller updates the
+// trigger state.
+void Processor::trigger(std::uint64_t run_start, double declared_at, float p, double ms) {
+    const double run_t = pos_to_epoch(run_start);
+    ++stats_.detections;
+    bus_.send(Detection{st_.code, run_t, declared_at, p, ms});
+    if (cfg_.pick) picks_.emplace_back(run_start - static_cast<std::uint64_t>(cfg_.picker_lead * kFs), run_t);
+    // Early magnitude window: the regressor's window starts 2 s before the
+    // assumed P.
+    if (cfg_.magnitude) early_.emplace_back(run_start + 150, run_t);
+}
+
+// Runs the scheduled picker and early magnitude jobs whose windows end at or
+// before `limit`. The run loop passes the end of the last scored window, not
+// the end of the data ingest has written: in a replay faster than real time
+// ingest can be far ahead, and the order of the messages would then depend on
+// thread timing. With live data the two are the same.
+void Processor::run_jobs(std::uint64_t limit) {
+    while (!picks_.empty() && picks_.front().first + Picker::kWindow <= limit) {
+        const auto [start, trigger] = picks_.front();
+        picks_.pop_front();
+        run_pick(start, trigger);
+    }
+    while (!early_.empty() && early_.front().first + kMagWindow <= limit) {
+        const auto [start, trigger] = early_.front();
+        early_.pop_front();
+        run_early_magnitude(start, trigger);
+    }
+}
+
+void Processor::run_pick(std::uint64_t start, double trigger) {
     std::uint64_t resume = 0;
     if (!extract(start, Picker::kWindow, raw_, resume)) {
         ++stats_.abandoned_picks;
@@ -168,23 +231,29 @@ void Processor::try_pick(std::uint64_t available) {
     stats_.pick_ms.push_back(static_cast<float>(ms));
     const double t = pos_to_epoch(start);
     const double p_time = t + pk.p_seconds, declared = t + Picker::kWindow / kFs;
-    bus_.send(Pick{st_.code, pending_trigger_, p_time, t + pk.s_seconds, pk.p_prob, pk.s_prob, declared, ms});
+    Pick pick{st_.code, trigger, p_time, t + pk.s_seconds, pk.p_prob, pk.s_prob, declared, ms, nullptr};
 
-    // If the P pick is confident and near the trigger, estimate the magnitude
-    // from the 10 s window starting 2 s before it (the training alignment). The
-    // data is already available at this point.
-    if (cfg_.magnitude && pk.p_prob >= 0.5 && p_time >= pending_trigger_ - 3 && p_time <= pending_trigger_ + 9)
-        run_magnitude(epoch_to_pos(p_time) - 200, pending_trigger_, true, declared);
+    // If the P pick is confident and near the trigger, the pick carries the 10 s
+    // window starting 2 s before it (the training alignment) and the current
+    // noise baseline. The network stage estimates the magnitude from them only
+    // if the trigger belongs to a declared event; most triggers do not (single-
+    // station detections, S and coda re-triggers).
+    if (cfg_.magnitude && pk.p_prob >= 0.5 && p_time >= trigger - 3 && p_time <= trigger + 9) {
+        const std::uint64_t mstart = epoch_to_pos(p_time) - 200;
+        auto w = std::make_shared<MagnitudeWindow>();
+        w->raw.resize(kMagWindow * 3);
+        if (extract(mstart, kMagWindow, w->raw, resume)) {
+            w->start = pos_to_epoch(mstart);
+            w->noise = noise_.noise();
+            pick.magnitude_window = std::move(w);
+        }
+    }
+    bus_.send(std::move(pick));
 }
 
-void Processor::try_early_magnitude(std::uint64_t available) {
-    if (early_mag_ == kUnset || early_mag_ + kMagWindow > available) return;
-    const std::uint64_t start = early_mag_;
-    early_mag_ = kUnset;
-    run_magnitude(start, early_trigger_, false, pos_to_epoch(start + kMagWindow));
-}
-
-void Processor::run_magnitude(std::uint64_t start, double trigger, bool at_pick, double declared_at) {
+// Early magnitude estimate for every trigger, so that an alarm can carry a
+// magnitude before any pick exists.
+void Processor::run_early_magnitude(std::uint64_t start, double trigger) {
     std::uint64_t resume = 0;
     if (!extract(start, kMagWindow, raw_, resume)) return;
     const auto t0 = Clock::now();
@@ -193,13 +262,13 @@ void Processor::run_magnitude(std::uint64_t start, double trigger, bool at_pick,
     ++stats_.magnitudes;
     stats_.magnitude_ms.push_back(static_cast<float>(ms));
     const auto& nz = noise_.noise();
-    bus_.send(MagnitudeEstimate{st_.code, trigger, at_pick, pos_to_epoch(start), m, nz.ready ? nz.windows : 0,
-                                declared_at, ms});
+    bus_.send(MagnitudeEstimate{st_.code, trigger, false, pos_to_epoch(start), m, nz.ready ? nz.windows : 0,
+                                pos_to_epoch(start + kMagWindow), ms});
 }
 
 // At most every `noise_every` seconds, adds the 10 s ending at the newest scored
 // window to the noise baseline, provided every detector window overlapping it
-// scored below `noise_below`. Signal included in the baseline would inflate the
+// scored below `noise_below` (`stalta_noise_below` for STA/LTA). Signal included in the baseline would inflate the
 // noise sigma and lower later magnitude estimates.
 void Processor::maybe_add_noise(std::uint64_t window_start) {
     const std::uint64_t end = window_start + Detector::kWindow;
@@ -207,8 +276,9 @@ void Processor::maybe_add_noise(std::uint64_t window_start) {
     const std::uint64_t begin = end - kMagWindow;
     if (end < last_noise_end_ + static_cast<std::uint64_t>(cfg_.noise_every * kFs)) return;
     if (recent_.empty() || recent_.front().first + Detector::kWindow > begin) return;   // not enough scored history
+    const double below = stalta_ ? cfg_.stalta_noise_below : cfg_.noise_below;
     for (const auto& [ws, p] : recent_)
-        if (ws + Detector::kWindow > begin && p >= cfg_.noise_below) return;
+        if (ws + Detector::kWindow > begin && p >= below) return;
     std::uint64_t resume = 0;
     if (!extract(begin, kMagWindow, noise_raw_, resume)) return;
     noise_.add(std::span<const double>(noise_raw_.data(), kMagWindow * 3));
@@ -238,38 +308,43 @@ void Processor::run(const std::atomic<bool>& stop) {
             // Start at the beginning of the data even with `from`, so that the
             // earlier windows build the noise baseline.
             std::uint64_t first = latest_base;
-            if (cfg_.from > 0 && !cfg_.magnitude) first = std::max(first, epoch_to_pos(cfg_.from));
+            // STA/LTA also needs its long-term average before `from`.
+            if (cfg_.from > 0 && !cfg_.magnitude && !stalta_) first = std::max(first, epoch_to_pos(cfg_.from));
             next_ = align_up(first, cfg_.step);
         }
 
+        // At most 256 windows (about 2 minutes of data) per pass, so that the
+        // ring floor below is raised regularly. Ingest may hold a full ring
+        // (22 minutes) ahead; scoring all of it before raising the floor would,
+        // for a processor slower than ~20x real time, block ingest past its
+        // backpressure limit and drop data.
         bool progressed = false;
-        while (next_ + Detector::kWindow <= available && !stop.load(std::memory_order_relaxed)) {
+        for (int n = 0; n < 256 && next_ + Detector::kWindow <= available && !stop.load(std::memory_order_relaxed); ++n) {
+            const std::uint64_t end = next_ + Detector::kWindow;
             score_window(next_);
             progressed = true;
-            // Run picker and magnitude jobs as soon as their data is available,
-            // so their messages stay in stream-time order with the detections.
-            try_pick(available);
-            if (cfg_.magnitude) try_early_magnitude(available);
+            run_jobs(end);
         }
-        try_pick(available);
-        if (cfg_.magnitude) try_early_magnitude(available);
 
         // Raise the ring floor, keeping the picker lead, one noise window before
         // the next window, and the windows of scheduled jobs.
         const std::uint64_t history = std::max<std::uint64_t>(lead, kMagWindow);
         std::uint64_t keep = next_ > history ? next_ - history : 0;
-        if (pending_pick_ != kUnset) keep = std::min(keep, pending_pick_);
-        if (early_mag_ != kUnset) keep = std::min(keep, early_mag_);
+        if (!picks_.empty()) keep = std::min(keep, picks_.front().first);
+        if (!early_.empty()) keep = std::min(keep, early_.front().first);
         for (auto& cs : st_.comp) {
             const auto base = cs.base.load(std::memory_order_acquire);
             if (keep > base) cs.ring.set_floor(std::min<std::uint64_t>(keep - base, cs.ring.written()));
         }
 
         // Lower bound on declared_at of any later message: the end of the next
-        // detector window or of a scheduled job's window.
+        // detector window (for STA/LTA, the next sample to be fed) or of a
+        // scheduled job's window. After a gap, the STA/LTA restarts at a later
+        // window start.
         double until = pos_to_epoch(next_ + Detector::kWindow);
-        if (pending_pick_ != kUnset) until = std::min(until, pos_to_epoch(pending_pick_ + Picker::kWindow));
-        if (early_mag_ != kUnset) until = std::min(until, pos_to_epoch(early_mag_ + kMagWindow));
+        if (stalta_) until = pos_to_epoch(stalta_next_ != kUnset ? stalta_next_ : next_);
+        if (!picks_.empty()) until = std::min(until, pos_to_epoch(picks_.front().first + Picker::kWindow));
+        if (!early_.empty()) until = std::min(until, pos_to_epoch(early_.front().first + kMagWindow));
         if (until - last_progress_ >= 0.5) {
             bus_.send(Progress{st_.code, until});
             last_progress_ = until;
@@ -279,10 +354,11 @@ void Processor::run(const std::atomic<bool>& stop) {
             // `done` was read before `available`, so all ingested data has been
             // processed.
             if (done) {
-                if (pending_pick_ != kUnset) {
-                    ++stats_.abandoned_picks;
-                    pending_pick_ = kUnset;
-                }
+                // End of the data: run the jobs whose windows fit in it.
+                run_jobs(available);
+                stats_.abandoned_picks += picks_.size();
+                picks_.clear();
+                early_.clear();
                 break;
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
