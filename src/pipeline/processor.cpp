@@ -179,13 +179,20 @@ float Processor::score_model(std::uint64_t start, double &ms) {
       above_ = 0;
       // P is the onset, or 3.5 s into the first window of the run without one.
       const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
+      std::uint64_t p_pos = run_start_ + lead;
       std::uint64_t window_start = run_start_;
       if (cfg_.anchor && onset != kUnset) {
+        p_pos = onset;
         window_start = onset - lead;
         ++stats_.anchored;
       }
-      last_trigger_ = pos_to_epoch(window_start);
-      trigger(window_start, t_start + Detector::kWindow / kFs, p, ms);
+      // The re-trigger gate stays on the detector's own clock: it drives the
+      // trigger state, which decides which windows feed the noise baseline.
+      last_trigger_ = pos_to_epoch(run_start_);
+      // The picker window follows the detector's own run start unless
+      // `anchor_picker` is set.
+      trigger(window_start, p_pos, run_start_,
+              t_start + Detector::kWindow / kFs, p, ms);
     }
   } else if (p < cfg_.release) {
     if (++below_ >= cfg_.release_windows)
@@ -253,7 +260,8 @@ float Processor::score_stalta(std::uint64_t start, double &ms) {
     // Detections carry a window start 3.5 s before P, the convention of the
     // detector windows, so that the picker and magnitude windows and the
     // catalogue matching are placed as for the model.
-    trigger(pos - lead, pos_to_epoch(pos + 1), static_cast<float>(r), ms);
+    trigger(pos - lead, pos, pos - lead, pos_to_epoch(pos + 1),
+            static_cast<float>(r), ms);
   }
   active_ = !stalta_armed_; // for the noise baseline
   return peak;
@@ -292,20 +300,29 @@ std::uint64_t Processor::onset_for(std::uint64_t run_start) const {
 // Sends a detection dated `run_start` (P assumed 3.5 s later) and schedules the
 // picker window and the early magnitude window for it. The caller updates the
 // trigger state.
-void Processor::trigger(std::uint64_t run_start, double declared_at, float p,
+// `run_start` dates the detection, `p_pos` is the P time, and `model_start` is
+// the first window of the detector's run. They differ only when the trigger is
+// anchored on an STA/LTA onset: P is then the onset, while the picker and
+// magnitude windows keep the placement their models were trained on unless
+// `anchor_picker` or `anchor_magnitude` is set.
+void Processor::trigger(std::uint64_t run_start, std::uint64_t p_pos,
+                        std::uint64_t model_start, double declared_at, float p,
                         double ms) {
   const double run_t = pos_to_epoch(run_start);
+  const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
+  const auto mag_lead = static_cast<std::uint64_t>(cfg_.magnitude_lead * kFs);
   ++stats_.detections;
   bus_.send(Detection{st_.code, run_t, declared_at, p, ms});
-  if (cfg_.pick)
+  if (cfg_.pick) {
+    const std::uint64_t from = cfg_.anchor_picker ? p_pos - lead : model_start;
     picks_.emplace_back(
-        run_start - static_cast<std::uint64_t>(cfg_.picker_lead * kFs), run_t);
-  // Early magnitude window: it starts `magnitude_lead` before the assumed P,
-  // which is 3.5 s after the start of the detection's window.
-  if (cfg_.magnitude)
-    early_.emplace_back(run_start + static_cast<std::uint64_t>(
-                                        (3.5 - cfg_.magnitude_lead) * kFs),
-                        run_t);
+        from - static_cast<std::uint64_t>(cfg_.picker_lead * kFs), run_t);
+  }
+  if (cfg_.magnitude) {
+    const std::uint64_t from =
+        cfg_.anchor_magnitude ? p_pos : model_start + lead;
+    early_.emplace_back(from - mag_lead, run_t);
+  }
 }
 
 // Runs the scheduled picker and early magnitude jobs whose windows end at or
@@ -398,7 +415,11 @@ void Processor::maybe_add_noise(std::uint64_t window_start) {
     return;
   if (recent_.empty() || recent_.front().first + Detector::kWindow > begin)
     return; // not enough scored history
-  const double below = stalta_ ? cfg_.stalta_noise_below : cfg_.noise_below;
+  // By detector kind, not by whether an STA/LTA exists: one also runs alongside
+  // the model when triggers are anchored, and its scale is not a probability.
+  const double below = cfg_.detector == DetectorKind::StaLta
+                           ? cfg_.stalta_noise_below
+                           : cfg_.noise_below;
   for (const auto &[ws, p] : recent_)
     if (ws + Detector::kWindow > begin && p >= below)
       return;

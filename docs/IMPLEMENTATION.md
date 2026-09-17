@@ -95,6 +95,8 @@ ayzek [options] STATION.mseed...
   --stalta-off R        STA/LTA ratio below which a trigger resets (default 1.5)
   --stalta-band LO,HI   STA/LTA pass band in Hz (default 2,20)
   --stalta-3c           STA/LTA on the energy of all three components (default: vertical)
+  --no-anchor           do not date model triggers by the STA/LTA onset
+  --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2)
   --no-pick             detector only

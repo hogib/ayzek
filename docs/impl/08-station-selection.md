@@ -112,16 +112,17 @@ p ≥ 0.9, is given for comparison where it differs.
 |---|---|
 | | default rule | earlier rule |
 |---|---|---|
-| alarms | 68: 45 matching an AFAD event, 23 without one | 49: 38 and 11 |
-| AFAD events within 250 km | 57: 45 detected, 12 missed | 38 detected, 19 missed |
-| located | 34 of the 45 | 30 of the 38 |
+| alarms | 68: 44 matching an AFAD event, 24 without one | 49: 38 and 11 |
+| AFAD events within 250 km | 57: 44 detected, 13 missed | 38 detected, 19 missed |
+| located | 35 of the 44 | 30 of the 38 |
 | **Mw 6.2 alert** | **11.0 s after origin** (ARNA, ELBA), S-wave blind zone 38 km | the same |
 | Mw 6.2 location | 3.1 km from AFAD's epicentre, origin +1.3 s, 6 stations | 11.8 km, origin +0.4 s |
 | Mw 6.2 magnitude | M4.6 at +14 s, at most M4.9 at +31 s, final M4.8 | M4.5 at +15 s, final M4.6 |
 | Mw 5.9 | alert +12.5 s, M4.3, located 21.1 km off | alert +12.5 s, M4.3, 59.6 km off |
 
-Of the 23 alarms without an AFAD event, 5 were located within 15 km of the
-Mw 6.2 epicentre (four within 7 km) and are probably uncatalogued aftershocks. Two others follow a missed catalogue event by 7 and
+Of the 24 alarms without an AFAD event, 9 were located at all, and 5 of those
+within 15 km of the Mw 6.2 epicentre (four within 7 km); these are probably
+uncatalogued aftershocks. Two others follow a missed catalogue event by 7 and
 8.5 s (10:42:34 ML 2.8, 10:47:05 ML 3.2) and may be the same events. Only 2
 of the 23 fall before the Mw 6.2. None of this was checked on the waveforms.
 
@@ -139,7 +140,7 @@ Vs = 3.5 km/s; `--site` for the three cities):
 | ARNA | 68 km | +7.9 s |
 | Bursa | 103 km | +18.4 s |
 
-Over all 45 detected events, the alarm preceded the S wave at 319 of 360
+Over all 44 detected events, the alarm preceded the S wave at 311 of 352
 station arrivals (median warning 25 s). This count is dominated by the
 distant stations.
 
@@ -154,11 +155,11 @@ Best subset per size, by the alert time for the Mw 6.2:
 
 | k | stations | Mw 6.2 alert | events declared | not in catalogue | subsets of this size that declare the Mw 6.2 |
 |---:|---|---:|---:|---:|---:|
-| 2 | ARNA+ELBA | 11.0 s | 18 | 1 | 28 of 28 |
+| 2 | ARNA+ELBA | 11.0 s | 19 | 1 | 28 of 28 |
 | 3 | ARNA+ELBA+SEMS | 11.0 s | 37 | 4 | 56 of 56 |
 | 4 | ARNA+ELBA+KIRK+SEMS | 11.0 s | 41 | 8 | 70 of 70 |
-| 5 | ARNA+BAND+ELBA+KIRK+SEMS | 11.0 s | 44 | 10 | 56 of 56 |
-| 8 | all | 11.0 s | 45 | 23 | 1 of 1 |
+| 5 | ARNA+CATL+ELBA+KIRK+SEMS | 11.0 s | 44 | 21 | 56 of 56 |
+| 8 | all | 11.0 s | 44 | 24 | 1 of 1 |
 
 With the earlier rule, 21 of the 28 pairs declared the Mw 6.2, and the best
 subsets of 2, 3 and 4 stations declared 16, 27 and 35 events.
@@ -168,14 +169,14 @@ subsets of 2–7 stations that exclude it):
 
 | station | + events declared | + declared, not in catalogue | Mw 6.2 alert change |
 |---|---:|---:|---:|
-| ARNA | 3.43 | 0.38 | −7.4 s |
-| ELBA | 7.39 | 2.01 | −7.4 s |
-| CATL | 7.90 | 8.63 | −7.1 s |
-| BAND | 7.20 | 2.54 | −6.9 s |
-| SEMS | 12.17 | 8.35 | −1.5 s |
-| KIRK | 4.46 | 3.21 | −0.9 s |
-| DEMI | 1.52 | 1.23 | −0.4 s |
-| MANT | 0.13 | 0.57 | 0 |
+| ARNA | 3.40 | 0.59 | −7.4 s |
+| ELBA | 7.19 | 2.18 | −7.4 s |
+| CATL | 7.54 | 8.45 | −7.1 s |
+| BAND | 6.68 | 3.26 | −6.9 s |
+| SEMS | 11.72 | 8.64 | −1.5 s |
+| KIRK | 4.62 | 2.99 | −0.9 s |
+| DEMI | 1.52 | 1.51 | −0.4 s |
+| MANT | 0.23 | 0.57 | 0 |
 
 - The four stations within 70 km each shorten the Mw 6.2 alert by about 7 s.
 - SEMS and CATL add the most declared events, and also the most declared

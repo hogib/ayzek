@@ -76,6 +76,12 @@ struct ProcessorConfig {
   double anchor_off = 1.5;     // ratio below which the next onset can be taken
   bool require_onset = false;  // a trigger also needs an onset in that range
   double magnitude_lead = 2.0; // magnitude window start, seconds before P
+  // The picker and early magnitude windows are placed from the detector's run
+  // start even when the trigger is anchored, unless these are set. Both models
+  // were trained on windows placed that way, and moving a window changes what
+  // they see (09-sta-lta.md).
+  bool anchor_picker = false;
+  bool anchor_magnitude = false;
 };
 
 // The 10 s window starting 2 s before a picked P and the station's noise
@@ -119,7 +125,9 @@ private:
   float update_stalta(std::uint64_t start, double on, double off, double &ms);
   // The onset position for a trigger, or kUnset if there is none in range.
   [[nodiscard]] std::uint64_t onset_for(std::uint64_t run_start) const;
-  void trigger(std::uint64_t run_start, double declared_at, float p, double ms);
+  void trigger(std::uint64_t run_start, std::uint64_t p_pos,
+               std::uint64_t model_start, double declared_at, float p,
+               double ms);
   void run_jobs(std::uint64_t limit);
   void run_pick(std::uint64_t start, double trigger);
   void run_early_magnitude(std::uint64_t start, double trigger);

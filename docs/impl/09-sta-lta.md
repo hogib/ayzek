@@ -70,9 +70,10 @@ it was computed for 20 candidates chosen from the uncorrected counts, which are
 never lower than the corrected ones. For both rules below, every setting that
 could have been selected after correction was among the candidates.
 
-**Selection rules, fixed before the held-out run.** The model's setting gives
-50.0 chance-corrected detections and 25 unmatched alarms over the two tuning
-datasets.
+**Selection rules, fixed before the held-out run.** They use the model's
+tuning-data numbers as measured at the time: 50.0 chance-corrected detections
+and 25 unmatched alarms. Anchoring the model's P times later moved those to
+48.7 and 26, which changes neither selection.
 
 - **Equal unmatched alarms:** the STA/LTA setting with the most
   chance-corrected detections among those with at most 25 unmatched alarms.
@@ -88,7 +89,7 @@ Tuning data (66 catalogue events):
 
 | detector | detected | chance-corrected | unmatched alarms | Marmara median alarm delay | Mw 6.2 alarm |
 |---|---:|---:|---:|---:|---:|
-| model: 0.8 × 8 windows, or 0.9 | 52 | 50.0 | 25 | 12.0 s | +11.0 s |
+| model: 0.8 × 8 windows, or 0.9 | 51 | 48.7 | 26 | 12.0 s | +11.0 s |
 | STA/LTA, equal unmatched alarms | 38 | 33.6 | 25 | 10.6 s | +10.0 s |
 | STA/LTA, equal detections | 59 | 56.3 | 63 | 10.1 s | +9.9 s |
 
@@ -96,16 +97,16 @@ Held out (Sındırgı 2025-08-10, 6 stations, 66 catalogue events):
 
 | detector | detected | chance-corrected | unmatched alarms | M2–3 | M3–4 | M4–5 | median alarm delay | Mw 6.1 alarm |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| model | 37 | 34.4 | 8 | 10/27 | 21/32 | 5/6 | 17.5 s | +17.0 s |
+| model | 39 | 36.4 | 7 | 12/27 | 21/32 | 5/6 | 17.5 s | +17.0 s |
 | STA/LTA, equal unmatched alarms | 25 | 21.7 | 9 | 4/27 | 14/32 | 6/6 | 17.8 s | +15.7 s |
 | STA/LTA, equal detections | 42 | 37.9 | 26 | 15/27 | 20/32 | 6/6 | 17.0 s | +15.7 s |
 
-- **At the same number of unmatched alarms** the model detects more: 50.0
-  against 33.6 chance-corrected on the tuning data, and 34.4 against 21.7 on
-  the held-out data (8 and 9 unmatched alarms). The difference is in M2–4.
+- **At the same number of unmatched alarms** the model detects more: 48.7
+  against 33.6 chance-corrected on the tuning data, and 36.4 against 21.7 on
+  the held-out data (7 and 9 unmatched alarms). The difference is in M2–4.
 - **At the same number of detections** STA/LTA raises about three times as many
-  alarms without a catalogue event: 63 against 25 on the tuning data, 26 against
-  8 on the held-out data (with 37.9 against 34.4 corrected detections).
+  alarms without a catalogue event: 63 against 26 on the tuning data, 26 against
+  7 on the held-out data (with 37.9 against 36.4 corrected detections).
 - **STA/LTA alarms earlier for the large events**: by 1.0–1.1 s for the Mw 6.2
   and 1.3 s for the Mw 6.1. It triggers on the onset sample, while the model
   needs P inside a 6 s window. For the median event the difference is small on
@@ -115,6 +116,54 @@ Held out (Sındırgı 2025-08-10, 6 stations, 66 catalogue events):
   Marmara replay without magnitude takes 2.3 s of wall time with STA/LTA
   (the rest of the pipeline: decoding, picking, association) and 3 min with
   the model.
+
+## Anchoring the model's P time
+
+The same STA/LTA also runs alongside the learned detector (`--no-anchor` turns
+it off). It never triggers anything: when the detector fires, the P time of the
+detection is taken to be the first sample in that window at which the ratio
+reaches `--anchor-on` (3) after having been below 1.5 in the preceding second,
+instead of the convention that P lies 3.5 s into the window. The sample is
+always in the past when the trigger fires, so **anchoring adds no latency** and
+cannot create or suppress an alarm.
+
+Measured against the picker's P on the Sındırgı demo, the anchored time has a
+median error of **0.10 s** against **−2.06 s** for the convention, which is
+biased early. About half of the triggers get an anchor (100 of 189 on the
+held-out replay, 176 of 389 on Marmara); the rest are S-wave and coda
+re-triggers where the ratio never rises from quiet, and they keep the
+convention.
+
+**Only the reported P time is anchored.** The detector's own clock still drives
+the trigger state and the re-trigger interval, and the picker and early
+magnitude windows keep the placement their models were trained on
+(`--anchor-picker`, `--anchor-magnitude` change that). Moving those windows
+makes both models worse: with the picker window anchored, the median epicentre
+error over the events both runs detect went from 9.4 to 10.3 km on Marmara.
+
+Effect on the two 3 h replays, over the catalogue events both runs detect:
+
+| | Marmara | held out |
+|---|---|---|
+| magnitude error, mean | 0.49 → 0.48 | 0.38 → 0.38 |
+| epicentre and origin error | unchanged | unchanged |
+| alarm delay | unchanged | unchanged |
+| catalogue events detected | 45 → 44 | 37 → 39 |
+| alarms without a catalogue event | 23 → 24 | 8 → 7 |
+
+Detection is a wash: the changes come from catalogue matching, which uses the
+P time. Anchoring is on by default because it costs nothing and makes the
+reported times right, which is also what a tighter association slack would
+need.
+
+**A bug this exposed.** The noise-baseline test picked its threshold by whether
+an STA/LTA object existed rather than by which detector was in use. With
+anchoring on, a model run therefore compared detector probabilities against the
+STA/LTA threshold of 2.0, so every window was accepted as noise, the noise sigma
+grew and magnitudes came out about one unit low. The first measurements of
+anchoring were wrong because of it. `--anchor-on 99`, which never anchors,
+now reproduces a run without anchoring exactly; that is the check that the
+machinery is inert.
 
 **Limits.**
 

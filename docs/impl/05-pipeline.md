@@ -59,7 +59,9 @@
     `--trigger-windows`), or earlier if a window of that run reaches p ≥ 0.9
     (`--instant-threshold`). Windows within 15 s of the previous trigger do
     not start a run. The reasons for this rule are under *Threshold* below.
-  - The detection is dated by the first window of the run.
+  - The detection carries a P time: the STA/LTA onset in that window if there
+    is one, otherwise 3.5 s after the start of the first window of the run
+    (`09-sta-lta.md`). Association and catalogue matching use it.
   - It re-arms after two consecutive windows below 0.3.
   - A trigger sends a `Detection` and queues a picker window starting 2 s
     before the first window of the run, and an early magnitude window.
@@ -73,9 +75,10 @@
   confident pick carries the 10 s window at its P, and the main thread
   estimates the magnitude from it if the trigger belongs to a declared event.
   Quiet windows keep the station's noise baseline current (`07-magnitude.md`).
-- **STA/LTA.** With `--detector stalta` the detector ensemble is replaced by a
-  recursive STA/LTA, for comparison (`09-sta-lta.md`). Everything after the
-  trigger is unchanged.
+- **STA/LTA.** One runs alongside the detector and gives the P time of a
+  trigger, in place of the convention that P lies 3.5 s into the window; it
+  never triggers anything. With `--detector stalta` it replaces the detector
+  instead, for comparison (`09-sta-lta.md`).
 - **Ring floor.** Every 256 windows the processor raises the floor to whatever
   no future window or queued job can need. That floor is what lets ingest
   write. (Raising it only after scoring everything buffered, up to 22 minutes
@@ -185,7 +188,7 @@ maximum at each of eight Marmara stations over three hours lies in that range.
 The original rule, a single window at p ≥ 0.9, therefore sits on the plateau:
 whether a clearly recorded event triggers can depend on the third decimal. KIRK
 reached 0.8992 for the 2025-04-23 Mw 6.2 and did not trigger. The same rule
-detected 38 of 57 catalogue events in the Marmara replay.
+detected 39 of 57 catalogue events in the Marmara replay.
 
 **Rule.** A threshold below the plateau passes many short excursions of noise.
 Requiring the probability to stay above it for several consecutive windows
@@ -228,36 +231,37 @@ without a catalogue event:
 
 | threshold | windows | instant | Sındırgı 30 min | Marmara | held out |
 |---:|---:|---:|---|---|---|
-| 0.9 | 1 | – | 5/9, 56%, 1 | 38/57, 62%, 11 | 24/66, 34%, 2 |
-| 0.85 | 4 | 0.9 | 6/9, 64%, 6 | 46/57, 75%, 51 | 48/66, 68%, 21 |
-| 0.85 | 6 | 0.9 | 6/9, 64%, 5 | 47/57, 79%, 28 | 42/66, 58%, 13 |
-| 0.85 | 8 | 0.9 | 6/9, 67%, 2 | 44/57, 74%, 17 | 32/66, 45%, 2 |
-| 0.8 | 4 | 0.9 | 7/9, 73%, 9 | 46/57, 72%, 81 | 51/66, 71%, 45 |
-| **0.8** | **8** | **0.9** | **7/9, 78%, 2** | **45/57, 75%, 23** | **37/66, 52%, 8** |
+| 0.9 | 1 | – | 5/9, 56%, 1 | 39/57, 64%, 10 | 24/66, 33%, 2 |
+| 0.85 | 4 | 0.9 | 6/9, 64%, 6 | 46/57, 75%, 52 | 51/66, 73%, 20 |
+| 0.85 | 6 | 0.9 | 6/9, 64%, 5 | 47/57, 79%, 29 | 42/66, 58%, 13 |
+| 0.85 | 8 | 0.9 | 6/9, 67%, 2 | 44/57, 74%, 16 | 32/66, 45%, 2 |
+| 0.8 | 4 | 0.9 | 7/9, 73%, 9 | 47/57, 74%, 80 | 52/66, 73%, 44 |
+| **0.8** | **8** | **0.9** | **7/9, 78%, 2** | **44/57, 73%, 24** | **39/66, 55%, 7** |
 | 0.8 | 12 | 0.9 | 5/9, 56%, 1 | 42/57, 70%, 10 | 25/66, 35%, 2 |
-| 0.7 | 12 | 0.9 | 6/9, 67%, 1 | 42/57, 70%, 16 | 25/66, 35%, 2 |
+| 0.7 | 12 | 0.9 | 6/9, 67%, 1 | 42/57, 69%, 15 | 25/66, 35%, 2 |
 
-(Full grid: `data/runs/v4/model_sweep.csv`, not tracked.)
+(Full grid: `data/runs/v6/model_sweep.csv`, not tracked.)
 
 - **Choice.** 0.8 with 8 windows, plus the single-window rule at 0.9, was
   chosen on the two tuning datasets before the held-out run. (The correction
   for stations that joined later was made after it; the choice was not
   revisited, and the table uses the corrected scoring.) On the held-out
-  data it detects 37 instead of 24 of 66 events, with 8 instead of 2 alarms
+  data it detects 39 instead of 24 of 66 events, with 7 instead of 2 alarms
   without a catalogue event. Over all three, the chance-corrected count rises
-  from 63 to 84 of 132 events.
-- **Where the gain is.** On the held-out data, M2–3 detections go from 2 to 10
+  from 64 to 85 of 132 events.
+- **Where the gain is.** On the held-out data, M2–3 detections go from 2 to 12
   of 27, and M3–4 from 16 to 21 of 32. Both settings detect 5 of 6 M4–5 and the
   Mw 6.1.
 - **Alarm time.** The main events alarm at the same time as before (Mw 6.2
   +11.0 s, Mw 6.1 +17.0 s, M4.9 +18.0 s), because they reach the plateau. The
   median alarm delay does not change on any dataset.
-- **Unmatched alarms.** Marmara goes from 11 to 23. 2 of the 23 fall in the 79
+- **Unmatched alarms.** Marmara goes from 10 to 24. 2 of the 24 fall in the 79
   minutes before the Mw 6.2, when the catalogue should be complete; the others
-  follow the Mw 6.2 and may be uncatalogued aftershocks. This was not checked.
+  follow the Mw 6.2 and 5 of them are located within 15 km of it
+  (`08-station-selection.md`).
 - **Sensitivity.** On the tuning data, settings around the chosen one give
   similar counts. The held-out data is more sensitive to the number of windows:
-  at 0.8, 8 windows detect 37 events, 10 windows 29 and 12 windows 25. A
+  at 0.8, 8 windows detect 39 events, 10 windows 29 and 12 windows 25. A
   likely reason, not checked, is that only two of its stations (DEMI 60 km,
   CMH 85 km) are within 100 km of the sequence, and small events at these
   distances stay above the threshold for fewer windows. 0.85 with 6 windows

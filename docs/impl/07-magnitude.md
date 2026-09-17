@@ -99,7 +99,7 @@ network did not and still has their at-pick estimates.
 |---|---:|---:|---:|---:|---|
 | Sındırgı 30 min | 33 | 23 | 20 | 3 | 56 → 53 |
 | Marmara 3 h | 389 | 256 | 202 | 54 | 645 → 591 |
-| Sındırgı Mw 6.1 3 h | 188 | 125 | 96 | 29 | 313 → 284 |
+| Sındırgı Mw 6.1 3 h | 188 | 124 | 96 | 28 | 312 → 284 |
 
 The saving is 5–9% of all estimates, much less than expected when this was
 proposed. Most picks with a confident P near the trigger belong to declared

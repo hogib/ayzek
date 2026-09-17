@@ -172,6 +172,10 @@ int main(int argc, char **argv) try {
       pcfg.anchor = false;
     else if (a == "--anchor-on")
       pcfg.anchor_on = std::stod(next());
+    else if (a == "--anchor-picker")
+      pcfg.anchor_picker = true;
+    else if (a == "--anchor-magnitude")
+      pcfg.anchor_magnitude = true;
     else if (a == "--require-onset")
       pcfg.require_onset = true;
     else if (a == "--mag-lead")

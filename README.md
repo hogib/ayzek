@@ -109,6 +109,8 @@ tools/demo.sh all      # 7 stations, full speed
 | `--stalta-on R`, `--stalta-off R` | 8, 1.5 | STA/LTA ratio that triggers, and below which a trigger re-arms |
 | `--stalta-band LO,HI` | 2,20 | STA/LTA pass band in Hz (4th-order Butterworth high- and low-pass) |
 | `--stalta-3c` | | STA/LTA on the energy of all three components instead of the vertical |
+| `--no-anchor` | | do not take the P time of a model trigger from the STA/LTA onset |
+| `--anchor-on R` | 3 | STA/LTA ratio taken as the onset when anchoring |
 | `--step N` | 50 | samples between detector windows (0.5 s at 100 Hz) |
 | `--min-stations N` | 2 | station detections needed to declare an event |
 | `--no-pick` | | no P/S picker, and so no location |
@@ -182,8 +184,8 @@ catalogue (events within 250 km):
 | replay | stations | catalogue events detected | alarms without a catalogue event | main event |
 |---|---:|---|---|---|
 | Sındırgı, 2025-11-10, 30 min | 3 | 7 of 9 | 2 of 9 | Mw 4.9: alarm 18.0 s after origin with M4.3, final M4.6, located 5.3 km off |
-| Marmara Sea, 2025-04-23, 3 h | 8 | 45 of 57 | 23 of 68 | Mw 6.2: alarm 11.0 s after origin, M4.6 at +14 s, final M4.8, located 3.1 km off |
-| Sındırgı, 2025-08-10, 3 h | 6 | 37 of 66 | 8 of 45 | Mw 6.1: alarm 17.0 s after origin, M4.9 at +17.5 s, final M4.7, located 32.5 km off |
+| Marmara Sea, 2025-04-23, 3 h | 8 | 44 of 57 | 24 of 68 | Mw 6.2: alarm 11.0 s after origin, M4.6 at +14 s, final M4.8, located 3.1 km off |
+| Sındırgı, 2025-08-10, 3 h | 6 | 39 of 66 | 7 of 46 | Mw 6.1: alarm 17.0 s after origin, M4.9 at +17.5 s, final M4.7, located 32.5 km off |
 
 - **Trigger settings.** Chosen on the first two replays. The third was not used
   for the choice. There, the earlier rule (one window at p ≥ 0.9) detected 24
@@ -194,11 +196,12 @@ catalogue (events within 250 km):
 - **Magnitude.** Saturates for large events (final M4.7 for the Mw 6.1, M4.8
   for the Mw 6.2). The regressor was trained on 10 s windows with few events
   above M5.5 (`docs/impl/07-magnitude.md`).
-- **Unmatched alarms.** Some are probably uncatalogued aftershocks. Five of the
-  23 in the Marmara replay were located within 15 km of the Mw 6.2.
+- **Unmatched alarms.** Some are probably uncatalogued aftershocks. Of the 24
+  in the Marmara replay, 9 were located and 5 of those within 15 km of the
+  Mw 6.2.
 - **Against STA/LTA.** STA/LTA settings were chosen on the first two replays
   to match the model's unmatched alarms. On the held-out replay that setting
-  detects 25 events against the model's 37, with 9 unmatched alarms against 8.
+  detects 25 events against the model's 39, with 9 unmatched alarms against 7.
   To detect as many events as the model, STA/LTA needs about three times the
   unmatched alarms. It alarms 1–1.3 s earlier for the Mw 6.1 and 6.2, and
   costs about 0.001 ms per update against 5 ms (`docs/impl/09-sta-lta.md`).
