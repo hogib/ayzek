@@ -13,7 +13,7 @@ The target platform is a Raspberry Pi 4 or 5. The input is currently a replay
 of AFAD miniSEED files at real time or faster; a live SeedLink client is not
 implemented yet.
 
-Named after a bird.
+Named after my pet bird.
 
 ## Requirements
 
