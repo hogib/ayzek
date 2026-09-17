@@ -46,6 +46,9 @@ const char* kUsage = R"(usage: ayzek [options] STATION.mseed...
   --instant-threshold P or when one window reaches P (default 0.9; > 1 disables)
   --release P           probability below which a trigger resets (default 0.3)
   --detector KIND       model (default) or stalta, the reference STA/LTA trigger
+  --no-anchor           do not date model triggers by the STA/LTA onset
+  --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
+  --require-onset       a detector trigger also needs an STA/LTA onset
   --sta S, --lta S      STA/LTA averaging lengths in seconds (default 1, 30)
   --stalta-on R         STA/LTA ratio that triggers (default 8)
   --stalta-off R        STA/LTA ratio below which a trigger resets (default 1.5)
@@ -138,6 +141,9 @@ int main(int argc, char** argv) try {
             pcfg.stalta.f_hi = std::stod(band.substr(comma + 1));
         }
         else if (a == "--stalta-3c") pcfg.stalta.three_component = true;
+        else if (a == "--no-anchor") pcfg.anchor = false;
+        else if (a == "--anchor-on") pcfg.anchor_on = std::stod(next());
+        else if (a == "--require-onset") pcfg.require_onset = true;
         else if (a == "--step") pcfg.step = std::stoul(next());
         else if (a == "--min-stations") ncfg.min_stations = std::stoul(next());
         else if (a == "--no-pick") pcfg.pick = false;
@@ -219,7 +225,7 @@ int main(int argc, char** argv) try {
     const double start = pcfg.from > 0 ? pcfg.from - 70.0 : t_first;   // 70 s covers a picker window before `from`
     const std::string detector_name =
         pcfg.detector == DetectorKind::Model
-            ? std::string("3-seed detector")
+            ? std::string(pcfg.anchor ? "3-seed detector + STA/LTA anchor" : "3-seed detector")
             : std::format("STA/LTA {:g}/{:g} s on {:g} off {:g}, {:g}-{:g} Hz, {}", pcfg.stalta.sta_seconds,
                           pcfg.stalta.lta_seconds, pcfg.stalta_on, pcfg.stalta_off, pcfg.stalta.f_lo, pcfg.stalta.f_hi,
                           pcfg.stalta.three_component ? "Z+N+E" : "Z");
@@ -339,7 +345,7 @@ int main(int argc, char** argv) try {
     log.plain(true, "Station processing ({} backend)", simd::kBackend);
     log.plain(false, "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>17}   {:>16} {:>9} {:>14}", "", "windows", "with gap", "triggers", "picks",
               "magnitudes early/P", "ms/window (p99)", "ms/pick", "ms/magnitude");
-    std::uint64_t windows = 0;
+    std::uint64_t windows = 0, triggers = 0, anchored = 0;
     std::size_t pick_estimated = 0, pick_skipped = 0;
     for (std::size_t i = 0; i < stations.size(); ++i) {
         const auto& s = procs[i]->stats();
@@ -358,11 +364,16 @@ int main(int argc, char** argv) try {
         }
         if (dropped) Log::get().line("warn", "33", "{}: {} samples dropped by the ring", stations[i]->code, dropped);
         windows += s.windows;
+        triggers += s.detections;
+        anchored += s.anchored;
         if (stale) log.line("warn", "33", "{}: {} late records discarded", stations[i]->code, stale);
         log.plain(false, "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>17}   {:>8.3f} ({:>5.3f}) {:>9.0f} {:>14.0f}", stations[i]->code, s.windows,
                   s.gap_windows, s.detections, s.picks, std::format("{}/{}", s.magnitudes, ps.estimated), w.mean, w.p99,
                   pk.mean, mg.mean);
     }
+    if (pcfg.detector == DetectorKind::Model && pcfg.anchor)
+        log.plain(false, "  P time from an STA/LTA onset for {} of {} triggers ({} from the window start)", anchored,
+                  triggers, triggers - anchored);
     if (pcfg.magnitude)
         log.plain(false, "  magnitude at the picked P: {} estimated, {} not (trigger not part of a declared event)",
                   pick_estimated, pick_skipped);

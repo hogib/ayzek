@@ -54,7 +54,15 @@ struct ProcessorConfig {
     double stalta_on = 8.0;
     double stalta_off = 1.5;
     double stalta_noise_below = 2.0;   // max ratio over a window accepted as noise
-};
+
+    // Anchoring (detector = Model): an STA/LTA runs alongside the detector and
+    // its onsets give the P time of a trigger, in place of the assumption that P
+    // lies 3.5 s into the first window of the run. It never triggers anything:
+    // the detector alone decides (09-sta-lta.md).
+    bool anchor = true;
+    double anchor_on = 3.0;            // ratio taken as an onset
+    double anchor_off = 1.5;           // ratio below which the next onset can be taken
+    bool require_onset = false;        // a trigger also needs an onset in that range
 
 // The 10 s window starting 2 s before a picked P and the station's noise
 // baseline at that time, sent with the Pick (common.hpp).
@@ -66,6 +74,8 @@ struct MagnitudeWindow {
 
 struct ProcessorStats {
     std::uint64_t windows = 0, gap_windows = 0, detections = 0, picks = 0, abandoned_picks = 0, magnitudes = 0;
+    std::uint64_t anchored = 0;        // detections whose P time came from an STA/LTA onset
+    std::uint64_t unconfirmed = 0;     // runs of windows dropped for want of an onset (require_onset)
     std::size_t noise_windows = 0;
     std::vector<float> window_ms;      // conditioning + ensemble (or STA/LTA update), per window
     std::vector<float> pick_ms, magnitude_ms;   // magnitude_ms: early estimates only
@@ -84,6 +94,9 @@ private:
     void score_window(std::uint64_t start);
     float score_model(std::uint64_t start, double& ms);
     float score_stalta(std::uint64_t start, double& ms);
+    float update_stalta(std::uint64_t start, double on, double off, double& ms);
+    // The onset position for a trigger, or kUnset if there is none in range.
+    [[nodiscard]] std::uint64_t onset_for(std::uint64_t run_start) const;
     void trigger(std::uint64_t run_start, double declared_at, float p, double ms);
     void run_jobs(std::uint64_t limit);
     void run_pick(std::uint64_t start, double trigger);
@@ -100,7 +113,10 @@ private:
     std::unique_ptr<MagnitudeEstimator> magnitude_;
     std::unique_ptr<dsp::StaLta> stalta_;
     std::uint64_t stalta_next_ = kUnset;     // next sample to feed to the STA/LTA; kUnset after a gap
-    std::vector<std::pair<std::uint64_t, double>> stalta_triggers_;   // (sample, ratio) within one update
+    bool stalta_armed_ = true;               // the ratio has been below `off` since the last onset
+    std::deque<std::pair<std::uint64_t, double>> onsets_;   // recent (sample, ratio) of STA/LTA onsets
+    std::deque<float> ratios_;               // STA/LTA ratio of the last 60 s, for anchoring
+    std::uint64_t ratios_end_ = 0;           // position after the last of them
     NoiseBaseline noise_;
     dsp::Conditioner cond6_, cond60_;
     std::vector<double> raw_, noise_raw_;

@@ -25,7 +25,7 @@ Processor::Processor(Station& st, const std::vector<Weights>& detector, const We
     : st_(st), cfg_(cfg), bus_(bus), detector_(detector), noise_(bp),
       cond6_(bp, Detector::kWindow), cond60_(bp, Picker::kWindow) {
     if (cfg_.pick) picker_ = std::make_unique<Picker>(picker);
-    if (cfg_.detector == DetectorKind::StaLta) stalta_ = std::make_unique<dsp::StaLta>(cfg_.stalta);
+    if (cfg_.detector == DetectorKind::StaLta || cfg_.anchor) stalta_ = std::make_unique<dsp::StaLta>(cfg_.stalta);
     if (cfg_.magnitude && !magnitude.empty()) magnitude_ = std::make_unique<MagnitudeEstimator>(magnitude, bp);
     else cfg_.magnitude = false;
     raw_.resize(Picker::kWindow * 3);
@@ -91,7 +91,17 @@ void Processor::score_window(std::uint64_t start) {
         return;
     }
     double ms = 0;
-    const float p = stalta_ ? score_stalta(start, ms) : score_model(start, ms);
+    float p = 0;
+    if (cfg_.detector == DetectorKind::StaLta) {
+        p = score_stalta(start, ms);
+    } else {
+        // The anchoring STA/LTA is fed before the window is scored, so that an
+        // onset in this window can date a trigger from it.
+        double anchor_ms = 0;
+        if (stalta_) update_stalta(start, cfg_.anchor_on, cfg_.anchor_off, anchor_ms);
+        p = score_model(start, ms);
+        ms += anchor_ms;
+    }
     ++stats_.windows;
     stats_.window_ms.push_back(static_cast<float>(ms));
     recent_.emplace_back(start, p);
@@ -132,11 +142,25 @@ float Processor::score_model(std::uint64_t start, double& ms) {
             above_ = 0;
         }
         if (above_ > 0 && (above_ >= cfg_.trigger_windows || p >= cfg_.instant_threshold)) {
+            const std::uint64_t onset = (cfg_.anchor || cfg_.require_onset) ? onset_for(run_start_) : kUnset;
+            if (cfg_.require_onset && onset == kUnset) {
+                // No STA/LTA onset: the run is not confirmed and starts again.
+                ++stats_.unconfirmed;
+                above_ = 0;
+                return p;
+            }
             active_ = true;
             below_ = 0;
             above_ = 0;
-            last_trigger_ = pos_to_epoch(run_start_);
-            trigger(run_start_, t_start + Detector::kWindow / kFs, p, ms);
+            // P is the onset, or 3.5 s into the first window of the run without one.
+            const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
+            std::uint64_t window_start = run_start_;
+            if (cfg_.anchor && onset != kUnset) {
+                window_start = onset - lead;
+                ++stats_.anchored;
+            }
+            last_trigger_ = pos_to_epoch(window_start);
+            trigger(window_start, t_start + Detector::kWindow / kFs, p, ms);
         }
     } else if (p < cfg_.release) {
         if (++below_ >= cfg_.release_windows) active_ = false;
@@ -147,42 +171,77 @@ float Processor::score_model(std::uint64_t start, double& ms) {
 }
 
 // Feeds the samples of the window not yet seen to the STA/LTA, one at a time,
-// and triggers at the first sample whose ratio reaches `stalta_on`. Returns the
-// largest ratio among those samples. Within a gap-free stretch each call adds
-// the last `step` samples of the window.
-float Processor::score_stalta(std::uint64_t start, double& ms) {
+// and records the positions where the ratio first reaches `on` after having
+// fallen below `off`. Returns the largest ratio among those samples. Within a
+// gap-free stretch each call adds the last `step` samples of the window.
+float Processor::update_stalta(std::uint64_t start, double on, double off, double& ms) {
     const std::uint64_t end = start + Detector::kWindow;
     std::uint64_t from = stalta_next_;
     if (from == kUnset || from < start) {
         stalta_->reset();
+        stalta_armed_ = true;
+        ratios_.clear();
         from = start;
     }
-    // Detections carry a window start 3.5 s before P, the convention of the
-    // detector windows, so that the picker and magnitude windows and the
-    // catalogue matching are placed as for the model.
-    const auto onset = static_cast<std::uint64_t>(3.5 * kFs);
     const auto t0 = Clock::now();
     double peak = 0;
-    stalta_triggers_.clear();
     for (std::uint64_t pos = from; pos < end; ++pos) {
         const double r = stalta_->step(std::span<const double, 3>(raw_.data() + (pos - start) * 3, 3));
         peak = std::max(peak, r);
-        if (cfg_.from > 0 && pos_to_epoch(pos) < cfg_.from) {
-            active_ = r >= cfg_.stalta_off;
-        } else if (!active_) {
-            if (r >= cfg_.stalta_on && pos_to_epoch(pos - onset) - last_trigger_ >= cfg_.retrigger_seconds) {
-                stalta_triggers_.emplace_back(pos, r);
-                active_ = true;
-                last_trigger_ = pos_to_epoch(pos - onset);
-            }
-        } else if (r < cfg_.stalta_off) {
-            active_ = false;
+        if (stalta_armed_ && r >= on) {
+            onsets_.emplace_back(pos, r);
+            stalta_armed_ = false;
+        } else if (!stalta_armed_ && r < off) {
+            stalta_armed_ = true;
         }
+        ratios_.push_back(static_cast<float>(r));
     }
+    ratios_end_ = end;
+    while (ratios_.size() > static_cast<std::size_t>(60 * kFs)) ratios_.pop_front();
     ms = ms_since(t0);
     stalta_next_ = end;
-    for (const auto& [pos, r] : stalta_triggers_) trigger(pos - onset, pos_to_epoch(pos + 1), static_cast<float>(r), ms);
+    while (!onsets_.empty() && end - onsets_.front().first > static_cast<std::uint64_t>(120 * kFs)) onsets_.pop_front();
     return static_cast<float>(peak);
+}
+
+// STA/LTA as the detector: every onset triggers, subject to the minimum time
+// between triggers. The trigger sample is the P time.
+float Processor::score_stalta(std::uint64_t start, double& ms) {
+    const float peak = update_stalta(start, cfg_.stalta_on, cfg_.stalta_off, ms);
+    const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
+    while (!onsets_.empty()) {
+        const auto [pos, r] = onsets_.front();
+        onsets_.pop_front();
+        const double run_t = pos_to_epoch(pos - lead);
+        if (cfg_.from > 0 && pos_to_epoch(pos) < cfg_.from) continue;
+        if (run_t - last_trigger_ < cfg_.retrigger_seconds) continue;
+        last_trigger_ = run_t;
+        ++stats_.anchored;
+        // Detections carry a window start 3.5 s before P, the convention of the
+        // detector windows, so that the picker and magnitude windows and the
+        // catalogue matching are placed as for the model.
+        trigger(pos - lead, pos_to_epoch(pos + 1), static_cast<float>(r), ms);
+    }
+    active_ = !stalta_armed_;      // for the noise baseline
+    return peak;
+}
+
+// P time of a trigger whose run of windows starts at `run_start`: the first
+// sample from 2 s before that window at which the STA/LTA ratio reaches
+// `anchor_on`, searched up to the end of the window. Without one, the model's
+// own estimate is used, which places P 3.5 s into the window. The sample is
+// always in the past when the trigger fires, so anchoring does not delay
+// anything. The classical re-arm rule is deliberately not applied here: during
+// the coda of an earlier event the ratio may not fall back below `anchor_off`,
+// and the onset of the next event would then have no anchor.
+std::uint64_t Processor::onset_for(std::uint64_t run_start) const {
+    if (ratios_.empty()) return kUnset;
+    const std::uint64_t first = ratios_end_ - ratios_.size();
+    const std::uint64_t lo = std::max(run_start - 200, first);
+    const std::uint64_t hi = std::min(run_start + Detector::kWindow, ratios_end_);
+    for (std::uint64_t pos = lo; pos < hi; ++pos)
+        if (ratios_[pos - first] >= cfg_.anchor_on) return pos;
+    return kUnset;
 }
 
 // Sends a detection dated `run_start` (P assumed 3.5 s later) and schedules the
