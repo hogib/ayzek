@@ -20,31 +20,34 @@ namespace ayzek::pipeline {
 
 class ReplaySource {
 public:
-    // Reads and indexes every 512-byte record. Throws on an unreadable file.
-    explicit ReplaySource(const std::string& path);
+  // Reads and indexes every 512-byte record. Throws on an unreadable file.
+  explicit ReplaySource(const std::string &path);
 
-    [[nodiscard]] const std::string& station() const noexcept { return station_; }
-    [[nodiscard]] double first_time() const noexcept { return first_; }
-    [[nodiscard]] double last_time() const noexcept { return last_; }
+  [[nodiscard]] const std::string &station() const noexcept { return station_; }
+  [[nodiscard]] double first_time() const noexcept { return first_; }
+  [[nodiscard]] double last_time() const noexcept { return last_; }
 
-    struct Record {
-        double end_time;
-        std::size_t comp;
-        std::array<std::byte, 512> bytes;
-    };
-    // Records sorted by end time, i.e. the delivery order of a stream without
-    // late records. Late arrivals present in the archive are not reproduced.
-    [[nodiscard]] const std::vector<Record>& records() const noexcept { return records_; }
+  struct Record {
+    double end_time;
+    std::size_t comp;
+    std::array<std::byte, 512> bytes;
+  };
+  // Records sorted by end time, i.e. the delivery order of a stream without
+  // late records. Late arrivals present in the archive are not reproduced.
+  [[nodiscard]] const std::vector<Record> &records() const noexcept {
+    return records_;
+  }
 
 private:
-    std::string station_;
-    double first_ = 0, last_ = 0;
-    std::vector<Record> records_;
+  std::string station_;
+  double first_ = 0, last_ = 0;
+  std::vector<Record> records_;
 };
 
 // Feeds all records of `src` into the station's rings, then sets
 // st.ingest_done. When a ring is full it waits for the processor (replay only;
 // see ingest.cpp).
-void run_ingest(const ReplaySource& src, Station& st, const StreamClock& clock, const std::atomic<bool>& stop);
+void run_ingest(const ReplaySource &src, Station &st, const StreamClock &clock,
+                const std::atomic<bool> &stop);
 
-}  // namespace ayzek::pipeline
+} // namespace ayzek::pipeline

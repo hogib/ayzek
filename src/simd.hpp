@@ -6,8 +6,8 @@
 // Two implementations: NEON intrinsics on aarch64 (Raspberry Pi 4/5), and
 // portable loops elsewhere, written so that GCC and Clang can auto-vectorise
 // them. The two sum in different orders, so results agree to floating-point
-// rounding rather than exactly. tests/test_models.cpp checks both builds against
-// PyTorch.
+// rounding rather than exactly. tests/test_models.cpp checks both builds
+// against PyTorch.
 
 #include <cstddef>
 
@@ -20,144 +20,165 @@
 
 namespace ayzek::simd {
 
-inline constexpr const char* kBackend = AYZEK_NEON ? "neon" : "scalar";
+inline constexpr const char *kBackend = AYZEK_NEON ? "neon" : "scalar";
 
 // sum(a[i] * b[i])
-inline float dot(const float* a, const float* b, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline float dot(const float *a, const float *b, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    float32x4_t s0 = vdupq_n_f32(0), s1 = vdupq_n_f32(0), s2 = vdupq_n_f32(0), s3 = vdupq_n_f32(0);
-    for (; i + 16 <= n; i += 16) {
-        s0 = vmlaq_f32(s0, vld1q_f32(a + i), vld1q_f32(b + i));
-        s1 = vmlaq_f32(s1, vld1q_f32(a + i + 4), vld1q_f32(b + i + 4));
-        s2 = vmlaq_f32(s2, vld1q_f32(a + i + 8), vld1q_f32(b + i + 8));
-        s3 = vmlaq_f32(s3, vld1q_f32(a + i + 12), vld1q_f32(b + i + 12));
-    }
-    for (; i + 4 <= n; i += 4) s0 = vmlaq_f32(s0, vld1q_f32(a + i), vld1q_f32(b + i));
-    float s = vaddvq_f32(vaddq_f32(vaddq_f32(s0, s1), vaddq_f32(s2, s3)));
+  float32x4_t s0 = vdupq_n_f32(0), s1 = vdupq_n_f32(0), s2 = vdupq_n_f32(0),
+              s3 = vdupq_n_f32(0);
+  for (; i + 16 <= n; i += 16) {
+    s0 = vmlaq_f32(s0, vld1q_f32(a + i), vld1q_f32(b + i));
+    s1 = vmlaq_f32(s1, vld1q_f32(a + i + 4), vld1q_f32(b + i + 4));
+    s2 = vmlaq_f32(s2, vld1q_f32(a + i + 8), vld1q_f32(b + i + 8));
+    s3 = vmlaq_f32(s3, vld1q_f32(a + i + 12), vld1q_f32(b + i + 12));
+  }
+  for (; i + 4 <= n; i += 4)
+    s0 = vmlaq_f32(s0, vld1q_f32(a + i), vld1q_f32(b + i));
+  float s = vaddvq_f32(vaddq_f32(vaddq_f32(s0, s1), vaddq_f32(s2, s3)));
 #else
-    // Four accumulators. The compiler may not reorder a single floating-point
-    // sum without -ffast-math, but four independent sums can be vectorised.
-    float s0 = 0, s1 = 0, s2 = 0, s3 = 0;
-    for (; i + 4 <= n; i += 4) {
-        s0 += a[i] * b[i];
-        s1 += a[i + 1] * b[i + 1];
-        s2 += a[i + 2] * b[i + 2];
-        s3 += a[i + 3] * b[i + 3];
-    }
-    float s = (s0 + s1) + (s2 + s3);
+  // Four accumulators. The compiler may not reorder a single floating-point
+  // sum without -ffast-math, but four independent sums can be vectorised.
+  float s0 = 0, s1 = 0, s2 = 0, s3 = 0;
+  for (; i + 4 <= n; i += 4) {
+    s0 += a[i] * b[i];
+    s1 += a[i + 1] * b[i + 1];
+    s2 += a[i + 2] * b[i + 2];
+    s3 += a[i + 3] * b[i + 3];
+  }
+  float s = (s0 + s1) + (s2 + s3);
 #endif
-    for (; i < n; ++i) s += a[i] * b[i];
-    return s;
+  for (; i < n; ++i)
+    s += a[i] * b[i];
+  return s;
 }
 
-// y[r] = bias[r] + sum_c W[r, c] * x[c], W row-major (rows x cols). bias may be null.
-inline void gemv(const float* W, std::size_t rows, std::size_t cols, const float* x,
-                 const float* bias, float* y) noexcept {
-    for (std::size_t r = 0; r < rows; ++r) {
-        y[r] = dot(W + r * cols, x, cols) + (bias ? bias[r] : 0.0f);
-    }
+// y[r] = bias[r] + sum_c W[r, c] * x[c], W row-major (rows x cols). bias may be
+// null.
+inline void gemv(const float *W, std::size_t rows, std::size_t cols,
+                 const float *x, const float *bias, float *y) noexcept {
+  for (std::size_t r = 0; r < rows; ++r) {
+    y[r] = dot(W + r * cols, x, cols) + (bias ? bias[r] : 0.0f);
+  }
 }
 
 // y += x
-inline void add(const float* x, float* y, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline void add(const float *x, float *y, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    for (; i + 4 <= n; i += 4) vst1q_f32(y + i, vaddq_f32(vld1q_f32(y + i), vld1q_f32(x + i)));
+  for (; i + 4 <= n; i += 4)
+    vst1q_f32(y + i, vaddq_f32(vld1q_f32(y + i), vld1q_f32(x + i)));
 #endif
-    for (; i < n; ++i) y[i] += x[i];
+  for (; i < n; ++i)
+    y[i] += x[i];
 }
 
 // y += a * x
-inline void axpy(float a, const float* x, float* y, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline void axpy(float a, const float *x, float *y, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    const float32x4_t va = vdupq_n_f32(a);
-    for (; i + 4 <= n; i += 4) vst1q_f32(y + i, vmlaq_f32(vld1q_f32(y + i), va, vld1q_f32(x + i)));
+  const float32x4_t va = vdupq_n_f32(a);
+  for (; i + 4 <= n; i += 4)
+    vst1q_f32(y + i, vmlaq_f32(vld1q_f32(y + i), va, vld1q_f32(x + i)));
 #endif
-    for (; i < n; ++i) y[i] += a * x[i];
+  for (; i < n; ++i)
+    y[i] += a * x[i];
 }
 
 // x = x * s + b
-inline void affine(float* x, float s, float b, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline void affine(float *x, float s, float b, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    const float32x4_t vs = vdupq_n_f32(s), vb = vdupq_n_f32(b);
-    for (; i + 4 <= n; i += 4) vst1q_f32(x + i, vaddq_f32(vmulq_f32(vld1q_f32(x + i), vs), vb));
+  const float32x4_t vs = vdupq_n_f32(s), vb = vdupq_n_f32(b);
+  for (; i + 4 <= n; i += 4)
+    vst1q_f32(x + i, vaddq_f32(vmulq_f32(vld1q_f32(x + i), vs), vb));
 #endif
-    for (; i < n; ++i) x[i] = x[i] * s + b;
+  for (; i < n; ++i)
+    x[i] = x[i] * s + b;
 }
 
 // x = max(x, 0)
-inline void relu(float* x, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline void relu(float *x, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    const float32x4_t z = vdupq_n_f32(0);
-    for (; i + 4 <= n; i += 4) vst1q_f32(x + i, vmaxq_f32(vld1q_f32(x + i), z));
+  const float32x4_t z = vdupq_n_f32(0);
+  for (; i + 4 <= n; i += 4)
+    vst1q_f32(x + i, vmaxq_f32(vld1q_f32(x + i), z));
 #endif
-    for (; i < n; ++i) x[i] = x[i] > 0.0f ? x[i] : 0.0f;
+  for (; i < n; ++i)
+    x[i] = x[i] > 0.0f ? x[i] : 0.0f;
 }
 
 // y = a * x  (elementwise), y may alias x
-inline void mul(const float* a, const float* x, float* y, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline void mul(const float *a, const float *x, float *y,
+                std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    for (; i + 4 <= n; i += 4) vst1q_f32(y + i, vmulq_f32(vld1q_f32(a + i), vld1q_f32(x + i)));
+  for (; i + 4 <= n; i += 4)
+    vst1q_f32(y + i, vmulq_f32(vld1q_f32(a + i), vld1q_f32(x + i)));
 #endif
-    for (; i < n; ++i) y[i] = a[i] * x[i];
+  for (; i < n; ++i)
+    y[i] = a[i] * x[i];
 }
 
 // sum(x) over doubles, for window statistics.
-inline double sum(const double* x, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline double sum(const double *x, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    float64x2_t s0 = vdupq_n_f64(0), s1 = vdupq_n_f64(0);
-    for (; i + 4 <= n; i += 4) {
-        s0 = vaddq_f64(s0, vld1q_f64(x + i));
-        s1 = vaddq_f64(s1, vld1q_f64(x + i + 2));
-    }
-    double s = vaddvq_f64(vaddq_f64(s0, s1));
+  float64x2_t s0 = vdupq_n_f64(0), s1 = vdupq_n_f64(0);
+  for (; i + 4 <= n; i += 4) {
+    s0 = vaddq_f64(s0, vld1q_f64(x + i));
+    s1 = vaddq_f64(s1, vld1q_f64(x + i + 2));
+  }
+  double s = vaddvq_f64(vaddq_f64(s0, s1));
 #else
-    double s = 0.0;
+  double s = 0.0;
 #endif
-    for (; i < n; ++i) s += x[i];
-    return s;
+  for (; i < n; ++i)
+    s += x[i];
+  return s;
 }
 
 // sum(x * y) over doubles.
-inline double dot(const double* x, const double* y, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline double dot(const double *x, const double *y, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    float64x2_t s0 = vdupq_n_f64(0), s1 = vdupq_n_f64(0);
-    for (; i + 4 <= n; i += 4) {
-        s0 = vmlaq_f64(s0, vld1q_f64(x + i), vld1q_f64(y + i));
-        s1 = vmlaq_f64(s1, vld1q_f64(x + i + 2), vld1q_f64(y + i + 2));
-    }
-    double s = vaddvq_f64(vaddq_f64(s0, s1));
+  float64x2_t s0 = vdupq_n_f64(0), s1 = vdupq_n_f64(0);
+  for (; i + 4 <= n; i += 4) {
+    s0 = vmlaq_f64(s0, vld1q_f64(x + i), vld1q_f64(y + i));
+    s1 = vmlaq_f64(s1, vld1q_f64(x + i + 2), vld1q_f64(y + i + 2));
+  }
+  double s = vaddvq_f64(vaddq_f64(s0, s1));
 #else
-    double s = 0.0;
+  double s = 0.0;
 #endif
-    for (; i < n; ++i) s += x[i] * y[i];
-    return s;
+  for (; i < n; ++i)
+    s += x[i] * y[i];
+  return s;
 }
 
 // x *= a  (elementwise) over doubles
-inline void mul_d(const double* a, double* x, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline void mul_d(const double *a, double *x, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    for (; i + 2 <= n; i += 2) vst1q_f64(x + i, vmulq_f64(vld1q_f64(a + i), vld1q_f64(x + i)));
+  for (; i + 2 <= n; i += 2)
+    vst1q_f64(x + i, vmulq_f64(vld1q_f64(a + i), vld1q_f64(x + i)));
 #endif
-    for (; i < n; ++i) x[i] *= a[i];
+  for (; i < n; ++i)
+    x[i] *= a[i];
 }
 
 // x = x * s + b over doubles
-inline void affine(double* x, double s, double b, std::size_t n) noexcept {
-    std::size_t i = 0;
+inline void affine(double *x, double s, double b, std::size_t n) noexcept {
+  std::size_t i = 0;
 #if AYZEK_NEON
-    const float64x2_t vs = vdupq_n_f64(s), vb = vdupq_n_f64(b);
-    for (; i + 2 <= n; i += 2) vst1q_f64(x + i, vaddq_f64(vmulq_f64(vld1q_f64(x + i), vs), vb));
+  const float64x2_t vs = vdupq_n_f64(s), vb = vdupq_n_f64(b);
+  for (; i + 2 <= n; i += 2)
+    vst1q_f64(x + i, vaddq_f64(vmulq_f64(vld1q_f64(x + i), vs), vb));
 #endif
-    for (; i < n; ++i) x[i] = x[i] * s + b;
+  for (; i < n; ++i)
+    x[i] = x[i] * s + b;
 }
 
-}  // namespace ayzek::simd
+} // namespace ayzek::simd
