@@ -115,7 +115,8 @@ tools/demo.sh all      # 7 stations, full speed
 | `--require-onset` | | a detector trigger also needs an STA/LTA onset; measured, and worse than not requiring one (`docs/impl/09-sta-lta.md`) |
 | `--mag-lead S` | 2 | magnitude window start, seconds before P |
 | `--step N` | 50 | samples between detector windows (0.5 s at 100 Hz) |
-| `--min-stations N` | 2 | station detections needed to declare an event |
+| `--min-stations N` | 2 | station detections needed to declare an event; 3 halves the unmatched alarms in a dense network but costs warning time (`docs/impl/05-pipeline.md`) |
+| `--slack S` | 3 | tolerance on the inter-station P travel time, seconds |
 | `--no-pick` | | no P/S picker, and so no location |
 | `--no-magnitude` | | no magnitude regressor. Otherwise each trigger gets an early estimate, and triggers of declared events a second one at the picked P |
 | `--catalog CSV` | | AFAD catalogue export; each alarm is compared with it |

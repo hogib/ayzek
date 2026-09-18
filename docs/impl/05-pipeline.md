@@ -270,6 +270,50 @@ without a catalogue event:
   them around the same sequence. A quiet period, to measure the false-alarm
   rate without uncatalogued aftershocks, has not been evaluated.
 
+### Association
+
+Two detections can belong to one event if their P times differ by no more than
+the P travel time between the stations plus `--slack` (3 s). The slack was sized
+for the old P estimate, which was good to about 2.5 s; anchored P times are good
+to 0.1 s (`09-sta-lta.md`), so the obvious question is whether a tighter slack
+removes alarms that pair by chance. It does not.
+
+Chance-corrected detections and alarms without a catalogue event, from the
+same replays (`data/runs/v7/slack_sweep.csv`, not tracked):
+
+| slack | Sındırgı 30 min | Marmara | held out |
+|---:|---|---|---|
+| 3 s | 7.0, 2 unmatched | 41.7, 24 | 36.4, 7 |
+| 1.5 s | 7.0, 2 | 41.7, 25 | 35.4, 7 |
+| 0.5 s | 7.0, 2 | 43.0, 25 | 35.4, 7 |
+
+Nothing moves by more than one event or one alarm. The reason is that the
+slack is the small term: the tolerance is dominated by the inter-station travel
+time, which is 7 s for ARNA–ELBA and about 50 s for the widest pairs in these
+networks. Anchoring the P times cannot help with that.
+
+The lever that does work is requiring a third station (`--min-stations 3`),
+and it costs warning time:
+
+| | Marmara | held out |
+|---|---|---|
+| detected, 2 stations | 44 of 57 | 39 of 66 |
+| detected, 3 stations | 38 | 25 |
+| unmatched, 2 → 3 stations | 24 → 12 | 7 → 1 |
+| median alarm delay | 12.0 → 13.2 s | 17.5 → **42.0 s** |
+| largest event | Mw 6.2 +11.0 → +11.5 s | Mw 6.1 +17.0 → **+37.0 s** |
+
+In the dense Marmara network a third station halves the unmatched alarms for
+half a second of delay. In the held-out network it is ruinous: the third
+station is 230–290 km away, so the Mw 6.1 alarm arrives 20 s later, which is
+most of the warning. The default stays at two stations; three is worth setting
+only where the network is dense.
+
+A real reduction in unmatched alarms would need the declaration to depend on
+whether the detections fit one origin, rather than on pairwise time
+differences. That is not implemented: the location runs after the alarm, from
+the picks, about a minute later.
+
 ### Scaling
 
 All seven stations (up to 296 km) at full speed on a 12-thread x86 laptop:

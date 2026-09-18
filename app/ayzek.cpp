@@ -59,6 +59,7 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --stalta-3c           STA/LTA on the energy of all three components (default: vertical)
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2)
+  --slack S             tolerance on the inter-station P travel time, seconds (default 3)
   --no-pick             detector only
   --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
@@ -184,6 +185,8 @@ int main(int argc, char **argv) try {
       pcfg.magnitude_lead = std::stod(next());
     else if (a == "--step")
       pcfg.step = std::stoul(next());
+    else if (a == "--slack")
+      ncfg.slack_seconds = std::stod(next());
     else if (a == "--min-stations")
       ncfg.min_stations = std::stoul(next());
     else if (a == "--no-pick")
