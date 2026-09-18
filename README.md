@@ -112,7 +112,7 @@ tools/demo.sh all      # 7 stations, full speed
 | `--no-anchor` | | do not take the P time of a model trigger from the STA/LTA onset |
 | `--anchor-on R` | 3 | STA/LTA ratio taken as the onset when anchoring |
 | `--anchor-picker`, `--anchor-magnitude` | | also place the picker and early magnitude windows from the anchored P; both make their models worse (`docs/impl/09-sta-lta.md`) |
-| `--require-onset` | | a detector trigger also needs an STA/LTA onset (not evaluated yet) |
+| `--require-onset` | | a detector trigger also needs an STA/LTA onset; measured, and worse than not requiring one (`docs/impl/09-sta-lta.md`) |
 | `--mag-lead S` | 2 | magnitude window start, seconds before P |
 | `--step N` | 50 | samples between detector windows (0.5 s at 100 Hz) |
 | `--min-stations N` | 2 | station detections needed to declare an event |

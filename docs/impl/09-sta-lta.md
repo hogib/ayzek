@@ -156,6 +156,40 @@ P time. Anchoring is on by default because it costs nothing and makes the
 reported times right, which is also what a tighter association slack would
 need.
 
+## Onset confirmation does not pay
+
+`--require-onset` makes a detector trigger need an STA/LTA onset in its window
+as well. The idea was that the detector threshold could then be lowered, giving
+more detections at the same number of unmatched alarms. It does not work.
+
+Grid: threshold 0.9 to 0.6, 1 to 8 windows, with and without confirmation, on
+the three replays with the chance correction
+(`data/runs/v7/onset_sweep.csv`, not tracked). The rules were fixed in advance
+against the default setting's tuning numbers, 48.7 chance-corrected detections
+and 26 unmatched alarms.
+
+| setting | Sındırgı 30 min | Marmara | held out |
+|---|---|---|---|
+| **default, no confirmation** | 7/9, 2 unmatched | 44/57 (41.7), 24 | **39/66 (36.4), 7** |
+| confirmed, 0.75 × 4 windows | 8/9, 0 | 38/57 (34.3), 25 | 37/66 (34.1), 14 |
+| confirmed, at the default | 6/9, 0 | 34/57 (30.9), 11 | 27/66 (25.4), 2 |
+| confirmed, 0.6 × 2 windows | 8/9, 1 | 40/57 (35.6), 38 | 41/66 (36.4), 29 |
+
+- At no more than the default's 26 unmatched alarms on the tuning data, the
+  best confirmed setting reaches 42.3 chance-corrected detections against 48.7.
+- No confirmed setting reaches 48.7 at any threshold in the grid. Matching the
+  default's held-out recall takes 0.6 × 2 windows, at 29 unmatched alarms
+  against 7.
+- The Mw 6.2 and Mw 6.1 alarm at +11.0 s and +17.0 s in every variant, so
+  confirmation neither delays nor blocks the large events.
+
+The reason is in the anchoring numbers above: only about half of the triggers
+have an onset, and the half without are not mostly noise. They are onsets
+inside the coda of an earlier event, or too gradual for the ratio to rise from
+quiet, and many belong to catalogue events. Requiring an onset removes those
+along with the noise. `--require-onset` stays off; the option is kept because
+the measurement is worth repeating if the onset definition changes.
+
 **A bug this exposed.** The noise-baseline test picked its threshold by whether
 an STA/LTA object existed rather than by which detector was in use. With
 anchoring on, a model run therefore compared detector probabilities against the
