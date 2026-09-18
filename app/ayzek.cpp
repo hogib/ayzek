@@ -49,6 +49,8 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --no-anchor           do not date model triggers by the STA/LTA onset
   --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
   --require-onset       a detector trigger also needs an STA/LTA onset
+  --anchor-picker       place the picker window from the anchored P too
+  --anchor-magnitude    place the early magnitude window from the anchored P too
   --mag-lead S          magnitude window start, seconds before P (default 2)
   --sta S, --lta S      STA/LTA averaging lengths in seconds (default 1, 30)
   --stalta-on R         STA/LTA ratio that triggers (default 8)

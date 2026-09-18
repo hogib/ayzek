@@ -97,6 +97,10 @@ ayzek [options] STATION.mseed...
   --stalta-3c           STA/LTA on the energy of all three components (default: vertical)
   --no-anchor           do not date model triggers by the STA/LTA onset
   --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
+  --anchor-picker       place the picker window from the anchored P too
+  --anchor-magnitude    place the early magnitude window from the anchored P too
+  --require-onset       a detector trigger also needs an STA/LTA onset
+  --mag-lead S          magnitude window start, seconds before P (default 2)
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2)
   --no-pick             detector only
