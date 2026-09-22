@@ -4,8 +4,10 @@ Inference is hand-written, so the checkpoints are converted once, by Python,
 into a flat format C++ can read with no dependency.
 
 ```bash
-# from the ayzek root; the archive pipeline's env has torch, scipy and obspy
-uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_models.py
+# from the ayzek root; tools/ is its own uv project, and tools/reference/ holds
+# the model classes and conditioning the checkpoints were trained with
+uv run --project tools python tools/export_models.py \
+    --detector-dir CKPT_DIR --picker wave_n250.pt
 ```
 
 It needs `data/demo/DEMI.mseed` for the fixtures, so run
@@ -15,7 +17,8 @@ The magnitude regressor's inputs come from seismic_cli's encoder, which needs
 torchaudio, so its export runs in the data_downloader environment:
 
 ```bash
-uv run --project ~/Projects/sismokaos/data_downloader python tools/export_magnitude.py
+uv run --project tools python tools/export_magnitude.py \
+    --partition P0.pth --partition P1.pth --partition P2.pth --dataset dataset_magreg_fdsn_10s
 ```
 
 It writes `models/magnitude_p{0,1,2}.ayzw` and `data/fixtures/magnitude.ayzw`.

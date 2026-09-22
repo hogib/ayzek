@@ -1,0 +1,22 @@
+# The Python side of ayzek: model export and reference outputs for the C++
+# tests, plus the evaluation scripts. Run everything through this project:
+#
+#     uv run --project tools python tools/export_models.py --help
+#
+# The model classes and the conditioning they reproduce are copied into
+# tools/reference/, so nothing here needs another repository.
+[project]
+name = "ayzek-tools"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.14",
+    "obspy>=1.5.0",
+    "pandas>=2.2",
+    "torch>=2.14.0",
+    "torchaudio>=2.11.0",
+]
+
+[tool.uv]
+package = false

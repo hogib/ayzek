@@ -66,8 +66,10 @@ python3 tools/make_demo_data.py --out data/demo \
     ~/Projects/sismokaos/tdvms/afad_raw/{ELBA,SEMS}/*_2025-10-21.zip
 
 # 2. weights and test fixtures from the PyTorch checkpoints
-uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_models.py
-uv run --project ~/Projects/sismokaos/data_downloader python tools/export_magnitude.py
+uv run --project tools python tools/export_models.py \
+    --detector-dir CKPT_DIR --picker wave_n250.pt
+uv run --project tools python tools/export_magnitude.py \
+    --partition P0.pth --partition P1.pth --partition P2.pth --dataset dataset_magreg_fdsn_10s
 
 # 3. build and test
 meson setup build-release --buildtype=release

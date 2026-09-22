@@ -1,6 +1,7 @@
 #!/bin/sh
 # Demo: replays the 2025-11-10 Sındırgı M4.9 and aftershocks from AFAD stations
-# and compares the results with the AFAD catalogue.
+# and compares the results with the AFAD catalogue (tests/catalog_demo.csv, or
+# $AYZEK_CATALOG).
 #
 #   tools/demo.sh                 3 stations, 10x, from 18:20
 #   tools/demo.sh all             all 7 stations, full speed, whole 30 minutes
@@ -10,7 +11,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 BUILD=${BUILD:-build-release}
-CATALOG=${AYZEK_CATALOG:-$HOME/Projects/sismokaos/data_downloader/catalogs/catalog_afad_full_2026-08-30.csv}
+CATALOG=${AYZEK_CATALOG:-tests/catalog_demo.csv}
 
 if [ ! -f data/demo/DEMI.mseed ] || [ ! -f models/detector_s42.ayzw ]; then
     echo "missing data/demo or models: see docs/IMPLEMENTATION.md, 'First run'" >&2

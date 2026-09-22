@@ -133,9 +133,10 @@ python3 tools/make_demo_data.py --out data/demo \
     --start 2025-11-10T18:05:00 --end 2025-11-10T18:35:00 \
     ~/Projects/sismokaos/tdvms/afad_raw/{DEMI,MANT,BAND,KAND,KIRK}/*_2025-10-29.zip \
     ~/Projects/sismokaos/tdvms/afad_raw/{ELBA,SEMS}/*_2025-10-21.zip
-uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_models.py
+uv run --project tools python tools/export_models.py \
+    --detector-dir CKPT_DIR --picker wave_n250.pt
 
-CAT=~/Projects/sismokaos/data_downloader/catalogs/catalog_afad_full_2026-08-30.csv
+CAT=tests/catalog_demo.csv
 build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 --catalog $CAT \
     data/demo/DEMI.mseed data/demo/MANT.mseed data/demo/BAND.mseed
 ```

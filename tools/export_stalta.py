@@ -9,9 +9,9 @@ From 4 minutes of DEMI around the 2025-11-10 18:20:51 M4.9:
               (ObsPy has no three-component version; written out here)
   sos_hp, sos_lp  scipy's second-order sections
 
-Run from the ayzek root in the archive_pipeline environment:
+Run from the ayzek root:
 
-    uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_stalta.py
+    uv run --project tools python tools/export_stalta.py
 
 Writes data/fixtures/stalta.ayzw.
 """

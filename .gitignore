@@ -6,3 +6,6 @@ compile_commands.json
 data/
 __pycache__/
 docs/paper/*
+
+# the tools/ uv environment
+tools/.venv/

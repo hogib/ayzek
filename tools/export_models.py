@@ -11,12 +11,21 @@ Output files (AYZW format, docs/impl/02-weights.md):
   data/fixtures/detector.ayzw        inputs, per-seed logits, intermediates (torch)
   data/fixtures/picker.ayzw          inputs, logits, intermediates (torch)
 
-Run from the ayzek root in the archive_pipeline environment (torch, scipy,
-obspy). Requires data/demo/DEMI.mseed (tools/make_demo_data.py):
+Run from the ayzek root. Requires data/demo/DEMI.mseed (tools/make_demo_data.py):
 
-    uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_models.py
+    uv run --project tools python tools/export_models.py \
+        --detector-dir DIR --picker CKPT [--stations-csv CSV]
+
+--detector-dir holds the three seed checkpoints of one detector run
+(`best_..._seed42.pth` and so on, as `cascade-impl detect` writes them);
+--picker is an sphase `wave` checkpoint. The model classes are in
+tools/reference/. models/stations.csv is tracked, so --stations-csv is only
+needed to rebuild it from an AFAD station list (Code, Latitude, Longitude,
+Height).
 """
+import argparse
 import hashlib
+import re
 import sys
 from pathlib import Path
 
@@ -25,26 +34,34 @@ import torch
 from obspy import UTCDateTime, read
 from scipy import signal
 
-SISMO = Path.home() / "Projects/sismokaos"
-SPHASE = Path.home() / "Projects/Codings/sphase"
-sys.path.insert(0, str(SISMO / "archive_pipeline/src"))
-sys.path.insert(0, str(SPHASE / "src"))
-
-from archive_pipeline.archive import clean_block, taper_vector  # noqa: E402
-from archive_pipeline.products.detector import WaveformDetector, find_checkpoints  # noqa: E402
-from sphase.model import PhasePicker  # noqa: E402
-
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ayzw import write_ayzw  # noqa: E402
+from reference.conditioning import clean_block, taper_vector  # noqa: E402
+from reference.detector import WaveformDetector  # noqa: E402
+from reference.picker import PhasePicker  # noqa: E402
 
-DETECTOR_DIR = SISMO / "cnn_earthquake/trained_model_perwindow_6s"
-PICKER_CKPT = SPHASE / "runs/wave_n250.pt"
-STATIONS_CSV = SISMO / "data_downloader/catalogs/istasyon_katalog.csv"
 DEMO = Path("data/demo")
 FS, FMIN, FMAX = 100.0, 1.0, 45.0
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()[:16]
+
+
+def seed_checkpoints(ckpt_dir):
+    """(seed, path) for every seed checkpoint of the one run in `ckpt_dir`.
+
+    The seeds are averaged, so they must come from the same run: the filename
+    minus its `_pid<n>_seed<n>.pth` tail has to agree.
+    """
+    tail = re.compile(r"_pid\d+_seed(\d+)\.pth$")
+    found = [(int(m.group(1)), p) for p in sorted(Path(ckpt_dir).glob("*.pth"))
+             if (m := tail.search(p.name))]
+    if not found:
+        sys.exit(f"no *_pid<n>_seed<n>.pth checkpoints in {ckpt_dir}")
+    runs = {tail.sub("", p.name) for _, p in found}
+    if len(runs) > 1:
+        sys.exit(f"{ckpt_dir} holds checkpoints of several runs: {sorted(runs)}")
+    return sorted(found)
 
 
 def state_arrays(sd):
@@ -75,15 +92,19 @@ def cut(st, t, n):
 
 
 def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--detector-dir", type=Path, required=True)
+    ap.add_argument("--picker", type=Path, required=True)
+    ap.add_argument("--stations-csv", type=Path)
+    args = ap.parse_args()
     torch.set_grad_enabled(False)
     models = Path("models")
 
     # --- detector ---------------------------------------------------------
     print("detector")
-    ckpts = find_checkpoints(DETECTOR_DIR, "1d", "linear", "cnn-lstm")
     dets = []
-    for c in ckpts:
-        seed = int(str(c).rsplit("seed", 1)[1].split(".")[0])
+    for seed, c in seed_checkpoints(args.detector_dir):
         m = WaveformDetector(3, hidden=48, fusion_dim=96, branch1d="cnn-lstm")
         m.load_state_dict(torch.load(c, weights_only=True, map_location="cpu"), strict=True)
         m.eval()
@@ -95,26 +116,27 @@ def main():
 
     # --- picker -----------------------------------------------------------
     print("picker")
-    ck = torch.load(PICKER_CKPT, weights_only=False, map_location="cpu")
-    picker = PhasePicker(arm="wave", n_chunks=250)
+    ck = torch.load(args.picker, weights_only=False, map_location="cpu")
+    picker = PhasePicker(n_chunks=250)
     picker.load_state_dict(ck["state"], strict=True)
     picker.eval()
     write_ayzw(models / "spicker.ayzw", state_arrays(picker.state_dict()),
                {"model": "sphase-wave", "window": 6000, "n_chunks": 250, "channels": "ZNE",
-                "standardize": "per-trace z-score", "source": str(PICKER_CKPT),
-                "sha256_16": sha(PICKER_CKPT)})
+                "standardize": "per-trace z-score", "source": str(args.picker),
+                "sha256_16": sha(args.picker)})
 
     # --- filter and stations ----------------------------------------------
     b, a = signal.butter(4, [FMIN, FMAX], btype="bandpass", fs=FS)
     write_ayzw(models / "bandpass.ayzw", {"b": b, "a": a, "zi": signal.lfilter_zi(b, a)},
                {"design": "scipy.signal.butter(4, [1, 45], 'bandpass', fs=100)"})
-    import csv
-    rows = list(csv.DictReader(open(STATIONS_CSV, encoding="utf-8-sig")))
-    with open(models / "stations.csv", "w") as f:
-        f.write("code,lat,lon,elev_m\n")
-        for r in rows:
-            f.write(f"{r['Code']},{r['Latitude']},{r['Longitude']},{r['Height']}\n")
-    print(f"  {models / 'stations.csv'}  ({len(rows)} stations)")
+    if args.stations_csv:
+        import csv
+        rows = list(csv.DictReader(open(args.stations_csv, encoding="utf-8-sig")))
+        with open(models / "stations.csv", "w") as f:
+            f.write("code,lat,lon,elev_m\n")
+            for r in rows:
+                f.write(f"{r['Code']},{r['Latitude']},{r['Longitude']},{r['Height']}\n")
+        print(f"  {models / 'stations.csv'}  ({len(rows)} stations)")
 
     # --- fixtures from real data ------------------------------------------
     print("fixtures")

@@ -1,16 +1,22 @@
 """Exports the magnitude regressor weights and reference outputs for the C++ tests.
 
-The reference inputs are computed with seismic_cli's encoder functions (the
-ones used to generate the training data), which require torchaudio; run in
-the data_downloader environment:
+The reference inputs are computed with the encoder functions that generated
+the training data (tools/reference/conditioning.py). Run from the ayzek root:
 
-    uv run --project ~/Projects/sismokaos/data_downloader python tools/export_magnitude.py
+    uv run --project tools python tools/export_magnitude.py \
+        --partition P0 --partition P1 --partition P2 --dataset DATASET
+
+Each --partition is a regressor checkpoint (or a directory holding one), in
+partition order; --dataset is the regressor's training set
+(`dataset_magreg_fdsn_10s`), whose test split supplies three corpus windows for
+the fixture. Both come from cascade_impl (`REPRODUCING.md`, recipe A).
 
 Writes:
   models/magnitude_p{0,1,2}.ayzw   the three station- and event-disjoint partition models
   data/fixtures/magnitude.ayzw     noise baselines, spectrograms, normalised
                                    inputs and model outputs on real windows
 """
+import argparse
 import sys
 from pathlib import Path
 
@@ -19,23 +25,12 @@ import pandas as pd
 import torch
 from obspy import UTCDateTime, read
 
-SISMO = Path.home() / "Projects/sismokaos"
-sys.path.insert(0, str(SISMO / "data_downloader"))
-sys.path.insert(0, str(SISMO / "cnn_earthquake/src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from ayzw import write_ayzw  # noqa: E402
-from seismic_cli.core import clean_and_filter_1d, standardize  # noqa: E402
-from seismic_cli.spectrogram import SpectrogramEncoder, compute_station_spectral_baselines  # noqa: E402,F401
-from sismokaos.model.dual_channel import DualChannelNet  # noqa: E402
+from reference.conditioning import SpectrogramEncoder, clean_and_filter_1d, standardize  # noqa: E402
+from reference.magnitude import DualChannelNet  # noqa: E402
 
-CE = SISMO / "cnn_earthquake"
-PARTITIONS = {
-    0: CE / "trained_model_magreg_fdsn10s_nonaux_p0",
-    1: CE / "trained_model_magreg_fdsn10s_nonaux_p1",
-    2: CE / "trained_model_magreg_fdsn10s_nonaux_p2",
-}
-DATASET = CE / "dataset_magreg_fdsn_10s"
 FS, FMIN, FMAX, N_FFT, HOP, TOP_DB, WINDOW = 100.0, 1.0, 45.0, 128, 32, 80.0, 10.0
 
 
@@ -55,15 +50,32 @@ def cut(st, t, n):
     return out
 
 
+def checkpoint(path):
+    """A checkpoint file, or the single one inside a directory."""
+    if path.is_file():
+        return path
+    found = sorted(path.glob("*.pth"))
+    if len(found) != 1:
+        sys.exit(f"{path}: expected one *.pth, found {len(found)}")
+    return found[0]
+
+
 def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--partition", type=Path, action="append", required=True,
+                    help="checkpoint or directory, once per partition, in order")
+    ap.add_argument("--dataset", type=Path, required=True)
+    args = ap.parse_args()
+    DATASET = args.dataset
     torch.set_grad_enabled(False)
     enc = SpectrogramEncoder(n_fft=N_FFT, hop_length=HOP, top_db=TOP_DB, nominal_fs=FS,
                              window_seconds=WINDOW, normalize="station")
     _, spec_tf, db_tf = enc._transforms()
 
     models = {}
-    for p, d in PARTITIONS.items():
-        ckpt = next(d.glob("*.pth"))
+    for p, d in enumerate(args.partition):
+        ckpt = checkpoint(d)
         models[p] = build(ckpt)
         sd = {k: v.numpy() for k, v in models[p].state_dict().items() if v.dtype.is_floating_point}
         write_ayzw(Path(f"models/magnitude_p{p}.ayzw"), sd,
@@ -72,7 +84,7 @@ def main():
                     "normalize": "station noise sigma (seq), station median noise dB profile (img)",
                     "partition": p, "source": str(ckpt), "reported_mae": "0.4203 +- 0.0165 over p0-p2"})
 
-    # --- noise baseline, computed as in seismic_cli's baseline functions --------------
+    # --- noise baseline, computed as in the encoder's baseline functions --------------
     st = read("data/demo/DEMI.mseed")
     st.merge(method=1, fill_value=None)
     st = st.split()

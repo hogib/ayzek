@@ -2,11 +2,13 @@
 # End-to-end test: replays DEMI, MANT and BAND through ayzek and requires the
 # 2025-11-10 M4.9 to be declared, located within 10 km of the AFAD epicentre,
 # and assigned a magnitude between 3.9 and 5.9.
-# Exits 77 (skipped) if the demo data, models or catalogue are missing.
+# Exits 77 (skipped) if the demo data or models are missing. The catalogue is
+# tests/catalog_demo.csv, AFAD events of 2025-11-10 16:00-20:00; AYZEK_CATALOG
+# overrides it.
 set -eu
 AYZEK=$1
 ROOT=$2
-CATALOG=${AYZEK_CATALOG:-$HOME/Projects/sismokaos/data_downloader/catalogs/catalog_afad_full_2026-08-30.csv}
+CATALOG=${AYZEK_CATALOG:-$ROOT/tests/catalog_demo.csv}
 for f in "$ROOT/data/demo/DEMI.mseed" "$ROOT/data/demo/MANT.mseed" "$ROOT/data/demo/BAND.mseed" \
          "$ROOT/models/detector_s42.ayzw" "$CATALOG"; do
     [ -e "$f" ] || { echo "skipped: $f not found"; exit 77; }

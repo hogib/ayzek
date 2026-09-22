@@ -21,9 +21,11 @@ Named after my pet bird.
 - Meson and Ninja, and a C++23 compiler and standard library with
   `std::expected`, `std::print` and `std::mdspan`. Tested with Meson 1.12,
   GCC 16.2, and Clang with libc++ through zig 0.16.
-- For exporting the models: [uv](https://docs.astral.sh/uv/) and the
-  `archive_pipeline` and `data_downloader` environments that hold the PyTorch
-  checkpoints.
+- For exporting the models: [uv](https://docs.astral.sh/uv/). The export
+  scripts have their own environment (`tools/pyproject.toml`) and their own
+  copies of the reference model code (`tools/reference/`); they need the PyTorch
+  checkpoints, which cascade_impl trains (its `REPRODUCING.md`), and no other
+  repository.
 - For the Raspberry Pi build: uv (it fetches zig) and, to run the tests on
   x86, `qemu-aarch64`.
 
@@ -50,7 +52,11 @@ meson test -C build-pi --timeout-multiplier 10     # under qemu-aarch64
 
 ## Data and models
 
-`data/` and `models/` are not tracked. To create them:
+`models/` is tracked: the exported weights (AYZW format), the band-pass
+coefficients and the station table, about 5 MB. A clone can run the pipeline
+without the PyTorch checkpoints they were exported from.
+
+`data/` is not tracked. To create it:
 
 ```bash
 # waveforms: cut a time range from the AFAD archive chunks, one file per station
@@ -58,11 +64,17 @@ python3 tools/make_demo_data.py --out data/demo \
     --start 2025-11-10T18:05:00 --end 2025-11-10T18:35:00 \
     ~/Projects/sismokaos/tdvms/afad_raw/{DEMI,MANT,BAND,KAND,KIRK}/*_2025-10-29.zip \
     ~/Projects/sismokaos/tdvms/afad_raw/{ELBA,SEMS}/*_2025-10-21.zip
+```
 
-# weights (AYZW format), filter coefficients, station table, test fixtures
-uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_models.py
-uv run --project ~/Projects/sismokaos/data_downloader python tools/export_magnitude.py
-uv run --project ~/Projects/sismokaos/archive_pipeline python tools/export_stalta.py
+To re-export `models/` and the test fixtures in `data/fixtures/` (needs the
+checkpoints):
+
+```bash
+uv run --project tools python tools/export_models.py \
+    --detector-dir CKPT_DIR --picker wave_n250.pt
+uv run --project tools python tools/export_magnitude.py \
+    --partition P0.pth --partition P1.pth --partition P2.pth --dataset dataset_magreg_fdsn_10s
+uv run --project tools python tools/export_stalta.py
 ```
 
 Archive chunks are named by their start date, so a given day is usually in a
@@ -78,7 +90,7 @@ Each file holds one station's HH? channels. The station code is read from the
 records and its coordinates from `models/stations.csv`.
 
 ```bash
-CAT=~/Projects/sismokaos/data_downloader/catalogs/catalog_afad_full_2026-08-30.csv
+CAT=tests/catalog_demo.csv   # AFAD events of 2025-11-10 16:00-20:00; any AFAD export works
 
 # three stations at 10x real time, triggers from 18:20 on
 build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 --catalog $CAT \
