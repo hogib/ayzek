@@ -1,0 +1,43 @@
+  demo: done
+  marmara: done
+  sindirgi61: done
+  noise_a1: done
+  noise_a2: done
+  noise_b: done
+  noise_c: done
+
+scorecard  models=/home/oguzb/Projects/Codings/ayzek/ayzek_code/models  args=-  (2026-09-22T17:23:04Z, 05595da-dirty)
+
+  detected (tuning)                  51/66
+  unmatched alarms (tuning)          26
+  detected (held out)                39/66
+  unmatched alarms (held out)        7
+  false alarms per day (noise)       4.33
+  noise hours                        33.3
+  magnitude MAE, all matched         0.381
+  magnitude MAE, AFAD M>=4           0.512
+  magnitude bias, AFAD M>=4          -0.512
+  epicentre error median km          10.6
+
+  dataset     role       st  detected  alarms unmatched  delay  mag MAE false/day
+  demo        tuning      3       7/9       9         2   18.0      0.4         -
+  marmara     tuning      8     44/57      68        24   12.0     0.48         -
+  sindirgi61  held out    6     39/66      46         7   17.5     0.37         -
+  noise_a1    noise       9       0/0       3         3      -        -      12.1
+  noise_a2    noise       9       0/0       2         2      -        -      11.1
+  noise_b     noise       6       0/0       0         0      -        -       0.0
+  noise_c     noise       7       0/0       1         1      -        -       2.2
+
+  large events (AFAD M>=4)
+    demo        MW 4.9 at 18:20:51.00: alarm +18.0 s, M4.3 at the alarm, M4.6 final (-0.3), epicentre 5.3 km
+    marmara     ML 4.5 at 09:52:19.00: alarm +15.0 s, M3.9 at the alarm, M3.9 final (-0.6), epicentre 24.9 km
+    marmara     MW 4.0 at 10:46:13.00: alarm +25.5 s, M2.9 at the alarm, M2.9 final (-1.1), epicentre 12.3 km
+    sindirgi61  ML 4.1 at 17:04:14.00: alarm +17.5 s, M4.0 at the alarm, M4.0 final (-0.1), epicentre 67.9 km
+    sindirgi61  ML 4.0 at 17:06:29.00: alarm +16.5 s, M4.1 at the alarm, M3.7 final (-0.3), epicentre 63.6 km
+    sindirgi61  MW 4.2 at 17:32:07.00: alarm +17.0 s, M3.8 at the alarm, M3.8 final (-0.4), epicentre 2.8 km
+    sindirgi61  MW 4.1 at 18:27:52.00: alarm +17.0 s, M3.3 at the alarm, M3.4 final (-0.7), epicentre 32.2 km
+    sindirgi61  MW 4.2 at 18:31:45.00: alarm +16.5 s, M3.2 at the alarm, M3.6 final (-0.6), epicentre 33.2 km
+
+  speed (AMD Ryzen 5 5600 6-Core Processor): per-window total 5.2 ms, picker 12.0 ms, magnitude estimate (3 models) 291.9 ms
+
+scorecard -> bench/results/scorecard_baseline.json

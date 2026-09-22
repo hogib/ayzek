@@ -27,7 +27,23 @@
 #include <sstream>
 #include <thread>
 #include <tuple>
+
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
+
+namespace {
+// True when stdout is a terminal, so colour is worth emitting.
+bool stdout_is_tty() {
+#ifdef _WIN32
+  return _isatty(_fileno(stdout)) != 0;
+#else
+  return isatty(STDOUT_FILENO) != 0;
+#endif
+}
+} // namespace
 
 using namespace ayzek;
 using namespace ayzek::pipeline;
@@ -230,7 +246,7 @@ int main(int argc, char **argv) try {
   }
   if (pcfg.detector == DetectorKind::StaLta && !scores_in_dir.empty())
     throw std::runtime_error("--scores-in applies to the model detector only");
-  if (!isatty(STDOUT_FILENO))
+  if (!stdout_is_tty())
     Log::get().color = false;
   std::signal(SIGINT, [](int) { g_stop = true; });
 
