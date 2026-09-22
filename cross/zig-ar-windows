@@ -1,0 +1,3 @@
+#!/bin/sh
+# zig's archiver, installed through uv (docs/impl/11-windows.md).
+exec uv run --quiet --with ziglang python -m ziglang ar  "$@"

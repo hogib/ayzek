@@ -1,0 +1,9 @@
+#!/bin/sh
+# zig used as an x86_64 Windows cross compiler, installed through uv (docs/impl/11-windows.md).
+# Removes -Wl,--fatal-warnings and -Wl,-O1, which Meson adds and zig's linker does
+# not accept; compiler warnings remain errors.
+for a in "$@"; do
+    shift
+    case "$a" in -Wl,--fatal-warnings|-Wl,-O1) ;; *) set -- "$@" "$a" ;; esac
+done
+exec uv run --quiet --with ziglang python -m ziglang c++ -target x86_64-windows-gnu "$@"

@@ -136,7 +136,7 @@ python3 tools/make_demo_data.py --out data/demo \
 uv run --project tools python tools/export_models.py \
     --detector-dir CKPT_DIR --picker wave_n250.pt
 
-CAT=tests/catalog_demo.csv
+CAT=tests/catalogs/demo.csv
 build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 --catalog $CAT \
     data/demo/DEMI.mseed data/demo/MANT.mseed data/demo/BAND.mseed
 ```

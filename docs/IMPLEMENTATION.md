@@ -19,6 +19,8 @@ describe what was built.
 | [07 · Magnitude](impl/07-magnitude.md) | the regressor, station noise baselines, spectrogram, results |
 | [08 · Station selection](impl/08-station-selection.md) | recording and subset replay, geometry model, 2025-04-23 Mw 6.2 Marmara results |
 | [09 · STA/LTA benchmark](impl/09-sta-lta.md) | a recursive STA/LTA in place of the detector, tuned and compared on the same replays |
+| [10 · Benchmarks and the scorecard](impl/10-benchmarks.md) | time per stage and layer, real-time capacity, and one scorecard of detection, false alarms and magnitude for every model change |
+| [11 · Windows build](impl/11-windows.md) | cross-compiling a self-contained ayzek.exe with zig |
 
 ## In one screen
 

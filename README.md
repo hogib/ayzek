@@ -42,6 +42,14 @@ in `data/fixtures/` and are skipped if these are missing. The end-to-end test
 (`demo_m49`) replays the 2025-11-10 Sındırgı M4.9. It requires the event to be
 detected, located within 10 km and given a magnitude between 3.9 and 5.9.
 
+Windows (self-contained `ayzek.exe`, `docs/impl/11-windows.md`; built and
+linked, not yet run):
+
+```bash
+meson setup build-win --cross-file cross/x86_64-windows.ini --buildtype=release
+ninja -C build-win
+```
+
 Raspberry Pi (static aarch64 binary, `docs/impl/06-raspberry-pi.md`):
 
 ```bash
@@ -90,7 +98,7 @@ Each file holds one station's HH? channels. The station code is read from the
 records and its coordinates from `models/stations.csv`.
 
 ```bash
-CAT=tests/catalog_demo.csv   # AFAD events of 2025-11-10 16:00-20:00; any AFAD export works
+CAT=tests/catalogs/demo.csv   # AFAD events within a day of the demo data; any AFAD export works
 
 # three stations at 10x real time, triggers from 18:20 on
 build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 --catalog $CAT \
@@ -177,6 +185,9 @@ especially during aftershock sequences.
 | `tools/mseed_dump`, `tools/validate_mseed.py` | record-level inspection, and a decoding check against ObsPy |
 | `tools/replay_check`, `tools/gaps_vs_events.py` | gap statistics of the archive, and their relation to earthquake times |
 | `tools/scan_encodings.py` | counts the miniSEED data encodings in archive chunks |
+| `bench/ayzek_bench` | time per stage and per layer, the stations that fit in real time; `meson test -C build-release --benchmark` (`docs/impl/10-benchmarks.md`) |
+| `tools/scorecard.py` | detection, unmatched and false alarms, magnitude and location on the fixed datasets, for judging a model change; `--compare A.json B.json` |
+| `tools/bench_compare.py` | two `ayzek_bench` results side by side, flags regressions |
 
 Trigger sweeps on one dataset:
 
@@ -240,7 +251,8 @@ src/            ring buffer, miniSEED decoding, reordering, SIMD kernels, layers
 src/pipeline/   ingest, per-station processor, network association and location, recording
 app/            the ayzek binary
 tests/          unit tests, agreement with PyTorch/scipy/torchaudio, end-to-end check
-tools/          model export, data preparation, evaluation
+tools/          model export, data preparation, evaluation, the scorecard
+bench/          ayzek_bench, and reference results in bench/results/
 cross/          zig toolchain wrappers and the Raspberry Pi cross file
 docs/           design and implementation notes
 ```
