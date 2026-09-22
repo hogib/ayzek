@@ -8,6 +8,7 @@
 #include <map>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace ayzek {
@@ -40,6 +41,11 @@ public:
   [[nodiscard]] std::vector<float>
   vec(const std::string &name, std::vector<std::size_t> shape = {}) const;
   [[nodiscard]] const std::string &meta() const noexcept { return meta_; }
+  // The value of a string field of the metadata, or "" when absent. The
+  // metadata is JSON written by the export scripts; this reads one flat
+  // `"key": "value"` pair rather than carrying a JSON parser for the two
+  // fields the pipeline acts on.
+  [[nodiscard]] std::string meta_string(std::string_view key) const;
   [[nodiscard]] const std::string &path() const noexcept { return path_; }
 
 private:

@@ -17,6 +17,7 @@ Writes:
                                    inputs and model outputs on real windows
 """
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -50,6 +51,20 @@ def cut(st, t, n):
     return out
 
 
+def seq_transform(path):
+    """How the waveform channel was fed in training, from the run's model.json.
+
+    The regressor's own spec records it under `protocol`; a checkpoint trained
+    before the flag existed has none, which means "none". The C++ estimator
+    reads the same value out of the weights file and applies it, so a model
+    cannot be scored with the wrong input convention.
+    """
+    spec = (path if path.is_dir() else path.parent) / "model.json"
+    if not spec.exists():
+        return "none"
+    return json.loads(spec.read_text()).get("protocol", {}).get("seq_transform", "none")
+
+
 def checkpoint(path):
     """A checkpoint file, or the single one inside a directory."""
     if path.is_file():
@@ -73,6 +88,12 @@ def main():
                              window_seconds=WINDOW, normalize="station")
     _, spec_tf, db_tf = enc._transforms()
 
+    transforms = {seq_transform(d) for d in args.partition}
+    if len(transforms) != 1:
+        sys.exit(f"partitions disagree on seq_transform: {sorted(transforms)}")
+    transform = transforms.pop()
+    print(f"seq_transform: {transform}")
+
     models = {}
     for p, d in enumerate(args.partition):
         ckpt = checkpoint(d)
@@ -80,6 +101,7 @@ def main():
         sd = {k: v.numpy() for k, v in models[p].state_dict().items() if v.dtype.is_floating_point}
         write_ayzw(Path(f"models/magnitude_p{p}.ayzw"), sd,
                    {"model": "magnitude-1d+2d-lstm", "window": 1000, "pre_p_seconds": 2.0,
+                    "seq_transform": transform,
                     "spectrogram": {"n_fft": N_FFT, "hop": HOP, "top_db": TOP_DB},
                     "normalize": "station noise sigma (seq), station median noise dB profile (img)",
                     "partition": p, "source": str(ckpt), "reported_mae": "0.4203 +- 0.0165 over p0-p2"})
@@ -125,6 +147,12 @@ def main():
     rows = man[man.split == "test"].sort_values("magnitude").iloc[[0, len(man[man.split == "test"]) // 2, -1]]
     corpus = [torch.load(DATASET / r.split / r.filename, weights_only=True) for r in rows.itertuples()]
     c_seq = torch.stack([d["seq"].float() for d in corpus])
+    if transform == "asinh":
+        # Both the fixture's `seq` (compared against the C++ estimator's own
+        # input) and the tensors fed to the model below are post-transform, as
+        # the trainer's dataset applies it on load.
+        seq = np.arcsinh(seq).astype(np.float32)
+        c_seq = torch.asinh(c_seq)
     c_img = torch.stack([d["img"].float() for d in corpus])
 
     out = {"noise_raw": noise_raw, "noise_mu": mu, "noise_sigma": sigma, "noise_profile": profiles.astype(np.float32),

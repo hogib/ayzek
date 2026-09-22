@@ -94,6 +94,7 @@ public:
 
 private:
   std::vector<MagnitudeRegressor> models_;
+  bool asinh_seq_ = false; // from the weights' `seq_transform`
   dsp::Conditioner cond_;
   dsp::Spectrogram spec_;
   std::vector<float> scratch_;

@@ -146,6 +146,21 @@ MagnitudeEstimator::MagnitudeEstimator(const std::vector<Weights> &partitions,
     models_.emplace_back(w);
   if (models_.empty())
     throw std::runtime_error("no magnitude models");
+  // How the waveform channel was fed in training, from the weights file:
+  // "none" (every regressor before the transform existed) or "asinh". A model
+  // scored without the transform it was trained with still runs and returns
+  // wrong magnitudes, so the partitions must agree and an unknown value stops
+  // the run rather than being ignored.
+  const std::string transform = partitions.front().meta_string("seq_transform");
+  for (const auto &w : partitions)
+    if (w.meta_string("seq_transform") != transform)
+      throw std::runtime_error(
+          "magnitude partitions disagree on seq_transform: " + w.path());
+  if (transform == "asinh")
+    asinh_seq_ = true;
+  else if (!transform.empty() && transform != "none")
+    throw std::runtime_error(partitions.front().path() +
+                             ": unknown seq_transform " + transform);
   seq.resize(kMagWindow * 3);
   img.resize(3 * kMagBins * kMagFrames);
   spec_db.resize(img.size());
@@ -175,8 +190,13 @@ float MagnitudeEstimator::estimate(std::span<const double> raw,
           0.0));
     }
     sd = std::max(sd, 1e-12);
-    for (std::size_t t = 0; t < kMagWindow; ++t)
-      seq[t * 3 + c] = static_cast<float>((channel_[t] - mu) / sd);
+    for (std::size_t t = 0; t < kMagWindow; ++t) {
+      const double x = (channel_[t] - mu) / sd;
+      // The waveform is in multiples of the station's noise sigma and its tail
+      // is long; asinh compresses it while keeping sign and order, which is
+      // what the model was trained on when its weights say so.
+      seq[t * 3 + c] = static_cast<float>(asinh_seq_ ? std::asinh(x) : x);
+    }
   }
 
   // Spectrogram of the three components; one top_db floor over all of them.

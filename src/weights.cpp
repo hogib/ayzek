@@ -125,4 +125,22 @@ std::vector<float> Weights::vec(const std::string &name,
   return {s.begin(), s.end()};
 }
 
+
+std::string Weights::meta_string(std::string_view key) const {
+  const std::string needle = std::format("\"{}\"", key);
+  auto i = meta_.find(needle);
+  if (i == std::string::npos)
+    return {};
+  i = meta_.find(':', i + needle.size());
+  if (i == std::string::npos)
+    return {};
+  const auto open = meta_.find('"', i);
+  if (open == std::string::npos)
+    return {};
+  const auto close = meta_.find('"', open + 1);
+  if (close == std::string::npos)
+    return {};
+  return meta_.substr(open + 1, close - open - 1);
+}
+
 } // namespace ayzek
