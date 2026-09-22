@@ -58,7 +58,7 @@ DATASETS = {
 EVENT = re.compile(
     r"^Event #\d+: detected M([\d.]+) .*\n"
     r"  alarm\s+(\S+) UTC by (.*)\n"
-    r"  magnitude\s+M([\d.]+) at the alarm, M([\d.]+) final.*\n"
+    r"  magnitude\s+M([\d.]+) (?:at the alarm|[\d.]+ s after the alarm), M([\d.]+) final.*\n"
     r"(?:  location .*\n)?"
     r"  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm ([\d.]+) s after origin, "
     r"magnitude ([+-][\d.]+)(?:, epicentre ([\d.]+) km off)?", re.M)
@@ -220,6 +220,10 @@ def main():
     ap.add_argument("--jobs", type=int, default=2, help="datasets run at once")
     ap.add_argument("--bench", action="store_true", help="also time the stages with ayzek_bench")
     ap.add_argument("--json", help="write the scorecard here")
+    ap.add_argument("--save-output", metavar="DIR",
+                    help="also keep each dataset's ayzek output, so a parser fix "
+                         "does not need the replays run again "
+                         "(default: <json>.out/ when --json is given)")
     ap.add_argument("--compare", nargs=2, metavar=("A", "B"), help="compare two scorecards and exit")
     a = ap.parse_args()
     if a.compare:
@@ -236,6 +240,9 @@ def main():
     version = subprocess.run(["git", "-C", str(ROOT), "describe", "--always", "--dirty"],
                              capture_output=True, text=True).stdout.strip()
 
+    outdir = Path(a.save_output) if a.save_output else (Path(a.json + ".out") if a.json else None)
+    if outdir:
+        outdir.mkdir(parents=True, exist_ok=True)
     sets, skipped = {}, {}
     with concurrent.futures.ThreadPoolExecutor(a.jobs) as ex:
         for name, out, err in ex.map(lambda n: run_ayzek(n, a.build, models, extra), names):
@@ -244,6 +251,8 @@ def main():
                 print(f"  {name}: skipped ({err})", file=sys.stderr)
             else:
                 sets[name] = score_dataset(name, out)
+                if outdir:
+                    (outdir / f"{name}.txt").write_text(out)
                 print(f"  {name}: done", file=sys.stderr)
     card = {"version": version, "date": dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "models": str(models), "args": a.args, "datasets": sets, "skipped": skipped,
