@@ -4,6 +4,5 @@ subprojects/*/
 compile_commands.json
 .cache/
 data/
-models/
 __pycache__/
 docs/paper/*
