@@ -21,13 +21,10 @@ Named after my pet bird.
 - Meson and Ninja, and a C++23 compiler and standard library with
   `std::expected`, `std::print` and `std::mdspan`. Tested with Meson 1.12,
   GCC 16.2, and Clang with libc++ through zig 0.16.
-- For exporting the models: [uv](https://docs.astral.sh/uv/). The export
-  scripts have their own environment (`tools/pyproject.toml`) and their own
-  copies of the reference model code (`tools/reference/`); they need the PyTorch
-  checkpoints, which cascade_impl trains (its `REPRODUCING.md`), and no other
-  repository.
-- For the Raspberry Pi build: uv (it fetches zig) and, to run the tests on
-  x86, `qemu-aarch64`.
+- For the Raspberry Pi and Windows builds: [uv](https://docs.astral.sh/uv/)
+  (it fetches zig) and, to run the aarch64 tests on x86, `qemu-aarch64`.
+- Nothing else. The weights are in the repository, so no Python and no ML
+  runtime are needed to build or run.
 
 ## Build and test
 
@@ -42,14 +39,6 @@ in `data/fixtures/` and are skipped if these are missing. The end-to-end test
 (`demo_m49`) replays the 2025-11-10 Sındırgı M4.9. It requires the event to be
 detected, located within 10 km and given a magnitude between 3.9 and 5.9.
 
-Windows (self-contained `ayzek.exe`, `docs/impl/11-windows.md`; built and
-linked, not yet run):
-
-```bash
-meson setup build-win --cross-file cross/x86_64-windows.ini --buildtype=release
-ninja -C build-win
-```
-
 Raspberry Pi (static aarch64 binary, `docs/impl/06-raspberry-pi.md`):
 
 ```bash
@@ -58,35 +47,71 @@ ninja -C build-pi
 meson test -C build-pi --timeout-multiplier 10     # under qemu-aarch64
 ```
 
+## Windows
+
+`ayzek.exe` is built on Linux with zig and needs no runtime DLLs beyond what
+Windows 10 and 11 already have (`docs/impl/11-windows.md`):
+
+```bash
+meson setup build-win --cross-file cross/x86_64-windows.ini --buildtype=release
+ninja -C build-win                       # -> build-win/app/ayzek.exe, 1.6 MB
+```
+
+To run it, put `ayzek.exe` in a folder with the `models` folder beside it, and
+the waveforms wherever you like:
+
+```
+C:\ayzek\
+    ayzek.exe
+    models\          the whole folder from this repository
+    data\demo\       one .mseed per station
+    demo.csv         optional AFAD catalogue export (tests\catalogs\demo.csv)
+```
+
+In PowerShell or Command Prompt, from `C:\ayzek`:
+
+```
+ayzek.exe --speed 10 --from 2025-11-10T18:20:00 data\demo\DEMI.mseed data\demo\MANT.mseed data\demo\BAND.mseed
+```
+
+- `--speed 10` replays at ten times real time; `--speed 0` runs as fast as the
+  machine allows, `--speed 1` in real time.
+- `--catalog demo.csv` adds the comparison with the AFAD catalogue. Without it,
+  alarms are still reported, just not scored.
+- `--models DIR` points at the weights if they are not in `.\models`.
+- Colour is disabled automatically when the output is redirected to a file.
+  The colours are ANSI escapes, which Windows Terminal renders and the legacy
+  console may print as `[32m` instead; `--no-color` turns them off.
+- Everything else is the same as on Linux, including the option table below.
+
+**Not yet run on Windows.** The binaries are built and linked, and the
+numerical tests have not been executed on a Windows machine or under wine. If
+you run them, `meson test -C build-win` needs wine on Linux; on Windows the
+test executables in `build-win\tests\` can be run directly, and `test_models`,
+`test_magnitude`, `test_dsp` and `test_stalta` are the ones that would catch a
+floating-point difference.
+
 ## Data and models
 
 `models/` is tracked: the exported weights (AYZW format), the band-pass
 coefficients and the station table, about 5 MB. A clone can run the pipeline
 without the PyTorch checkpoints they were exported from.
 
-`data/` is not tracked. To create it:
+`data/` is not tracked: the waveforms are cut from AFAD archive chunks with
+`tools/make_demo_data.py`, one file per station.
 
 ```bash
-# waveforms: cut a time range from the AFAD archive chunks, one file per station
 python3 tools/make_demo_data.py --out data/demo \
     --start 2025-11-10T18:05:00 --end 2025-11-10T18:35:00 \
-    ~/Projects/sismokaos/tdvms/afad_raw/{DEMI,MANT,BAND,KAND,KIRK}/*_2025-10-29.zip \
-    ~/Projects/sismokaos/tdvms/afad_raw/{ELBA,SEMS}/*_2025-10-21.zip
-```
-
-To re-export `models/` and the test fixtures in `data/fixtures/` (needs the
-checkpoints):
-
-```bash
-uv run --project tools python tools/export_models.py \
-    --detector-dir CKPT_DIR --picker wave_n250.pt
-uv run --project tools python tools/export_magnitude.py \
-    --partition P0.pth --partition P1.pth --partition P2.pth --dataset dataset_magreg_fdsn_10s
-uv run --project tools python tools/export_stalta.py
+    ARCHIVE/{DEMI,MANT,BAND,KAND,KIRK}/*_2025-10-29.zip \
+    ARCHIVE/{ELBA,SEMS}/*_2025-10-21.zip
 ```
 
 Archive chunks are named by their start date, so a given day is usually in a
 chunk that starts some days earlier.
+
+Retraining a model and exporting new weights is `docs/impl/02-weights.md`; the
+checkpoints come from the cascade_impl project.
 
 ## Usage
 
@@ -232,17 +257,24 @@ catalogue (events within 250 km):
   To detect as many events as the model, STA/LTA needs about three times the
   unmatched alarms. It alarms 1–1.3 s earlier for the Mw 6.1 and 6.2, and
   costs about 0.001 ms per update against 5 ms (`docs/impl/09-sta-lta.md`).
-- **Speed.** On a 12-thread x86 laptop: 5–6 ms per detector window (three
-  models, every 0.5 s per station), 13 ms per picker run, and 300–400 ms per
-  magnitude estimate. The aarch64 NEON build passes the same agreement tests
-  under qemu. Timing on a Raspberry Pi has not been measured yet.
+- **False alarms.** Over 33.3 h of recordings with no catalogue event within
+  250 km of any station, the model raised 6 alarms, 4.3 a day. STA/LTA tuned to
+  match its unmatched alarms on the replays raised 113, 81.5 a day
+  (`docs/impl/10-benchmarks.md`).
+- **Speed.** Measured with `bench/ayzek_bench` on a Ryzen 5 5600, scalar
+  backend: 5.2 ms per detector window (three models, every 0.5 s per station,
+  about 1% of a core per station), 12 ms per picker run, 288 ms per magnitude
+  estimate, of which 91% is one attention layer. One core sustains 95 stations,
+  four cores 372. The aarch64 NEON build passes the same agreement tests under
+  qemu; timing on a Raspberry Pi has not been measured yet.
 
 ## Documentation
 
 - `docs/DESIGN.md`: the architecture and the reasoning behind it
 - `docs/IMPLEMENTATION.md`: an overview of what was built, with an index of
-  `docs/impl/01`–`09` (SIMD kernels, weights format, conditioning, models,
-  pipeline, Raspberry Pi, magnitude, station selection, STA/LTA benchmark)
+  `docs/impl/01`–`11` (SIMD kernels, weights format, conditioning, models,
+  pipeline, Raspberry Pi, magnitude, station selection, STA/LTA benchmark,
+  benchmarks and the scorecard, Windows build)
 
 ## Layout
 
@@ -253,6 +285,6 @@ app/            the ayzek binary
 tests/          unit tests, agreement with PyTorch/scipy/torchaudio, end-to-end check
 tools/          model export, data preparation, evaluation, the scorecard
 bench/          ayzek_bench, and reference results in bench/results/
-cross/          zig toolchain wrappers and the Raspberry Pi cross file
+cross/          zig toolchain wrappers and the Raspberry Pi and Windows cross files
 docs/           design and implementation notes
 ```
