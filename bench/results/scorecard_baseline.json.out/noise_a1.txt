@@ -1,0 +1,68 @@
+ayzek    9 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker + 3-model magnitude, replay 2024-06-05 00:39:02.48 to 07:16:06.39 UTC at full speed
+ayzek    catalogue: 6 events in the replay span
+ALARM    #1   02:11:02.50  earthquake detected by GCAM, KIRK
+MAG      #1   02:11:02.50  magnitude M2.2 from 1 station (GCAM 2.2)
+MAG      #1   02:11:08.00  magnitude M2.9 from 2 stations (GCAM 2.2, KIRK 3.6)
+ALARM    #2   03:21:29.00  earthquake detected by BAND, KIRK
+MAG      #2   03:21:29.00  magnitude M3.3 from 1 station (KIRK 3.3)
+MAG      #2   03:21:32.50  magnitude M2.8 from 2 stations (BAND 2.4, KIRK 3.3)
+ALARM    #3   03:41:58.50  earthquake detected by GCAM, KIRK
+MAG      #3   03:41:58.50  magnitude M3.2 from 1 station (KIRK 3.2)
+MAG      #3   03:42:03.50  magnitude M2.8 from 2 stations (GCAM 2.3, KIRK 3.2)
+MAG      #3   03:42:50.00  magnitude M2.7 from 2 stations (GCAM 2.2, KIRK 3.2)
+
+------------------------------------------------------------------------------
+REPORT  9 stations, 2024-06-05 01:18:50.00 to 07:16:06.39 UTC
+------------------------------------------------------------------------------
+
+Event #1: detected M2.9 earthquake, not located
+  alarm      02:11:02.50 UTC by GCAM, KIRK
+  magnitude  M2.2 at the alarm, M2.9 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #2: detected M2.9 earthquake, not located
+  alarm      03:21:29.00 UTC by BAND, KIRK
+  magnitude  M3.3 at the alarm, M2.9 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #3: detected M2.7 earthquake, not located
+  alarm      03:41:58.50 UTC by GCAM, KIRK
+  magnitude  M3.2 at the alarm, M2.7 final from 2 stations
+  AFAD       no matching catalogue event
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                           3
+  single-station detections, no alarm    31
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)        0    0%
+    false    (no AFAD event)              3  100%
+
+  AFAD events within 250 km                0
+    detected                              0     -
+    missed                                0     -
+
+  By magnitude      AFAD events   detected   missed
+
+  False alarms (no AFAD event; small uncatalogued earthquakes are possible)
+    02:11:02.50 UTC  #1  M2.9, not located
+    03:21:29.00 UTC  #2  M2.9, not located
+    03:41:58.50 UTC  #3  M2.7, not located
+------------------------------------------------------------------------------
+
+Station processing (scalar backend)
+         windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
+  BAND     47620         0        4      4               4/1     19.231 (35.653)        42            902
+  CMH      47624         0        1      1               1/0     19.257 (35.378)        49           1465
+  ELBA     47626         0        0      0               0/0     19.622 (36.080)         0              0
+  GCAM     47452        16       10     10              10/2     19.409 (35.761)        34           1035
+  KAND     47629         0        0      0               0/0     19.218 (35.534)         0              0
+  KIRK     47622         0       20     20              20/2     19.475 (34.945)        46           1034
+  MANT     47622         0        0      0               0/0     19.512 (35.970)         0              0
+  SEMS     47619         0        2      2               2/0     19.157 (35.040)        41           1334
+  VIZE     47623         0        0      0               0/0     19.511 (36.142)         0              0
+  P time from an STA/LTA onset for 33 of 37 triggers (4 from the window start)
+  magnitude at the picked P: 5 estimated, 21 not (trigger not part of a declared event)
+  428437 windows in 954.0 s: 22x real time per station

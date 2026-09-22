@@ -1,0 +1,35 @@
+ayzek    6 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker + 3-model magnitude, replay 2024-10-02 12:19:03.39 to 01:08:04.01 UTC at full speed
+ayzek    catalogue: 16 events in the replay span
+
+------------------------------------------------------------------------------
+REPORT  6 stations, 2024-10-02 12:58:50.00 to 01:08:04.01 UTC
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                           0
+  single-station detections, no alarm    25
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)        0     -
+    false    (no AFAD event)              0     -
+
+  AFAD events within 250 km                0
+    detected                              0     -
+    missed                                0     -
+
+  By magnitude      AFAD events   detected   missed
+------------------------------------------------------------------------------
+
+Station processing (scalar backend)
+         windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
+  BAND     92262         0        8      8               8/0     13.858 (31.207)        38            894
+  CMH      92263         0        2      2               2/0     13.928 (30.985)        21            689
+  DEMI     92262         0        8      8               8/0     13.826 (31.475)        30            718
+  GCAM     88571       329        6      6               6/0     14.140 (31.587)        28            787
+  KAND     92262         0        1      1               1/0     13.854 (30.805)        21           1009
+  MANT     85277       661        0      0               0/0     14.088 (31.571)         0              0
+  P time from an STA/LTA onset for 12 of 25 triggers (13 from the window start)
+  magnitude at the picked P: 0 estimated, 14 not (trigger not part of a declared event)
+  542897 windows in 1292.0 s: 34x real time per station

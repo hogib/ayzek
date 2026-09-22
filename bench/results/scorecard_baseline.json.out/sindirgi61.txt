@@ -1,0 +1,902 @@
+ayzek    6 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker + 3-model magnitude, replay 2025-08-10 15:59:03.65 to 19:00:04.60 UTC at full speed
+ayzek    catalogue: 66 events in the replay span
+ALARM    #1   16:54:03.00  earthquake detected by CMH, DEMI  (AFAD MW 6.1 at 16:53:46.00, 17.0 s ago)
+MAG      #1   16:54:03.50  magnitude M4.9 from 1 station (DEMI 4.9)
+MAG      #1   16:54:08.00  magnitude M5.0 from 2 stations (CMH 5.0, DEMI 4.9)
+MAG      #1   16:54:28.00  magnitude M5.0 from 3 stations (CMH 5.0, DEMI 4.9, SEMS 5.0)
+MAG      #1   16:54:32.50  magnitude M5.0 from 4 stations (CMH 5.0, DEMI 4.9, SEMS 5.0, VIZE 4.8)
+MAG      #1   16:54:33.50  magnitude M4.9 from 5 stations (CMH 5.0, DEMI 4.9, KAND 4.8, SEMS 5.0, VIZE 4.8)
+MAG      #1   16:54:35.50  magnitude M4.9 from 6 stations (CMH 5.0, DEMI 4.9, KAND 4.8, KIRK 4.6, SEMS 5.0, VIZE 4.8)
+MAG      #1   16:54:50.00  magnitude M4.8 from 6 stations (CMH 5.0, DEMI 4.7, KAND 4.8, KIRK 4.6, SEMS 5.0, VIZE 4.8)
+LOCATE   #1   16:54:54.50  located at 39.612N 28.868E, origin 16:53:47.30, rms 0.08 s from 2 stations
+LOCATE   #1   16:55:19.00  located at 39.091N 27.746E, origin 16:53:42.78, rms 1.56 s from 3 stations
+MAG      #1   16:55:19.00  magnitude M4.7 from 6 stations (CMH 4.8, DEMI 4.7, KAND 4.8, KIRK 4.6, SEMS 5.0, VIZE 4.5)
+ALARM    #2   17:01:32.50  earthquake detected by CMH, DEMI
+MAG      #2   17:01:32.50  magnitude M3.9 from 1 station (DEMI 3.9)
+MAG      #2   17:01:34.50  magnitude M3.7 from 2 stations (CMH 3.5, DEMI 3.9)
+ALARM    #3   17:04:31.50  earthquake detected by CMH, DEMI  (AFAD ML 4.1 at 17:04:14.00, 17.5 s ago)
+MAG      #3   17:04:31.50  magnitude M4.0 from 1 station (DEMI 4.0)
+MAG      #3   17:04:37.00  magnitude M4.0 from 2 stations (CMH 3.9, DEMI 4.0)
+LOCATE   #3   17:05:23.50  located at 39.522N 28.828E, origin 17:04:15.58, rms 0.05 s from 2 stations
+ALARM    #4   17:06:45.50  earthquake detected by CMH, DEMI  (AFAD ML 4.0 at 17:06:29.00, 16.5 s ago)
+MAG      #4   17:06:45.50  magnitude M4.1 from 1 station (DEMI 4.1)
+MAG      #4   17:06:49.50  magnitude M3.8 from 2 stations (CMH 3.6, DEMI 4.1)
+MAG      #4   17:07:12.00  magnitude M3.6 from 3 stations (CMH 3.6, DEMI 4.1, SEMS 2.5)
+LOCATE   #4   17:07:36.00  located at 39.532N 28.723E, origin 17:06:28.45, rms 0.08 s from 2 stations
+ALARM    #5   17:09:32.50  earthquake detected by DEMI, VIZE  (AFAD ML 3.4 at 17:08:48.00, 44.5 s ago)
+MAG      #5   17:09:32.50  magnitude M3.9 from 1 station (DEMI 3.9)
+MAG      #5   17:09:34.50  magnitude M3.2 from 2 stations (DEMI 3.9, VIZE 2.4)
+ALARM    #6   17:10:59.50  earthquake detected by CMH, DEMI
+MAG      #6   17:10:59.50  magnitude M2.6 from 1 station (CMH 2.6)
+MAG      #6   17:11:01.50  magnitude M3.2 from 2 stations (CMH 2.6, DEMI 3.8)
+ALARM    #7   17:14:13.00  earthquake detected by CMH, DEMI  (AFAD ML 3.4 at 17:13:56.00, 17.0 s ago)
+MAG      #7   17:14:13.00  magnitude M3.6 from 1 station (DEMI 3.6)
+MAG      #7   17:14:18.50  magnitude M3.1 from 2 stations (CMH 2.7, DEMI 3.6)
+MAG      #7   17:14:43.00  magnitude M2.7 from 3 stations (CMH 2.7, DEMI 3.6, SEMS 2.7)
+LOCATE   #7   17:15:05.00  located at 39.227N 28.148E, origin 17:13:57.70, rms 0.03 s from 2 stations
+ALARM    #8   17:15:24.00  earthquake detected by CMH, DEMI  (AFAD ML 3.9 at 17:15:07.00, 17.0 s ago)
+MAG      #8   17:15:24.50  magnitude M4.0 from 1 station (DEMI 4.0)
+MAG      #8   17:15:29.50  magnitude M3.6 from 2 stations (CMH 3.1, DEMI 4.0)
+MAG      #8   17:15:50.00  magnitude M3.9 from 3 stations (CMH 3.1, DEMI 4.0, SEMS 3.9)
+MAG      #8   17:15:57.00  magnitude M3.5 from 4 stations (CMH 3.1, DEMI 4.0, KIRK 2.5, SEMS 3.9)
+LOCATE   #8   17:16:16.00  located at 39.237N 28.103E, origin 17:15:08.45, rms 0.04 s from 2 stations
+ALARM    #9   17:16:34.50  earthquake detected by DEMI, VIZE  (AFAD ML 3.2 at 17:16:19.00, 15.5 s ago)
+MAG      #9   17:16:34.50  magnitude M3.7 from 1 station (VIZE 3.7)
+MAG      #9   17:16:36.50  magnitude M3.8 from 2 stations (DEMI 3.9, VIZE 3.7)
+MAG      #9   17:16:43.50  magnitude M3.7 from 3 stations (CMH 2.7, DEMI 3.9, VIZE 3.7)
+LOCATE   #8   17:16:43.50  located at 39.617N 28.397E, origin 17:15:05.63, rms 0.57 s from 2 stations, left out CMH
+ALARM    #10  17:20:41.50  earthquake detected by DEMI, SEMS  (AFAD ML 3.1 at 17:19:58.00, 43.5 s ago)
+MAG      #10  17:20:41.50  magnitude M3.7 from 1 station (DEMI 3.7)
+MAG      #10  17:20:43.50  magnitude M3.1 from 2 stations (DEMI 3.7, SEMS 2.6)
+ALARM    #11  17:26:00.50  earthquake detected by CMH, DEMI  (AFAD ML 3.5 at 17:25:41.00, 19.5 s ago)
+MAG      #11  17:26:00.50  magnitude M3.6 from 1 station (DEMI 3.6)
+MAG      #11  17:26:04.00  magnitude M3.0 from 2 stations (CMH 2.4, DEMI 3.6)
+MAG      #11  17:26:44.00  magnitude M3.1 from 2 stations (CMH 2.4, DEMI 3.7)
+LOCATE   #11  17:26:50.50  located at 39.207N 28.168E, origin 17:25:42.39, rms 0.07 s from 2 stations
+ALARM    #12  17:32:24.00  earthquake detected by CMH, DEMI  (AFAD MW 4.2 at 17:32:07.00, 17.0 s ago)
+MAG      #12  17:32:24.00  magnitude M3.8 from 1 station (DEMI 3.8)
+MAG      #12  17:32:29.50  magnitude M3.3 from 2 stations (CMH 2.8, DEMI 3.8)
+MAG      #12  17:32:53.50  magnitude M3.7 from 3 stations (CMH 2.8, DEMI 3.8, VIZE 3.7)
+MAG      #12  17:32:54.00  magnitude M3.7 from 4 stations (CMH 2.8, DEMI 3.8, KAND 3.7, VIZE 3.7)
+ALARM    #13  17:32:54.50  earthquake detected by DEMI, KIRK  (AFAD ML 2.8 at 17:31:41.00, 73.5 s ago)
+MAG      #13  17:32:54.50  magnitude M3.5 from 1 station (DEMI 3.5)
+MAG      #13  17:32:57.50  magnitude M3.2 from 2 stations (DEMI 3.5, KIRK 2.8)
+LOCATE   #12  17:33:16.00  located at 39.212N 28.163E, origin 17:32:08.13, rms 0.02 s from 2 stations
+MAG      #12  17:33:40.50  magnitude M3.8 from 4 stations (CMH 2.8, DEMI 3.9, KAND 4.2, VIZE 3.7)
+MAG      #13  17:33:44.00  magnitude M3.2 from 2 stations (DEMI 3.5, KIRK 3.0)
+ALARM    #14  17:41:04.00  earthquake detected by CMH, SEMS  (AFAD ML 2.7 at 17:40:20.00, 44.0 s ago)
+MAG      #14  17:41:04.00  magnitude M2.4 from 1 station (CMH 2.4)
+MAG      #14  17:41:06.00  magnitude M2.6 from 2 stations (CMH 2.4, SEMS 2.8)
+ALARM    #15  17:41:33.50  earthquake detected by DEMI, KIRK  (AFAD ML 3.6 at 17:40:48.00, 45.5 s ago)
+MAG      #15  17:41:33.50  magnitude M3.5 from 1 station (DEMI 3.5)
+MAG      #15  17:41:39.00  magnitude M3.0 from 2 stations (DEMI 3.5, KIRK 2.5)
+MAG      #15  17:41:51.00  magnitude M3.1 from 2 stations (DEMI 3.7, KIRK 2.5)
+LOCATE   #15  17:42:25.50  located at 39.567N 29.327E, origin 17:40:43.14, rms 1.64 s from 2 stations
+MAG      #15  17:42:25.50  magnitude M3.1 from 2 stations (DEMI 3.7, KIRK 2.4)
+ALARM    #16  17:45:56.00  earthquake detected by CMH, DEMI  (AFAD ML 2.9 at 17:45:35.00, 21.0 s ago)
+MAG      #16  17:45:56.00  magnitude M3.3 from 1 station (DEMI 3.3)
+MAG      #16  17:45:58.00  magnitude M2.8 from 2 stations (CMH 2.2, DEMI 3.3)
+LOCATE   #16  17:46:44.50  located at 39.627N 28.888E, origin 17:45:35.37, rms 0.18 s from 2 stations
+ALARM    #17  17:49:30.50  earthquake detected by CMH, DEMI  (AFAD ML 3.4 at 17:49:13.00, 17.5 s ago)
+MAG      #17  17:49:30.50  magnitude M3.2 from 1 station (DEMI 3.2)
+MAG      #17  17:49:36.00  magnitude M2.8 from 2 stations (CMH 2.4, DEMI 3.2)
+MAG      #17  17:49:57.00  magnitude M3.2 from 3 stations (CMH 2.4, DEMI 3.2, SEMS 3.8)
+MAG      #17  17:50:01.50  magnitude M3.5 from 4 stations (CMH 2.4, DEMI 3.2, KAND 3.7, SEMS 3.8)
+MAG      #17  17:50:04.00  magnitude M3.2 from 5 stations (CMH 2.4, DEMI 3.2, KAND 3.7, KIRK 2.5, SEMS 3.8)
+MAG      #17  17:50:17.00  magnitude M3.4 from 5 stations (CMH 2.4, DEMI 3.4, KAND 3.7, KIRK 2.5, SEMS 3.8)
+LOCATE   #17  17:50:48.00  located at 38.469N 29.444E, origin 17:49:06.88, rms 1.95 s from 2 stations, left out CMH
+ALARM    #18  17:55:02.00  earthquake detected by CMH, DEMI
+MAG      #18  17:55:02.00  magnitude M3.4 from 1 station (DEMI 3.4)
+MAG      #18  17:55:05.50  magnitude M2.9 from 2 stations (CMH 2.4, DEMI 3.4)
+MAG      #18  17:55:32.00  magnitude M2.4 from 3 stations (CMH 2.4, DEMI 3.4, KIRK 2.4)
+LOCATE   #18  17:55:52.00  located at 39.582N 28.848E, origin 17:54:43.72, rms 0.17 s from 2 stations
+ALARM    #19  17:56:02.50  earthquake detected by CMH, DEMI  (AFAD ML 3.6 at 17:55:44.00, 18.5 s ago)
+MAG      #19  17:56:02.50  magnitude M3.5 from 1 station (DEMI 3.5)
+MAG      #19  17:56:06.50  magnitude M3.0 from 2 stations (CMH 2.4, DEMI 3.5)
+MAG      #19  17:56:30.00  magnitude M3.4 from 3 stations (CMH 2.4, DEMI 3.5, SEMS 3.4)
+LOCATE   #19  17:56:53.00  located at 39.172N 28.123E, origin 17:55:44.18, rms 0.11 s from 2 stations
+ALARM    #20  17:59:13.00  earthquake detected by CMH, DEMI  (AFAD ML 3.5 at 17:58:53.00, 20.0 s ago)
+MAG      #20  17:59:13.00  magnitude M3.7 from 1 station (DEMI 3.7)
+MAG      #20  17:59:17.00  magnitude M3.0 from 2 stations (CMH 2.4, DEMI 3.7)
+MAG      #20  17:59:44.50  magnitude M2.5 from 3 stations (CMH 2.4, DEMI 3.7, KIRK 2.5)
+LOCATE   #20  18:00:03.50  located at 39.212N 28.163E, origin 17:58:54.92, rms 0.01 s from 2 stations
+ALARM    #21  18:00:06.50  earthquake detected by CMH, DEMI  (AFAD ML 3.1 at 17:59:48.00, 18.5 s ago)
+MAG      #21  18:00:06.50  magnitude M3.6 from 1 station (DEMI 3.6)
+MAG      #21  18:00:11.50  magnitude M3.0 from 2 stations (CMH 2.4, DEMI 3.6)
+LOCATE   #20  18:00:31.00  located at 39.572N 28.417E, origin 17:58:51.97, rms 0.63 s from 2 stations, left out CMH
+MAG      #21  18:00:51.50  magnitude M3.1 from 2 stations (CMH 2.4, DEMI 3.7)
+LOCATE   #21  18:00:58.00  located at 39.197N 28.148E, origin 17:59:49.48, rms 0.03 s from 2 stations
+ALARM    #22  18:05:54.00  earthquake detected by CMH, DEMI  (AFAD ML 2.6 at 18:05:33.00, 21.0 s ago)
+MAG      #22  18:05:54.00  magnitude M3.2 from 1 station (DEMI 3.2)
+MAG      #22  18:05:56.00  magnitude M2.7 from 2 stations (CMH 2.3, DEMI 3.2)
+MAG      #22  18:06:36.50  magnitude M2.8 from 2 stations (CMH 2.3, DEMI 3.4)
+LOCATE   #22  18:06:42.50  located at 39.227N 28.153E, origin 18:05:34.68, rms 0.04 s from 2 stations
+pick     DEMI  picker window at 18:07:22.50 crosses a gap, skipped
+ALARM    #23  18:07:36.50  earthquake detected by CMH, DEMI  (AFAD ML 2.8 at 18:07:19.00, 17.5 s ago)
+MAG      #23  18:07:36.50  magnitude M3.1 from 1 station (DEMI 3.1)
+MAG      #23  18:07:41.00  magnitude M2.7 from 2 stations (CMH 2.2, DEMI 3.1)
+MAG      #23  18:08:05.00  magnitude M2.7 from 3 stations (CMH 2.2, DEMI 3.1, SEMS 2.7)
+ALARM    #24  18:08:49.50  earthquake detected by CMH, DEMI  (AFAD ML 2.8 at 18:08:33.00, 16.5 s ago)
+MAG      #24  18:08:50.50  magnitude M3.3 from 1 station (DEMI 3.3)
+MAG      #24  18:08:55.00  magnitude M2.8 from 2 stations (CMH 2.3, DEMI 3.3)
+MAG      #24  18:09:20.00  magnitude M2.8 from 3 stations (CMH 2.3, DEMI 3.3, SEMS 2.8)
+MAG      #24  18:09:23.00  magnitude M2.6 from 4 stations (CMH 2.3, DEMI 3.3, KIRK 2.4, SEMS 2.8)
+LOCATE   #24  18:09:41.50  located at 39.192N 28.068E, origin 18:08:33.61, rms 0.08 s from 2 stations
+ALARM    #25  18:10:23.50  earthquake detected by CMH, DEMI  (AFAD ML 3.5 at 18:10:07.00, 16.5 s ago)
+MAG      #25  18:10:25.50  magnitude M3.4 from 1 station (DEMI 3.4)
+MAG      #25  18:10:28.50  magnitude M3.0 from 2 stations (CMH 2.5, DEMI 3.4)
+MAG      #25  18:10:54.00  magnitude M3.2 from 3 stations (CMH 2.5, DEMI 3.4, SEMS 3.2)
+MAG      #25  18:10:56.50  magnitude M2.9 from 4 stations (CMH 2.5, DEMI 3.4, KIRK 2.4, SEMS 3.2)
+LOCATE   #25  18:11:15.00  located at 39.632N 28.838E, origin 18:10:08.31, rms 0.05 s from 2 stations
+ALARM    #26  18:13:21.50  earthquake detected by CMH, DEMI  (AFAD ML 3.3 at 18:13:05.00, 16.5 s ago)
+MAG      #26  18:13:23.00  magnitude M3.4 from 1 station (DEMI 3.4)
+MAG      #26  18:13:27.00  magnitude M2.8 from 2 stations (CMH 2.3, DEMI 3.4)
+MAG      #26  18:13:47.50  magnitude M3.2 from 3 stations (CMH 2.3, DEMI 3.4, SEMS 3.2)
+MAG      #26  18:13:55.00  magnitude M2.8 from 4 stations (CMH 2.3, DEMI 3.4, KIRK 2.5, SEMS 3.2)
+LOCATE   #26  18:14:13.50  located at 39.622N 28.873E, origin 18:13:05.96, rms 0.01 s from 2 stations
+MAG      #26  18:14:41.50  magnitude M2.8 from 4 stations (CMH 2.3, DEMI 3.5, KIRK 2.3, SEMS 3.2)
+ALARM    #27  18:18:55.00  earthquake detected by CMH, DEMI  (AFAD ML 2.7 at 18:18:32.00, 23.0 s ago)
+MAG      #27  18:18:55.50  magnitude M2.2 from 1 station (CMH 2.2)
+MAG      #27  18:18:57.00  magnitude M2.7 from 2 stations (CMH 2.2, DEMI 3.2)
+ALARM    #28  18:19:51.50  earthquake detected by CMH, KIRK  (AFAD ML 2.9 at 18:19:02.00, 49.5 s ago)
+MAG      #28  18:19:51.50  magnitude M2.6 from 1 station (CMH 2.6)
+MAG      #28  18:19:53.50  magnitude M2.5 from 2 stations (CMH 2.6, KIRK 2.5)
+MAG      #28  18:19:56.50  magnitude M2.6 from 3 stations (CMH 2.6, DEMI 3.0, KIRK 2.5)
+ALARM    #29  18:20:55.00  earthquake detected by CMH, DEMI
+MAG      #29  18:20:55.00  magnitude M2.4 from 1 station (CMH 2.4)
+MAG      #29  18:20:59.00  magnitude M2.8 from 2 stations (CMH 2.4, DEMI 3.2)
+MAG      #29  18:21:45.50  magnitude M2.7 from 2 stations (CMH 2.4, DEMI 3.1)
+ALARM    #30  18:22:58.50  earthquake detected by DEMI, SEMS
+MAG      #30  18:22:58.50  magnitude M3.2 from 1 station (DEMI 3.2)
+MAG      #30  18:23:00.50  magnitude M3.0 from 2 stations (DEMI 3.2, SEMS 2.8)
+ALARM    #31  18:25:15.00  earthquake detected by CMH, DEMI  (AFAD ML 3.3 at 18:24:59.00, 16.0 s ago)
+MAG      #31  18:25:15.50  magnitude M3.2 from 1 station (DEMI 3.2)
+MAG      #31  18:25:20.50  magnitude M2.8 from 2 stations (CMH 2.5, DEMI 3.2)
+MAG      #31  18:25:45.00  magnitude M3.1 from 3 stations (CMH 2.5, DEMI 3.2, SEMS 3.1)
+LOCATE   #31  18:26:07.00  located at 39.202N 28.053E, origin 18:24:59.42, rms 0.01 s from 2 stations
+ALARM    #32  18:28:09.00  earthquake detected by CMH, DEMI  (AFAD MW 4.1 at 18:27:52.00, 17.0 s ago)
+MAG      #32  18:28:09.00  magnitude M3.3 from 1 station (DEMI 3.3)
+MAG      #32  18:28:14.50  magnitude M2.9 from 2 stations (CMH 2.6, DEMI 3.3)
+MAG      #32  18:28:33.00  magnitude M3.3 from 3 stations (CMH 2.6, DEMI 3.3, SEMS 3.6)
+MAG      #32  18:28:38.50  magnitude M3.2 from 4 stations (CMH 2.6, DEMI 3.3, SEMS 3.6, VIZE 3.0)
+MAG      #32  18:28:39.00  magnitude M3.0 from 5 stations (CMH 2.6, DEMI 3.3, KAND 2.8, SEMS 3.6, VIZE 3.0)
+MAG      #32  18:28:42.50  magnitude M2.9 from 6 stations (CMH 2.6, DEMI 3.3, KAND 2.8, KIRK 2.5, SEMS 3.6, VIZE 3.0)
+LOCATE   #32  18:29:01.00  located at 39.167N 28.113E, origin 18:27:52.42, rms 0.02 s from 2 stations
+LOCATE   #32  18:29:19.50  located at 39.190N 28.139E, origin 18:27:52.09, rms 1.73 s from 3 stations
+MAG      #32  18:29:25.00  magnitude M3.0 from 6 stations (CMH 2.6, DEMI 3.5, KAND 2.8, KIRK 2.5, SEMS 4.0, VIZE 3.2)
+MAG      #32  18:29:25.50  magnitude M3.4 from 6 stations (CMH 2.6, DEMI 3.5, KAND 3.9, KIRK 2.5, SEMS 4.0, VIZE 3.2)
+LOCATE   #32  18:29:29.00  located at 39.218N 27.788E, origin 18:27:46.41, rms 1.54 s from 4 stations, left out CMH
+ALARM    #33  18:29:36.50  earthquake detected by CMH, DEMI  (AFAD ML 3.4 at 18:29:18.00, 18.5 s ago)
+MAG      #33  18:29:36.50  magnitude M3.3 from 1 station (DEMI 3.3)
+MAG      #33  18:29:38.50  magnitude M2.9 from 2 stations (CMH 2.4, DEMI 3.3)
+ALARM    #34  18:32:01.50  earthquake detected by CMH, DEMI  (AFAD MW 4.2 at 18:31:45.00, 16.5 s ago)
+MAG      #34  18:32:01.50  magnitude M3.2 from 1 station (DEMI 3.2)
+MAG      #34  18:32:07.00  magnitude M3.0 from 2 stations (CMH 2.8, DEMI 3.2)
+MAG      #34  18:32:25.50  magnitude M3.2 from 3 stations (CMH 2.8, DEMI 3.2, SEMS 4.4)
+MAG      #34  18:32:31.00  magnitude M3.5 from 4 stations (CMH 2.8, DEMI 3.2, SEMS 4.4, VIZE 3.8)
+MAG      #34  18:32:31.50  magnitude M3.8 from 5 stations (CMH 2.8, DEMI 3.2, KAND 3.9, SEMS 4.4, VIZE 3.8)
+MAG      #34  18:32:34.50  magnitude M3.5 from 6 stations (CMH 2.8, DEMI 3.2, KAND 3.9, KIRK 2.7, SEMS 4.4, VIZE 3.8)
+MAG      #34  18:32:47.00  magnitude M3.6 from 6 stations (CMH 2.8, DEMI 3.4, KAND 3.9, KIRK 2.7, SEMS 4.4, VIZE 3.8)
+LOCATE   #34  18:32:53.50  located at 39.512N 28.833E, origin 18:31:45.33, rms 0.02 s from 2 stations
+ALARM    #35  18:33:20.00  earthquake detected by CMH, DEMI
+MAG      #35  18:33:20.00  magnitude M3.2 from 1 station (DEMI 3.2)
+LOCATE   #34  18:33:21.00  located at 39.260N 27.799E, origin 18:31:38.63, rms 1.75 s from 3 stations, left out CMH
+MAG      #35  18:33:22.00  magnitude M2.8 from 2 stations (CMH 2.3, DEMI 3.2)
+pick     DEMI  picker window at 18:35:49.50 crosses a gap, skipped
+ALARM    #36  18:35:13.00  earthquake detected by CMH, DEMI  (AFAD ML 3.0 at 18:34:54.00, 19.0 s ago)
+MAG      #36  18:35:13.00  magnitude M2.8 from 1 station (DEMI 2.8)
+MAG      #36  18:35:16.50  magnitude M2.5 from 2 stations (CMH 2.2, DEMI 2.8)
+MAG      #36  18:35:40.00  magnitude M2.7 from 3 stations (CMH 2.2, DEMI 2.8, SEMS 2.7)
+MAG      #36  18:35:44.50  magnitude M2.6 from 4 stations (CMH 2.2, DEMI 2.8, KIRK 2.5, SEMS 2.7)
+LOCATE   #36  18:36:03.00  located at 39.197N 28.138E, origin 18:34:54.83, rms 0.07 s from 2 stations
+ALARM    #37  18:36:18.50  earthquake detected by CMH, DEMI  (AFAD ML 2.8 at 18:35:46.00, 32.5 s ago)
+MAG      #37  18:36:18.50  magnitude M2.9 from 1 station (DEMI 2.9)
+MAG      #37  18:36:20.50  magnitude M2.7 from 2 stations (CMH 2.5, DEMI 2.9)
+ALARM    #38  18:39:00.50  earthquake detected by CMH, DEMI  (AFAD ML 3.1 at 18:38:43.00, 17.5 s ago)
+MAG      #38  18:39:00.50  magnitude M2.9 from 1 station (DEMI 2.9)
+MAG      #38  18:39:05.50  magnitude M2.6 from 2 stations (CMH 2.3, DEMI 2.9)
+MAG      #38  18:39:25.00  magnitude M2.9 from 3 stations (CMH 2.3, DEMI 2.9, SEMS 3.6)
+MAG      #38  18:39:33.00  magnitude M2.7 from 4 stations (CMH 2.3, DEMI 2.9, KIRK 2.5, SEMS 3.6)
+MAG      #38  18:39:46.00  magnitude M2.8 from 4 stations (CMH 2.3, DEMI 3.1, KIRK 2.5, SEMS 3.6)
+LOCATE   #38  18:39:52.00  located at 39.227N 28.193E, origin 18:38:44.64, rms 0.04 s from 2 stations
+ALARM    #39  18:40:31.50  earthquake detected by CMH, DEMI  (AFAD ML 3.0 at 18:40:14.00, 17.5 s ago)
+MAG      #39  18:40:31.50  magnitude M2.6 from 1 station (DEMI 2.6)
+MAG      #39  18:40:36.50  magnitude M2.4 from 2 stations (CMH 2.3, DEMI 2.6)
+MAG      #39  18:41:16.50  magnitude M2.5 from 2 stations (CMH 2.3, DEMI 2.7)
+LOCATE   #39  18:41:23.00  located at 39.212N 28.163E, origin 18:40:15.13, rms 0.02 s from 2 stations
+ALARM    #40  18:41:34.00  earthquake detected by CMH, DEMI  (AFAD ML 3.0 at 18:41:17.00, 17.0 s ago)
+MAG      #40  18:41:34.00  magnitude M2.7 from 1 station (DEMI 2.7)
+MAG      #40  18:41:39.50  magnitude M2.5 from 2 stations (CMH 2.3, DEMI 2.7)
+MAG      #40  18:42:19.00  magnitude M2.6 from 2 stations (CMH 2.3, DEMI 2.9)
+LOCATE   #40  18:42:26.00  located at 39.197N 28.148E, origin 18:41:17.95, rms 0.03 s from 2 stations
+ALARM    #41  18:42:59.00  earthquake detected by CMH, DEMI  (AFAD ML 2.7 at 18:42:38.00, 21.0 s ago)
+MAG      #41  18:42:59.00  magnitude M2.6 from 1 station (DEMI 2.6)
+MAG      #41  18:43:01.00  magnitude M2.5 from 2 stations (CMH 2.3, DEMI 2.6)
+MAG      #41  18:43:25.50  magnitude M2.5 from 3 stations (CMH 2.3, DEMI 2.6, SEMS 2.5)
+MAG      #41  18:43:28.50  magnitude M2.4 from 4 stations (CMH 2.3, DEMI 2.6, KIRK 2.3, SEMS 2.5)
+LOCATE   #41  18:43:47.50  located at 39.582N 28.868E, origin 18:42:39.32, rms 0.11 s from 2 stations
+ALARM    #42  18:47:03.00  earthquake detected by CMH, DEMI  (AFAD ML 3.0 at 18:46:47.00, 16.0 s ago)
+MAG      #42  18:47:06.00  magnitude M2.9 from 1 station (DEMI 2.9)
+MAG      #42  18:47:08.50  magnitude M2.6 from 2 stations (CMH 2.2, DEMI 2.9)
+MAG      #42  18:47:36.50  magnitude M2.4 from 3 stations (CMH 2.2, DEMI 2.9, KIRK 2.4)
+LOCATE   #42  18:47:55.00  located at 39.237N 27.968E, origin 18:46:47.63, rms 0.01 s from 2 stations
+ALARM    #43  18:50:50.00  earthquake detected by DEMI, SEMS  (AFAD ML 2.4 at 18:50:05.00, 45.0 s ago)
+MAG      #43  18:50:50.00  magnitude M2.6 from 1 station (DEMI 2.6)
+MAG      #43  18:50:52.00  magnitude M2.6 from 2 stations (DEMI 2.6, SEMS 2.6)
+MAG      #43  18:50:56.00  magnitude M2.6 from 3 stations (DEMI 2.6, KIRK 2.4, SEMS 2.6)
+ALARM    #44  18:52:04.00  earthquake detected by CMH, DEMI  (AFAD ML 2.6 at 18:51:46.00, 18.0 s ago)
+MAG      #44  18:52:04.00  magnitude M2.7 from 1 station (DEMI 2.7)
+MAG      #44  18:52:06.00  magnitude M2.5 from 2 stations (CMH 2.3, DEMI 2.7)
+MAG      #44  18:52:36.50  magnitude M2.3 from 3 stations (CMH 2.3, DEMI 2.7, KIRK 2.3)
+MAG      #44  18:52:52.50  magnitude M2.3 from 3 stations (CMH 2.3, DEMI 2.6, KIRK 2.3)
+ALARM    #45  18:58:02.00  earthquake detected by CMH, DEMI  (AFAD ML 3.0 at 18:57:46.00, 16.0 s ago)
+MAG      #45  18:58:02.50  magnitude M3.0 from 1 station (DEMI 3.0)
+MAG      #45  18:58:07.50  magnitude M2.7 from 2 stations (CMH 2.3, DEMI 3.0)
+MAG      #45  18:58:26.50  magnitude M3.0 from 3 stations (CMH 2.3, DEMI 3.0, SEMS 3.1)
+MAG      #45  18:58:32.00  magnitude M2.9 from 4 stations (CMH 2.3, DEMI 3.0, KAND 2.7, SEMS 3.1)
+MAG      #45  18:58:35.00  magnitude M2.7 from 5 stations (CMH 2.3, DEMI 3.0, KAND 2.7, KIRK 2.3, SEMS 3.1)
+LOCATE   #45  18:58:54.00  located at 39.532N 28.958E, origin 18:57:44.92, rms 0.28 s from 2 stations
+LOCATE   #45  18:59:13.00  located at 39.235N 28.219E, origin 18:57:46.57, rms 1.87 s from 3 stations
+MAG      #45  18:59:18.50  magnitude M2.8 from 5 stations (CMH 2.3, DEMI 2.8, KAND 2.8, KIRK 2.3, SEMS 3.0)
+LOCATE   #45  18:59:21.50  located at 39.212N 27.726E, origin 18:57:38.29, rms 1.73 s from 4 stations, left out CMH
+ALARM    #46  19:00:01.00  earthquake detected by CMH, DEMI
+MAG      #46  19:00:01.00  magnitude M2.9 from 1 station (DEMI 2.9)
+
+------------------------------------------------------------------------------
+REPORT  6 stations, 2025-08-10 15:59:03.65 to 19:00:04.60 UTC
+------------------------------------------------------------------------------
+
+Event #1: detected M4.7 earthquake at 39.091N 27.746E, origin 16:53:42.78 UTC
+  alarm      16:54:03.00 UTC by CMH, DEMI; later KAND, KIRK, SEMS, VIZE
+  magnitude  M4.9 0.5 s after the alarm, M4.7 final from 6 stations
+  location   rms 1.56 s from 3 stations
+  AFAD       MW 6.1 at 16:53:46.00 UTC: alarm 17.0 s after origin, magnitude -1.4, epicentre 32.5 km off, origin -3.2 s
+  S wave     had travelled 58 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          60 km   16:54:05.96 UTC (picked)      +3.0 s  before S
+             CMH           86 km   16:54:12.86 UTC (picked)      +9.9 s  before S
+             SEMS         230 km   16:54:51.85 UTC (predicted)   +48.9 s  before S
+             VIZE         260 km   16:55:02.32 UTC (picked)     +59.3 s  before S
+             KAND         274 km   16:55:04.28 UTC (predicted)   +61.3 s  before S
+             KIRK         294 km   16:54:58.84 UTC (picked)     +55.8 s  before S
+
+Event #2: detected M3.7 earthquake, not located
+  alarm      17:01:32.50 UTC by CMH, DEMI
+  magnitude  M3.9 at the alarm, M3.7 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #3: detected M4.0 earthquake at 39.522N 28.828E, origin 17:04:15.58 UTC
+  alarm      17:04:31.50 UTC by CMH, DEMI
+  magnitude  M4.0 at the alarm, M4.0 final from 2 stations
+  location   rms 0.05 s from 2 stations
+  AFAD       ML 4.1 at 17:04:14.00 UTC: alarm 17.5 s after origin, magnitude -0.1, epicentre 67.9 km off, origin +1.6 s
+  S wave     had travelled 61 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          52 km   17:04:31.30 UTC (picked)      -0.2 s  after S
+             CMH           91 km   17:04:41.86 UTC (picked)     +10.4 s  before S
+             SEMS         229 km   17:05:19.50 UTC (predicted)   +48.0 s  before S
+             VIZE         265 km   17:05:29.76 UTC (predicted)   +58.3 s  before S
+             KAND         272 km   17:05:31.81 UTC (predicted)   +60.3 s  before S
+             KIRK         300 km   17:05:39.71 UTC (predicted)   +68.2 s  before S
+
+Event #4: detected M3.7 earthquake at 39.532N 28.723E, origin 17:06:28.45 UTC
+  alarm      17:06:45.50 UTC by CMH, DEMI; later SEMS
+  magnitude  M4.1 at the alarm, M3.7 final from 3 stations
+  location   rms 0.08 s from 2 stations
+  AFAD       ML 4.0 at 17:06:29.00 UTC: alarm 16.5 s after origin, magnitude -0.3, epicentre 63.6 km off, origin -0.5 s
+  S wave     had travelled 55 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          59 km   17:06:44.30 UTC (picked)      -1.2 s  after S
+             CMH           86 km   17:06:52.44 UTC (picked)      +6.9 s  before S
+             SEMS         229 km   17:07:34.72 UTC (predicted)   +49.2 s  before S
+             VIZE         261 km   17:07:43.66 UTC (predicted)   +58.2 s  before S
+             KAND         273 km   17:07:47.11 UTC (predicted)   +61.6 s  before S
+             KIRK         295 km   17:07:53.32 UTC (predicted)   +67.8 s  before S
+
+Event #5: detected M3.2 earthquake, not located
+  alarm      17:09:32.50 UTC by DEMI, VIZE
+  magnitude  M3.9 at the alarm, M3.2 final from 2 stations
+  AFAD       ML 3.4 at 17:08:48.00 UTC: alarm 44.5 s after origin, magnitude -0.2
+  S wave     had travelled 156 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          56 km   17:09:04.11 UTC (predicted)   -28.4 s  after S
+             CMH           89 km   17:09:13.62 UTC (predicted)   -18.9 s  after S
+             SEMS         231 km   17:09:53.96 UTC (predicted)   +21.5 s  before S
+             VIZE         264 km   17:10:04.08 UTC (picked)     +31.6 s  before S
+             KAND         274 km   17:10:06.33 UTC (predicted)   +33.8 s  before S
+             KIRK         298 km   17:10:13.15 UTC (predicted)   +40.7 s  before S
+
+Event #6: detected M3.2 earthquake, not located
+  alarm      17:10:59.50 UTC by CMH, DEMI
+  magnitude  M2.6 at the alarm, M3.2 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #7: detected M2.7 earthquake at 39.227N 28.148E, origin 17:13:57.70 UTC
+  alarm      17:14:13.00 UTC by CMH, DEMI; later SEMS
+  magnitude  M3.6 at the alarm, M2.7 final from 3 stations
+  location   rms 0.03 s from 2 stations
+  AFAD       ML 3.4 at 17:13:56.00 UTC: alarm 17.0 s after origin, magnitude -0.7, epicentre 1.2 km off, origin +1.7 s
+  S wave     had travelled 58 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          52 km   17:14:13.18 UTC (picked)      +0.2 s  before S
+             CMH           90 km   17:14:23.12 UTC (picked)     +10.1 s  before S
+             SEMS         228 km   17:15:01.37 UTC (predicted)   +48.4 s  before S
+             VIZE         264 km   17:15:11.53 UTC (predicted)   +58.5 s  before S
+             KAND         272 km   17:15:13.68 UTC (predicted)   +60.7 s  before S
+             KIRK         299 km   17:15:21.48 UTC (predicted)   +68.5 s  before S
+
+Event #8: detected M3.5 earthquake at 39.617N 28.397E, origin 17:15:05.63 UTC
+  alarm      17:15:24.00 UTC by CMH, DEMI; later KIRK, SEMS
+  magnitude  M4.0 0.5 s after the alarm, M3.5 final from 4 stations
+  location   rms 0.57 s from 2 stations
+  AFAD       ML 3.9 at 17:15:07.00 UTC: alarm 17.0 s after origin, magnitude -0.4, epicentre 48.5 km off, origin -1.4 s
+  S wave     had travelled 59 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          56 km   17:15:25.04 UTC (picked)      +1.0 s  before S
+             CMH           87 km   17:15:33.40 UTC (picked)      +9.4 s  before S
+             SEMS         228 km   17:16:12.16 UTC (predicted)   +48.2 s  before S
+             VIZE         261 km   17:16:21.70 UTC (predicted)   +57.7 s  before S
+             KAND         271 km   17:16:24.55 UTC (predicted)   +60.6 s  before S
+             KIRK         296 km   17:16:20.82 UTC (picked)     +56.8 s  before S
+
+Event #9: detected M3.7 earthquake, not located
+  alarm      17:16:34.50 UTC by DEMI, VIZE; later CMH
+  magnitude  M3.7 at the alarm, M3.7 final from 3 stations
+  AFAD       ML 3.2 at 17:16:19.00 UTC: alarm 15.5 s after origin, magnitude +0.5
+  S wave     had travelled 54 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          50 km   17:16:33.40 UTC (predicted)    -1.1 s  after S
+             CMH           92 km   17:16:47.64 UTC (picked)     +13.1 s  before S
+             SEMS         229 km   17:17:24.31 UTC (predicted)   +49.8 s  before S
+             VIZE         266 km   17:17:34.89 UTC (predicted)   +60.4 s  before S
+             KAND         272 km   17:17:36.61 UTC (predicted)   +62.1 s  before S
+             KIRK         301 km   17:17:44.93 UTC (predicted)   +70.4 s  before S
+
+Event #10: detected M3.2 earthquake, not located
+  alarm      17:20:41.50 UTC by DEMI, SEMS
+  magnitude  M3.7 at the alarm, M3.2 final from 2 stations
+  AFAD       ML 3.1 at 17:19:58.00 UTC: alarm 43.5 s after origin, magnitude +0.1
+  S wave     had travelled 152 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          62 km   17:20:15.69 UTC (predicted)   -25.8 s  after S
+             CMH           82 km   17:20:21.43 UTC (predicted)   -20.1 s  after S
+             SEMS         227 km   17:21:03.96 UTC (picked)     +22.5 s  before S
+             VIZE         256 km   17:21:11.24 UTC (predicted)   +29.7 s  before S
+             KAND         270 km   17:21:15.27 UTC (predicted)   +33.8 s  before S
+             KIRK         290 km   17:21:20.89 UTC (predicted)   +39.4 s  before S
+
+Event #11: detected M3.1 earthquake at 39.207N 28.168E, origin 17:25:42.39 UTC
+  alarm      17:26:00.50 UTC by CMH, DEMI
+  magnitude  M3.6 at the alarm, M3.1 final from 2 stations
+  location   rms 0.07 s from 2 stations
+  AFAD       ML 3.5 at 17:25:41.00 UTC: alarm 19.5 s after origin, magnitude -0.4, epicentre 1.6 km off, origin +1.4 s
+  S wave     had travelled 67 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          52 km   17:25:57.08 UTC (picked)      -3.4 s  after S
+             CMH           92 km   17:26:08.62 UTC (picked)      +8.1 s  before S
+             SEMS         230 km   17:26:46.76 UTC (predicted)   +46.3 s  before S
+             VIZE         266 km   17:26:57.05 UTC (predicted)   +56.5 s  before S
+             KAND         273 km   17:26:59.05 UTC (predicted)   +58.6 s  before S
+             KIRK         301 km   17:27:06.98 UTC (predicted)   +66.5 s  before S
+
+Event #12: detected M3.8 earthquake at 39.212N 28.163E, origin 17:32:08.13 UTC
+  alarm      17:32:24.00 UTC by CMH, DEMI; later KAND, VIZE
+  magnitude  M3.8 at the alarm, M3.8 final from 4 stations
+  location   rms 0.02 s from 2 stations
+  AFAD       MW 4.2 at 17:32:07.00 UTC: alarm 17.0 s after origin, magnitude -0.4, epicentre 2.8 km off, origin +1.1 s
+  S wave     had travelled 58 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          51 km   17:32:23.06 UTC (picked)      -0.9 s  after S
+             CMH           93 km   17:32:34.12 UTC (picked)     +10.1 s  before S
+             SEMS         231 km   17:33:12.99 UTC (predicted)   +49.0 s  before S
+             VIZE         267 km   17:33:23.39 UTC (predicted)   +59.4 s  before S
+             KAND         274 km   17:33:26.70 UTC (picked)     +62.7 s  before S
+             KIRK         302 km   17:33:33.33 UTC (predicted)   +69.3 s  before S
+
+Event #13: detected M3.2 earthquake, not located
+  alarm      17:32:54.50 UTC by DEMI, KIRK
+  magnitude  M3.5 at the alarm, M3.2 final from 2 stations
+  AFAD       ML 2.8 at 17:31:41.00 UTC: alarm 73.5 s after origin, magnitude +0.4
+  S wave     had travelled 257 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          60 km   17:31:58.24 UTC (predicted)   -56.3 s  after S
+             CMH           86 km   17:32:05.59 UTC (predicted)   -48.9 s  after S
+             SEMS         230 km   17:32:46.73 UTC (predicted)    -7.8 s  after S
+             VIZE         260 km   17:32:55.41 UTC (predicted)    +0.9 s  before S
+             KAND         274 km   17:32:59.17 UTC (predicted)    +4.7 s  before S
+             KIRK         294 km   17:33:21.80 UTC (picked)     +27.3 s  before S
+
+Event #14: detected M2.6 earthquake, not located
+  alarm      17:41:04.00 UTC by CMH, SEMS
+  magnitude  M2.4 at the alarm, M2.6 final from 2 stations
+  AFAD       ML 2.7 at 17:40:20.00 UTC: alarm 44.0 s after origin, magnitude -0.1
+  S wave     had travelled 154 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          55 km   17:40:35.90 UTC (predicted)   -28.1 s  after S
+             CMH           90 km   17:40:45.81 UTC (predicted)   -18.2 s  after S
+             SEMS         231 km   17:41:25.91 UTC (predicted)   +21.9 s  before S
+             VIZE         264 km   17:41:35.56 UTC (predicted)   +31.6 s  before S
+             KAND         274 km   17:41:38.26 UTC (predicted)   +34.3 s  before S
+             KIRK         299 km   17:41:45.34 UTC (predicted)   +41.3 s  before S
+
+Event #15: detected M3.1 earthquake at 39.567N 29.327E, origin 17:40:43.14 UTC
+  alarm      17:41:33.50 UTC by DEMI, KIRK
+  magnitude  M3.5 at the alarm, M3.1 final from 2 stations
+  location   rms 1.64 s from 2 stations
+  AFAD       ML 3.6 at 17:40:48.00 UTC: alarm 45.5 s after origin, magnitude -0.5, epicentre 109.2 km off, origin -4.9 s
+  S wave     had travelled 159 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          51 km   17:41:04.56 UTC (picked)     -28.9 s  after S
+             CMH           93 km   17:41:14.88 UTC (predicted)   -18.6 s  after S
+             SEMS         231 km   17:41:54.05 UTC (predicted)   +20.6 s  before S
+             VIZE         267 km   17:42:04.46 UTC (predicted)   +31.0 s  before S
+             KAND         274 km   17:42:06.32 UTC (predicted)   +32.8 s  before S
+             KIRK         302 km   17:42:12.90 UTC (picked)     +39.4 s  before S
+
+Event #16: detected M2.8 earthquake at 39.627N 28.888E, origin 17:45:35.37 UTC
+  alarm      17:45:56.00 UTC by CMH, DEMI
+  magnitude  M3.3 at the alarm, M2.8 final from 2 stations
+  location   rms 0.18 s from 2 stations
+  AFAD       ML 2.9 at 17:45:35.00 UTC: alarm 21.0 s after origin, magnitude -0.1, epicentre 82.2 km off, origin +0.4 s
+  S wave     had travelled 73 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          59 km   17:45:54.50 UTC (picked)      -1.5 s  after S
+             CMH           86 km   17:46:01.18 UTC (picked)      +5.2 s  before S
+             SEMS         230 km   17:46:40.87 UTC (predicted)   +44.9 s  before S
+             VIZE         261 km   17:46:49.63 UTC (predicted)   +53.6 s  before S
+             KAND         274 km   17:46:53.29 UTC (predicted)   +57.3 s  before S
+             KIRK         295 km   17:46:59.24 UTC (predicted)   +63.2 s  before S
+
+Event #17: detected M3.4 earthquake at 38.469N 29.444E, origin 17:49:06.88 UTC
+  alarm      17:49:30.50 UTC by CMH, DEMI; later KAND, KIRK, SEMS
+  magnitude  M3.2 at the alarm, M3.4 final from 5 stations
+  location   rms 1.95 s from 2 stations
+  AFAD       ML 3.4 at 17:49:13.00 UTC: alarm 17.5 s after origin, magnitude +0.0, epicentre 143.1 km off, origin -6.1 s
+  S wave     had travelled 61 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          56 km   17:49:31.28 UTC (picked)      +0.8 s  before S
+             CMH           89 km   17:50:13.50 UTC (picked)     +43.0 s  before S
+             SEMS         230 km   17:50:18.88 UTC (predicted)   +48.4 s  before S
+             VIZE         263 km   17:50:28.23 UTC (predicted)   +57.7 s  before S
+             KAND         274 km   17:50:33.72 UTC (picked)     +63.2 s  before S
+             KIRK         297 km   17:50:37.96 UTC (predicted)   +67.5 s  before S
+
+Event #18: detected M2.4 earthquake at 39.582N 28.848E, origin 17:54:43.72 UTC
+  alarm      17:55:02.00 UTC by CMH, DEMI; later KIRK
+  magnitude  M3.4 at the alarm, M2.4 final from 3 stations
+  location   rms 0.17 s from 2 stations
+  AFAD       no matching catalogue event
+  S wave     had travelled 63 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             DEMI          61 km   17:55:01.52 UTC (picked)      -0.5 s  after S
+             CMH           89 km   17:55:09.16 UTC (picked)      +7.2 s  before S
+             SEMS         162 km   17:55:30.11 UTC (predicted)   +28.1 s  before S
+             KAND         203 km   17:55:41.82 UTC (predicted)   +39.8 s  before S
+             VIZE         238 km   17:55:51.71 UTC (predicted)   +49.7 s  before S
+             KIRK         286 km   17:56:05.39 UTC (predicted)   +63.4 s  before S
+
+Event #19: detected M3.4 earthquake at 39.172N 28.123E, origin 17:55:44.18 UTC
+  alarm      17:56:02.50 UTC by CMH, DEMI; later SEMS
+  magnitude  M3.5 at the alarm, M3.4 final from 3 stations
+  location   rms 0.11 s from 2 stations
+  AFAD       ML 3.6 at 17:55:44.00 UTC: alarm 18.5 s after origin, magnitude -0.2, epicentre 4.8 km off, origin +0.2 s
+  S wave     had travelled 64 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          51 km   17:55:59.56 UTC (picked)      -2.9 s  after S
+             CMH           92 km   17:56:11.36 UTC (picked)      +8.9 s  before S
+             SEMS         229 km   17:56:49.45 UTC (predicted)   +47.0 s  before S
+             VIZE         266 km   17:56:59.98 UTC (predicted)   +57.5 s  before S
+             KAND         272 km   17:57:01.74 UTC (predicted)   +59.2 s  before S
+             KIRK         301 km   17:57:09.99 UTC (predicted)   +67.5 s  before S
+
+Event #20: detected M2.5 earthquake at 39.572N 28.417E, origin 17:58:51.97 UTC
+  alarm      17:59:13.00 UTC by CMH, DEMI; later KIRK
+  magnitude  M3.7 at the alarm, M2.5 final from 3 stations
+  location   rms 0.63 s from 2 stations
+  AFAD       ML 3.5 at 17:58:53.00 UTC: alarm 20.0 s after origin, magnitude -1.0, epicentre 47.4 km off, origin -1.0 s
+  S wave     had travelled 70 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          50 km   17:59:09.86 UTC (picked)      -3.1 s  after S
+             CMH           93 km   17:59:20.90 UTC (picked)      +7.9 s  before S
+             SEMS         230 km   17:59:58.66 UTC (predicted)   +45.7 s  before S
+             VIZE         267 km   18:00:09.27 UTC (predicted)   +56.3 s  before S
+             KAND         273 km   18:00:10.94 UTC (predicted)   +57.9 s  before S
+             KIRK         302 km   18:00:08.56 UTC (picked)     +55.6 s  before S
+
+Event #21: detected M3.0 earthquake at 39.197N 28.148E, origin 17:59:49.48 UTC
+  alarm      18:00:06.50 UTC by CMH, DEMI
+  magnitude  M3.6 at the alarm, M3.0 final from 2 stations
+  location   rms 0.03 s from 2 stations
+  AFAD       ML 3.1 at 17:59:48.00 UTC: alarm 18.5 s after origin, magnitude -0.1, epicentre 2.2 km off, origin +1.5 s
+  S wave     had travelled 64 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          50 km   18:00:04.58 UTC (picked)      -1.9 s  after S
+             CMH           93 km   18:00:15.88 UTC (picked)      +9.4 s  before S
+             SEMS         230 km   18:00:53.62 UTC (predicted)   +47.1 s  before S
+             VIZE         267 km   18:01:04.32 UTC (predicted)   +57.8 s  before S
+             KAND         273 km   18:01:05.89 UTC (predicted)   +59.4 s  before S
+             KIRK         302 km   18:01:14.35 UTC (predicted)   +67.9 s  before S
+
+Event #22: detected M2.8 earthquake at 39.227N 28.153E, origin 18:05:34.68 UTC
+  alarm      18:05:54.00 UTC by CMH, DEMI
+  magnitude  M3.2 at the alarm, M2.8 final from 2 stations
+  location   rms 0.04 s from 2 stations
+  AFAD       ML 2.6 at 18:05:33.00 UTC: alarm 21.0 s after origin, magnitude +0.2, epicentre 2.9 km off, origin +1.7 s
+  S wave     had travelled 73 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          53 km   18:05:50.06 UTC (picked)      -3.9 s  after S
+             CMH           91 km   18:06:00.14 UTC (picked)      +6.1 s  before S
+             SEMS         230 km   18:06:38.77 UTC (predicted)   +44.8 s  before S
+             VIZE         265 km   18:06:48.86 UTC (predicted)   +54.9 s  before S
+             KAND         273 km   18:06:51.09 UTC (predicted)   +57.1 s  before S
+             KIRK         300 km   18:06:58.75 UTC (predicted)   +64.8 s  before S
+
+Event #23: detected M2.7 earthquake, not located
+  alarm      18:07:36.50 UTC by CMH, DEMI; later SEMS
+  magnitude  M3.1 at the alarm, M2.7 final from 3 stations
+  AFAD       ML 2.8 at 18:07:19.00 UTC: alarm 17.5 s after origin, magnitude -0.1
+  S wave     had travelled 61 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          56 km   18:07:35.26 UTC (predicted)    -1.2 s  after S
+             CMH           88 km   18:07:45.14 UTC (picked)      +8.6 s  before S
+             SEMS         230 km   18:08:24.70 UTC (predicted)   +48.2 s  before S
+             VIZE         263 km   18:08:34.06 UTC (predicted)   +57.6 s  before S
+             KAND         273 km   18:08:37.08 UTC (predicted)   +60.6 s  before S
+             KIRK         297 km   18:08:43.81 UTC (predicted)   +67.3 s  before S
+
+Event #24: detected M2.5 earthquake at 39.192N 28.068E, origin 18:08:33.61 UTC
+  alarm      18:08:49.50 UTC by CMH, DEMI; later KIRK, SEMS
+  magnitude  M3.3 1.0 s after the alarm, M2.5 final from 4 stations
+  location   rms 0.08 s from 2 stations
+  AFAD       ML 2.8 at 18:08:33.00 UTC: alarm 16.5 s after origin, magnitude -0.3, epicentre 4.8 km off, origin +0.6 s
+  S wave     had travelled 57 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          54 km   18:08:50.56 UTC (picked)      +1.1 s  before S
+             CMH           91 km   18:08:59.86 UTC (picked)     +10.4 s  before S
+             SEMS         231 km   18:09:39.14 UTC (predicted)   +49.6 s  before S
+             VIZE         266 km   18:09:48.97 UTC (predicted)   +59.5 s  before S
+             KAND         275 km   18:09:51.47 UTC (predicted)   +62.0 s  before S
+             KIRK         300 km   18:09:30.50 UTC (picked)     +41.0 s  before S
+
+Event #25: detected M2.8 earthquake at 39.632N 28.838E, origin 18:10:08.31 UTC
+  alarm      18:10:23.50 UTC by CMH, DEMI; later KIRK, SEMS
+  magnitude  M3.4 2.0 s after the alarm, M2.8 final from 4 stations
+  location   rms 0.05 s from 2 stations
+  AFAD       ML 3.5 at 18:10:07.00 UTC: alarm 16.5 s after origin, magnitude -0.7, epicentre 80.9 km off, origin +1.3 s
+  S wave     had travelled 57 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          63 km   18:10:27.48 UTC (picked)      +4.0 s  before S
+             CMH           85 km   18:10:32.88 UTC (picked)      +9.4 s  before S
+             SEMS         231 km   18:11:13.13 UTC (predicted)   +49.6 s  before S
+             VIZE         260 km   18:11:21.21 UTC (predicted)   +57.7 s  before S
+             KAND         275 km   18:11:25.60 UTC (predicted)   +62.1 s  before S
+             KIRK         293 km   18:11:30.66 UTC (predicted)   +67.2 s  before S
+
+Event #26: detected M2.8 earthquake at 39.622N 28.873E, origin 18:13:05.96 UTC
+  alarm      18:13:21.50 UTC by CMH, DEMI; later KIRK, SEMS
+  magnitude  M3.4 1.5 s after the alarm, M2.8 final from 4 stations
+  location   rms 0.01 s from 2 stations
+  AFAD       ML 3.3 at 18:13:05.00 UTC: alarm 16.5 s after origin, magnitude -0.5, epicentre 81.4 km off, origin +1.0 s
+  S wave     had travelled 56 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          61 km   18:13:24.98 UTC (picked)      +3.5 s  before S
+             CMH           85 km   18:13:31.38 UTC (picked)      +9.9 s  before S
+             SEMS         230 km   18:14:10.91 UTC (predicted)   +49.4 s  before S
+             VIZE         260 km   18:14:19.36 UTC (predicted)   +57.9 s  before S
+             KAND         274 km   18:14:23.35 UTC (predicted)   +61.9 s  before S
+             KIRK         293 km   18:14:28.91 UTC (predicted)   +67.4 s  before S
+
+Event #27: detected M2.7 earthquake, not located
+  alarm      18:18:55.00 UTC by CMH, DEMI
+  magnitude  M2.2 0.5 s after the alarm, M2.7 final from 2 stations
+  AFAD       ML 2.7 at 18:18:32.00 UTC: alarm 23.0 s after origin, magnitude +0.0
+  S wave     had travelled 80 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          54 km   18:18:47.44 UTC (predicted)    -7.6 s  after S
+             CMH           88 km   18:18:57.16 UTC (predicted)    +2.2 s  before S
+             SEMS         227 km   18:19:36.90 UTC (predicted)   +41.9 s  before S
+             VIZE         262 km   18:19:46.89 UTC (predicted)   +51.9 s  before S
+             KAND         270 km   18:19:49.25 UTC (predicted)   +54.3 s  before S
+             KIRK         297 km   18:19:56.84 UTC (predicted)   +61.8 s  before S
+
+Event #28: detected M2.6 earthquake, not located
+  alarm      18:19:51.50 UTC by CMH, KIRK; later DEMI
+  magnitude  M2.6 at the alarm, M2.6 final from 3 stations
+  AFAD       ML 2.9 at 18:19:02.00 UTC: alarm 49.5 s after origin, magnitude -0.3
+  S wave     had travelled 173 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          50 km   18:19:56.80 UTC (picked)      +5.3 s  before S
+             CMH           92 km   18:19:28.34 UTC (predicted)   -23.2 s  after S
+             SEMS         229 km   18:20:07.47 UTC (predicted)   +16.0 s  before S
+             VIZE         266 km   18:20:18.04 UTC (predicted)   +26.5 s  before S
+             KAND         272 km   18:20:19.75 UTC (predicted)   +28.3 s  before S
+             KIRK         301 km   18:20:25.24 UTC (picked)     +33.7 s  before S
+
+Event #29: detected M2.7 earthquake, not located
+  alarm      18:20:55.00 UTC by CMH, DEMI
+  magnitude  M2.4 at the alarm, M2.7 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #30: detected M3.0 earthquake, not located
+  alarm      18:22:58.50 UTC by DEMI, SEMS
+  magnitude  M3.2 at the alarm, M3.0 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #31: detected M3.1 earthquake at 39.202N 28.053E, origin 18:24:59.42 UTC
+  alarm      18:25:15.00 UTC by CMH, DEMI; later SEMS
+  magnitude  M3.2 0.5 s after the alarm, M3.1 final from 3 stations
+  location   rms 0.01 s from 2 stations
+  AFAD       ML 3.3 at 18:24:59.00 UTC: alarm 16.0 s after origin, magnitude -0.2, epicentre 1.9 km off, origin +0.4 s
+  S wave     had travelled 54 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          62 km   18:25:16.76 UTC (picked)      +1.8 s  before S
+             CMH           89 km   18:25:25.36 UTC (picked)     +10.4 s  before S
+             SEMS         234 km   18:26:06.12 UTC (predicted)   +51.1 s  before S
+             VIZE         263 km   18:26:14.40 UTC (predicted)   +59.4 s  before S
+             KAND         278 km   18:26:18.55 UTC (predicted)   +63.6 s  before S
+             KIRK         296 km   18:26:23.79 UTC (predicted)   +68.8 s  before S
+
+Event #32: detected M3.4 earthquake at 39.218N 27.788E, origin 18:27:46.41 UTC
+  alarm      18:28:09.00 UTC by CMH, DEMI; later KAND, KIRK, SEMS, VIZE
+  magnitude  M3.3 at the alarm, M3.4 final from 6 stations
+  location   rms 1.54 s from 4 stations
+  AFAD       MW 4.1 at 18:27:52.00 UTC: alarm 17.0 s after origin, magnitude -0.7, epicentre 32.2 km off, origin -5.6 s
+  S wave     had travelled 58 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          50 km   18:28:08.04 UTC (picked)      -1.0 s  after S
+             CMH           95 km   18:28:19.60 UTC (picked)     +10.6 s  before S
+             SEMS         232 km   18:28:59.22 UTC (picked)     +50.2 s  before S
+             VIZE         269 km   18:29:00.40 UTC (picked)     +51.4 s  before S
+             KAND         275 km   18:29:10.72 UTC (predicted)   +61.7 s  before S
+             KIRK         304 km   18:29:07.76 UTC (picked)     +58.8 s  before S
+
+Event #33: detected M2.9 earthquake, not located
+  alarm      18:29:36.50 UTC by CMH, DEMI
+  magnitude  M3.3 at the alarm, M2.9 final from 2 stations
+  AFAD       ML 3.4 at 18:29:18.00 UTC: alarm 18.5 s after origin, magnitude -0.5
+  S wave     had travelled 63 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          54 km   18:29:34.09 UTC (predicted)    -2.4 s  after S
+             CMH           93 km   18:30:05.92 UTC (picked)     +29.4 s  before S
+             SEMS         233 km   18:30:24.80 UTC (predicted)   +48.3 s  before S
+             VIZE         268 km   18:30:34.61 UTC (predicted)   +58.1 s  before S
+             KAND         276 km   18:30:37.11 UTC (predicted)   +60.6 s  before S
+             KIRK         302 km   18:30:44.34 UTC (predicted)   +67.8 s  before S
+
+Event #34: detected M3.6 earthquake at 39.260N 27.799E, origin 18:31:38.63 UTC
+  alarm      18:32:01.50 UTC by CMH, DEMI; later KAND, KIRK, SEMS, VIZE
+  magnitude  M3.2 at the alarm, M3.6 final from 6 stations
+  location   rms 1.75 s from 3 stations
+  AFAD       MW 4.2 at 18:31:45.00 UTC: alarm 16.5 s after origin, magnitude -0.6, epicentre 33.2 km off, origin -6.4 s
+  S wave     had travelled 57 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          50 km   18:32:00.80 UTC (picked)      -0.7 s  after S
+             CMH           91 km   18:32:11.86 UTC (picked)     +10.4 s  before S
+             SEMS         227 km   18:32:50.01 UTC (predicted)   +48.5 s  before S
+             VIZE         265 km   18:33:00.70 UTC (predicted)   +59.2 s  before S
+             KAND         270 km   18:33:02.76 UTC (picked)     +61.3 s  before S
+             KIRK         300 km   18:32:59.04 UTC (picked)     +57.5 s  before S
+
+Event #35: detected M2.8 earthquake, not located
+  alarm      18:33:20.00 UTC by CMH, DEMI
+  magnitude  M3.2 at the alarm, M2.8 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #36: detected M2.6 earthquake at 39.197N 28.138E, origin 18:34:54.83 UTC
+  alarm      18:35:13.00 UTC by CMH, DEMI; later KIRK, SEMS
+  magnitude  M2.8 at the alarm, M2.6 final from 4 stations
+  location   rms 0.07 s from 2 stations
+  AFAD       ML 3.0 at 18:34:54.00 UTC: alarm 19.0 s after origin, magnitude -0.4, epicentre 2.1 km off, origin +0.8 s
+  S wave     had travelled 66 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          51 km   18:35:10.20 UTC (picked)      -2.8 s  after S
+             CMH           92 km   18:35:21.12 UTC (picked)      +8.1 s  before S
+             SEMS         230 km   18:35:59.66 UTC (predicted)   +46.7 s  before S
+             VIZE         266 km   18:36:10.16 UTC (predicted)   +57.2 s  before S
+             KAND         273 km   18:36:11.95 UTC (predicted)   +59.0 s  before S
+             KIRK         301 km   18:36:20.14 UTC (predicted)   +67.1 s  before S
+
+Event #37: detected M2.7 earthquake, not located
+  alarm      18:36:18.50 UTC by CMH, DEMI
+  magnitude  M2.9 at the alarm, M2.7 final from 2 stations
+  AFAD       ML 2.8 at 18:35:46.00 UTC: alarm 32.5 s after origin, magnitude -0.1
+  S wave     had travelled 114 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          49 km   18:36:00.24 UTC (predicted)   -18.3 s  after S
+             CMH           93 km   18:36:12.61 UTC (predicted)    -5.9 s  after S
+             SEMS         229 km   18:36:51.52 UTC (predicted)   +33.0 s  before S
+             VIZE         267 km   18:37:02.29 UTC (predicted)   +43.8 s  before S
+             KAND         272 km   18:37:03.79 UTC (predicted)   +45.3 s  before S
+             KIRK         302 km   18:37:12.34 UTC (predicted)   +53.8 s  before S
+
+Event #38: detected M2.8 earthquake at 39.227N 28.193E, origin 18:38:44.64 UTC
+  alarm      18:39:00.50 UTC by CMH, DEMI; later KIRK, SEMS
+  magnitude  M2.9 at the alarm, M2.8 final from 4 stations
+  location   rms 0.04 s from 2 stations
+  AFAD       ML 3.1 at 18:38:43.00 UTC: alarm 17.5 s after origin, magnitude -0.3, epicentre 2.9 km off, origin +1.6 s
+  S wave     had travelled 61 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          50 km   18:38:59.08 UTC (picked)      -1.4 s  after S
+             CMH           92 km   18:39:10.36 UTC (picked)      +9.9 s  before S
+             SEMS         228 km   18:39:48.20 UTC (predicted)   +47.7 s  before S
+             VIZE         266 km   18:39:58.96 UTC (predicted)   +58.5 s  before S
+             KAND         271 km   18:40:00.47 UTC (predicted)   +60.0 s  before S
+             KIRK         301 km   18:39:58.02 UTC (picked)     +57.5 s  before S
+
+Event #39: detected M2.5 earthquake at 39.212N 28.163E, origin 18:40:15.13 UTC
+  alarm      18:40:31.50 UTC by CMH, DEMI
+  magnitude  M2.6 at the alarm, M2.5 final from 2 stations
+  location   rms 0.02 s from 2 stations
+  AFAD       ML 3.0 at 18:40:14.00 UTC: alarm 17.5 s after origin, magnitude -0.5, epicentre 2.2 km off, origin +1.1 s
+  S wave     had travelled 61 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          51 km   18:40:30.06 UTC (picked)      -1.4 s  after S
+             CMH           93 km   18:40:41.12 UTC (picked)      +9.6 s  before S
+             SEMS         230 km   18:41:19.71 UTC (predicted)   +48.2 s  before S
+             VIZE         267 km   18:41:30.22 UTC (predicted)   +58.7 s  before S
+             KAND         273 km   18:41:32.00 UTC (predicted)   +60.5 s  before S
+             KIRK         302 km   18:41:40.20 UTC (predicted)   +68.7 s  before S
+
+Event #40: detected M2.6 earthquake at 39.197N 28.148E, origin 18:41:17.95 UTC
+  alarm      18:41:34.00 UTC by CMH, DEMI
+  magnitude  M2.7 at the alarm, M2.6 final from 2 stations
+  location   rms 0.03 s from 2 stations
+  AFAD       ML 3.0 at 18:41:17.00 UTC: alarm 17.0 s after origin, magnitude -0.4, epicentre 3.4 km off, origin +1.0 s
+  S wave     had travelled 59 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          50 km   18:41:33.04 UTC (picked)      -1.0 s  after S
+             CMH           95 km   18:41:44.36 UTC (picked)     +10.4 s  before S
+             SEMS         232 km   18:42:23.25 UTC (predicted)   +49.3 s  before S
+             VIZE         269 km   18:42:33.96 UTC (predicted)   +60.0 s  before S
+             KAND         275 km   18:42:35.51 UTC (predicted)   +61.5 s  before S
+             KIRK         304 km   18:42:43.93 UTC (predicted)   +69.9 s  before S
+
+Event #41: detected M2.4 earthquake at 39.582N 28.868E, origin 18:42:39.32 UTC
+  alarm      18:42:59.00 UTC by CMH, DEMI; later KIRK, SEMS
+  magnitude  M2.6 at the alarm, M2.4 final from 4 stations
+  location   rms 0.11 s from 2 stations
+  AFAD       ML 2.7 at 18:42:38.00 UTC: alarm 21.0 s after origin, magnitude -0.3, epicentre 79.8 km off, origin +1.3 s
+  S wave     had travelled 73 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          59 km   18:42:57.02 UTC (picked)      -2.0 s  after S
+             CMH           89 km   18:43:05.38 UTC (picked)      +6.4 s  before S
+             SEMS         233 km   18:43:44.48 UTC (predicted)   +45.5 s  before S
+             VIZE         264 km   18:43:53.34 UTC (predicted)   +54.3 s  before S
+             KAND         276 km   18:43:56.89 UTC (predicted)   +57.9 s  before S
+             KIRK         297 km   18:44:08.16 UTC (picked)     +69.2 s  before S
+
+Event #42: detected M2.4 earthquake at 39.237N 27.968E, origin 18:46:47.63 UTC
+  alarm      18:47:03.00 UTC by CMH, DEMI; later KIRK
+  magnitude  M2.9 3.0 s after the alarm, M2.4 final from 3 stations
+  location   rms 0.01 s from 2 stations
+  AFAD       ML 3.0 at 18:46:47.00 UTC: alarm 16.0 s after origin, magnitude -0.6, epicentre 6.5 km off, origin +0.6 s
+  S wave     had travelled 56 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          65 km   18:47:07.26 UTC (picked)      +4.3 s  before S
+             CMH           82 km   18:47:12.40 UTC (picked)      +9.4 s  before S
+             SEMS         230 km   18:47:52.68 UTC (predicted)   +49.7 s  before S
+             VIZE         257 km   18:48:00.43 UTC (predicted)   +57.4 s  before S
+             KAND         274 km   18:48:05.19 UTC (predicted)   +62.2 s  before S
+             KIRK         290 km   18:48:09.85 UTC (predicted)   +66.9 s  before S
+
+Event #43: detected M2.6 earthquake, not located
+  alarm      18:50:50.00 UTC by DEMI, SEMS; later KIRK
+  magnitude  M2.6 at the alarm, M2.6 final from 3 stations
+  AFAD       ML 2.4 at 18:50:05.00 UTC: alarm 45.0 s after origin, magnitude +0.2
+  S wave     had travelled 157 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          59 km   18:50:24.26 UTC (picked)     -25.7 s  after S
+             CMH           88 km   18:50:30.09 UTC (predicted)   -19.9 s  after S
+             SEMS         231 km   18:51:11.15 UTC (predicted)   +21.2 s  before S
+             VIZE         262 km   18:51:19.90 UTC (predicted)   +29.9 s  before S
+             KAND         275 km   18:51:23.58 UTC (predicted)   +33.6 s  before S
+             KIRK         296 km   18:51:29.48 UTC (predicted)   +39.5 s  before S
+
+Event #44: detected M2.3 earthquake, not located
+  alarm      18:52:04.00 UTC by CMH, DEMI; later KIRK
+  magnitude  M2.7 at the alarm, M2.3 final from 3 stations
+  AFAD       ML 2.6 at 18:51:46.00 UTC: alarm 18.0 s after origin, magnitude -0.3
+  S wave     had travelled 63 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          49 km   18:52:01.34 UTC (picked)      -2.7 s  after S
+             CMH           95 km   18:52:13.30 UTC (predicted)    +9.3 s  before S
+             SEMS         231 km   18:52:52.11 UTC (predicted)   +48.1 s  before S
+             VIZE         269 km   18:53:02.99 UTC (predicted)   +59.0 s  before S
+             KAND         274 km   18:53:04.36 UTC (predicted)   +60.4 s  before S
+             KIRK         304 km   18:53:13.02 UTC (predicted)   +69.0 s  before S
+
+Event #45: detected M2.8 earthquake at 39.212N 27.726E, origin 18:57:38.29 UTC
+  alarm      18:58:02.00 UTC by CMH, DEMI; later KAND, KIRK, SEMS
+  magnitude  M3.0 0.5 s after the alarm, M2.8 final from 5 stations
+  location   rms 1.73 s from 4 stations
+  AFAD       ML 3.0 at 18:57:46.00 UTC: alarm 16.0 s after origin, magnitude -0.2, epicentre 38.2 km off, origin -7.7 s
+  S wave     had travelled 56 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             DEMI          51 km   18:58:01.60 UTC (picked)      -0.4 s  after S
+             CMH           90 km   18:58:13.80 UTC (picked)     +11.8 s  before S
+             SEMS         227 km   18:58:51.52 UTC (picked)     +49.5 s  before S
+             VIZE         264 km   18:59:01.52 UTC (predicted)   +59.5 s  before S
+             KAND         271 km   18:59:03.98 UTC (picked)     +62.0 s  before S
+             KIRK         299 km   18:58:59.54 UTC (picked)     +57.5 s  before S
+
+Event #46: detected M2.9 earthquake, not located
+  alarm      19:00:01.00 UTC by CMH, DEMI
+  magnitude  M2.9 at the alarm, M2.9 final from 1 station
+  AFAD       no matching catalogue event
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                          46
+  single-station detections, no alarm    41
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)       39   85%
+    false    (no AFAD event)              7   15%
+
+  AFAD events within 250 km               66
+    detected                             39   59%
+    missed                               27   41%
+
+  By magnitude      AFAD events   detected   missed
+    M 2-3                  27         12       15
+    M 3-4                  32         21       11
+    M 4-5                   6          5        1
+    M 5+                    1          1        0
+
+  Correct alarms
+    alarm after origin time             median 17.5 s
+    magnitude error                     mean 0.37 units
+    located                             27 of 39
+    alarm before the S wave             at 196 of 234 station arrivals, median warning 49.6 s, max 70.4 s
+
+  Missed AFAD events
+    16:57:41.00 UTC  ML 3.7   183 km from the network centre
+    16:59:19.00 UTC  ML 3.7   173 km from the network centre
+    17:01:21.00 UTC  MW 4.6   174 km from the network centre
+    17:03:16.00 UTC  ML 3.4   172 km from the network centre
+    17:09:46.00 UTC  ML 3.1   175 km from the network centre
+    17:12:56.00 UTC  ML 3.2   176 km from the network centre
+    17:17:26.00 UTC  ML 2.7   172 km from the network centre
+    17:21:26.00 UTC  ML 2.7   166 km from the network centre
+    17:27:14.00 UTC  ML 2.6   173 km from the network centre
+    17:28:46.00 UTC  ML 2.2   178 km from the network centre
+    17:29:35.00 UTC  ML 2.6   171 km from the network centre
+    17:33:03.00 UTC  ML 3.1   175 km from the network centre
+    17:36:01.00 UTC  ML 2.7   171 km from the network centre
+    17:37:41.00 UTC  ML 2.8   172 km from the network centre
+    17:43:28.00 UTC  ML 2.6   171 km from the network centre
+    17:44:05.00 UTC  ML 3.0   177 km from the network centre
+    17:50:05.00 UTC  ML 3.5   179 km from the network centre
+    17:51:45.00 UTC  ML 2.6   177 km from the network centre
+    17:54:02.00 UTC  ML 2.8   178 km from the network centre
+    17:56:13.00 UTC  ML 3.6   175 km from the network centre
+    18:00:36.00 UTC  ML 2.6   174 km from the network centre
+    18:01:15.00 UTC  ML 2.8   176 km from the network centre
+    18:13:38.00 UTC  ML 2.8   176 km from the network centre
+    18:16:57.00 UTC  ML 3.0   172 km from the network centre
+    18:19:40.00 UTC  ML 3.0   174 km from the network centre
+    18:25:54.00 UTC  ML 2.7   175 km from the network centre
+    18:48:21.00 UTC  ML 2.2   179 km from the network centre
+
+  False alarms (no AFAD event; small uncatalogued earthquakes are possible)
+    17:01:32.50 UTC  #2  M3.7, not located
+    17:10:59.50 UTC  #6  M3.2, not located
+    17:55:02.00 UTC  #18  M2.4, located 39.58N 28.85E
+    18:20:55.00 UTC  #29  M2.7, not located
+    18:22:58.50 UTC  #30  M3.0, not located
+    18:33:20.00 UTC  #35  M2.8, not located
+    19:00:01.00 UTC  #46  M2.9, not located
+------------------------------------------------------------------------------
+
+Station processing (scalar backend)
+         windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
+  CMH      21705         0       47     46             46/33     18.795 (35.128)        44           1117
+  DEMI     21659         4       85     81             85/34     18.097 (34.622)        39           1105
+  KAND     21702         0        6      6               6/5     19.255 (35.936)        27           1144
+  KIRK     21703         0       21     21             21/18     18.865 (37.238)        46           1140
+  SEMS     21705         0       24     24              24/3     19.351 (35.687)        44           1163
+  VIZE     21703         0        6      6               6/3     19.161 (36.121)        39           1274
+  P time from an STA/LTA onset for 100 of 189 triggers (89 from the window start)
+  magnitude at the picked P: 96 estimated, 28 not (trigger not part of a declared event)
+  130177 windows in 490.9 s: 22x real time per station

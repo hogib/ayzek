@@ -1,6 +1,6 @@
 {
- "version": "05595da-dirty",
- "date": "2026-09-22T17:23:04Z",
+ "version": "707b3b8-dirty",
+ "date": "2026-09-22T18:10:19Z",
  "models": "/home/oguzb/Projects/Codings/ayzek/ayzek_code/models",
  "args": "",
  "datasets": {
@@ -88,6 +88,17 @@
      "M_error": 0.2,
      "epicentre_km": 4.4,
      "stations": "DEMI, MANT + BAND"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.4,
+     "origin": "18:32:40.00",
+     "alarm_delay_s": 22.5,
+     "M_alarm": 2.6,
+     "M_final": 2.9,
+     "M_error": 0.5,
+     "epicentre_km": 100.4,
+     "stations": "DEMI, MANT"
     }
    ],
    "dropped_warnings": 0
@@ -114,6 +125,39 @@
    "events": [
     {
      "afad_type": "ML",
+     "afad_M": 3.9,
+     "origin": "09:13:05.00",
+     "alarm_delay_s": 11.0,
+     "M_alarm": 3.5,
+     "M_final": 3.3,
+     "M_error": -0.6,
+     "epicentre_km": 4.9,
+     "stations": "ARNA, BAND, ELBA + CATL, DEMI, KIRK, MANT, SEMS"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 6.2,
+     "origin": "09:49:10.00",
+     "alarm_delay_s": 11.0,
+     "M_alarm": 4.6,
+     "M_final": 4.8,
+     "M_error": -1.4,
+     "epicentre_km": 3.1,
+     "stations": "ARNA, ELBA + BAND, CATL, DEMI, KIRK, MANT, SEMS"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 5.9,
+     "origin": "09:51:19.00",
+     "alarm_delay_s": 12.5,
+     "M_alarm": 4.5,
+     "M_final": 4.3,
+     "M_error": -1.6,
+     "epicentre_km": 21.1,
+     "stations": "ARNA, ELBA + SEMS"
+    },
+    {
+     "afad_type": "ML",
      "afad_M": 4.5,
      "origin": "09:52:19.00",
      "alarm_delay_s": 15.0,
@@ -136,6 +180,50 @@
     },
     {
      "afad_type": "ML",
+     "afad_M": 3.6,
+     "origin": "09:59:29.00",
+     "alarm_delay_s": 10.5,
+     "M_alarm": 3.4,
+     "M_final": 3.5,
+     "M_error": -0.1,
+     "epicentre_km": 6.1,
+     "stations": "ARNA, ELBA + BAND, CATL, KIRK, SEMS"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 4.8,
+     "origin": "10:01:02.00",
+     "alarm_delay_s": 11.0,
+     "M_alarm": 3.7,
+     "M_final": 3.6,
+     "M_error": -1.2,
+     "epicentre_km": 6.3,
+     "stations": "ARNA, ELBA + BAND, CATL, DEMI, KIRK, SEMS"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 4.5,
+     "origin": "10:02:10.00",
+     "alarm_delay_s": 9.0,
+     "M_alarm": 4.2,
+     "M_final": 3.4,
+     "M_error": -1.1,
+     "epicentre_km": 218.8,
+     "stations": "ARNA, ELBA + BAND, CATL, DEMI, KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.0,
+     "origin": "10:05:43.00",
+     "alarm_delay_s": 13.0,
+     "M_alarm": 3.1,
+     "M_final": 2.8,
+     "M_error": -0.2,
+     "epicentre_km": 32.1,
+     "stations": "ARNA, ELBA"
+    },
+    {
+     "afad_type": "ML",
      "afad_M": 3.4,
      "origin": "10:07:01.00",
      "alarm_delay_s": 7.5,
@@ -144,6 +232,17 @@
      "M_error": -0.8,
      "epicentre_km": 8.6,
      "stations": "ELBA, SEMS + ARNA, BAND, CATL, KIRK"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "10:13:56.00",
+     "alarm_delay_s": 10.0,
+     "M_alarm": 2.4,
+     "M_final": 2.3,
+     "M_error": -0.4,
+     "epicentre_km": 106.1,
+     "stations": "ARNA, ELBA + BAND, CATL, KIRK, SEMS"
     },
     {
      "afad_type": "ML",
@@ -166,6 +265,39 @@
      "M_error": -0.6,
      "epicentre_km": 109.0,
      "stations": "ARNA, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.1,
+     "origin": "10:18:51.00",
+     "alarm_delay_s": 13.5,
+     "M_alarm": 2.2,
+     "M_final": 2.3,
+     "M_error": 0.2,
+     "epicentre_km": null,
+     "stations": "CATL, ELBA"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.0,
+     "origin": "10:20:26.00",
+     "alarm_delay_s": 12.0,
+     "M_alarm": 2.3,
+     "M_final": 2.3,
+     "M_error": 0.3,
+     "epicentre_km": 10.6,
+     "stations": "CATL, ELBA + BAND, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.2,
+     "origin": "10:22:31.00",
+     "alarm_delay_s": 11.5,
+     "M_alarm": 2.3,
+     "M_final": 2.3,
+     "M_error": 0.1,
+     "epicentre_km": 13.6,
+     "stations": "CATL, ELBA + BAND, KIRK, SEMS"
     },
     {
      "afad_type": "ML",
@@ -202,6 +334,17 @@
     },
     {
      "afad_type": "ML",
+     "afad_M": 2.5,
+     "origin": "10:29:33.00",
+     "alarm_delay_s": 13.5,
+     "M_alarm": 2.5,
+     "M_final": 2.4,
+     "M_error": -0.1,
+     "epicentre_km": null,
+     "stations": "BAND, ELBA + CATL, SEMS"
+    },
+    {
+     "afad_type": "ML",
      "afad_M": 2.9,
      "origin": "10:31:15.00",
      "alarm_delay_s": 29.5,
@@ -235,6 +378,28 @@
     },
     {
      "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "10:39:02.00",
+     "alarm_delay_s": 12.0,
+     "M_alarm": 2.4,
+     "M_final": 2.4,
+     "M_error": -0.3,
+     "epicentre_km": 4.3,
+     "stations": "BAND, ELBA + CATL, KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.2,
+     "origin": "10:41:19.00",
+     "alarm_delay_s": 9.5,
+     "M_alarm": 2.6,
+     "M_final": 2.6,
+     "M_error": -0.6,
+     "epicentre_km": 6.9,
+     "stations": "ARNA, ELBA + BAND, CATL, DEMI, KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
      "afad_M": 2.2,
      "origin": "10:43:53.00",
      "alarm_delay_s": 10.0,
@@ -243,6 +408,17 @@
      "M_error": 0.1,
      "epicentre_km": 13.1,
      "stations": "ELBA, KIRK + BAND, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.8,
+     "origin": "10:45:34.00",
+     "alarm_delay_s": 12.0,
+     "M_alarm": 2.2,
+     "M_final": 2.3,
+     "M_error": -0.5,
+     "epicentre_km": null,
+     "stations": "CATL, ELBA + BAND, SEMS"
     },
     {
      "afad_type": "MW",
@@ -257,6 +433,105 @@
     },
     {
      "afad_type": "ML",
+     "afad_M": 2.3,
+     "origin": "10:48:47.00",
+     "alarm_delay_s": 11.5,
+     "M_alarm": 2.4,
+     "M_final": 2.4,
+     "M_error": 0.1,
+     "epicentre_km": 12.5,
+     "stations": "CATL, ELBA + BAND, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "10:53:54.00",
+     "alarm_delay_s": 10.5,
+     "M_alarm": 2.6,
+     "M_final": 2.5,
+     "M_error": -0.2,
+     "epicentre_km": 7.7,
+     "stations": "CATL, ELBA + ARNA, BAND, KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.9,
+     "origin": "10:57:20.00",
+     "alarm_delay_s": 11.0,
+     "M_alarm": 2.8,
+     "M_final": 2.7,
+     "M_error": -0.2,
+     "epicentre_km": 6.0,
+     "stations": "ARNA, CATL, ELBA + BAND, DEMI, KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.6,
+     "origin": "11:00:29.00",
+     "alarm_delay_s": 8.5,
+     "M_alarm": 2.5,
+     "M_final": 2.3,
+     "M_error": -0.3,
+     "epicentre_km": 26.2,
+     "stations": "ARNA, BAND, CATL, ELBA + DEMI, KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 1.6,
+     "origin": "11:03:53.00",
+     "alarm_delay_s": 10.5,
+     "M_alarm": 2.4,
+     "M_final": 2.3,
+     "M_error": 0.7,
+     "epicentre_km": 8.8,
+     "stations": "CATL, ELBA + BAND, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 1.9,
+     "origin": "11:07:06.00",
+     "alarm_delay_s": 11.5,
+     "M_alarm": 2.4,
+     "M_final": 2.4,
+     "M_error": 0.5,
+     "epicentre_km": 41.3,
+     "stations": "CATL, ELBA + BAND, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 1.9,
+     "origin": "11:09:02.00",
+     "alarm_delay_s": 13.5,
+     "M_alarm": 2.2,
+     "M_final": 2.3,
+     "M_error": 0.4,
+     "epicentre_km": 12.4,
+     "stations": "CATL, ELBA + BAND, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 1.9,
+     "origin": "11:10:57.00",
+     "alarm_delay_s": 29.5,
+     "M_alarm": 2.3,
+     "M_final": 2.3,
+     "M_error": 0.4,
+     "epicentre_km": 5.6,
+     "stations": "KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.1,
+     "origin": "11:12:54.00",
+     "alarm_delay_s": 11.0,
+     "M_alarm": 2.9,
+     "M_final": 2.9,
+     "M_error": -0.2,
+     "epicentre_km": 8.2,
+     "stations": "CATL, ELBA + ARNA, BAND, DEMI, KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
      "afad_M": 2.0,
      "origin": "11:14:07.00",
      "alarm_delay_s": 22.0,
@@ -268,6 +543,17 @@
     },
     {
      "afad_type": "ML",
+     "afad_M": 1.6,
+     "origin": "11:15:03.00",
+     "alarm_delay_s": 16.0,
+     "M_alarm": 2.3,
+     "M_final": 2.4,
+     "M_error": 0.8,
+     "epicentre_km": 10.0,
+     "stations": "BAND, CATL + SEMS"
+    },
+    {
+     "afad_type": "ML",
      "afad_M": 1.9,
      "origin": "11:17:53.00",
      "alarm_delay_s": 17.0,
@@ -276,6 +562,39 @@
      "M_error": 0.4,
      "epicentre_km": null,
      "stations": "BAND, CATL + SEMS"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 3.6,
+     "origin": "11:21:40.00",
+     "alarm_delay_s": 7.5,
+     "M_alarm": 3.2,
+     "M_final": 3.0,
+     "M_error": -0.6,
+     "epicentre_km": 7.0,
+     "stations": "CATL, ELBA + ARNA, BAND, DEMI, KIRK, MANT, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.4,
+     "origin": "11:23:32.00",
+     "alarm_delay_s": 10.5,
+     "M_alarm": 3.4,
+     "M_final": 3.2,
+     "M_error": -0.2,
+     "epicentre_km": 6.5,
+     "stations": "ARNA, ELBA + BAND, CATL, DEMI, KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 1.9,
+     "origin": "11:25:44.00",
+     "alarm_delay_s": 15.0,
+     "M_alarm": 2.3,
+     "M_final": 2.4,
+     "M_error": 0.5,
+     "epicentre_km": null,
+     "stations": "CATL, ELBA + KIRK, SEMS"
     },
     {
      "afad_type": "ML",
@@ -310,6 +629,17 @@
    "before_s": "196/234",
    "warning_median_s": 49.6,
    "events": [
+    {
+     "afad_type": "MW",
+     "afad_M": 6.1,
+     "origin": "16:53:46.00",
+     "alarm_delay_s": 17.0,
+     "M_alarm": 4.9,
+     "M_final": 4.7,
+     "M_error": -1.4,
+     "epicentre_km": 32.5,
+     "stations": "CMH, DEMI + KAND, KIRK, SEMS, VIZE"
+    },
     {
      "afad_type": "ML",
      "afad_M": 4.1,
@@ -353,6 +683,17 @@
      "M_error": -0.7,
      "epicentre_km": 1.2,
      "stations": "CMH, DEMI + SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.9,
+     "origin": "17:15:07.00",
+     "alarm_delay_s": 17.0,
+     "M_alarm": 4.0,
+     "M_final": 3.5,
+     "M_error": -0.4,
+     "epicentre_km": 48.5,
+     "stations": "CMH, DEMI + KIRK, SEMS"
     },
     {
      "afad_type": "ML",
@@ -510,6 +851,50 @@
     },
     {
      "afad_type": "ML",
+     "afad_M": 2.8,
+     "origin": "18:08:33.00",
+     "alarm_delay_s": 16.5,
+     "M_alarm": 3.3,
+     "M_final": 2.5,
+     "M_error": -0.3,
+     "epicentre_km": 4.8,
+     "stations": "CMH, DEMI + KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.5,
+     "origin": "18:10:07.00",
+     "alarm_delay_s": 16.5,
+     "M_alarm": 3.4,
+     "M_final": 2.8,
+     "M_error": -0.7,
+     "epicentre_km": 80.9,
+     "stations": "CMH, DEMI + KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.3,
+     "origin": "18:13:05.00",
+     "alarm_delay_s": 16.5,
+     "M_alarm": 3.4,
+     "M_final": 2.8,
+     "M_error": -0.5,
+     "epicentre_km": 81.4,
+     "stations": "CMH, DEMI + KIRK, SEMS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "18:18:32.00",
+     "alarm_delay_s": 23.0,
+     "M_alarm": 2.2,
+     "M_final": 2.7,
+     "M_error": 0.0,
+     "epicentre_km": null,
+     "stations": "CMH, DEMI"
+    },
+    {
+     "afad_type": "ML",
      "afad_M": 2.9,
      "origin": "18:19:02.00",
      "alarm_delay_s": 49.5,
@@ -518,6 +903,17 @@
      "M_error": -0.3,
      "epicentre_km": null,
      "stations": "CMH, KIRK + DEMI"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.3,
+     "origin": "18:24:59.00",
+     "alarm_delay_s": 16.0,
+     "M_alarm": 3.2,
+     "M_final": 3.1,
+     "M_error": -0.2,
+     "epicentre_km": 1.9,
+     "stations": "CMH, DEMI + SEMS"
     },
     {
      "afad_type": "MW",
@@ -620,6 +1016,17 @@
     },
     {
      "afad_type": "ML",
+     "afad_M": 3.0,
+     "origin": "18:46:47.00",
+     "alarm_delay_s": 16.0,
+     "M_alarm": 2.9,
+     "M_final": 2.4,
+     "M_error": -0.6,
+     "epicentre_km": 6.5,
+     "stations": "CMH, DEMI + KIRK"
+    },
+    {
+     "afad_type": "ML",
      "afad_M": 2.4,
      "origin": "18:50:05.00",
      "alarm_delay_s": 45.0,
@@ -639,6 +1046,17 @@
      "M_error": -0.3,
      "epicentre_km": null,
      "stations": "CMH, DEMI + KIRK"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.0,
+     "origin": "18:57:46.00",
+     "alarm_delay_s": 16.0,
+     "M_alarm": 3.0,
+     "M_final": 2.8,
+     "M_error": -0.2,
+     "epicentre_km": 38.2,
+     "stations": "CMH, DEMI + KAND, KIRK, SEMS"
     }
    ],
    "dropped_warnings": 0
@@ -724,16 +1142,16 @@
   "unmatched alarms (held out)": 7,
   "false alarms per day (noise)": 4.33,
   "noise hours": 33.3,
-  "magnitude MAE, all matched": 0.381,
-  "magnitude MAE, AFAD M>=4": 0.512,
-  "magnitude bias, AFAD M>=4": -0.512,
-  "epicentre error median km": 10.6
+  "magnitude MAE, all matched": 0.427,
+  "magnitude MAE, AFAD M>=4": 0.831,
+  "magnitude bias, AFAD M>=4": -0.831,
+  "epicentre error median km": 10.0
  },
  "bench": {
   "cpu": "AMD Ryzen 5 5600 6-Core Processor",
   "version": "05595da-dirty",
-  "per-window total": 5.22513,
-  "picker": 12.0215,
-  "magnitude estimate (3 models)": 291.942
+  "per-window total": 5.87652,
+  "picker": 12.9439,
+  "magnitude estimate (3 models)": 306.682
  }
 }
