@@ -46,7 +46,10 @@ SETS = {
     "demo_ko": ("2025-11-10T18:04:00", "2025-11-10T18:35:00",
                 39.22333, 28.16556, 150.0, 6),
     # The 2025-04-23 Marmara Mw 6.2, for the large-event and magnitude story.
-    "marmara_ko": ("2025-04-23T09:45:00", "2025-04-23T10:45:00",
+    # Starts 49 min before the Mw 6.2: the magnitude regressor needs the
+    # station noise baselines warm (30 windows over 5 min, §3.3.5 of the paper),
+    # and a 4-minute lead-in cost 0.7 magnitude units on the mainshock.
+    "marmara_ko": ("2025-04-23T09:00:00", "2025-04-23T10:45:00",
                    40.87, 28.20, 200.0, 8),
     # A catalogue-quiet span on the demo stations; `quiet-scan` chooses it.
     # 2024-01-03 11:14 to 2024-01-04 02:33 holds no catalogue event within

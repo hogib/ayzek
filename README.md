@@ -292,7 +292,7 @@ KOERI sets attached to the release are the reproducible equivalents, and
 | dataset | result |
 |---|---|
 | `demo_ko`, 6 stations, 30 min | Mw 4.9 declared 18.0 s after origin, 8 of 9 catalogue events detected, 2 unmatched alarms, magnitude error 0.35 |
-| `marmara_ko`, 8 stations, 1 h | Mw 6.2 declared **10.5 s** after origin, Mw 5.9 at +11.0 s, 27 of 36 detected |
+| `marmara_ko`, 8 stations, 1 h 45 min | Mw 6.2 declared **10.5 s** after origin, Mw 5.9 at +11.0 s, 28 of 37 detected; the span starts 49 min early so the noise baselines are warm |
 | `quiet_ko`, 6 stations, 6 h, no catalogue event within 250 km | **1 alarm, 4.1 a day**; STA/LTA on the same data raises 25, 103 a day |
 
 ## Data sources
