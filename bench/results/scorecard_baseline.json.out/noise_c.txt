@@ -2,16 +2,16 @@ ayzek    7 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker +
 ayzek    catalogue: 13 events in the replay span
 ALARM    #1   10:01:17.00  earthquake detected by KIRK, VIZE
 MAG      #1   10:01:17.00  magnitude M2.5 from 1 station (KIRK 2.5)
-MAG      #1   10:01:19.00  magnitude M2.4 from 2 stations (KIRK 2.5, VIZE 2.3)
-MAG      #1   10:02:00.50  magnitude M2.4 from 2 stations (KIRK 2.4, VIZE 2.3)
+MAG      #1   10:01:19.00  magnitude M2.5 from 2 stations (KIRK 2.5, VIZE 2.6)
+MAG      #1   10:02:05.50  magnitude M2.4 from 2 stations (KIRK 2.4, VIZE 2.5)
 
 ------------------------------------------------------------------------------
 REPORT  7 stations, 2025-03-31 04:15:50.00 to 15:10:04.86 UTC
 ------------------------------------------------------------------------------
 
-Event #1: detected M2.3 earthquake, not located
+Event #1: detected M2.4 earthquake, not located
   alarm      10:01:17.00 UTC by KIRK, VIZE
-  magnitude  M2.5 at the alarm, M2.3 final from 2 stations
+  magnitude  M2.5 at the alarm, M2.4 final from 2 stations
   AFAD       no matching catalogue event
 
 ------------------------------------------------------------------------------
@@ -31,18 +31,18 @@ SUMMARY
   By magnitude      AFAD events   detected   missed
 
   False alarms (no AFAD event; small uncatalogued earthquakes are possible)
-    10:01:17.00 UTC  #1  M2.3, not located
+    10:01:17.00 UTC  #1  M2.4, not located
 ------------------------------------------------------------------------------
 
 Station processing (scalar backend)
          windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
-  BAND     83266         0        2      2               2/0     11.071 (25.983)        26            733
-  CMH      83263         0        2      2               2/0     11.120 (26.514)        20            688
-  ELBA     83268         0        1      1               1/0     10.928 (26.053)        20            600
-  KIRK     83261         0        2      2               2/1     11.064 (25.823)        23            669
-  MANT     83264         0        0      0               0/0     11.047 (25.953)         0              0
-  SEMS     83259         0        0      0               0/0     11.010 (25.929)         0              0
-  VIZE     83263         0        1      1               1/1     11.158 (26.305)        20            637
+  BAND     83266         0        2      2               2/0     13.021 (27.671)        31           1145
+  CMH      83263         0        2      2               2/0     13.028 (27.538)        20            888
+  ELBA     83268         0        1      1               1/0     13.233 (27.463)        20            812
+  KIRK     83261         0        2      2               2/1     13.096 (27.413)        35            800
+  MANT     83264         0        0      0               0/0     12.991 (27.080)         0              0
+  SEMS     83259         0        0      0               0/0     13.140 (27.726)         0              0
+  VIZE     83263         0        1      1               1/1     13.290 (27.816)        61            984
   P time from an STA/LTA onset for 4 of 8 triggers (4 from the window start)
   magnitude at the picked P: 2 estimated, 5 not (trigger not part of a declared event)
-  582844 windows in 934.1 s: 42x real time per station
+  582844 windows in 1113.1 s: 35x real time per station

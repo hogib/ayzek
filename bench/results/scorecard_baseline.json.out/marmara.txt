@@ -1,20 +1,19 @@
 ayzek    8 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker + 3-model magnitude, replay 2025-04-23 08:29:02.00 to 11:30:04.00 UTC at full speed
 ayzek    catalogue: 58 events in the replay span
 ALARM    #1   09:05:36.50  earthquake detected by CATL, SEMS
-MAG      #1   09:05:36.50  magnitude M2.5 from 1 station (CATL 2.5)
-MAG      #1   09:05:38.50  magnitude M2.7 from 2 stations (CATL 2.5, SEMS 2.8)
-MAG      #1   09:06:16.00  magnitude M2.9 from 2 stations (CATL 2.9, SEMS 2.8)
-MAG      #1   09:06:25.00  magnitude M2.8 from 2 stations (CATL 2.9, SEMS 2.6)
+MAG      #1   09:05:36.50  magnitude M2.6 from 1 station (CATL 2.6)
+MAG      #1   09:05:38.50  magnitude M2.9 from 2 stations (CATL 2.6, SEMS 3.3)
+MAG      #1   09:06:16.00  magnitude M3.2 from 2 stations (CATL 3.1, SEMS 3.3)
+MAG      #1   09:06:25.00  magnitude M3.1 from 2 stations (CATL 3.1, SEMS 3.1)
 ALARM    #2   09:13:16.00  earthquake detected by ARNA, ELBA  (AFAD ML 3.9 at 09:13:05.00, 11.0 s ago)
 MAG      #2   09:13:19.00  magnitude M3.5 from 1 station (ELBA 3.5)
-MAG      #2   09:13:21.50  magnitude M3.4 from 2 stations (ARNA 3.2, ELBA 3.5)
-MAG      #2   09:13:21.50  magnitude M3.5 from 3 stations (ARNA 3.2, BAND 3.5, ELBA 3.5)
-MAG      #2   09:13:22.00  magnitude M3.5 from 4 stations (ARNA 3.2, BAND 3.5, CATL 3.7, ELBA 3.5)
-MAG      #2   09:13:35.00  magnitude M3.5 from 5 stations (ARNA 3.2, BAND 3.5, CATL 3.7, ELBA 3.5, KIRK 3.2)
-MAG      #2   09:13:36.50  magnitude M3.5 from 6 stations (ARNA 3.2, BAND 3.5, CATL 3.7, ELBA 3.5, KIRK 3.2, SEMS 4.1)
-MAG      #2   09:13:43.50  magnitude M3.5 from 7 stations (ARNA 3.2, BAND 3.5, CATL 3.7, DEMI 2.8, ELBA 3.5, KIRK 3.2, SEMS 4.1)
-MAG      #2   09:13:51.00  magnitude M3.3 from 8 stations (ARNA 3.2, BAND 3.5, CATL 3.7, DEMI 2.8, ELBA 3.5, KIRK 3.2, MANT 2.3, SEMS 4.1)
-MAG      #2   09:14:05.50  magnitude M3.2 from 8 stations (ARNA 3.2, BAND 3.5, CATL 3.7, DEMI 2.8, ELBA 3.3, KIRK 3.2, MANT 2.3, SEMS 4.1)
+MAG      #2   09:13:21.50  magnitude M3.4 from 2 stations (ARNA 3.4, ELBA 3.5)
+MAG      #2   09:13:21.50  magnitude M3.5 from 3 stations (ARNA 3.4, BAND 3.5, ELBA 3.5)
+MAG      #2   09:13:22.00  magnitude M3.5 from 4 stations (ARNA 3.4, BAND 3.5, CATL 3.6, ELBA 3.5)
+MAG      #2   09:13:35.00  magnitude M3.5 from 5 stations (ARNA 3.4, BAND 3.5, CATL 3.6, ELBA 3.5, KIRK 3.5)
+MAG      #2   09:13:36.50  magnitude M3.5 from 6 stations (ARNA 3.4, BAND 3.5, CATL 3.6, ELBA 3.5, KIRK 3.5, SEMS 4.0)
+MAG      #2   09:13:43.50  magnitude M3.5 from 7 stations (ARNA 3.4, BAND 3.5, CATL 3.6, DEMI 2.8, ELBA 3.5, KIRK 3.5, SEMS 4.0)
+MAG      #2   09:13:51.00  magnitude M3.5 from 8 stations (ARNA 3.4, BAND 3.5, CATL 3.6, DEMI 2.8, ELBA 3.5, KIRK 3.5, MANT 2.4, SEMS 4.0)
 LOCATE   #2   09:14:08.00  located at 40.752N 28.637E, origin 09:13:04.57, rms 0.35 s from 2 stations
 LOCATE   #2   09:14:08.00  located at 40.755N 28.610E, origin 09:13:04.71, rms 0.37 s from 3 stations
 LOCATE   #2   09:14:08.50  located at 40.777N 28.542E, origin 09:13:05.14, rms 0.51 s from 4 stations
@@ -23,481 +22,498 @@ LOCATE   #2   09:14:23.00  located at 40.865N 28.171E, origin 09:13:06.46, rms 1
 LOCATE   #2   09:14:30.00  located at 40.811N 28.171E, origin 09:13:05.48, rms 1.94 s from 7 stations
 ALARM    #3   09:28:31.00  earthquake detected by DEMI, MANT
 MAG      #3   09:28:31.00  magnitude M2.8 from 1 station (DEMI 2.8)
-MAG      #3   09:28:33.00  magnitude M2.6 from 2 stations (DEMI 2.8, MANT 2.3)
-MAG      #3   09:29:10.00  magnitude M2.5 from 2 stations (DEMI 2.7, MANT 2.3)
+MAG      #3   09:28:33.00  magnitude M2.5 from 2 stations (DEMI 2.8, MANT 2.2)
 LOCATE   #3   09:29:19.50  located at 39.217N 28.982E, origin 09:28:12.23, rms 0.16 s from 2 stations
 ALARM    #4   09:49:21.00  earthquake detected by ARNA, ELBA  (AFAD MW 6.2 at 09:49:10.00, 11.0 s ago)
-MAG      #4   09:49:24.00  magnitude M4.6 from 1 station (ELBA 4.6)
-MAG      #4   09:49:26.00  magnitude M4.6 from 2 stations (ARNA 4.6, ELBA 4.6)
-MAG      #4   09:49:26.50  magnitude M4.6 from 3 stations (ARNA 4.6, BAND 4.9, ELBA 4.6)
-MAG      #4   09:49:27.00  magnitude M4.7 from 4 stations (ARNA 4.6, BAND 4.9, CATL 4.9, ELBA 4.6)
-MAG      #4   09:49:41.00  magnitude M4.9 from 5 stations (ARNA 4.6, BAND 4.9, CATL 4.9, ELBA 4.6, KIRK 5.1)
-MAG      #4   09:49:41.00  magnitude M4.9 from 6 stations (ARNA 4.6, BAND 4.9, CATL 4.9, ELBA 4.6, KIRK 5.1, SEMS 5.1)
-MAG      #4   09:49:48.00  magnitude M4.9 from 7 stations (ARNA 4.6, BAND 4.9, CATL 4.9, DEMI 4.4, ELBA 4.6, KIRK 5.1, SEMS 5.1)
-MAG      #4   09:49:55.50  magnitude M4.7 from 8 stations (ARNA 4.6, BAND 4.9, CATL 4.9, DEMI 4.4, ELBA 4.6, KIRK 5.1, MANT 4.2, SEMS 5.1)
+MAG      #4   09:49:24.00  magnitude M5.0 from 1 station (ELBA 5.0)
+MAG      #4   09:49:26.00  magnitude M5.1 from 2 stations (ARNA 5.1, ELBA 5.0)
+MAG      #4   09:49:26.50  magnitude M5.1 from 3 stations (ARNA 5.1, BAND 5.3, ELBA 5.0)
+MAG      #4   09:49:27.00  magnitude M5.2 from 4 stations (ARNA 5.1, BAND 5.3, CATL 5.8, ELBA 5.0)
+MAG      #4   09:49:41.00  magnitude M5.3 from 5 stations (ARNA 5.1, BAND 5.3, CATL 5.8, ELBA 5.0, KIRK 5.9)
+MAG      #4   09:49:41.00  magnitude M5.4 from 6 stations (ARNA 5.1, BAND 5.3, CATL 5.8, ELBA 5.0, KIRK 5.9, SEMS 5.6)
+MAG      #4   09:49:48.00  magnitude M5.3 from 7 stations (ARNA 5.1, BAND 5.3, CATL 5.8, DEMI 4.6, ELBA 5.0, KIRK 5.9, SEMS 5.6)
+MAG      #4   09:49:55.50  magnitude M5.2 from 8 stations (ARNA 5.1, BAND 5.3, CATL 5.8, DEMI 4.6, ELBA 5.0, KIRK 5.9, MANT 4.2, SEMS 5.6)
+MAG      #4   09:50:10.50  magnitude M5.3 from 8 stations (ARNA 5.1, BAND 5.3, CATL 5.8, DEMI 4.6, ELBA 5.3, KIRK 5.9, MANT 4.2, SEMS 5.6)
 LOCATE   #4   09:50:12.50  located at 41.287N 27.847E, origin 09:49:08.44, rms 0.36 s from 2 stations
-MAG      #4   09:50:12.50  magnitude M4.8 from 8 stations (ARNA 4.8, BAND 4.9, CATL 4.9, DEMI 4.4, ELBA 4.6, KIRK 5.1, MANT 4.2, SEMS 5.1)
 LOCATE   #4   09:50:13.00  located at 40.745N 28.655E, origin 09:49:09.12, rms 0.34 s from 3 stations
-MAG      #4   09:50:13.00  magnitude M4.8 from 8 stations (ARNA 4.8, BAND 4.8, CATL 4.9, DEMI 4.4, ELBA 4.6, KIRK 5.1, MANT 4.2, SEMS 5.1)
+MAG      #4   09:50:13.00  magnitude M5.4 from 8 stations (ARNA 5.3, BAND 5.6, CATL 5.8, DEMI 4.6, ELBA 5.3, KIRK 5.9, MANT 4.2, SEMS 5.6)
 LOCATE   #4   09:50:13.50  located at 40.767N 28.592E, origin 09:49:09.55, rms 0.51 s from 4 stations
 LOCATE   #4   09:50:27.50  located at 40.834N 28.298E, origin 09:49:10.73, rms 0.94 s from 5 stations
 LOCATE   #4   09:50:27.50  located at 40.860N 28.186E, origin 09:49:11.33, rms 1.44 s from 6 stations
+MAG      #4   09:50:27.50  magnitude M5.3 from 8 stations (ARNA 5.3, BAND 5.6, CATL 5.9, DEMI 4.6, ELBA 5.3, KIRK 5.8, MANT 4.2, SEMS 5.3)
 ALARM    #5   09:51:31.50  earthquake detected by ARNA, ELBA  (AFAD MW 5.9 at 09:51:19.00, 12.5 s ago)
-MAG      #5   09:51:33.00  magnitude M4.5 from 1 station (ELBA 4.5)
-MAG      #5   09:51:35.50  magnitude M4.4 from 2 stations (ARNA 4.3, ELBA 4.5)
-MAG      #5   09:51:49.50  magnitude M4.4 from 3 stations (ARNA 4.3, ELBA 4.5, SEMS 4.4)
+MAG      #5   09:51:33.00  magnitude M4.6 from 1 station (ELBA 4.6)
+MAG      #5   09:51:35.50  magnitude M4.5 from 2 stations (ARNA 4.4, ELBA 4.6)
+MAG      #5   09:51:49.50  magnitude M4.5 from 3 stations (ARNA 4.4, ELBA 4.6, SEMS 4.5)
+MAG      #5   09:52:19.50  magnitude M4.5 from 3 stations (ARNA 4.4, ELBA 4.5, SEMS 4.5)
 LOCATE   #5   09:52:22.00  located at 40.837N 28.667E, origin 09:51:19.37, rms 0.30 s from 2 stations
 ALARM    #6   09:52:34.00  earthquake detected by ARNA, ELBA  (AFAD ML 4.5 at 09:52:19.00, 15.0 s ago)
-MAG      #6   09:52:34.00  magnitude M3.9 from 1 station (ELBA 3.9)
-MAG      #6   09:52:36.00  magnitude M4.1 from 2 stations (ARNA 4.2, ELBA 3.9)
+MAG      #6   09:52:34.00  magnitude M4.2 from 1 station (ELBA 4.2)
+MAG      #6   09:52:36.00  magnitude M4.3 from 2 stations (ARNA 4.3, ELBA 4.2)
 LOCATE   #5   09:52:36.00  located at 40.987N 28.186E, origin 09:51:20.63, rms 1.35 s from 3 stations
-MAG      #6   09:52:51.00  magnitude M4.0 from 3 stations (ARNA 4.2, ELBA 3.9, SEMS 4.0)
+MAG      #6   09:52:51.00  magnitude M4.3 from 3 stations (ARNA 4.3, ELBA 4.2, SEMS 4.4)
 LOCATE   #6   09:53:22.50  located at 41.282N 27.962E, origin 09:52:19.61, rms 0.43 s from 2 stations
+MAG      #6   09:53:22.50  magnitude M4.1 from 3 stations (ARNA 4.1, ELBA 3.9, SEMS 4.4)
 LOCATE   #6   09:53:37.50  located at 41.012N 28.106E, origin 09:52:20.70, rms 1.19 s from 3 stations
 ALARM    #7   09:56:26.00  earthquake detected by CATL, SEMS  (AFAD ML 3.2 at 09:56:13.00, 13.0 s ago)
-MAG      #7   09:56:26.00  magnitude M3.4 from 1 station (SEMS 3.4)
-MAG      #7   09:56:30.00  magnitude M3.4 from 2 stations (CATL 3.4, SEMS 3.4)
-MAG      #7   09:57:16.50  magnitude M3.5 from 2 stations (CATL 3.6, SEMS 3.4)
+MAG      #7   09:56:26.00  magnitude M3.6 from 1 station (SEMS 3.6)
+MAG      #7   09:56:30.00  magnitude M3.5 from 2 stations (CATL 3.4, SEMS 3.6)
+MAG      #7   09:57:16.50  magnitude M3.6 from 2 stations (CATL 3.6, SEMS 3.6)
 ALARM    #8   09:59:39.50  earthquake detected by ARNA, ELBA  (AFAD ML 3.6 at 09:59:29.00, 10.5 s ago)
-MAG      #8   09:59:43.00  magnitude M3.4 from 1 station (ELBA 3.4)
-MAG      #8   09:59:45.00  magnitude M3.4 from 2 stations (ARNA 3.3, ELBA 3.4)
-MAG      #8   09:59:46.00  magnitude M3.4 from 3 stations (ARNA 3.3, BAND 3.5, ELBA 3.4)
-MAG      #8   09:59:46.00  magnitude M3.4 from 4 stations (ARNA 3.3, BAND 3.5, CATL 3.5, ELBA 3.4)
-MAG      #8   09:59:56.00  magnitude M3.4 from 5 stations (ARNA 3.3, BAND 3.5, CATL 3.5, ELBA 3.4, SEMS 3.4)
-MAG      #8   10:00:00.50  magnitude M3.4 from 6 stations (ARNA 3.3, BAND 3.5, CATL 3.5, ELBA 3.4, KIRK 2.7, SEMS 3.4)
+MAG      #8   09:59:43.00  magnitude M3.5 from 1 station (ELBA 3.5)
+MAG      #8   09:59:45.00  magnitude M3.5 from 2 stations (ARNA 3.5, ELBA 3.5)
+MAG      #8   09:59:46.00  magnitude M3.5 from 3 stations (ARNA 3.5, BAND 3.8, ELBA 3.5)
+MAG      #8   09:59:46.00  magnitude M3.5 from 4 stations (ARNA 3.5, BAND 3.8, CATL 3.6, ELBA 3.5)
+MAG      #8   09:59:56.00  magnitude M3.6 from 5 stations (ARNA 3.5, BAND 3.8, CATL 3.6, ELBA 3.5, SEMS 3.7)
+MAG      #8   10:00:00.50  magnitude M3.5 from 6 stations (ARNA 3.5, BAND 3.8, CATL 3.6, ELBA 3.5, KIRK 2.6, SEMS 3.7)
 LOCATE   #8   10:00:31.50  located at 40.782N 28.642E, origin 09:59:28.71, rms 0.43 s from 2 stations
 LOCATE   #8   10:00:32.50  located at 40.775N 28.605E, origin 09:59:28.66, rms 0.46 s from 3 stations
 LOCATE   #8   10:00:32.50  located at 40.782N 28.582E, origin 09:59:28.81, rms 0.47 s from 4 stations
+MAG      #8   10:00:32.50  magnitude M3.6 from 6 stations (ARNA 3.4, BAND 3.9, CATL 3.8, ELBA 3.6, KIRK 2.6, SEMS 3.7)
 LOCATE   #8   10:00:42.50  located at 40.867N 28.212E, origin 09:59:30.10, rms 1.23 s from 5 stations
-MAG      #8   10:00:42.50  magnitude M3.5 from 6 stations (ARNA 3.2, BAND 3.7, CATL 3.7, ELBA 3.4, KIRK 2.7, SEMS 3.6)
 LOCATE   #8   10:00:47.00  located at 40.860N 28.236E, origin 09:59:30.28, rms 1.15 s from 6 stations
 ALARM    #9   10:01:13.00  earthquake detected by ARNA, ELBA  (AFAD MW 4.8 at 10:01:02.00, 11.0 s ago)
-MAG      #9   10:01:15.00  magnitude M3.7 from 1 station (ELBA 3.7)
-MAG      #9   10:01:17.50  magnitude M3.6 from 2 stations (ARNA 3.5, ELBA 3.7)
-MAG      #9   10:01:18.50  magnitude M3.7 from 3 stations (ARNA 3.5, CATL 3.7, ELBA 3.7)
-MAG      #9   10:01:19.50  magnitude M3.7 from 4 stations (ARNA 3.5, BAND 3.8, CATL 3.7, ELBA 3.7)
-MAG      #9   10:01:32.00  magnitude M3.7 from 5 stations (ARNA 3.5, BAND 3.8, CATL 3.7, ELBA 3.7, SEMS 3.6)
-MAG      #9   10:01:34.00  magnitude M3.6 from 6 stations (ARNA 3.5, BAND 3.8, CATL 3.7, ELBA 3.7, KIRK 2.8, SEMS 3.6)
-MAG      #9   10:01:41.00  magnitude M3.6 from 7 stations (ARNA 3.5, BAND 3.8, CATL 3.7, DEMI 2.5, ELBA 3.7, KIRK 2.8, SEMS 3.6)
+MAG      #9   10:01:15.00  magnitude M3.9 from 1 station (ELBA 3.9)
+MAG      #9   10:01:17.50  magnitude M3.7 from 2 stations (ARNA 3.6, ELBA 3.9)
+MAG      #9   10:01:18.50  magnitude M3.9 from 3 stations (ARNA 3.6, CATL 3.9, ELBA 3.9)
+MAG      #9   10:01:19.50  magnitude M3.9 from 4 stations (ARNA 3.6, BAND 3.9, CATL 3.9, ELBA 3.9)
+MAG      #9   10:01:32.00  magnitude M3.9 from 5 stations (ARNA 3.6, BAND 3.9, CATL 3.9, ELBA 3.9, SEMS 3.9)
+MAG      #9   10:01:34.00  magnitude M3.9 from 6 stations (ARNA 3.6, BAND 3.9, CATL 3.9, ELBA 3.9, KIRK 2.9, SEMS 3.9)
+MAG      #9   10:01:41.00  magnitude M3.9 from 7 stations (ARNA 3.6, BAND 3.9, CATL 3.9, DEMI 3.0, ELBA 3.9, KIRK 2.9, SEMS 3.9)
 LOCATE   #9   10:02:04.00  located at 40.792N 28.647E, origin 10:01:01.24, rms 0.50 s from 2 stations
 LOCATE   #9   10:02:05.00  located at 40.813N 28.625E, origin 10:01:01.76, rms 0.47 s from 3 stations
 LOCATE   #9   10:02:06.00  located at 40.802N 28.597E, origin 10:01:01.62, rms 0.48 s from 4 stations
 LOCATE   #9   10:02:18.50  located at 40.882N 28.237E, origin 10:01:03.00, rms 1.27 s from 5 stations
+MAG      #9   10:02:18.50  magnitude M3.7 from 7 stations (ARNA 3.7, BAND 3.8, CATL 3.8, DEMI 3.0, ELBA 3.8, KIRK 2.9, SEMS 3.6)
 ALARM    #10  10:02:19.00  earthquake detected by ARNA, ELBA  (AFAD MW 4.5 at 10:02:10.00, 9.0 s ago)
 LOCATE   #9   10:02:20.50  located at 40.875N 28.261E, origin 10:01:03.18, rms 1.19 s from 6 stations
-MAG      #10  10:02:22.50  magnitude M4.2 from 1 station (ELBA 4.2)
-MAG      #10  10:02:24.50  magnitude M3.8 from 2 stations (ARNA 3.4, ELBA 4.2)
-MAG      #10  10:02:26.00  magnitude M3.4 from 3 stations (ARNA 3.4, CATL 3.3, ELBA 4.2)
-MAG      #10  10:02:27.00  magnitude M3.6 from 4 stations (ARNA 3.4, BAND 3.9, CATL 3.3, ELBA 4.2)
+MAG      #10  10:02:22.50  magnitude M4.1 from 1 station (ELBA 4.1)
+MAG      #10  10:02:24.50  magnitude M3.8 from 2 stations (ARNA 3.5, ELBA 4.1)
+MAG      #10  10:02:26.00  magnitude M3.5 from 3 stations (ARNA 3.5, CATL 3.5, ELBA 4.1)
+MAG      #10  10:02:27.00  magnitude M3.8 from 4 stations (ARNA 3.5, BAND 4.0, CATL 3.5, ELBA 4.1)
 LOCATE   #9   10:02:27.50  located at 40.856N 28.266E, origin 10:01:02.78, rms 1.45 s from 7 stations
-MAG      #10  10:02:38.00  magnitude M3.5 from 5 stations (ARNA 3.4, BAND 3.9, CATL 3.3, ELBA 4.2, SEMS 3.5)
-MAG      #10  10:02:42.00  magnitude M3.4 from 6 stations (ARNA 3.4, BAND 3.9, CATL 3.3, ELBA 4.2, KIRK 3.0, SEMS 3.5)
-MAG      #10  10:02:48.00  magnitude M3.4 from 7 stations (ARNA 3.4, BAND 3.9, CATL 3.3, DEMI 2.7, ELBA 4.2, KIRK 3.0, SEMS 3.5)
+MAG      #10  10:02:38.00  magnitude M3.7 from 5 stations (ARNA 3.5, BAND 4.0, CATL 3.5, ELBA 4.1, SEMS 3.7)
+MAG      #10  10:02:42.00  magnitude M3.6 from 6 stations (ARNA 3.5, BAND 4.0, CATL 3.5, ELBA 4.1, KIRK 3.2, SEMS 3.7)
+MAG      #10  10:02:48.00  magnitude M3.5 from 7 stations (ARNA 3.5, BAND 4.0, CATL 3.5, DEMI 3.0, ELBA 4.1, KIRK 3.2, SEMS 3.7)
 LOCATE   #10  10:03:13.50  located at 40.701N 31.025E, origin 10:01:39.28, rms 0.02 s from 2 stations
 ALARM    #11  10:05:56.00  earthquake detected by ARNA, ELBA  (AFAD ML 3.0 at 10:05:43.00, 13.0 s ago)
 MAG      #11  10:05:58.00  magnitude M3.1 from 1 station (ELBA 3.1)
 MAG      #11  10:06:00.00  magnitude M2.8 from 2 stations (ARNA 2.5, ELBA 3.1)
 LOCATE   #11  10:06:46.50  located at 40.782N 28.622E, origin 10:05:43.53, rms 0.28 s from 2 stations
 ALARM    #12  10:07:08.50  earthquake detected by ELBA, SEMS  (AFAD ML 3.4 at 10:07:01.00, 7.5 s ago)
-MAG      #12  10:07:08.50  magnitude M2.2 from 1 station (SEMS 2.2)
-MAG      #12  10:07:13.00  magnitude M2.6 from 2 stations (ELBA 3.0, SEMS 2.2)
-MAG      #12  10:07:15.00  magnitude M2.5 from 3 stations (ARNA 2.5, ELBA 3.0, SEMS 2.2)
-MAG      #12  10:07:16.50  magnitude M2.4 from 4 stations (ARNA 2.5, CATL 2.3, ELBA 3.0, SEMS 2.2)
-MAG      #12  10:07:17.50  magnitude M2.5 from 5 stations (ARNA 2.5, BAND 2.9, CATL 2.3, ELBA 3.0, SEMS 2.2)
-MAG      #12  10:07:32.50  magnitude M2.4 from 6 stations (ARNA 2.5, BAND 2.9, CATL 2.3, ELBA 3.0, KIRK 2.3, SEMS 2.2)
+MAG      #12  10:07:08.50  magnitude M2.1 from 1 station (SEMS 2.1)
+MAG      #12  10:07:13.00  magnitude M2.8 from 2 stations (ELBA 3.5, SEMS 2.1)
+MAG      #12  10:07:15.00  magnitude M2.7 from 3 stations (ARNA 2.7, ELBA 3.5, SEMS 2.1)
+MAG      #12  10:07:16.50  magnitude M2.5 from 4 stations (ARNA 2.7, CATL 2.3, ELBA 3.5, SEMS 2.1)
+MAG      #12  10:07:17.50  magnitude M2.7 from 5 stations (ARNA 2.7, BAND 3.2, CATL 2.3, ELBA 3.5, SEMS 2.1)
+MAG      #12  10:07:32.50  magnitude M2.6 from 6 stations (ARNA 2.7, BAND 3.2, CATL 2.3, ELBA 3.5, KIRK 2.5, SEMS 2.1)
 LOCATE   #12  10:08:01.50  located at 40.857N 28.662E, origin 10:06:59.96, rms 0.30 s from 2 stations
-MAG      #12  10:08:01.50  magnitude M2.5 from 6 stations (ARNA 2.6, BAND 2.9, CATL 2.3, ELBA 3.0, KIRK 2.3, SEMS 2.2)
+MAG      #12  10:08:01.50  magnitude M2.7 from 6 stations (ARNA 2.8, BAND 3.2, CATL 2.3, ELBA 3.2, KIRK 2.5, SEMS 2.1)
 LOCATE   #12  10:08:03.00  located at 40.868N 28.660E, origin 10:07:00.24, rms 0.27 s from 3 stations
-MAG      #12  10:08:03.00  magnitude M2.6 from 6 stations (ARNA 2.6, BAND 2.9, CATL 2.6, ELBA 3.0, KIRK 2.3, SEMS 2.2)
+MAG      #12  10:08:03.00  magnitude M2.9 from 6 stations (ARNA 2.8, BAND 3.2, CATL 3.0, ELBA 3.2, KIRK 2.5, SEMS 2.1)
 LOCATE   #12  10:08:04.00  located at 41.839N 28.630E, origin 10:06:59.87, rms 0.28 s from 2 stations, left out ELBA BAND
 LOCATE   #12  10:08:19.00  located at 40.824N 28.472E, origin 10:06:59.54, rms 0.87 s from 4 stations, left out BAND
 ALARM    #13  10:10:29.00  earthquake detected by CATL, SEMS
-MAG      #13  10:10:30.50  magnitude M2.3 from 1 station (CATL 2.3)
-MAG      #13  10:10:34.50  magnitude M2.3 from 2 stations (CATL 2.3, SEMS 2.3)
+MAG      #13  10:10:30.50  magnitude M2.2 from 1 station (CATL 2.2)
+MAG      #13  10:10:34.50  magnitude M2.1 from 2 stations (CATL 2.2, SEMS 2.1)
 ALARM    #14  10:13:20.50  earthquake detected by KIRK, SEMS
-MAG      #14  10:13:20.50  magnitude M2.3 from 1 station (SEMS 2.3)
-MAG      #14  10:13:24.50  magnitude M2.3 from 2 stations (KIRK 2.4, SEMS 2.3)
+MAG      #14  10:13:20.50  magnitude M2.2 from 1 station (SEMS 2.2)
+MAG      #14  10:13:24.50  magnitude M2.3 from 2 stations (KIRK 2.4, SEMS 2.2)
 ALARM    #15  10:14:06.00  earthquake detected by ARNA, ELBA  (AFAD ML 2.7 at 10:13:56.00, 10.0 s ago)
-MAG      #15  10:14:09.00  magnitude M2.4 from 1 station (ELBA 2.4)
-MAG      #15  10:14:11.00  magnitude M2.4 from 2 stations (ARNA 2.3, ELBA 2.4)
-MAG      #15  10:14:12.50  magnitude M2.3 from 3 stations (ARNA 2.3, CATL 2.3, ELBA 2.4)
-MAG      #15  10:14:14.00  magnitude M2.3 from 4 stations (ARNA 2.3, BAND 2.4, CATL 2.3, ELBA 2.4)
-MAG      #15  10:14:25.00  magnitude M2.4 from 5 stations (ARNA 2.3, BAND 2.4, CATL 2.3, ELBA 2.4, SEMS 2.4)
-MAG      #15  10:14:28.00  magnitude M2.3 from 6 stations (ARNA 2.3, BAND 2.4, CATL 2.3, ELBA 2.4, KIRK 2.3, SEMS 2.4)
+MAG      #15  10:14:09.00  magnitude M2.5 from 1 station (ELBA 2.5)
+MAG      #15  10:14:11.00  magnitude M2.4 from 2 stations (ARNA 2.3, ELBA 2.5)
+MAG      #14  10:14:11.00  magnitude M2.2 from 2 stations (KIRK 2.2, SEMS 2.2)
+MAG      #15  10:14:12.50  magnitude M2.3 from 3 stations (ARNA 2.3, CATL 2.1, ELBA 2.5)
+MAG      #15  10:14:14.00  magnitude M2.3 from 4 stations (ARNA 2.3, BAND 2.2, CATL 2.1, ELBA 2.5)
+MAG      #15  10:14:25.00  magnitude M2.2 from 5 stations (ARNA 2.3, BAND 2.2, CATL 2.1, ELBA 2.5, SEMS 2.2)
+MAG      #15  10:14:28.00  magnitude M2.2 from 6 stations (ARNA 2.3, BAND 2.2, CATL 2.1, ELBA 2.5, KIRK 2.3, SEMS 2.2)
 LOCATE   #15  10:14:59.00  located at 41.839N 28.630E, origin 10:13:55.87, rms 0.28 s from 2 stations, left out ELBA
 LOCATE   #15  10:15:00.50  located at 41.546N 26.610E, origin 10:13:36.88, rms 0.42 s from 2 stations, left out CATL ARNA
 LOCATE   #15  10:15:11.50  located at 41.796N 28.766E, origin 10:13:56.17, rms 0.77 s from 3 stations, left out ELBA BAND
 ALARM    #16  10:15:44.50  earthquake detected by CATL, SEMS  (AFAD ML 2.4 at 10:15:19.00, 25.5 s ago)
-MAG      #16  10:15:44.50  magnitude M2.3 from 1 station (CATL 2.3)
-MAG      #16  10:15:49.50  magnitude M2.3 from 2 stations (CATL 2.3, SEMS 2.4)
+MAG      #16  10:15:44.50  magnitude M2.2 from 1 station (CATL 2.2)
+MAG      #16  10:15:49.50  magnitude M2.2 from 2 stations (CATL 2.2, SEMS 2.2)
 ALARM    #17  10:16:03.00  earthquake detected by CATL, ELBA
-MAG      #17  10:16:08.00  magnitude M2.3 from 1 station (CATL 2.3)
-MAG      #17  10:16:08.00  magnitude M2.3 from 2 stations (CATL 2.3, ELBA 2.3)
-MAG      #17  10:16:09.50  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.3, ELBA 2.3)
+MAG      #17  10:16:08.00  magnitude M2.2 from 1 station (CATL 2.2)
+MAG      #17  10:16:08.00  magnitude M2.3 from 2 stations (CATL 2.2, ELBA 2.4)
+MAG      #17  10:16:09.50  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.2, ELBA 2.4)
 ALARM    #18  10:16:47.00  earthquake detected by ARNA, SEMS  (AFAD ML 3.4 at 10:16:23.00, 24.0 s ago)
-MAG      #18  10:16:47.00  magnitude M2.9 from 1 station (ARNA 2.9)
-MAG      #18  10:16:52.00  magnitude M2.7 from 2 stations (ARNA 2.9, SEMS 2.5)
-MAG      #18  10:17:25.50  magnitude M2.9 from 2 stations (ARNA 3.2, SEMS 2.5)
+MAG      #18  10:16:47.00  magnitude M3.2 from 1 station (ARNA 3.2)
+MAG      #18  10:16:52.00  magnitude M2.9 from 2 stations (ARNA 3.2, SEMS 2.6)
+MAG      #18  10:17:25.50  magnitude M3.0 from 2 stations (ARNA 3.5, SEMS 2.6)
 ALARM    #19  10:17:28.00  earthquake detected by DEMI, KIRK
-MAG      #19  10:17:28.00  magnitude M2.7 from 1 station (KIRK 2.7)
-MAG      #19  10:17:30.00  magnitude M3.1 from 2 stations (DEMI 3.5, KIRK 2.7)
+MAG      #19  10:17:28.00  magnitude M3.0 from 1 station (KIRK 3.0)
+MAG      #19  10:17:30.00  magnitude M3.4 from 2 stations (DEMI 3.9, KIRK 3.0)
 LOCATE   #18  10:17:38.50  located at 41.789N 28.811E, origin 10:16:24.08, rms 0.45 s from 2 stations
+MAG      #18  10:17:38.50  magnitude M3.0 from 2 stations (ARNA 3.5, SEMS 2.4)
 ALARM    #20  10:19:04.50  earthquake detected by CATL, ELBA  (AFAD ML 2.1 at 10:18:51.00, 13.5 s ago)
 MAG      #20  10:19:05.50  magnitude M2.2 from 1 station (ELBA 2.2)
-MAG      #20  10:19:08.50  magnitude M2.3 from 2 stations (CATL 2.3, ELBA 2.2)
+MAG      #20  10:19:08.50  magnitude M2.2 from 2 stations (CATL 2.1, ELBA 2.2)
 ALARM    #21  10:20:38.00  earthquake detected by CATL, ELBA  (AFAD ML 2.0 at 10:20:26.00, 12.0 s ago)
 MAG      #21  10:20:40.00  magnitude M2.3 from 1 station (ELBA 2.3)
-MAG      #21  10:20:43.00  magnitude M2.3 from 2 stations (CATL 2.2, ELBA 2.3)
-MAG      #21  10:20:44.00  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.2, ELBA 2.3)
-MAG      #21  10:20:56.50  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.2, ELBA 2.3, SEMS 2.4)
+MAG      #21  10:20:43.00  magnitude M2.2 from 2 stations (CATL 2.1, ELBA 2.3)
+MAG      #21  10:20:44.00  magnitude M2.1 from 3 stations (BAND 2.1, CATL 2.1, ELBA 2.3)
+MAG      #21  10:20:56.50  magnitude M2.1 from 4 stations (BAND 2.1, CATL 2.1, ELBA 2.3, SEMS 2.1)
 LOCATE   #21  10:21:29.50  located at 40.849N 28.333E, origin 10:20:27.94, rms 0.06 s from 2 stations
 LOCATE   #21  10:21:30.50  located at 40.853N 28.325E, origin 10:20:28.00, rms 0.06 s from 3 stations
 LOCATE   #21  10:21:43.00  located at 40.873N 28.226E, origin 10:20:28.09, rms 0.35 s from 4 stations
 ALARM    #22  10:22:42.50  earthquake detected by CATL, ELBA  (AFAD ML 2.2 at 10:22:31.00, 11.5 s ago)
-MAG      #22  10:22:45.00  magnitude M2.3 from 1 station (ELBA 2.3)
-MAG      #22  10:22:47.50  magnitude M2.3 from 2 stations (CATL 2.2, ELBA 2.3)
-MAG      #22  10:22:49.00  magnitude M2.3 from 3 stations (BAND 2.4, CATL 2.2, ELBA 2.3)
-MAG      #22  10:23:01.50  magnitude M2.3 from 4 stations (BAND 2.4, CATL 2.2, ELBA 2.3, SEMS 2.3)
-MAG      #22  10:23:02.00  magnitude M2.3 from 5 stations (BAND 2.4, CATL 2.2, ELBA 2.3, KIRK 2.3, SEMS 2.3)
-MAG      #22  10:23:31.50  magnitude M2.3 from 5 stations (BAND 2.4, CATL 2.2, ELBA 2.3, KIRK 2.3, SEMS 2.3)
+MAG      #22  10:22:45.00  magnitude M2.4 from 1 station (ELBA 2.4)
+MAG      #22  10:22:47.50  magnitude M2.3 from 2 stations (CATL 2.2, ELBA 2.4)
+MAG      #22  10:22:49.00  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.2, ELBA 2.4)
+MAG      #22  10:23:01.50  magnitude M2.2 from 4 stations (BAND 2.2, CATL 2.2, ELBA 2.4, SEMS 2.1)
+MAG      #22  10:23:02.00  magnitude M2.2 from 5 stations (BAND 2.2, CATL 2.2, ELBA 2.4, KIRK 2.1, SEMS 2.1)
 LOCATE   #22  10:23:34.00  located at 40.929N 28.768E, origin 10:22:32.11, rms 0.02 s from 2 stations
-MAG      #22  10:23:34.00  magnitude M2.3 from 5 stations (BAND 2.4, CATL 2.3, ELBA 2.3, KIRK 2.3, SEMS 2.3)
+MAG      #22  10:23:34.00  magnitude M2.2 from 5 stations (BAND 2.2, CATL 2.2, ELBA 2.3, KIRK 2.1, SEMS 2.1)
 LOCATE   #22  10:23:35.50  located at 40.813N 28.355E, origin 10:22:31.92, rms 0.13 s from 3 stations
 LOCATE   #22  10:23:48.00  located at 40.858N 28.131E, origin 10:22:31.86, rms 0.36 s from 4 stations
 ALARM    #23  10:24:24.00  earthquake detected by BAND, ELBA  (AFAD ML 2.2 at 10:24:10.00, 14.0 s ago)
 MAG      #23  10:24:24.00  magnitude M2.2 from 1 station (ELBA 2.2)
-MAG      #23  10:24:27.00  magnitude M2.2 from 2 stations (CATL 2.3, ELBA 2.2)
-MAG      #23  10:24:27.50  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.3, ELBA 2.2)
-MAG      #23  10:24:40.50  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.3, ELBA 2.2, SEMS 2.4)
+MAG      #23  10:24:27.00  magnitude M2.2 from 2 stations (CATL 2.1, ELBA 2.2)
+MAG      #23  10:24:27.50  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.1, ELBA 2.2)
+MAG      #23  10:24:40.50  magnitude M2.2 from 4 stations (BAND 2.2, CATL 2.1, ELBA 2.2, SEMS 2.1)
 LOCATE   #23  10:25:13.50  located at 40.839N 28.273E, origin 10:24:11.01, rms 0.03 s from 2 stations
-MAG      #23  10:25:13.50  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.4, ELBA 2.2, SEMS 2.4)
 LOCATE   #23  10:25:14.00  located at 40.848N 28.265E, origin 10:24:11.19, rms 0.05 s from 3 stations
 LOCATE   #23  10:25:27.00  located at 40.873N 28.146E, origin 10:24:11.06, rms 0.43 s from 4 stations
 ALARM    #24  10:26:16.50  earthquake detected by BAND, CATL
-MAG      #24  10:26:16.50  magnitude M2.2 from 1 station (CATL 2.2)
-MAG      #24  10:26:18.50  magnitude M2.3 from 2 stations (BAND 2.3, CATL 2.2)
-MAG      #24  10:26:22.50  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.2, SEMS 2.4)
+MAG      #24  10:26:16.50  magnitude M2.1 from 1 station (CATL 2.1)
+MAG      #24  10:26:18.50  magnitude M2.2 from 2 stations (BAND 2.3, CATL 2.1)
+MAG      #24  10:26:22.50  magnitude M2.1 from 3 stations (BAND 2.3, CATL 2.1, SEMS 2.1)
 ALARM    #25  10:26:42.50  earthquake detected by DEMI, KIRK  (AFAD ML 3.0 at 10:26:05.00, 37.5 s ago)
-MAG      #25  10:26:42.50  magnitude M2.4 from 1 station (KIRK 2.4)
-MAG      #25  10:26:44.50  magnitude M2.5 from 2 stations (DEMI 2.5, KIRK 2.4)
-MAG      #25  10:26:46.50  magnitude M2.5 from 3 stations (DEMI 2.5, ELBA 2.7, KIRK 2.4)
+MAG      #25  10:26:42.50  magnitude M2.5 from 1 station (KIRK 2.5)
+MAG      #25  10:26:44.50  magnitude M2.6 from 2 stations (DEMI 2.6, KIRK 2.5)
+MAG      #25  10:26:46.50  magnitude M2.6 from 3 stations (DEMI 2.6, ELBA 2.8, KIRK 2.5)
 ALARM    #26  10:27:16.00  earthquake detected by CATL, SEMS
 MAG      #26  10:27:16.00  magnitude M2.6 from 1 station (CATL 2.6)
-MAG      #26  10:27:18.00  magnitude M2.5 from 2 stations (CATL 2.6, SEMS 2.4)
+MAG      #26  10:27:18.00  magnitude M2.6 from 2 stations (CATL 2.6, SEMS 2.6)
+MAG      #25  10:27:31.00  magnitude M2.5 from 3 stations (DEMI 2.5, ELBA 2.8, KIRK 2.4)
 ALARM    #27  10:28:24.50  earthquake detected by ELBA, KIRK  (AFAD ML 2.7 at 10:28:18.00, 6.5 s ago)
-MAG      #27  10:28:24.50  magnitude M2.3 from 1 station (KIRK 2.3)
-MAG      #27  10:28:30.00  magnitude M2.4 from 2 stations (ELBA 2.6, KIRK 2.3)
-MAG      #27  10:28:31.00  magnitude M2.4 from 3 stations (ARNA 2.4, ELBA 2.6, KIRK 2.3)
-MAG      #27  10:28:34.50  magnitude M2.4 from 4 stations (ARNA 2.4, BAND 2.3, ELBA 2.6, KIRK 2.3)
-MAG      #27  10:28:45.50  magnitude M2.3 from 5 stations (ARNA 2.4, BAND 2.3, ELBA 2.6, KIRK 2.3, SEMS 2.3)
-MAG      #27  10:28:55.50  magnitude M2.3 from 6 stations (ARNA 2.4, BAND 2.3, DEMI 2.3, ELBA 2.6, KIRK 2.3, SEMS 2.3)
+MAG      #27  10:28:24.50  magnitude M2.2 from 1 station (KIRK 2.2)
+MAG      #27  10:28:30.00  magnitude M2.4 from 2 stations (ELBA 2.6, KIRK 2.2)
+MAG      #27  10:28:31.00  magnitude M2.6 from 3 stations (ARNA 2.6, ELBA 2.6, KIRK 2.2)
+MAG      #27  10:28:34.50  magnitude M2.5 from 4 stations (ARNA 2.6, BAND 2.4, ELBA 2.6, KIRK 2.2)
+MAG      #27  10:28:45.50  magnitude M2.4 from 5 stations (ARNA 2.6, BAND 2.4, ELBA 2.6, KIRK 2.2, SEMS 2.1)
+MAG      #27  10:28:55.50  magnitude M2.3 from 6 stations (ARNA 2.6, BAND 2.4, DEMI 2.2, ELBA 2.6, KIRK 2.2, SEMS 2.1)
 LOCATE   #27  10:29:17.50  located at 40.847N 28.677E, origin 10:28:16.83, rms 0.38 s from 2 stations
 LOCATE   #27  10:29:21.00  located at 40.815N 28.645E, origin 10:28:16.21, rms 0.50 s from 3 stations
-MAG      #27  10:29:21.00  magnitude M2.4 from 6 stations (ARNA 3.0, BAND 2.6, DEMI 2.3, ELBA 2.5, KIRK 2.3, SEMS 2.3)
+MAG      #27  10:29:21.00  magnitude M2.4 from 6 stations (ARNA 3.3, BAND 2.5, DEMI 2.2, ELBA 2.5, KIRK 2.2, SEMS 2.1)
 LOCATE   #27  10:29:32.00  located at 40.925N 28.218E, origin 10:28:17.33, rms 1.26 s from 4 stations
 LOCATE   #27  10:29:42.00  located at 40.893N 28.229E, origin 10:28:16.87, rms 1.66 s from 5 stations
 ALARM    #28  10:29:46.50  earthquake detected by BAND, ELBA  (AFAD ML 2.5 at 10:29:33.00, 13.5 s ago)
-MAG      #28  10:29:47.50  magnitude M2.5 from 1 station (ELBA 2.5)
-MAG      #28  10:29:51.00  magnitude M2.4 from 2 stations (BAND 2.3, ELBA 2.5)
-MAG      #28  10:29:51.50  magnitude M2.5 from 3 stations (BAND 2.3, CATL 2.5, ELBA 2.5)
-MAG      #28  10:30:02.00  magnitude M2.4 from 4 stations (BAND 2.3, CATL 2.5, ELBA 2.5, SEMS 2.3)
-MAG      #28  10:30:37.50  magnitude M2.4 from 4 stations (BAND 2.4, CATL 2.5, ELBA 2.4, SEMS 2.3)
+MAG      #28  10:29:47.50  magnitude M2.6 from 1 station (ELBA 2.6)
+MAG      #28  10:29:51.00  magnitude M2.4 from 2 stations (BAND 2.2, ELBA 2.6)
+MAG      #28  10:29:51.50  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.2, ELBA 2.6)
+MAG      #28  10:30:02.00  magnitude M2.2 from 4 stations (BAND 2.2, CATL 2.2, ELBA 2.6, SEMS 2.2)
 ALARM    #29  10:31:16.00  earthquake detected by CATL, ELBA
 MAG      #29  10:31:18.00  magnitude M2.2 from 1 station (ELBA 2.2)
-MAG      #29  10:31:21.00  magnitude M2.2 from 2 stations (CATL 2.3, ELBA 2.2)
-MAG      #29  10:31:23.00  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.3, ELBA 2.2)
-MAG      #29  10:31:33.50  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.3, ELBA 2.2, SEMS 2.3)
+MAG      #29  10:31:21.00  magnitude M2.2 from 2 stations (CATL 2.2, ELBA 2.2)
+MAG      #29  10:31:23.00  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.2, ELBA 2.2)
+MAG      #29  10:31:33.50  magnitude M2.2 from 4 stations (BAND 2.2, CATL 2.2, ELBA 2.2, SEMS 2.1)
 ALARM    #30  10:31:44.50  earthquake detected by ARNA, KIRK  (AFAD ML 2.9 at 10:31:15.00, 29.5 s ago)
-MAG      #30  10:31:44.50  magnitude M2.5 from 1 station (ARNA 2.5)
-MAG      #30  10:31:46.50  magnitude M2.4 from 2 stations (ARNA 2.5, KIRK 2.3)
-MAG      #30  10:31:53.50  magnitude M2.3 from 3 stations (ARNA 2.5, DEMI 2.3, KIRK 2.3)
+MAG      #30  10:31:44.50  magnitude M2.7 from 1 station (ARNA 2.7)
+MAG      #30  10:31:46.50  magnitude M2.5 from 2 stations (ARNA 2.7, KIRK 2.4)
+MAG      #30  10:31:53.50  magnitude M2.4 from 3 stations (ARNA 2.7, DEMI 2.3, KIRK 2.4)
 LOCATE   #29  10:32:07.50  located at 40.344N 29.683E, origin 10:30:48.51, rms 0.03 s from 2 stations
 ALARM    #31  10:32:21.00  earthquake detected by BAND, SEMS  (AFAD ML 3.1 at 10:31:56.00, 25.0 s ago)
-MAG      #31  10:32:21.00  magnitude M2.4 from 1 station (BAND 2.4)
-MAG      #31  10:32:26.00  magnitude M2.3 from 2 stations (BAND 2.4, SEMS 2.3)
-MAG      #31  10:32:28.50  magnitude M2.4 from 3 stations (BAND 2.4, ELBA 3.0, SEMS 2.3)
-MAG      #31  10:32:31.50  magnitude M2.6 from 4 stations (BAND 2.4, CATL 2.9, ELBA 3.0, SEMS 2.3)
+MAG      #31  10:32:21.00  magnitude M2.3 from 1 station (BAND 2.3)
+MAG      #31  10:32:26.00  magnitude M2.2 from 2 stations (BAND 2.3, SEMS 2.1)
+MAG      #31  10:32:28.50  magnitude M2.3 from 3 stations (BAND 2.3, ELBA 3.2, SEMS 2.1)
+MAG      #31  10:32:31.50  magnitude M2.6 from 4 stations (BAND 2.3, CATL 3.0, ELBA 3.2, SEMS 2.1)
 LOCATE   #30  10:32:33.00  located at 40.639N 28.461E, origin 10:31:09.40, rms 1.57 s from 2 stations
-MAG      #31  10:32:45.50  magnitude M2.5 from 5 stations (BAND 2.4, CATL 2.9, ELBA 3.0, KIRK 2.5, SEMS 2.3)
+MAG      #31  10:32:45.50  magnitude M2.6 from 5 stations (BAND 2.3, CATL 3.0, ELBA 3.2, KIRK 2.6, SEMS 2.1)
 LOCATE   #31  10:33:18.00  located at 40.839N 28.388E, origin 10:32:16.22, rms 0.10 s from 2 stations
 ALARM    #32  10:33:26.50  earthquake detected by CATL, DEMI  (AFAD ML 3.1 at 10:33:14.00, 12.5 s ago)
-MAG      #32  10:33:26.50  magnitude M2.5 from 1 station (DEMI 2.5)
-MAG      #32  10:33:29.00  magnitude M2.6 from 2 stations (DEMI 2.5, ELBA 2.7)
-MAG      #32  10:33:31.00  magnitude M2.7 from 3 stations (CATL 2.8, DEMI 2.5, ELBA 2.7)
+MAG      #32  10:33:26.50  magnitude M2.6 from 1 station (DEMI 2.6)
+MAG      #32  10:33:29.00  magnitude M2.7 from 2 stations (DEMI 2.6, ELBA 2.7)
+MAG      #32  10:33:31.00  magnitude M2.7 from 3 stations (CATL 2.7, DEMI 2.6, ELBA 2.7)
 ALARM    #33  10:33:38.50  earthquake detected by BAND, SEMS  (AFAD ML 3.1 at 10:33:14.00, 24.5 s ago)
-MAG      #33  10:33:38.50  magnitude M2.6 from 1 station (BAND 2.6)
-MAG      #32  10:33:40.50  magnitude M2.8 from 3 stations (CATL 2.8, DEMI 2.8, ELBA 2.7)
-MAG      #33  10:33:44.00  magnitude M2.4 from 2 stations (BAND 2.6, SEMS 2.2)
+MAG      #33  10:33:38.50  magnitude M2.8 from 1 station (BAND 2.8)
+MAG      #33  10:33:44.00  magnitude M2.5 from 2 stations (BAND 2.8, SEMS 2.2)
+MAG      #32  10:34:15.50  magnitude M2.8 from 3 stations (CATL 2.7, DEMI 2.9, ELBA 2.8)
 LOCATE   #32  10:34:17.50  located at 40.839N 28.518E, origin 10:33:14.96, rms 0.11 s from 2 stations
-MAG      #33  10:34:18.50  magnitude M2.6 from 2 stations (BAND 3.0, SEMS 2.2)
+MAG      #32  10:34:17.50  magnitude M2.9 from 3 stations (CATL 3.4, DEMI 2.9, ELBA 2.8)
+MAG      #33  10:34:18.50  magnitude M2.7 from 2 stations (BAND 3.2, SEMS 2.2)
 LOCATE   #33  10:34:30.50  located at 40.158N 28.674E, origin 10:33:17.03, rms 0.23 s from 2 stations
+MAG      #33  10:34:30.50  magnitude M2.8 from 2 stations (BAND 3.2, SEMS 2.5)
 ALARM    #34  10:35:45.50  earthquake detected by CATL, SEMS
-MAG      #34  10:35:45.50  magnitude M2.4 from 1 station (SEMS 2.4)
-MAG      #34  10:35:50.50  magnitude M2.4 from 2 stations (CATL 2.3, SEMS 2.4)
-MAG      #34  10:35:52.50  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.3, SEMS 2.4)
+MAG      #34  10:35:45.50  magnitude M2.2 from 1 station (SEMS 2.2)
+MAG      #34  10:35:50.50  magnitude M2.2 from 2 stations (CATL 2.2, SEMS 2.2)
+MAG      #34  10:35:52.50  magnitude M2.2 from 3 stations (BAND 2.1, CATL 2.2, SEMS 2.2)
 ALARM    #35  10:36:33.50  earthquake detected by CATL, SEMS
-MAG      #35  10:36:33.50  magnitude M2.3 from 1 station (SEMS 2.3)
-MAG      #35  10:36:36.50  magnitude M2.3 from 2 stations (CATL 2.3, SEMS 2.3)
-MAG      #34  10:36:37.00  magnitude M2.4 from 3 stations (BAND 2.3, CATL 2.4, SEMS 2.4)
-MAG      #35  10:36:37.50  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.3, SEMS 2.3)
+MAG      #35  10:36:33.50  magnitude M2.1 from 1 station (SEMS 2.1)
+MAG      #35  10:36:36.50  magnitude M2.1 from 2 stations (CATL 2.1, SEMS 2.1)
+MAG      #35  10:36:37.50  magnitude M2.1 from 3 stations (BAND 2.1, CATL 2.1, SEMS 2.1)
 LOCATE   #35  10:37:24.00  located at 40.898N 28.063E, origin 10:36:21.04, rms 0.04 s from 2 stations
 ALARM    #36  10:37:29.50  earthquake detected by BAND, CATL
-MAG      #36  10:37:32.50  magnitude M2.3 from 1 station (CATL 2.3)
-MAG      #36  10:37:34.00  magnitude M2.3 from 2 stations (BAND 2.3, CATL 2.3)
-MAG      #36  10:37:45.00  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.3, SEMS 2.4)
+MAG      #36  10:37:32.50  magnitude M2.2 from 1 station (CATL 2.2)
+MAG      #36  10:37:34.00  magnitude M2.2 from 2 stations (BAND 2.2, CATL 2.2)
+MAG      #36  10:37:45.00  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.2, SEMS 2.1)
 ALARM    #37  10:38:26.00  earthquake detected by ELBA, KIRK
-MAG      #37  10:38:27.00  magnitude M2.3 from 1 station (KIRK 2.3)
-MAG      #37  10:38:29.50  magnitude M2.3 from 2 stations (ELBA 2.3, KIRK 2.3)
+MAG      #37  10:38:27.00  magnitude M2.2 from 1 station (KIRK 2.2)
+MAG      #37  10:38:29.50  magnitude M2.3 from 2 stations (ELBA 2.3, KIRK 2.2)
 LOCATE   #36  10:38:31.50  located at 40.843N 28.294E, origin 10:37:17.75, rms 0.19 s from 2 stations, left out CATL
-MAG      #37  10:38:32.50  magnitude M2.3 from 3 stations (CATL 2.4, ELBA 2.3, KIRK 2.3)
-MAG      #37  10:38:33.00  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.4, ELBA 2.3, KIRK 2.3)
-MAG      #37  10:38:45.00  magnitude M2.3 from 5 stations (BAND 2.3, CATL 2.4, ELBA 2.3, KIRK 2.3, SEMS 2.3)
+MAG      #37  10:38:32.50  magnitude M2.2 from 3 stations (CATL 2.1, ELBA 2.3, KIRK 2.2)
+MAG      #37  10:38:33.00  magnitude M2.2 from 4 stations (BAND 2.1, CATL 2.1, ELBA 2.3, KIRK 2.2)
+MAG      #37  10:38:45.00  magnitude M2.1 from 5 stations (BAND 2.1, CATL 2.1, ELBA 2.3, KIRK 2.2, SEMS 2.1)
 ALARM    #38  10:39:14.00  earthquake detected by BAND, ELBA  (AFAD ML 2.7 at 10:39:02.00, 12.0 s ago)
 MAG      #38  10:39:17.00  magnitude M2.4 from 1 station (ELBA 2.4)
-MAG      #38  10:39:19.00  magnitude M2.4 from 2 stations (BAND 2.5, ELBA 2.4)
-MAG      #38  10:39:20.00  magnitude M2.5 from 3 stations (BAND 2.5, CATL 2.5, ELBA 2.4)
-MAG      #38  10:39:33.50  magnitude M2.4 from 4 stations (BAND 2.5, CATL 2.5, ELBA 2.4, SEMS 2.3)
-MAG      #38  10:39:34.00  magnitude M2.4 from 5 stations (BAND 2.5, CATL 2.5, ELBA 2.4, KIRK 2.3, SEMS 2.3)
+MAG      #38  10:39:19.00  magnitude M2.4 from 2 stations (BAND 2.3, ELBA 2.4)
+MAG      #38  10:39:20.00  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.3, ELBA 2.4)
+MAG      #38  10:39:33.50  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.3, ELBA 2.4, SEMS 2.2)
+MAG      #38  10:39:34.00  magnitude M2.3 from 5 stations (BAND 2.3, CATL 2.3, ELBA 2.4, KIRK 2.4, SEMS 2.2)
 LOCATE   #38  10:40:05.50  located at 40.796N 28.280E, origin 10:39:03.89, rms 0.08 s from 2 stations
 LOCATE   #38  10:40:20.00  located at 39.646N 26.033E, origin 10:38:29.40, rms 0.62 s from 2 stations, left out ELBA BAND
 LOCATE   #38  10:40:20.50  located at 40.818N 28.298E, origin 10:39:03.21, rms 0.15 s from 2 stations, left out ELBA CATL SEMS
 ALARM    #39  10:40:21.00  earthquake detected by CATL, ELBA
-MAG      #39  10:40:21.50  magnitude M2.3 from 1 station (ELBA 2.3)
-MAG      #39  10:40:23.00  magnitude M2.4 from 2 stations (CATL 2.5, ELBA 2.3)
-MAG      #39  10:40:37.00  magnitude M2.3 from 3 stations (CATL 2.5, ELBA 2.3, SEMS 2.3)
+MAG      #39  10:40:21.50  magnitude M2.4 from 1 station (ELBA 2.4)
+MAG      #39  10:40:23.00  magnitude M2.3 from 2 stations (CATL 2.2, ELBA 2.4)
+MAG      #39  10:40:37.00  magnitude M2.2 from 3 stations (CATL 2.2, ELBA 2.4, SEMS 2.2)
 LOCATE   #39  10:41:09.50  located at 40.934N 28.828E, origin 10:40:07.11, rms 0.02 s from 2 stations
+MAG      #39  10:41:09.50  magnitude M2.3 from 3 stations (CATL 2.3, ELBA 2.3, SEMS 2.2)
 LOCATE   #39  10:41:23.50  located at 40.870N 28.157E, origin 10:40:08.03, rms 0.34 s from 3 stations
 ALARM    #40  10:41:28.50  earthquake detected by ARNA, ELBA  (AFAD ML 3.2 at 10:41:19.00, 9.5 s ago)
-MAG      #40  10:41:32.00  magnitude M2.6 from 1 station (ELBA 2.6)
-MAG      #40  10:41:34.00  magnitude M2.7 from 2 stations (ARNA 2.7, ELBA 2.6)
-MAG      #40  10:41:35.00  magnitude M2.7 from 3 stations (ARNA 2.7, CATL 2.7, ELBA 2.6)
-MAG      #40  10:41:36.00  magnitude M2.7 from 4 stations (ARNA 2.7, BAND 2.7, CATL 2.7, ELBA 2.6)
-MAG      #40  10:41:47.50  magnitude M2.7 from 5 stations (ARNA 2.7, BAND 2.7, CATL 2.7, ELBA 2.6, SEMS 2.4)
-MAG      #40  10:41:50.50  magnitude M2.7 from 6 stations (ARNA 2.7, BAND 2.7, CATL 2.7, ELBA 2.6, KIRK 2.5, SEMS 2.4)
-MAG      #40  10:41:56.50  magnitude M2.6 from 7 stations (ARNA 2.7, BAND 2.7, CATL 2.7, DEMI 2.5, ELBA 2.6, KIRK 2.5, SEMS 2.4)
+MAG      #40  10:41:32.00  magnitude M3.1 from 1 station (ELBA 3.1)
+MAG      #40  10:41:34.00  magnitude M2.9 from 2 stations (ARNA 2.7, ELBA 3.1)
+MAG      #40  10:41:35.00  magnitude M2.9 from 3 stations (ARNA 2.7, CATL 2.9, ELBA 3.1)
+MAG      #40  10:41:36.00  magnitude M2.9 from 4 stations (ARNA 2.7, BAND 2.8, CATL 2.9, ELBA 3.1)
+MAG      #40  10:41:47.50  magnitude M2.8 from 5 stations (ARNA 2.7, BAND 2.8, CATL 2.9, ELBA 3.1, SEMS 2.7)
+MAG      #40  10:41:50.50  magnitude M2.8 from 6 stations (ARNA 2.7, BAND 2.8, CATL 2.9, ELBA 3.1, KIRK 2.7, SEMS 2.7)
+MAG      #40  10:41:56.50  magnitude M2.7 from 7 stations (ARNA 2.7, BAND 2.8, CATL 2.9, DEMI 2.7, ELBA 3.1, KIRK 2.7, SEMS 2.7)
 LOCATE   #40  10:42:20.50  located at 40.837N 28.672E, origin 10:41:18.58, rms 0.30 s from 2 stations
+MAG      #40  10:42:20.50  magnitude M2.8 from 7 stations (ARNA 3.4, BAND 2.8, CATL 2.9, DEMI 2.7, ELBA 2.9, KIRK 2.7, SEMS 2.7)
 LOCATE   #40  10:42:21.50  located at 40.853N 28.655E, origin 10:41:19.00, rms 0.30 s from 3 stations
 LOCATE   #40  10:42:22.50  located at 40.817N 28.627E, origin 10:41:18.29, rms 0.40 s from 4 stations
 LOCATE   #40  10:42:34.00  located at 40.892N 28.282E, origin 10:41:19.95, rms 1.28 s from 5 stations
 LOCATE   #40  10:42:37.00  located at 40.880N 28.331E, origin 10:41:20.29, rms 1.32 s from 6 stations
 ALARM    #41  10:42:41.00  earthquake detected by BAND, CATL
-MAG      #41  10:42:41.50  magnitude M2.7 from 1 station (CATL 2.7)
-MAG      #41  10:42:43.00  magnitude M2.6 from 2 stations (BAND 2.4, CATL 2.7)
+MAG      #41  10:42:41.50  magnitude M2.3 from 1 station (CATL 2.3)
+MAG      #41  10:42:43.00  magnitude M2.3 from 2 stations (BAND 2.2, CATL 2.3)
 LOCATE   #40  10:42:43.00  located at 40.856N 28.336E, origin 10:41:19.76, rms 1.57 s from 7 stations
-MAG      #41  10:42:49.00  magnitude M2.4 from 3 stations (ARNA 2.2, BAND 2.4, CATL 2.7)
-MAG      #41  10:42:55.50  magnitude M2.3 from 4 stations (ARNA 2.2, BAND 2.4, CATL 2.7, SEMS 2.3)
+MAG      #41  10:42:49.00  magnitude M2.3 from 3 stations (ARNA 2.3, BAND 2.2, CATL 2.3)
+MAG      #41  10:42:55.50  magnitude M2.3 from 4 stations (ARNA 2.3, BAND 2.2, CATL 2.3, SEMS 2.2)
 ALARM    #42  10:44:03.00  earthquake detected by ELBA, KIRK  (AFAD ML 2.2 at 10:43:53.00, 10.0 s ago)
 MAG      #42  10:44:03.00  magnitude M2.8 from 1 station (KIRK 2.8)
-MAG      #42  10:44:07.50  magnitude M2.6 from 2 stations (ELBA 2.3, KIRK 2.8)
-MAG      #42  10:44:11.50  magnitude M2.3 from 3 stations (BAND 2.3, ELBA 2.3, KIRK 2.8)
-MAG      #42  10:44:23.00  magnitude M2.3 from 4 stations (BAND 2.3, ELBA 2.3, KIRK 2.8, SEMS 2.3)
+MAG      #42  10:44:07.50  magnitude M2.6 from 2 stations (ELBA 2.4, KIRK 2.8)
+MAG      #42  10:44:11.50  magnitude M2.4 from 3 stations (BAND 2.2, ELBA 2.4, KIRK 2.8)
+MAG      #42  10:44:23.00  magnitude M2.3 from 4 stations (BAND 2.2, ELBA 2.4, KIRK 2.8, SEMS 2.1)
+MAG      #42  10:44:54.00  magnitude M2.2 from 4 stations (BAND 2.2, ELBA 2.2, KIRK 2.8, SEMS 2.1)
 LOCATE   #42  10:44:58.00  located at 40.861N 28.345E, origin 10:43:55.17, rms 0.01 s from 2 stations
 LOCATE   #42  10:45:09.50  located at 40.886N 28.241E, origin 10:43:55.16, rms 0.28 s from 3 stations
 ALARM    #43  10:45:46.00  earthquake detected by CATL, ELBA  (AFAD ML 2.8 at 10:45:34.00, 12.0 s ago)
 MAG      #43  10:45:48.50  magnitude M2.2 from 1 station (ELBA 2.2)
-MAG      #43  10:45:51.50  magnitude M2.3 from 2 stations (BAND 2.3, ELBA 2.2)
-MAG      #43  10:45:51.50  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.4, ELBA 2.2)
-MAG      #43  10:46:05.50  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.4, ELBA 2.2, SEMS 2.3)
+MAG      #43  10:45:51.50  magnitude M2.2 from 2 stations (BAND 2.2, ELBA 2.2)
+MAG      #43  10:45:51.50  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.4, ELBA 2.2)
+MAG      #43  10:46:05.50  magnitude M2.2 from 4 stations (BAND 2.2, CATL 2.4, ELBA 2.2, SEMS 2.1)
 ALARM    #44  10:46:38.50  earthquake detected by ARNA, KIRK  (AFAD MW 4.0 at 10:46:13.00, 25.5 s ago)
-MAG      #44  10:46:38.50  magnitude M2.9 from 1 station (ARNA 2.9)
-MAG      #44  10:46:43.50  magnitude M3.2 from 2 stations (ARNA 2.9, KIRK 3.5)
-MAG      #44  10:46:52.00  magnitude M2.9 from 3 stations (ARNA 2.9, DEMI 2.6, KIRK 3.5)
-MAG      #44  10:46:59.00  magnitude M2.8 from 4 stations (ARNA 2.9, DEMI 2.6, KIRK 3.5, MANT 2.5)
+MAG      #44  10:46:38.50  magnitude M3.0 from 1 station (ARNA 3.0)
+MAG      #44  10:46:43.50  magnitude M3.2 from 2 stations (ARNA 3.0, KIRK 3.5)
+MAG      #44  10:46:52.00  magnitude M3.0 from 3 stations (ARNA 3.0, DEMI 2.9, KIRK 3.5)
+MAG      #44  10:46:59.00  magnitude M2.9 from 4 stations (ARNA 3.0, DEMI 2.9, KIRK 3.5, MANT 2.8)
 ALARM    #45  10:47:13.50  earthquake detected by CATL, SEMS
-MAG      #45  10:47:13.50  magnitude M3.9 from 1 station (SEMS 3.9)
-MAG      #45  10:47:15.50  magnitude M3.5 from 2 stations (CATL 3.1, SEMS 3.9)
+MAG      #45  10:47:13.50  magnitude M4.0 from 1 station (SEMS 4.0)
+MAG      #44  10:47:14.00  magnitude M3.0 from 4 stations (ARNA 3.1, DEMI 2.9, KIRK 3.5, MANT 2.8)
+MAG      #45  10:47:15.50  magnitude M3.6 from 2 stations (CATL 3.1, SEMS 4.0)
 LOCATE   #44  10:47:30.00  located at 41.919N 28.941E, origin 10:46:11.57, rms 0.29 s from 2 stations
 LOCATE   #44  10:47:38.50  located at 40.869N 28.356E, origin 10:46:13.14, rms 1.19 s from 3 stations
 LOCATE   #44  10:47:45.50  located at 40.856N 28.359E, origin 10:46:12.65, rms 1.81 s from 4 stations
-MAG      #44  10:47:45.50  magnitude M2.9 from 4 stations (ARNA 2.9, DEMI 2.6, KIRK 3.5, MANT 2.9)
-MAG      #45  10:48:02.00  magnitude M3.4 from 2 stations (CATL 3.0, SEMS 3.9)
+MAG      #44  10:47:45.50  magnitude M3.1 from 4 stations (ARNA 3.1, DEMI 2.7, KIRK 3.4, MANT 3.1)
+MAG      #45  10:48:02.00  magnitude M3.5 from 2 stations (CATL 3.0, SEMS 4.0)
 ALARM    #46  10:48:58.50  earthquake detected by CATL, ELBA  (AFAD ML 2.3 at 10:48:47.00, 11.5 s ago)
 MAG      #46  10:49:00.50  magnitude M2.4 from 1 station (ELBA 2.4)
-MAG      #46  10:49:04.00  magnitude M2.6 from 2 stations (CATL 2.7, ELBA 2.4)
-MAG      #46  10:49:05.00  magnitude M2.4 from 3 stations (BAND 2.3, CATL 2.7, ELBA 2.4)
-MAG      #46  10:49:16.00  magnitude M2.4 from 4 stations (BAND 2.3, CATL 2.7, ELBA 2.4, SEMS 2.4)
+MAG      #46  10:49:04.00  magnitude M2.7 from 2 stations (CATL 2.9, ELBA 2.4)
+MAG      #46  10:49:05.00  magnitude M2.4 from 3 stations (BAND 2.2, CATL 2.9, ELBA 2.4)
+MAG      #46  10:49:16.00  magnitude M2.3 from 4 stations (BAND 2.2, CATL 2.9, ELBA 2.4, SEMS 2.2)
 LOCATE   #46  10:49:50.50  located at 40.894N 28.638E, origin 10:48:48.53, rms 0.03 s from 2 stations
 LOCATE   #46  10:49:51.50  located at 40.843N 28.410E, origin 10:48:48.38, rms 0.04 s from 3 stations
-MAG      #46  10:49:51.50  magnitude M2.5 from 4 stations (BAND 2.5, CATL 3.0, ELBA 2.4, SEMS 2.4)
+MAG      #46  10:49:51.50  magnitude M2.4 from 4 stations (BAND 2.3, CATL 3.0, ELBA 2.5, SEMS 2.2)
 LOCATE   #46  10:50:02.50  located at 40.868N 28.266E, origin 10:48:48.73, rms 0.33 s from 4 stations
 ALARM    #47  10:52:45.50  earthquake detected by BAND, CATL
 MAG      #47  10:52:47.50  magnitude M2.5 from 1 station (CATL 2.5)
-MAG      #47  10:52:48.50  magnitude M2.4 from 2 stations (BAND 2.4, CATL 2.5)
-MAG      #47  10:52:51.00  magnitude M2.5 from 3 stations (BAND 2.4, CATL 2.5, KIRK 2.7)
-MAG      #47  10:53:00.00  magnitude M2.4 from 4 stations (BAND 2.4, CATL 2.5, KIRK 2.7, SEMS 2.3)
-MAG      #47  10:53:34.00  magnitude M2.5 from 4 stations (BAND 2.4, CATL 2.6, KIRK 2.7, SEMS 2.3)
+MAG      #47  10:52:48.50  magnitude M2.3 from 2 stations (BAND 2.2, CATL 2.5)
+MAG      #47  10:52:51.00  magnitude M2.5 from 3 stations (BAND 2.2, CATL 2.5, KIRK 3.4)
+MAG      #47  10:53:00.00  magnitude M2.3 from 4 stations (BAND 2.2, CATL 2.5, KIRK 3.4, SEMS 2.1)
+MAG      #47  10:53:34.00  magnitude M2.5 from 4 stations (BAND 2.2, CATL 2.8, KIRK 3.4, SEMS 2.1)
 LOCATE   #47  10:53:35.00  located at 40.898N 28.018E, origin 10:52:31.99, rms 0.06 s from 2 stations
 LOCATE   #47  10:53:46.50  located at 40.861N 28.256E, origin 10:52:32.70, rms 0.27 s from 3 stations
 ALARM    #48  10:54:04.50  earthquake detected by CATL, ELBA  (AFAD ML 2.7 at 10:53:54.00, 10.5 s ago)
-MAG      #48  10:54:07.00  magnitude M2.6 from 1 station (ELBA 2.6)
-MAG      #48  10:54:09.50  magnitude M2.6 from 2 stations (ARNA 2.6, ELBA 2.6)
-MAG      #48  10:54:10.00  magnitude M2.6 from 3 stations (ARNA 2.6, BAND 2.5, ELBA 2.6)
-MAG      #48  10:54:10.00  magnitude M2.6 from 4 stations (ARNA 2.6, BAND 2.5, CATL 2.4, ELBA 2.6)
-MAG      #48  10:54:23.50  magnitude M2.6 from 5 stations (ARNA 2.6, BAND 2.5, CATL 2.4, ELBA 2.6, KIRK 2.6)
-MAG      #48  10:54:23.50  magnitude M2.6 from 6 stations (ARNA 2.6, BAND 2.5, CATL 2.4, ELBA 2.6, KIRK 2.6, SEMS 2.3)
+MAG      #48  10:54:07.00  magnitude M2.8 from 1 station (ELBA 2.8)
+MAG      #48  10:54:09.50  magnitude M2.8 from 2 stations (ARNA 2.8, ELBA 2.8)
+MAG      #48  10:54:10.00  magnitude M2.8 from 3 stations (ARNA 2.8, BAND 2.5, ELBA 2.8)
+MAG      #48  10:54:10.00  magnitude M2.6 from 4 stations (ARNA 2.8, BAND 2.5, CATL 2.4, ELBA 2.8)
+MAG      #48  10:54:23.50  magnitude M2.6 from 5 stations (ARNA 2.8, BAND 2.5, CATL 2.4, ELBA 2.8, KIRK 2.6)
+MAG      #48  10:54:23.50  magnitude M2.5 from 6 stations (ARNA 2.8, BAND 2.5, CATL 2.4, ELBA 2.8, KIRK 2.6, SEMS 2.3)
 LOCATE   #48  10:54:56.00  located at 41.302N 27.992E, origin 10:53:53.45, rms 0.34 s from 2 stations
 LOCATE   #48  10:54:56.50  located at 40.790N 28.615E, origin 10:53:52.76, rms 0.49 s from 3 stations
+MAG      #48  10:54:56.50  magnitude M2.6 from 6 stations (ARNA 2.7, BAND 3.0, CATL 2.4, ELBA 2.6, KIRK 2.6, SEMS 2.3)
 LOCATE   #48  10:54:56.50  located at 40.802N 28.577E, origin 10:53:53.05, rms 0.53 s from 4 stations
 LOCATE   #48  10:55:10.00  located at 40.854N 28.338E, origin 10:53:53.96, rms 0.98 s from 5 stations
 LOCATE   #48  10:55:10.00  located at 40.880N 28.241E, origin 10:53:54.58, rms 1.31 s from 6 stations
 ALARM    #49  10:55:29.00  earthquake detected by DEMI, SEMS
-MAG      #49  10:55:29.00  magnitude M3.0 from 1 station (DEMI 3.0)
-MAG      #49  10:55:33.50  magnitude M2.6 from 2 stations (DEMI 3.0, SEMS 2.2)
+MAG      #49  10:55:29.00  magnitude M3.3 from 1 station (DEMI 3.3)
+MAG      #49  10:55:33.50  magnitude M2.7 from 2 stations (DEMI 3.3, SEMS 2.1)
 ALARM    #50  10:57:31.00  earthquake detected by ARNA, ELBA  (AFAD ML 2.9 at 10:57:20.00, 11.0 s ago)
 MAG      #50  10:57:33.00  magnitude M2.8 from 1 station (ELBA 2.8)
 MAG      #50  10:57:35.00  magnitude M2.6 from 2 stations (ARNA 2.4, ELBA 2.8)
-MAG      #50  10:57:36.50  magnitude M2.7 from 3 stations (ARNA 2.4, CATL 2.7, ELBA 2.8)
-MAG      #50  10:57:37.50  magnitude M2.7 from 4 stations (ARNA 2.4, BAND 2.7, CATL 2.7, ELBA 2.8)
-MAG      #50  10:57:48.50  magnitude M2.7 from 5 stations (ARNA 2.4, BAND 2.7, CATL 2.7, ELBA 2.8, SEMS 2.4)
-MAG      #50  10:57:51.00  magnitude M2.6 from 6 stations (ARNA 2.4, BAND 2.7, CATL 2.7, ELBA 2.8, KIRK 2.5, SEMS 2.4)
-MAG      #50  10:57:58.50  magnitude M2.5 from 7 stations (ARNA 2.4, BAND 2.7, CATL 2.7, DEMI 2.4, ELBA 2.8, KIRK 2.5, SEMS 2.4)
+MAG      #50  10:57:36.50  magnitude M2.8 from 3 stations (ARNA 2.4, CATL 2.8, ELBA 2.8)
+MAG      #50  10:57:37.50  magnitude M2.8 from 4 stations (ARNA 2.4, BAND 2.9, CATL 2.8, ELBA 2.8)
+MAG      #50  10:57:48.50  magnitude M2.8 from 5 stations (ARNA 2.4, BAND 2.9, CATL 2.8, ELBA 2.8, SEMS 2.5)
+MAG      #50  10:57:51.00  magnitude M2.7 from 6 stations (ARNA 2.4, BAND 2.9, CATL 2.8, ELBA 2.8, KIRK 2.5, SEMS 2.5)
+MAG      #50  10:57:58.50  magnitude M2.6 from 7 stations (ARNA 2.4, BAND 2.9, CATL 2.8, DEMI 2.6, ELBA 2.8, KIRK 2.5, SEMS 2.5)
 LOCATE   #50  10:58:21.50  located at 40.857N 28.662E, origin 10:57:20.20, rms 0.30 s from 2 stations
-MAG      #50  10:58:21.50  magnitude M2.7 from 7 stations (ARNA 2.7, BAND 2.7, CATL 2.7, DEMI 2.4, ELBA 2.8, KIRK 2.5, SEMS 2.4)
+MAG      #50  10:58:21.50  magnitude M2.7 from 7 stations (ARNA 3.2, BAND 2.9, CATL 2.8, DEMI 2.6, ELBA 2.7, KIRK 2.5, SEMS 2.5)
 LOCATE   #50  10:58:23.00  located at 40.863N 28.660E, origin 10:57:20.33, rms 0.26 s from 3 stations
 LOCATE   #50  10:58:24.00  located at 40.822N 28.627E, origin 10:57:19.54, rms 0.41 s from 4 stations
 LOCATE   #50  10:58:35.00  located at 40.897N 28.272E, origin 10:57:21.17, rms 1.33 s from 5 stations
 LOCATE   #50  10:58:37.50  located at 40.885N 28.316E, origin 10:57:21.47, rms 1.32 s from 6 stations
 LOCATE   #50  10:58:45.00  located at 40.861N 28.316E, origin 10:57:20.92, rms 1.59 s from 7 stations
 ALARM    #51  11:00:37.50  earthquake detected by ARNA, CATL  (AFAD ML 2.6 at 11:00:29.00, 8.5 s ago)
-MAG      #51  11:00:39.50  magnitude M2.5 from 1 station (ELBA 2.5)
-MAG      #51  11:00:41.00  magnitude M2.6 from 2 stations (BAND 2.6, ELBA 2.5)
-MAG      #51  11:00:41.50  magnitude M2.5 from 3 stations (ARNA 2.4, BAND 2.6, ELBA 2.5)
-MAG      #51  11:00:41.50  magnitude M2.5 from 4 stations (ARNA 2.4, BAND 2.6, CATL 2.4, ELBA 2.5)
-MAG      #51  11:00:53.00  magnitude M2.4 from 5 stations (ARNA 2.4, BAND 2.6, CATL 2.4, ELBA 2.5, SEMS 2.4)
-MAG      #51  11:00:58.50  magnitude M2.4 from 6 stations (ARNA 2.4, BAND 2.6, CATL 2.4, ELBA 2.5, KIRK 2.4, SEMS 2.4)
-MAG      #51  11:01:02.00  magnitude M2.4 from 7 stations (ARNA 2.4, BAND 2.6, CATL 2.4, DEMI 2.2, ELBA 2.5, KIRK 2.4, SEMS 2.4)
+MAG      #51  11:00:39.50  magnitude M2.7 from 1 station (ELBA 2.7)
+MAG      #51  11:00:41.00  magnitude M2.6 from 2 stations (BAND 2.5, ELBA 2.7)
+MAG      #51  11:00:41.50  magnitude M2.6 from 3 stations (ARNA 2.6, BAND 2.5, ELBA 2.7)
+MAG      #51  11:00:41.50  magnitude M2.5 from 4 stations (ARNA 2.6, BAND 2.5, CATL 2.4, ELBA 2.7)
+MAG      #51  11:00:53.00  magnitude M2.5 from 5 stations (ARNA 2.6, BAND 2.5, CATL 2.4, ELBA 2.7, SEMS 2.4)
+MAG      #51  11:00:58.50  magnitude M2.5 from 6 stations (ARNA 2.6, BAND 2.5, CATL 2.4, ELBA 2.7, KIRK 2.4, SEMS 2.4)
+MAG      #51  11:01:02.00  magnitude M2.4 from 7 stations (ARNA 2.6, BAND 2.5, CATL 2.4, DEMI 2.4, ELBA 2.7, KIRK 2.4, SEMS 2.4)
 LOCATE   #51  11:01:27.50  located at 40.771N 28.270E, origin 11:00:26.74, rms 0.51 s from 2 stations
 LOCATE   #51  11:01:28.00  located at 40.720N 28.565E, origin 11:00:25.08, rms 0.79 s from 3 stations
 LOCATE   #51  11:01:28.00  located at 40.737N 28.522E, origin 11:00:25.19, rms 0.86 s from 4 stations
 LOCATE   #51  11:01:39.50  located at 40.822N 28.157E, origin 11:00:25.84, rms 1.28 s from 5 stations
-MAG      #51  11:01:45.00  magnitude M2.3 from 7 stations (ARNA 2.4, BAND 2.7, CATL 2.3, DEMI 2.2, ELBA 2.5, KIRK 2.3, SEMS 2.3)
 ALARM    #52  11:04:03.50  earthquake detected by CATL, ELBA  (AFAD ML 1.6 at 11:03:53.00, 10.5 s ago)
-MAG      #52  11:04:06.00  magnitude M2.4 from 1 station (ELBA 2.4)
-MAG      #52  11:04:09.00  magnitude M2.4 from 2 stations (CATL 2.4, ELBA 2.4)
-MAG      #52  11:04:10.50  magnitude M2.4 from 3 stations (BAND 2.4, CATL 2.4, ELBA 2.4)
-MAG      #52  11:04:23.00  magnitude M2.4 from 4 stations (BAND 2.4, CATL 2.4, ELBA 2.4, SEMS 2.3)
+MAG      #52  11:04:06.00  magnitude M2.5 from 1 station (ELBA 2.5)
+MAG      #52  11:04:09.00  magnitude M2.5 from 2 stations (CATL 2.5, ELBA 2.5)
+MAG      #52  11:04:10.50  magnitude M2.5 from 3 stations (BAND 2.2, CATL 2.5, ELBA 2.5)
+MAG      #52  11:04:23.00  magnitude M2.3 from 4 stations (BAND 2.2, CATL 2.5, ELBA 2.5, SEMS 2.1)
 LOCATE   #52  11:04:55.50  located at 40.839N 28.273E, origin 11:03:53.49, rms 0.03 s from 2 stations
 LOCATE   #52  11:04:57.00  located at 40.848N 28.270E, origin 11:03:53.69, rms 0.06 s from 3 stations
 LOCATE   #52  11:05:09.50  located at 40.868N 28.171E, origin 11:03:53.62, rms 0.34 s from 4 stations
 ALARM    #53  11:05:32.50  earthquake detected by CATL, SEMS
-MAG      #53  11:05:32.50  magnitude M2.4 from 1 station (CATL 2.4)
-MAG      #53  11:05:34.50  magnitude M2.4 from 2 stations (CATL 2.4, SEMS 2.3)
+MAG      #53  11:05:32.50  magnitude M2.6 from 1 station (CATL 2.6)
+MAG      #53  11:05:34.50  magnitude M2.4 from 2 stations (CATL 2.6, SEMS 2.1)
+MAG      #53  11:06:07.00  magnitude M2.4 from 2 stations (CATL 2.7, SEMS 2.1)
 LOCATE   #53  11:06:21.00  located at 41.726N 28.708E, origin 11:05:05.95, rms 0.35 s from 2 stations
 ALARM    #54  11:07:17.50  earthquake detected by CATL, ELBA  (AFAD ML 1.9 at 11:07:06.00, 11.5 s ago)
 MAG      #54  11:07:19.50  magnitude M2.4 from 1 station (ELBA 2.4)
 MAG      #54  11:07:22.00  magnitude M2.3 from 2 stations (CATL 2.2, ELBA 2.4)
-MAG      #54  11:07:23.50  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.2, ELBA 2.4)
-MAG      #54  11:07:31.50  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.2, ELBA 2.4, SEMS 2.3)
+MAG      #54  11:07:23.50  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.2, ELBA 2.4)
+MAG      #54  11:07:31.50  magnitude M2.2 from 4 stations (BAND 2.2, CATL 2.2, ELBA 2.4, SEMS 2.2)
 LOCATE   #54  11:08:10.00  located at 40.903N 27.978E, origin 11:07:06.18, rms 0.03 s from 2 stations, left out ELBA
+MAG      #54  11:08:10.00  magnitude M2.3 from 4 stations (BAND 2.4, CATL 2.6, ELBA 2.3, SEMS 2.2)
 ALARM    #55  11:09:15.50  earthquake detected by CATL, ELBA  (AFAD ML 1.9 at 11:09:02.00, 13.5 s ago)
-MAG      #55  11:09:17.50  magnitude M2.2 from 1 station (ELBA 2.2)
-MAG      #55  11:09:19.00  magnitude M2.2 from 2 stations (CATL 2.2, ELBA 2.2)
-MAG      #55  11:09:21.00  magnitude M2.2 from 3 stations (BAND 2.3, CATL 2.2, ELBA 2.2)
-MAG      #55  11:09:32.00  magnitude M2.2 from 4 stations (BAND 2.3, CATL 2.2, ELBA 2.2, SEMS 2.2)
+MAG      #55  11:09:17.50  magnitude M2.3 from 1 station (ELBA 2.3)
+MAG      #55  11:09:19.00  magnitude M2.2 from 2 stations (CATL 2.1, ELBA 2.3)
+MAG      #55  11:09:21.00  magnitude M2.3 from 3 stations (BAND 2.4, CATL 2.1, ELBA 2.3)
+MAG      #55  11:09:32.00  magnitude M2.2 from 4 stations (BAND 2.4, CATL 2.1, ELBA 2.3, SEMS 2.2)
 LOCATE   #55  11:10:05.50  located at 40.849N 28.403E, origin 11:09:03.58, rms 0.04 s from 2 stations
-MAG      #55  11:10:05.50  magnitude M2.3 from 4 stations (BAND 2.3, CATL 2.4, ELBA 2.2, SEMS 2.2)
+MAG      #55  11:10:05.50  magnitude M2.3 from 4 stations (BAND 2.4, CATL 2.6, ELBA 2.3, SEMS 2.2)
 LOCATE   #55  11:10:07.50  located at 40.848N 28.380E, origin 11:09:03.54, rms 0.04 s from 3 stations
+MAG      #55  11:10:07.50  magnitude M2.4 from 4 stations (BAND 2.7, CATL 2.6, ELBA 2.3, SEMS 2.2)
 LOCATE   #55  11:10:18.50  located at 40.873N 28.241E, origin 11:09:03.79, rms 0.37 s from 4 stations
 ALARM    #56  11:11:26.50  earthquake detected by KIRK, SEMS  (AFAD ML 1.9 at 11:10:57.00, 29.5 s ago)
-MAG      #56  11:11:27.50  magnitude M2.3 from 1 station (SEMS 2.3)
-MAG      #56  11:11:28.50  magnitude M2.3 from 2 stations (KIRK 2.3, SEMS 2.3)
+MAG      #56  11:11:27.50  magnitude M2.2 from 1 station (SEMS 2.2)
+MAG      #56  11:11:28.50  magnitude M2.3 from 2 stations (KIRK 2.4, SEMS 2.2)
 LOCATE   #56  11:12:15.00  located at 40.856N 28.218E, origin 11:10:59.27, rms 0.34 s from 2 stations
+MAG      #56  11:12:15.00  magnitude M2.2 from 2 stations (KIRK 2.2, SEMS 2.2)
 ALARM    #57  11:13:05.00  earthquake detected by CATL, ELBA  (AFAD ML 3.1 at 11:12:54.00, 11.0 s ago)
-MAG      #57  11:13:07.50  magnitude M2.9 from 1 station (ELBA 2.9)
-MAG      #57  11:13:10.50  magnitude M2.9 from 2 stations (CATL 3.0, ELBA 2.9)
-MAG      #57  11:13:11.50  magnitude M2.9 from 3 stations (BAND 2.6, CATL 3.0, ELBA 2.9)
-MAG      #57  11:13:17.50  magnitude M2.9 from 4 stations (ARNA 3.2, BAND 2.6, CATL 3.0, ELBA 2.9)
-MAG      #57  11:13:23.00  magnitude M2.9 from 5 stations (ARNA 3.2, BAND 2.6, CATL 3.0, ELBA 2.9, SEMS 2.8)
-MAG      #57  11:13:25.50  magnitude M2.9 from 6 stations (ARNA 3.2, BAND 2.6, CATL 3.0, ELBA 2.9, KIRK 2.5, SEMS 2.8)
-MAG      #57  11:13:32.00  magnitude M2.8 from 7 stations (ARNA 3.2, BAND 2.6, CATL 3.0, DEMI 2.5, ELBA 2.9, KIRK 2.5, SEMS 2.8)
+MAG      #57  11:13:07.50  magnitude M3.0 from 1 station (ELBA 3.0)
+MAG      #57  11:13:10.50  magnitude M3.0 from 2 stations (CATL 3.0, ELBA 3.0)
+MAG      #57  11:13:11.50  magnitude M3.0 from 3 stations (BAND 2.6, CATL 3.0, ELBA 3.0)
+MAG      #57  11:13:17.50  magnitude M3.0 from 4 stations (ARNA 3.6, BAND 2.6, CATL 3.0, ELBA 3.0)
+MAG      #57  11:13:23.00  magnitude M3.0 from 5 stations (ARNA 3.6, BAND 2.6, CATL 3.0, ELBA 3.0, SEMS 2.9)
+MAG      #57  11:13:25.50  magnitude M2.9 from 6 stations (ARNA 3.6, BAND 2.6, CATL 3.0, ELBA 3.0, KIRK 2.5, SEMS 2.9)
+MAG      #57  11:13:32.00  magnitude M2.9 from 7 stations (ARNA 3.6, BAND 2.6, CATL 3.0, DEMI 2.8, ELBA 3.0, KIRK 2.5, SEMS 2.9)
 LOCATE   #57  11:13:57.00  located at 40.894N 28.643E, origin 11:12:55.47, rms 0.03 s from 2 stations
 LOCATE   #57  11:13:58.00  located at 40.843N 28.405E, origin 11:12:55.38, rms 0.04 s from 3 stations
-MAG      #57  11:13:58.00  magnitude M2.9 from 7 stations (ARNA 3.2, BAND 2.9, CATL 3.1, DEMI 2.5, ELBA 2.9, KIRK 2.5, SEMS 2.8)
+MAG      #57  11:13:58.00  magnitude M3.0 from 7 stations (ARNA 3.6, BAND 3.2, CATL 3.2, DEMI 2.8, ELBA 3.0, KIRK 2.5, SEMS 2.9)
 LOCATE   #57  11:14:09.50  located at 40.873N 28.251E, origin 11:12:55.72, rms 0.30 s from 4 stations
 LOCATE   #57  11:14:12.00  located at 40.864N 28.279E, origin 11:12:55.94, rms 0.43 s from 5 stations
 LOCATE   #57  11:14:18.50  located at 40.841N 28.286E, origin 11:12:55.42, rms 1.15 s from 6 stations
 ALARM    #58  11:14:29.00  earthquake detected by CATL, SEMS  (AFAD ML 2.0 at 11:14:07.00, 22.0 s ago)
-MAG      #58  11:14:29.00  magnitude M2.8 from 1 station (CATL 2.8)
-MAG      #58  11:14:34.00  magnitude M2.6 from 2 stations (CATL 2.8, SEMS 2.4)
+MAG      #58  11:14:29.00  magnitude M3.1 from 1 station (CATL 3.1)
+MAG      #58  11:14:34.00  magnitude M2.9 from 2 stations (CATL 3.1, SEMS 2.7)
 ALARM    #59  11:14:53.00  earthquake detected by ELBA, KIRK
 MAG      #59  11:14:53.00  magnitude M2.4 from 1 station (ELBA 2.4)
 MAG      #59  11:14:55.00  magnitude M2.6 from 2 stations (ELBA 2.4, KIRK 2.8)
 ALARM    #60  11:15:19.00  earthquake detected by BAND, CATL  (AFAD ML 1.6 at 11:15:03.00, 16.0 s ago)
-MAG      #60  11:15:20.50  magnitude M2.3 from 1 station (CATL 2.3)
+MAG      #60  11:15:20.50  magnitude M2.4 from 1 station (CATL 2.4)
 LOCATE   #58  11:15:20.50  located at 40.056N 26.548E, origin 11:13:40.50, rms 0.04 s from 2 stations
-MAG      #60  11:15:21.00  magnitude M2.3 from 2 stations (BAND 2.4, CATL 2.3)
-MAG      #60  11:15:32.00  magnitude M2.3 from 3 stations (BAND 2.4, CATL 2.3, SEMS 2.3)
+MAG      #60  11:15:21.00  magnitude M2.5 from 2 stations (BAND 2.6, CATL 2.4)
+MAG      #60  11:15:32.00  magnitude M2.4 from 3 stations (BAND 2.6, CATL 2.4, SEMS 2.4)
 LOCATE   #60  11:16:07.50  located at 40.838N 28.503E, origin 11:15:03.30, rms 0.12 s from 2 stations
+MAG      #60  11:16:18.50  magnitude M2.5 from 3 stations (BAND 2.6, CATL 2.3, SEMS 2.5)
 ALARM    #61  11:18:10.00  earthquake detected by BAND, CATL  (AFAD ML 1.9 at 11:17:53.00, 17.0 s ago)
 MAG      #61  11:18:10.00  magnitude M2.2 from 1 station (CATL 2.2)
-MAG      #61  11:18:12.00  magnitude M2.3 from 2 stations (BAND 2.3, CATL 2.2)
-MAG      #61  11:18:23.00  magnitude M2.3 from 3 stations (BAND 2.3, CATL 2.2, SEMS 2.3)
+MAG      #61  11:18:12.00  magnitude M2.4 from 2 stations (BAND 2.5, CATL 2.2)
+MAG      #61  11:18:23.00  magnitude M2.5 from 3 stations (BAND 2.5, CATL 2.2, SEMS 2.5)
 ALARM    #62  11:20:23.00  earthquake detected by CATL, SEMS
-MAG      #62  11:20:23.00  magnitude M2.3 from 1 station (CATL 2.3)
-MAG      #62  11:20:28.00  magnitude M2.3 from 2 stations (CATL 2.3, SEMS 2.3)
+MAG      #62  11:20:23.00  magnitude M2.5 from 1 station (CATL 2.5)
+MAG      #62  11:20:28.00  magnitude M2.5 from 2 stations (CATL 2.5, SEMS 2.4)
 ALARM    #63  11:21:03.50  earthquake detected by CATL, SEMS
 MAG      #63  11:21:03.50  magnitude M2.3 from 1 station (CATL 2.3)
 MAG      #63  11:21:07.00  magnitude M2.3 from 2 stations (CATL 2.3, KIRK 2.4)
 MAG      #63  11:21:08.50  magnitude M2.4 from 3 stations (CATL 2.3, KIRK 2.4, SEMS 2.4)
 ALARM    #64  11:21:47.50  earthquake detected by CATL, ELBA  (AFAD MW 3.6 at 11:21:40.00, 7.5 s ago)
-MAG      #64  11:21:51.00  magnitude M3.2 from 1 station (CATL 3.2)
-MAG      #64  11:21:52.50  magnitude M3.2 from 2 stations (CATL 3.2, ELBA 3.2)
+MAG      #64  11:21:51.00  magnitude M3.1 from 1 station (CATL 3.1)
+MAG      #64  11:21:52.50  magnitude M3.2 from 2 stations (CATL 3.1, ELBA 3.4)
 LOCATE   #63  11:21:53.50  located at 41.771N 29.132E, origin 11:20:33.15, rms 1.39 s from 2 stations
-MAG      #64  11:21:54.50  magnitude M3.2 from 3 stations (ARNA 2.8, CATL 3.2, ELBA 3.2)
+MAG      #64  11:21:54.50  magnitude M3.1 from 3 stations (ARNA 2.9, CATL 3.1, ELBA 3.4)
 LOCATE   #63  11:21:55.00  located at 40.841N 28.217E, origin 11:20:39.32, rms 1.84 s from 3 stations
-MAG      #64  11:21:56.50  magnitude M3.2 from 4 stations (ARNA 2.8, BAND 3.2, CATL 3.2, ELBA 3.2)
-MAG      #64  11:22:05.50  magnitude M3.2 from 5 stations (ARNA 2.8, BAND 3.2, CATL 3.2, ELBA 3.2, SEMS 3.5)
-MAG      #64  11:22:10.50  magnitude M3.2 from 6 stations (ARNA 2.8, BAND 3.2, CATL 3.2, ELBA 3.2, KIRK 2.8, SEMS 3.5)
-MAG      #64  11:22:17.00  magnitude M3.2 from 7 stations (ARNA 2.8, BAND 3.2, CATL 3.2, DEMI 2.8, ELBA 3.2, KIRK 2.8, SEMS 3.5)
-MAG      #64  11:22:24.50  magnitude M3.0 from 8 stations (ARNA 2.8, BAND 3.2, CATL 3.2, DEMI 2.8, ELBA 3.2, KIRK 2.8, MANT 2.5, SEMS 3.5)
+MAG      #64  11:21:56.50  magnitude M3.1 from 4 stations (ARNA 2.9, BAND 3.1, CATL 3.1, ELBA 3.4)
+MAG      #64  11:22:05.50  magnitude M3.1 from 5 stations (ARNA 2.9, BAND 3.1, CATL 3.1, ELBA 3.4, SEMS 3.6)
+MAG      #64  11:22:10.50  magnitude M3.1 from 6 stations (ARNA 2.9, BAND 3.1, CATL 3.1, ELBA 3.4, KIRK 2.9, SEMS 3.6)
+MAG      #64  11:22:17.00  magnitude M3.1 from 7 stations (ARNA 2.9, BAND 3.1, CATL 3.1, DEMI 3.1, ELBA 3.4, KIRK 2.9, SEMS 3.6)
+MAG      #64  11:22:24.50  magnitude M3.1 from 8 stations (ARNA 2.9, BAND 3.1, CATL 3.1, DEMI 3.1, ELBA 3.4, KIRK 2.9, MANT 2.8, SEMS 3.6)
 LOCATE   #64  11:22:41.00  located at 40.847N 28.677E, origin 11:21:39.35, rms 0.37 s from 2 stations
 LOCATE   #64  11:22:43.00  located at 40.810N 28.640E, origin 11:21:38.62, rms 0.49 s from 3 stations
+MAG      #64  11:22:43.00  magnitude M3.2 from 8 stations (ARNA 3.4, BAND 3.5, CATL 3.1, DEMI 3.1, ELBA 3.5, KIRK 2.9, MANT 2.8, SEMS 3.6)
 LOCATE   #64  11:22:52.00  located at 40.930N 28.188E, origin 11:21:39.56, rms 1.25 s from 4 stations
-MAG      #64  11:22:52.00  magnitude M2.9 from 8 stations (ARNA 2.9, BAND 3.2, CATL 3.2, DEMI 2.8, ELBA 3.2, KIRK 2.8, MANT 2.5, SEMS 3.0)
+MAG      #64  11:22:52.00  magnitude M3.1 from 8 stations (ARNA 3.4, BAND 3.5, CATL 3.1, DEMI 3.1, ELBA 3.5, KIRK 2.9, MANT 2.8, SEMS 3.1)
 LOCATE   #64  11:22:57.00  located at 40.890N 28.305E, origin 11:21:40.63, rms 1.43 s from 5 stations
 LOCATE   #64  11:23:03.50  located at 40.857N 28.306E, origin 11:21:40.02, rms 1.70 s from 6 stations
 ALARM    #65  11:23:42.50  earthquake detected by ARNA, ELBA  (AFAD ML 3.4 at 11:23:32.00, 10.5 s ago)
 MAG      #65  11:23:45.50  magnitude M3.4 from 1 station (ELBA 3.4)
 MAG      #65  11:23:47.50  magnitude M3.4 from 2 stations (ARNA 3.4, ELBA 3.4)
-MAG      #65  11:23:48.50  magnitude M3.4 from 3 stations (ARNA 3.4, BAND 3.1, ELBA 3.4)
-MAG      #65  11:23:48.50  magnitude M3.3 from 4 stations (ARNA 3.4, BAND 3.1, CATL 3.3, ELBA 3.4)
-MAG      #65  11:24:00.50  magnitude M3.3 from 5 stations (ARNA 3.4, BAND 3.1, CATL 3.3, ELBA 3.4, SEMS 3.3)
-MAG      #65  11:24:02.50  magnitude M3.3 from 6 stations (ARNA 3.4, BAND 3.1, CATL 3.3, ELBA 3.4, KIRK 3.3, SEMS 3.3)
-MAG      #65  11:24:11.00  magnitude M3.3 from 7 stations (ARNA 3.4, BAND 3.1, CATL 3.3, DEMI 3.0, ELBA 3.4, KIRK 3.3, SEMS 3.3)
+MAG      #65  11:23:48.50  magnitude M3.4 from 3 stations (ARNA 3.4, BAND 3.2, ELBA 3.4)
+MAG      #65  11:23:48.50  magnitude M3.3 from 4 stations (ARNA 3.4, BAND 3.2, CATL 3.2, ELBA 3.4)
+MAG      #65  11:24:00.50  magnitude M3.3 from 5 stations (ARNA 3.4, BAND 3.2, CATL 3.2, ELBA 3.4, SEMS 3.3)
+MAG      #65  11:24:02.50  magnitude M3.3 from 6 stations (ARNA 3.4, BAND 3.2, CATL 3.2, ELBA 3.4, KIRK 3.3, SEMS 3.3)
+MAG      #65  11:24:11.00  magnitude M3.3 from 7 stations (ARNA 3.4, BAND 3.2, CATL 3.2, DEMI 3.1, ELBA 3.4, KIRK 3.3, SEMS 3.3)
+MAG      #65  11:24:32.00  magnitude M3.2 from 7 stations (ARNA 3.4, BAND 3.2, CATL 3.2, DEMI 3.1, ELBA 3.2, KIRK 3.3, SEMS 3.3)
 LOCATE   #65  11:24:34.00  located at 41.287N 27.962E, origin 11:23:31.71, rms 0.31 s from 2 stations
 LOCATE   #65  11:24:35.00  located at 40.785N 28.610E, origin 11:23:31.39, rms 0.42 s from 3 stations
+MAG      #65  11:24:35.00  magnitude M3.3 from 7 stations (ARNA 3.3, BAND 3.4, CATL 3.2, DEMI 3.1, ELBA 3.2, KIRK 3.3, SEMS 3.3)
 LOCATE   #65  11:24:35.00  located at 40.797N 28.572E, origin 11:23:31.65, rms 0.46 s from 4 stations
 LOCATE   #65  11:24:47.00  located at 40.892N 28.167E, origin 11:23:32.68, rms 1.32 s from 5 stations
 LOCATE   #65  11:24:49.00  located at 40.875N 28.226E, origin 11:23:33.18, rms 1.34 s from 6 stations
+MAG      #65  11:24:49.00  magnitude M3.2 from 7 stations (ARNA 3.3, BAND 3.4, CATL 3.6, DEMI 3.1, ELBA 3.2, KIRK 3.0, SEMS 3.0)
 LOCATE   #65  11:24:57.50  located at 40.851N 28.226E, origin 11:23:32.66, rms 1.51 s from 7 stations
 ALARM    #66  11:25:59.00  earthquake detected by CATL, ELBA  (AFAD ML 1.9 at 11:25:44.00, 15.0 s ago)
 MAG      #66  11:26:01.00  magnitude M2.3 from 1 station (ELBA 2.3)
-MAG      #66  11:26:02.50  magnitude M2.3 from 2 stations (CATL 2.2, ELBA 2.3)
-MAG      #66  11:26:15.00  magnitude M2.3 from 3 stations (CATL 2.2, ELBA 2.3, SEMS 2.5)
-MAG      #66  11:26:18.50  magnitude M2.4 from 4 stations (CATL 2.2, ELBA 2.3, KIRK 2.6, SEMS 2.5)
-MAG      #66  11:26:49.00  magnitude M2.5 from 4 stations (CATL 2.4, ELBA 2.3, KIRK 2.6, SEMS 2.5)
+MAG      #66  11:26:02.50  magnitude M2.3 from 2 stations (CATL 2.3, ELBA 2.3)
+MAG      #66  11:26:15.00  magnitude M2.3 from 3 stations (CATL 2.3, ELBA 2.3, SEMS 2.7)
+MAG      #66  11:26:18.50  magnitude M2.5 from 4 stations (CATL 2.3, ELBA 2.3, KIRK 2.8, SEMS 2.7)
+MAG      #66  11:26:49.00  magnitude M2.6 from 4 stations (CATL 2.6, ELBA 2.3, KIRK 2.8, SEMS 2.7)
 ALARM    #67  11:27:06.50  earthquake detected by CATL, SEMS
 MAG      #67  11:27:06.50  magnitude M2.6 from 1 station (CATL 2.6)
-MAG      #67  11:27:08.50  magnitude M2.7 from 2 stations (CATL 2.6, SEMS 2.7)
+MAG      #67  11:27:08.50  magnitude M2.8 from 2 stations (CATL 2.6, SEMS 2.9)
 ALARM    #68  11:28:32.00  earthquake detected by BAND, CATL  (AFAD ML 2.3 at 11:28:19.00, 13.0 s ago)
-MAG      #68  11:28:32.00  magnitude M2.2 from 1 station (CATL 2.2)
-MAG      #68  11:28:34.00  magnitude M2.2 from 2 stations (BAND 2.2, CATL 2.2)
-MAG      #68  11:28:40.50  magnitude M2.2 from 3 stations (BAND 2.2, CATL 2.2, SEMS 2.3)
+MAG      #68  11:28:32.00  magnitude M2.3 from 1 station (CATL 2.3)
+MAG      #68  11:28:34.00  magnitude M2.2 from 2 stations (BAND 2.2, CATL 2.3)
+MAG      #68  11:28:40.50  magnitude M2.3 from 3 stations (BAND 2.2, CATL 2.3, SEMS 2.3)
 
 ------------------------------------------------------------------------------
 REPORT  8 stations, 2025-04-23 08:29:02.00 to 11:30:04.00 UTC
 ------------------------------------------------------------------------------
 
-Event #1: detected M2.8 earthquake, not located
+Event #1: detected M3.1 earthquake, not located
   alarm      09:05:36.50 UTC by CATL, SEMS
-  magnitude  M2.5 at the alarm, M2.8 final from 2 stations
+  magnitude  M2.6 at the alarm, M3.1 final from 2 stations
   AFAD       no matching catalogue event
 
-Event #2: detected M3.3 earthquake at 40.811N 28.171E, origin 09:13:05.48 UTC
+Event #2: detected M3.5 earthquake at 40.811N 28.171E, origin 09:13:05.48 UTC
   alarm      09:13:16.00 UTC by ARNA, BAND, ELBA; later CATL, DEMI, KIRK, MANT, SEMS
-  magnitude  M3.5 3.0 s after the alarm, M3.3 final from 8 stations
+  magnitude  M3.5 3.0 s after the alarm, M3.5 final from 8 stations
   location   rms 1.94 s from 7 stations
-  AFAD       ML 3.9 at 09:13:05.00 UTC: alarm 11.0 s after origin, magnitude -0.6, epicentre 4.9 km off, origin +0.5 s
+  AFAD       ML 3.9 at 09:13:05.00 UTC: alarm 11.0 s after origin, magnitude -0.4, epicentre 4.9 km off, origin +0.5 s
   S wave     had travelled 38 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          39 km   09:13:18.10 UTC (picked)      +2.1 s  before S
@@ -525,11 +541,11 @@ Event #3: detected M2.5 earthquake at 39.217N 28.982E, origin 09:28:12.23 UTC
              CATL         242 km   09:29:21.45 UTC (predicted)   +50.5 s  before S
              KIRK         327 km   09:29:45.62 UTC (predicted)   +74.6 s  before S
 
-Event #4: detected M4.8 earthquake at 40.860N 28.186E, origin 09:49:11.33 UTC
+Event #4: detected M5.3 earthquake at 40.860N 28.186E, origin 09:49:11.33 UTC
   alarm      09:49:21.00 UTC by ARNA, ELBA; later BAND, CATL, DEMI, KIRK, MANT, SEMS
-  magnitude  M4.6 3.0 s after the alarm, M4.8 final from 8 stations
+  magnitude  M5.0 3.0 s after the alarm, M5.3 final from 8 stations
   location   rms 1.44 s from 6 stations
-  AFAD       MW 6.2 at 09:49:10.00 UTC: alarm 11.0 s after origin, magnitude -1.4, epicentre 3.1 km off, origin +1.3 s
+  AFAD       MW 6.2 at 09:49:10.00 UTC: alarm 11.0 s after origin, magnitude -0.9, epicentre 3.1 km off, origin +1.3 s
   S wave     had travelled 38 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          38 km   09:49:23.10 UTC (picked)      +2.1 s  before S
@@ -541,11 +557,11 @@ Event #4: detected M4.8 earthquake at 40.860N 28.186E, origin 09:49:11.33 UTC
              DEMI         205 km   09:50:08.51 UTC (predicted)   +47.5 s  before S
              MANT         263 km   09:50:25.23 UTC (predicted)   +64.2 s  before S
 
-Event #5: detected M4.3 earthquake at 40.987N 28.186E, origin 09:51:20.63 UTC
+Event #5: detected M4.5 earthquake at 40.987N 28.186E, origin 09:51:20.63 UTC
   alarm      09:51:31.50 UTC by ARNA, ELBA; later SEMS
-  magnitude  M4.5 1.5 s after the alarm, M4.3 final from 3 stations
+  magnitude  M4.6 1.5 s after the alarm, M4.5 final from 3 stations
   location   rms 1.35 s from 3 stations
-  AFAD       MW 5.9 at 09:51:19.00 UTC: alarm 12.5 s after origin, magnitude -1.6, epicentre 21.1 km off, origin +1.6 s
+  AFAD       MW 5.9 at 09:51:19.00 UTC: alarm 12.5 s after origin, magnitude -1.4, epicentre 21.1 km off, origin +1.6 s
   S wave     had travelled 43 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          37 km   09:51:30.90 UTC (picked)      -0.6 s  after S
@@ -557,11 +573,11 @@ Event #5: detected M4.3 earthquake at 40.987N 28.186E, origin 09:51:20.63 UTC
              DEMI         201 km   09:52:16.55 UTC (predicted)   +45.1 s  before S
              MANT         261 km   09:52:33.50 UTC (predicted)   +62.0 s  before S
 
-Event #6: detected M3.9 earthquake at 41.012N 28.106E, origin 09:52:20.70 UTC
+Event #6: detected M4.1 earthquake at 41.012N 28.106E, origin 09:52:20.70 UTC
   alarm      09:52:34.00 UTC by ARNA, ELBA; later SEMS
-  magnitude  M3.9 at the alarm, M3.9 final from 3 stations
+  magnitude  M4.2 at the alarm, M4.1 final from 3 stations
   location   rms 1.19 s from 3 stations
-  AFAD       ML 4.5 at 09:52:19.00 UTC: alarm 15.0 s after origin, magnitude -0.6, epicentre 24.9 km off, origin +1.7 s
+  AFAD       ML 4.5 at 09:52:19.00 UTC: alarm 15.0 s after origin, magnitude -0.4, epicentre 24.9 km off, origin +1.7 s
   S wave     had travelled 52 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          37 km   09:52:31.64 UTC (picked)      -2.4 s  after S
@@ -573,10 +589,10 @@ Event #6: detected M3.9 earthquake at 41.012N 28.106E, origin 09:52:20.70 UTC
              DEMI         202 km   09:53:16.88 UTC (predicted)   +42.9 s  before S
              MANT         262 km   09:53:33.75 UTC (predicted)   +59.7 s  before S
 
-Event #7: detected M3.5 earthquake, not located
+Event #7: detected M3.6 earthquake, not located
   alarm      09:56:26.00 UTC by CATL, SEMS
-  magnitude  M3.4 at the alarm, M3.5 final from 2 stations
-  AFAD       ML 3.2 at 09:56:13.00 UTC: alarm 13.0 s after origin, magnitude +0.3
+  magnitude  M3.6 at the alarm, M3.6 final from 2 stations
+  AFAD       ML 3.2 at 09:56:13.00 UTC: alarm 13.0 s after origin, magnitude +0.4
   S wave     had travelled 45 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          34 km   09:56:22.83 UTC (predicted)    -3.2 s  after S
@@ -588,11 +604,11 @@ Event #7: detected M3.5 earthquake, not located
              DEMI         202 km   09:57:10.86 UTC (predicted)   +44.9 s  before S
              MANT         262 km   09:57:27.95 UTC (predicted)   +62.0 s  before S
 
-Event #8: detected M3.5 earthquake at 40.860N 28.236E, origin 09:59:30.28 UTC
+Event #8: detected M3.6 earthquake at 40.860N 28.236E, origin 09:59:30.28 UTC
   alarm      09:59:39.50 UTC by ARNA, ELBA; later BAND, CATL, KIRK, SEMS
-  magnitude  M3.4 3.5 s after the alarm, M3.5 final from 6 stations
+  magnitude  M3.5 3.5 s after the alarm, M3.6 final from 6 stations
   location   rms 1.15 s from 6 stations
-  AFAD       ML 3.6 at 09:59:29.00 UTC: alarm 10.5 s after origin, magnitude -0.1, epicentre 6.1 km off, origin +1.3 s
+  AFAD       ML 3.6 at 09:59:29.00 UTC: alarm 10.5 s after origin, magnitude +0.0, epicentre 6.1 km off, origin +1.3 s
   S wave     had travelled 36 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          37 km   09:59:41.38 UTC (picked)      +1.9 s  before S
@@ -604,11 +620,11 @@ Event #8: detected M3.5 earthquake at 40.860N 28.236E, origin 09:59:30.28 UTC
              DEMI         202 km   10:00:26.68 UTC (predicted)   +47.2 s  before S
              MANT         261 km   10:00:43.57 UTC (predicted)   +64.1 s  before S
 
-Event #9: detected M3.6 earthquake at 40.856N 28.266E, origin 10:01:02.78 UTC
+Event #9: detected M3.7 earthquake at 40.856N 28.266E, origin 10:01:02.78 UTC
   alarm      10:01:13.00 UTC by ARNA, ELBA; later BAND, CATL, DEMI, KIRK, SEMS
-  magnitude  M3.7 2.0 s after the alarm, M3.6 final from 7 stations
+  magnitude  M3.9 2.0 s after the alarm, M3.7 final from 7 stations
   location   rms 1.45 s from 7 stations
-  AFAD       MW 4.8 at 10:01:02.00 UTC: alarm 11.0 s after origin, magnitude -1.2, epicentre 6.3 km off, origin +0.8 s
+  AFAD       MW 4.8 at 10:01:02.00 UTC: alarm 11.0 s after origin, magnitude -1.1, epicentre 6.3 km off, origin +0.8 s
   S wave     had travelled 38 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          36 km   10:01:13.62 UTC (picked)      +0.6 s  before S
@@ -620,11 +636,11 @@ Event #9: detected M3.6 earthquake at 40.856N 28.266E, origin 10:01:02.78 UTC
              DEMI         202 km   10:02:01.94 UTC (picked)     +48.9 s  before S
              MANT         261 km   10:02:16.64 UTC (predicted)   +63.6 s  before S
 
-Event #10: detected M3.4 earthquake at 40.701N 31.025E, origin 10:01:39.28 UTC
+Event #10: detected M3.5 earthquake at 40.701N 31.025E, origin 10:01:39.28 UTC
   alarm      10:02:19.00 UTC by ARNA, ELBA; later BAND, CATL, DEMI, KIRK, SEMS
-  magnitude  M4.2 3.5 s after the alarm, M3.4 final from 7 stations
+  magnitude  M4.1 3.5 s after the alarm, M3.5 final from 7 stations
   location   rms 0.02 s from 2 stations
-  AFAD       MW 4.5 at 10:02:10.00 UTC: alarm 9.0 s after origin, magnitude -1.1, epicentre 218.8 km off, origin -30.7 s
+  AFAD       MW 4.5 at 10:02:10.00 UTC: alarm 9.0 s after origin, magnitude -1.0, epicentre 218.8 km off, origin -30.7 s
   S wave     had travelled 31 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          29 km   10:02:43.20 UTC (picked)     +24.2 s  before S
@@ -636,11 +652,11 @@ Event #10: detected M3.4 earthquake at 40.701N 31.025E, origin 10:01:39.28 UTC
              DEMI         206 km   10:03:08.99 UTC (predicted)   +50.0 s  before S
              MANT         267 km   10:03:26.18 UTC (predicted)   +67.2 s  before S
 
-Event #11: detected M2.8 earthquake at 40.782N 28.622E, origin 10:05:43.53 UTC
+Event #11: detected M2.9 earthquake at 40.782N 28.622E, origin 10:05:43.53 UTC
   alarm      10:05:56.00 UTC by ARNA, ELBA
-  magnitude  M3.1 2.0 s after the alarm, M2.8 final from 2 stations
+  magnitude  M3.1 2.0 s after the alarm, M2.9 final from 2 stations
   location   rms 0.28 s from 2 stations
-  AFAD       ML 3.0 at 10:05:43.00 UTC: alarm 13.0 s after origin, magnitude -0.2, epicentre 32.1 km off, origin +0.5 s
+  AFAD       ML 3.0 at 10:05:43.00 UTC: alarm 13.0 s after origin, magnitude -0.1, epicentre 32.1 km off, origin +0.5 s
   S wave     had travelled 45 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          38 km   10:05:56.14 UTC (picked)      +0.1 s  before S
@@ -652,11 +668,11 @@ Event #11: detected M2.8 earthquake at 40.782N 28.622E, origin 10:05:43.53 UTC
              DEMI         203 km   10:06:41.02 UTC (predicted)   +45.0 s  before S
              MANT         262 km   10:06:57.80 UTC (predicted)   +61.8 s  before S
 
-Event #12: detected M2.6 earthquake at 40.824N 28.472E, origin 10:06:59.54 UTC
+Event #12: detected M2.9 earthquake at 40.824N 28.472E, origin 10:06:59.54 UTC
   alarm      10:07:08.50 UTC by ELBA, SEMS; later ARNA, BAND, CATL, KIRK
-  magnitude  M2.2 at the alarm, M2.6 final from 6 stations
+  magnitude  M2.1 at the alarm, M2.9 final from 6 stations
   location   rms 0.87 s from 4 stations
-  AFAD       ML 3.4 at 10:07:01.00 UTC: alarm 7.5 s after origin, magnitude -0.8, epicentre 8.6 km off, origin -1.5 s
+  AFAD       ML 3.4 at 10:07:01.00 UTC: alarm 7.5 s after origin, magnitude -0.5, epicentre 8.6 km off, origin -1.5 s
   S wave     had travelled 25 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          31 km   10:07:10.90 UTC (picked)      +2.4 s  before S
@@ -668,19 +684,19 @@ Event #12: detected M2.6 earthquake at 40.824N 28.472E, origin 10:06:59.54 UTC
              DEMI         205 km   10:07:59.59 UTC (predicted)   +51.1 s  before S
              MANT         265 km   10:08:16.69 UTC (predicted)   +68.2 s  before S
 
-Event #13: detected M2.3 earthquake, not located
+Event #13: detected M2.1 earthquake, not located
   alarm      10:10:29.00 UTC by CATL, SEMS
-  magnitude  M2.3 1.5 s after the alarm, M2.3 final from 2 stations
+  magnitude  M2.2 1.5 s after the alarm, M2.1 final from 2 stations
   AFAD       no matching catalogue event
 
-Event #14: detected M2.3 earthquake, not located
+Event #14: detected M2.2 earthquake, not located
   alarm      10:13:20.50 UTC by KIRK, SEMS
-  magnitude  M2.3 at the alarm, M2.3 final from 2 stations
+  magnitude  M2.2 at the alarm, M2.2 final from 2 stations
   AFAD       no matching catalogue event
 
 Event #15: detected M2.3 earthquake at 41.796N 28.766E, origin 10:13:56.17 UTC
   alarm      10:14:06.00 UTC by ARNA, ELBA; later BAND, CATL, KIRK, SEMS
-  magnitude  M2.4 3.0 s after the alarm, M2.3 final from 6 stations
+  magnitude  M2.5 3.0 s after the alarm, M2.3 final from 6 stations
   location   rms 0.77 s from 3 stations
   AFAD       ML 2.7 at 10:13:56.00 UTC: alarm 10.0 s after origin, magnitude -0.4, epicentre 106.1 km off, origin +0.2 s
   S wave     had travelled 34 km from the epicentre when the alarm sounded (AFAD hypocentre)
@@ -694,10 +710,10 @@ Event #15: detected M2.3 earthquake at 41.796N 28.766E, origin 10:13:56.17 UTC
              DEMI         206 km   10:14:54.76 UTC (predicted)   +48.8 s  before S
              MANT         266 km   10:15:11.92 UTC (predicted)   +65.9 s  before S
 
-Event #16: detected M2.3 earthquake, not located
+Event #16: detected M2.2 earthquake, not located
   alarm      10:15:44.50 UTC by CATL, SEMS
-  magnitude  M2.3 at the alarm, M2.3 final from 2 stations
-  AFAD       ML 2.4 at 10:15:19.00 UTC: alarm 25.5 s after origin, magnitude -0.1
+  magnitude  M2.2 at the alarm, M2.2 final from 2 stations
+  AFAD       ML 2.4 at 10:15:19.00 UTC: alarm 25.5 s after origin, magnitude -0.2
   S wave     had travelled 89 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          28 km   10:15:27.36 UTC (predicted)   -17.1 s  after S
@@ -709,16 +725,16 @@ Event #16: detected M2.3 earthquake, not located
              DEMI         209 km   10:16:18.82 UTC (predicted)   +34.3 s  before S
              MANT         269 km   10:16:35.82 UTC (predicted)   +51.3 s  before S
 
-Event #17: detected M2.3 earthquake, not located
+Event #17: detected M2.2 earthquake, not located
   alarm      10:16:03.00 UTC by CATL, ELBA; later BAND
-  magnitude  M2.3 5.0 s after the alarm, M2.3 final from 3 stations
+  magnitude  M2.2 5.0 s after the alarm, M2.2 final from 3 stations
   AFAD       no matching catalogue event
 
-Event #18: detected M2.8 earthquake at 41.789N 28.811E, origin 10:16:24.08 UTC
+Event #18: detected M3.0 earthquake at 41.789N 28.811E, origin 10:16:24.08 UTC
   alarm      10:16:47.00 UTC by ARNA, SEMS
-  magnitude  M2.9 at the alarm, M2.8 final from 2 stations
+  magnitude  M3.2 at the alarm, M3.0 final from 2 stations
   location   rms 0.45 s from 2 stations
-  AFAD       ML 3.4 at 10:16:23.00 UTC: alarm 24.0 s after origin, magnitude -0.6, epicentre 109.0 km off, origin +1.1 s
+  AFAD       ML 3.4 at 10:16:23.00 UTC: alarm 24.0 s after origin, magnitude -0.4, epicentre 109.0 km off, origin +1.1 s
   S wave     had travelled 84 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          33 km   10:16:32.58 UTC (predicted)   -14.4 s  after S
@@ -730,15 +746,15 @@ Event #18: detected M2.8 earthquake at 41.789N 28.811E, origin 10:16:24.08 UTC
              DEMI         203 km   10:17:20.93 UTC (predicted)   +33.9 s  before S
              MANT         263 km   10:17:38.10 UTC (predicted)   +51.1 s  before S
 
-Event #19: detected M3.1 earthquake, not located
+Event #19: detected M3.4 earthquake, not located
   alarm      10:17:28.00 UTC by DEMI, KIRK
-  magnitude  M2.7 at the alarm, M3.1 final from 2 stations
+  magnitude  M3.0 at the alarm, M3.4 final from 2 stations
   AFAD       no matching catalogue event
 
-Event #20: detected M2.3 earthquake, not located
+Event #20: detected M2.2 earthquake, not located
   alarm      10:19:04.50 UTC by CATL, ELBA
-  magnitude  M2.2 1.0 s after the alarm, M2.3 final from 2 stations
-  AFAD       ML 2.1 at 10:18:51.00 UTC: alarm 13.5 s after origin, magnitude +0.2
+  magnitude  M2.2 1.0 s after the alarm, M2.2 final from 2 stations
+  AFAD       ML 2.1 at 10:18:51.00 UTC: alarm 13.5 s after origin, magnitude +0.1
   S wave     had travelled 47 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          38 km   10:19:03.88 UTC (picked)      -0.6 s  after S
@@ -750,11 +766,11 @@ Event #20: detected M2.3 earthquake, not located
              DEMI         204 km   10:19:49.22 UTC (predicted)   +44.7 s  before S
              MANT         262 km   10:20:05.99 UTC (predicted)   +61.5 s  before S
 
-Event #21: detected M2.3 earthquake at 40.873N 28.226E, origin 10:20:28.09 UTC
+Event #21: detected M2.2 earthquake at 40.873N 28.226E, origin 10:20:28.09 UTC
   alarm      10:20:38.00 UTC by CATL, ELBA; later BAND, SEMS
-  magnitude  M2.3 2.0 s after the alarm, M2.3 final from 4 stations
+  magnitude  M2.3 2.0 s after the alarm, M2.2 final from 4 stations
   location   rms 0.35 s from 4 stations
-  AFAD       ML 2.0 at 10:20:26.00 UTC: alarm 12.0 s after origin, magnitude +0.3, epicentre 10.6 km off, origin +2.1 s
+  AFAD       ML 2.0 at 10:20:26.00 UTC: alarm 12.0 s after origin, magnitude +0.2, epicentre 10.6 km off, origin +2.1 s
   S wave     had travelled 41 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          31 km   10:20:38.14 UTC (picked)      +0.1 s  before S
@@ -766,11 +782,11 @@ Event #21: detected M2.3 earthquake at 40.873N 28.226E, origin 10:20:28.09 UTC
              DEMI         206 km   10:21:24.90 UTC (predicted)   +46.9 s  before S
              MANT         266 km   10:21:41.93 UTC (predicted)   +63.9 s  before S
 
-Event #22: detected M2.3 earthquake at 40.858N 28.131E, origin 10:22:31.86 UTC
+Event #22: detected M2.2 earthquake at 40.858N 28.131E, origin 10:22:31.86 UTC
   alarm      10:22:42.50 UTC by CATL, ELBA; later BAND, KIRK, SEMS
-  magnitude  M2.3 2.5 s after the alarm, M2.3 final from 5 stations
+  magnitude  M2.4 2.5 s after the alarm, M2.2 final from 5 stations
   location   rms 0.36 s from 4 stations
-  AFAD       ML 2.2 at 10:22:31.00 UTC: alarm 11.5 s after origin, magnitude +0.1, epicentre 13.6 km off, origin +0.9 s
+  AFAD       ML 2.2 at 10:22:31.00 UTC: alarm 11.5 s after origin, magnitude +0.0, epicentre 13.6 km off, origin +0.9 s
   S wave     had travelled 40 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          37 km   10:22:43.14 UTC (picked)      +0.6 s  before S
@@ -782,11 +798,11 @@ Event #22: detected M2.3 earthquake at 40.858N 28.131E, origin 10:22:31.86 UTC
              DEMI         202 km   10:23:28.80 UTC (predicted)   +46.3 s  before S
              MANT         261 km   10:23:45.67 UTC (predicted)   +63.2 s  before S
 
-Event #23: detected M2.3 earthquake at 40.873N 28.146E, origin 10:24:11.06 UTC
+Event #23: detected M2.2 earthquake at 40.873N 28.146E, origin 10:24:11.06 UTC
   alarm      10:24:24.00 UTC by BAND, ELBA; later CATL, SEMS
-  magnitude  M2.2 at the alarm, M2.3 final from 4 stations
+  magnitude  M2.2 at the alarm, M2.2 final from 4 stations
   location   rms 0.43 s from 4 stations
-  AFAD       ML 2.2 at 10:24:10.00 UTC: alarm 14.0 s after origin, magnitude +0.1, epicentre 12.3 km off, origin +1.1 s
+  AFAD       ML 2.2 at 10:24:10.00 UTC: alarm 14.0 s after origin, magnitude +0.0, epicentre 12.3 km off, origin +1.1 s
   S wave     had travelled 48 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          36 km   10:24:21.90 UTC (picked)      -2.1 s  after S
@@ -798,15 +814,15 @@ Event #23: detected M2.3 earthquake at 40.873N 28.146E, origin 10:24:11.06 UTC
              DEMI         204 km   10:25:08.22 UTC (predicted)   +44.2 s  before S
              MANT         263 km   10:25:25.10 UTC (predicted)   +61.1 s  before S
 
-Event #24: detected M2.3 earthquake, not located
+Event #24: detected M2.1 earthquake, not located
   alarm      10:26:16.50 UTC by BAND, CATL; later SEMS
-  magnitude  M2.2 at the alarm, M2.3 final from 3 stations
+  magnitude  M2.1 at the alarm, M2.1 final from 3 stations
   AFAD       no matching catalogue event
 
-Event #25: detected M2.4 earthquake, not located
+Event #25: detected M2.5 earthquake, not located
   alarm      10:26:42.50 UTC by DEMI, ELBA, KIRK
-  magnitude  M2.4 at the alarm, M2.4 final from 3 stations
-  AFAD       ML 3.0 at 10:26:05.00 UTC: alarm 37.5 s after origin, magnitude -0.6
+  magnitude  M2.5 at the alarm, M2.5 final from 3 stations
+  AFAD       ML 3.0 at 10:26:05.00 UTC: alarm 37.5 s after origin, magnitude -0.5
   S wave     had travelled 131 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          37 km   10:26:44.88 UTC (picked)      +2.4 s  before S
@@ -818,14 +834,14 @@ Event #25: detected M2.4 earthquake, not located
              DEMI         205 km   10:26:44.80 UTC (picked)      +2.3 s  before S
              MANT         264 km   10:27:20.32 UTC (predicted)   +37.8 s  before S
 
-Event #26: detected M2.5 earthquake, not located
+Event #26: detected M2.6 earthquake, not located
   alarm      10:27:16.00 UTC by CATL, SEMS
-  magnitude  M2.6 at the alarm, M2.5 final from 2 stations
+  magnitude  M2.6 at the alarm, M2.6 final from 2 stations
   AFAD       no matching catalogue event
 
 Event #27: detected M2.4 earthquake at 40.893N 28.229E, origin 10:28:16.87 UTC
   alarm      10:28:24.50 UTC by ELBA, KIRK; later ARNA, BAND, DEMI, SEMS
-  magnitude  M2.3 at the alarm, M2.4 final from 6 stations
+  magnitude  M2.2 at the alarm, M2.4 final from 6 stations
   location   rms 1.66 s from 5 stations
   AFAD       ML 2.7 at 10:28:18.00 UTC: alarm 6.5 s after origin, magnitude -0.3, epicentre 20.7 km off, origin -1.1 s
   S wave     had travelled 22 km from the epicentre when the alarm sounded (AFAD hypocentre)
@@ -839,10 +855,10 @@ Event #27: detected M2.4 earthquake at 40.893N 28.229E, origin 10:28:16.87 UTC
              DEMI         208 km   10:29:16.68 UTC (picked)     +52.2 s  before S
              MANT         268 km   10:29:34.70 UTC (predicted)   +70.2 s  before S
 
-Event #28: detected M2.4 earthquake, not located
+Event #28: detected M2.2 earthquake, not located
   alarm      10:29:46.50 UTC by BAND, ELBA; later CATL, SEMS
-  magnitude  M2.5 1.0 s after the alarm, M2.4 final from 4 stations
-  AFAD       ML 2.5 at 10:29:33.00 UTC: alarm 13.5 s after origin, magnitude -0.1
+  magnitude  M2.6 1.0 s after the alarm, M2.2 final from 4 stations
+  AFAD       ML 2.5 at 10:29:33.00 UTC: alarm 13.5 s after origin, magnitude -0.3
   S wave     had travelled 47 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          34 km   10:30:00.28 UTC (picked)     +13.8 s  before S
@@ -854,9 +870,9 @@ Event #28: detected M2.4 earthquake, not located
              DEMI         202 km   10:30:30.69 UTC (predicted)   +44.2 s  before S
              MANT         262 km   10:30:47.82 UTC (predicted)   +61.3 s  before S
 
-Event #29: detected M2.3 earthquake at 40.344N 29.683E, origin 10:30:48.51 UTC
+Event #29: detected M2.2 earthquake at 40.344N 29.683E, origin 10:30:48.51 UTC
   alarm      10:31:16.00 UTC by CATL, ELBA; later BAND, SEMS
-  magnitude  M2.2 2.0 s after the alarm, M2.3 final from 4 stations
+  magnitude  M2.2 2.0 s after the alarm, M2.2 final from 4 stations
   location   rms 0.03 s from 2 stations
   AFAD       no matching catalogue event
   S wave     had travelled 96 km from the epicentre when the alarm sounded (ayzek location)
@@ -872,7 +888,7 @@ Event #29: detected M2.3 earthquake at 40.344N 29.683E, origin 10:30:48.51 UTC
 
 Event #30: detected M2.4 earthquake at 40.639N 28.461E, origin 10:31:09.40 UTC
   alarm      10:31:44.50 UTC by ARNA, KIRK; later DEMI
-  magnitude  M2.5 at the alarm, M2.4 final from 3 stations
+  magnitude  M2.7 at the alarm, M2.4 final from 3 stations
   location   rms 1.57 s from 2 stations
   AFAD       ML 2.9 at 10:31:15.00 UTC: alarm 29.5 s after origin, magnitude -0.5, epicentre 24.6 km off, origin -5.6 s
   S wave     had travelled 103 km from the epicentre when the alarm sounded (AFAD hypocentre)
@@ -886,11 +902,11 @@ Event #30: detected M2.4 earthquake at 40.639N 28.461E, origin 10:31:09.40 UTC
              DEMI         200 km   10:32:12.04 UTC (predicted)   +27.5 s  before S
              MANT         258 km   10:32:28.85 UTC (predicted)   +44.4 s  before S
 
-Event #31: detected M2.5 earthquake at 40.839N 28.388E, origin 10:32:16.22 UTC
+Event #31: detected M2.6 earthquake at 40.839N 28.388E, origin 10:32:16.22 UTC
   alarm      10:32:21.00 UTC by BAND, SEMS; later CATL, ELBA, KIRK
-  magnitude  M2.4 at the alarm, M2.5 final from 5 stations
+  magnitude  M2.3 at the alarm, M2.6 final from 5 stations
   location   rms 0.10 s from 2 stations
-  AFAD       ML 3.5 at 10:32:15.00 UTC: alarm 6.0 s after origin, magnitude -1.0, epicentre 0.4 km off, origin +1.2 s
+  AFAD       ML 3.5 at 10:32:15.00 UTC: alarm 6.0 s after origin, magnitude -0.9, epicentre 0.4 km off, origin +1.2 s
   S wave     had travelled 18 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          35 km   10:32:26.40 UTC (picked)      +5.4 s  before S
@@ -902,11 +918,11 @@ Event #31: detected M2.5 earthquake at 40.839N 28.388E, origin 10:32:16.22 UTC
              DEMI         202 km   10:33:12.67 UTC (predicted)   +51.7 s  before S
              MANT         261 km   10:33:29.74 UTC (predicted)   +68.7 s  before S
 
-Event #32: detected M2.8 earthquake at 40.839N 28.518E, origin 10:33:14.96 UTC
+Event #32: detected M2.9 earthquake at 40.839N 28.518E, origin 10:33:14.96 UTC
   alarm      10:33:26.50 UTC by CATL, DEMI; later ELBA
-  magnitude  M2.5 at the alarm, M2.8 final from 3 stations
+  magnitude  M2.6 at the alarm, M2.9 final from 3 stations
   location   rms 0.11 s from 2 stations
-  AFAD       ML 3.1 at 10:33:14.00 UTC: alarm 12.5 s after origin, magnitude -0.3, epicentre 8.8 km off, origin +1.0 s
+  AFAD       ML 3.1 at 10:33:14.00 UTC: alarm 12.5 s after origin, magnitude -0.2, epicentre 8.8 km off, origin +1.0 s
   S wave     had travelled 43 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          36 km   10:33:25.46 UTC (picked)      -1.0 s  after S
@@ -918,9 +934,9 @@ Event #32: detected M2.8 earthquake at 40.839N 28.518E, origin 10:33:14.96 UTC
              DEMI         200 km   10:34:11.14 UTC (predicted)   +44.6 s  before S
              MANT         260 km   10:34:28.28 UTC (predicted)   +61.8 s  before S
 
-Event #33: detected M2.6 earthquake at 40.158N 28.674E, origin 10:33:17.03 UTC
+Event #33: detected M2.8 earthquake at 40.158N 28.674E, origin 10:33:17.03 UTC
   alarm      10:33:38.50 UTC by BAND, SEMS
-  magnitude  M2.6 at the alarm, M2.6 final from 2 stations
+  magnitude  M2.8 at the alarm, M2.8 final from 2 stations
   location   rms 0.23 s from 2 stations
   AFAD       no matching catalogue event
   S wave     had travelled 74 km from the epicentre when the alarm sounded (ayzek location)
@@ -934,14 +950,14 @@ Event #33: detected M2.6 earthquake at 40.158N 28.674E, origin 10:33:17.03 UTC
              MANT         186 km   10:34:10.15 UTC (predicted)   +31.7 s  before S
              KIRK         224 km   10:34:21.05 UTC (predicted)   +42.6 s  before S
 
-Event #34: detected M2.4 earthquake, not located
+Event #34: detected M2.2 earthquake, not located
   alarm      10:35:45.50 UTC by CATL, SEMS; later BAND
-  magnitude  M2.4 at the alarm, M2.4 final from 3 stations
+  magnitude  M2.2 at the alarm, M2.2 final from 3 stations
   AFAD       no matching catalogue event
 
-Event #35: detected M2.3 earthquake at 40.898N 28.063E, origin 10:36:21.04 UTC
+Event #35: detected M2.1 earthquake at 40.898N 28.063E, origin 10:36:21.04 UTC
   alarm      10:36:33.50 UTC by CATL, SEMS; later BAND
-  magnitude  M2.3 at the alarm, M2.3 final from 3 stations
+  magnitude  M2.1 at the alarm, M2.1 final from 3 stations
   location   rms 0.04 s from 2 stations
   AFAD       no matching catalogue event
   S wave     had travelled 42 km from the epicentre when the alarm sounded (ayzek location)
@@ -955,9 +971,9 @@ Event #35: detected M2.3 earthquake at 40.898N 28.063E, origin 10:36:21.04 UTC
              DEMI         214 km   10:37:22.16 UTC (predicted)   +48.7 s  before S
              MANT         271 km   10:37:38.53 UTC (predicted)   +65.0 s  before S
 
-Event #36: detected M2.4 earthquake at 40.843N 28.294E, origin 10:37:17.75 UTC
+Event #36: detected M2.2 earthquake at 40.843N 28.294E, origin 10:37:17.75 UTC
   alarm      10:37:29.50 UTC by BAND, CATL; later SEMS
-  magnitude  M2.3 3.0 s after the alarm, M2.4 final from 3 stations
+  magnitude  M2.2 3.0 s after the alarm, M2.2 final from 3 stations
   location   rms 0.19 s from 2 stations
   AFAD       no matching catalogue event
   S wave     had travelled 40 km from the epicentre when the alarm sounded (ayzek location)
@@ -971,9 +987,9 @@ Event #36: detected M2.4 earthquake at 40.843N 28.294E, origin 10:37:17.75 UTC
              DEMI         203 km   10:38:15.93 UTC (predicted)   +46.4 s  before S
              MANT         263 km   10:38:32.82 UTC (predicted)   +63.3 s  before S
 
-Event #37: detected M2.3 earthquake, not located
+Event #37: detected M2.2 earthquake, not located
   alarm      10:38:26.00 UTC by ELBA, KIRK; later BAND, CATL, SEMS
-  magnitude  M2.3 1.0 s after the alarm, M2.3 final from 5 stations
+  magnitude  M2.2 1.0 s after the alarm, M2.2 final from 5 stations
   AFAD       no matching catalogue event
 
 Event #38: detected M2.4 earthquake at 40.818N 28.298E, origin 10:39:03.21 UTC
@@ -994,7 +1010,7 @@ Event #38: detected M2.4 earthquake at 40.818N 28.298E, origin 10:39:03.21 UTC
 
 Event #39: detected M2.3 earthquake at 40.870N 28.157E, origin 10:40:08.03 UTC
   alarm      10:40:21.00 UTC by CATL, ELBA; later SEMS
-  magnitude  M2.3 0.5 s after the alarm, M2.3 final from 3 stations
+  magnitude  M2.4 0.5 s after the alarm, M2.3 final from 3 stations
   location   rms 0.34 s from 3 stations
   AFAD       no matching catalogue event
   S wave     had travelled 44 km from the epicentre when the alarm sounded (ayzek location)
@@ -1008,11 +1024,11 @@ Event #39: detected M2.3 earthquake at 40.870N 28.157E, origin 10:40:08.03 UTC
              DEMI         209 km   10:41:07.71 UTC (predicted)   +46.7 s  before S
              MANT         267 km   10:41:24.29 UTC (predicted)   +63.3 s  before S
 
-Event #40: detected M2.6 earthquake at 40.856N 28.336E, origin 10:41:19.76 UTC
+Event #40: detected M2.9 earthquake at 40.856N 28.336E, origin 10:41:19.76 UTC
   alarm      10:41:28.50 UTC by ARNA, ELBA; later BAND, CATL, DEMI, KIRK, SEMS
-  magnitude  M2.6 3.5 s after the alarm, M2.6 final from 7 stations
+  magnitude  M3.1 3.5 s after the alarm, M2.9 final from 7 stations
   location   rms 1.57 s from 7 stations
-  AFAD       ML 3.2 at 10:41:19.00 UTC: alarm 9.5 s after origin, magnitude -0.6, epicentre 6.9 km off, origin +0.8 s
+  AFAD       ML 3.2 at 10:41:19.00 UTC: alarm 9.5 s after origin, magnitude -0.3, epicentre 6.9 km off, origin +0.8 s
   S wave     had travelled 32 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          35 km   10:41:30.14 UTC (picked)      +1.6 s  before S
@@ -1024,9 +1040,9 @@ Event #40: detected M2.6 earthquake at 40.856N 28.336E, origin 10:41:19.76 UTC
              DEMI         200 km   10:42:18.16 UTC (picked)     +49.7 s  before S
              MANT         260 km   10:42:33.43 UTC (predicted)   +64.9 s  before S
 
-Event #41: detected M2.4 earthquake, not located
+Event #41: detected M2.3 earthquake, not located
   alarm      10:42:41.00 UTC by BAND, CATL; later ARNA, SEMS
-  magnitude  M2.7 0.5 s after the alarm, M2.4 final from 4 stations
+  magnitude  M2.3 0.5 s after the alarm, M2.3 final from 4 stations
   AFAD       no matching catalogue event
 
 Event #42: detected M2.3 earthquake at 40.886N 28.241E, origin 10:43:55.16 UTC
@@ -1045,10 +1061,10 @@ Event #42: detected M2.3 earthquake at 40.886N 28.241E, origin 10:43:55.16 UTC
              DEMI         203 km   10:44:51.15 UTC (predicted)   +48.2 s  before S
              MANT         263 km   10:45:08.24 UTC (predicted)   +65.2 s  before S
 
-Event #43: detected M2.3 earthquake, not located
+Event #43: detected M2.2 earthquake, not located
   alarm      10:45:46.00 UTC by CATL, ELBA; later BAND, SEMS
-  magnitude  M2.2 2.5 s after the alarm, M2.3 final from 4 stations
-  AFAD       ML 2.8 at 10:45:34.00 UTC: alarm 12.0 s after origin, magnitude -0.5
+  magnitude  M2.2 2.5 s after the alarm, M2.2 final from 4 stations
+  AFAD       ML 2.8 at 10:45:34.00 UTC: alarm 12.0 s after origin, magnitude -0.6
   S wave     had travelled 41 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          38 km   10:45:44.95 UTC (predicted)    -1.0 s  after S
@@ -1060,11 +1076,11 @@ Event #43: detected M2.3 earthquake, not located
              DEMI         202 km   10:46:31.65 UTC (predicted)   +45.7 s  before S
              MANT         261 km   10:46:48.52 UTC (predicted)   +62.5 s  before S
 
-Event #44: detected M2.9 earthquake at 40.856N 28.359E, origin 10:46:12.65 UTC
+Event #44: detected M3.1 earthquake at 40.856N 28.359E, origin 10:46:12.65 UTC
   alarm      10:46:38.50 UTC by ARNA, KIRK; later DEMI, MANT
-  magnitude  M2.9 at the alarm, M2.9 final from 4 stations
+  magnitude  M3.0 at the alarm, M3.1 final from 4 stations
   location   rms 1.81 s from 4 stations
-  AFAD       MW 4.0 at 10:46:13.00 UTC: alarm 25.5 s after origin, magnitude -1.1, epicentre 12.3 km off, origin -0.3 s
+  AFAD       MW 4.0 at 10:46:13.00 UTC: alarm 25.5 s after origin, magnitude -0.9, epicentre 12.3 km off, origin -0.3 s
   S wave     had travelled 89 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          38 km   10:46:24.15 UTC (predicted)   -14.3 s  after S
@@ -1076,9 +1092,9 @@ Event #44: detected M2.9 earthquake at 40.856N 28.359E, origin 10:46:12.65 UTC
              DEMI         206 km   10:47:13.66 UTC (picked)     +35.2 s  before S
              MANT         264 km   10:47:29.30 UTC (picked)     +50.8 s  before S
 
-Event #45: detected M3.4 earthquake, not located
+Event #45: detected M3.5 earthquake, not located
   alarm      10:47:13.50 UTC by CATL, SEMS
-  magnitude  M3.9 at the alarm, M3.4 final from 2 stations
+  magnitude  M4.0 at the alarm, M3.5 final from 2 stations
   AFAD       no matching catalogue event
 
 Event #46: detected M2.4 earthquake at 40.868N 28.266E, origin 10:48:48.73 UTC
@@ -1113,11 +1129,11 @@ Event #47: detected M2.5 earthquake at 40.861N 28.256E, origin 10:52:32.70 UTC
              DEMI         206 km   10:53:31.60 UTC (predicted)   +46.1 s  before S
              MANT         265 km   10:53:48.41 UTC (predicted)   +62.9 s  before S
 
-Event #48: detected M2.5 earthquake at 40.880N 28.241E, origin 10:53:54.58 UTC
+Event #48: detected M2.6 earthquake at 40.880N 28.241E, origin 10:53:54.58 UTC
   alarm      10:54:04.50 UTC by CATL, ELBA; later ARNA, BAND, KIRK, SEMS
-  magnitude  M2.6 2.5 s after the alarm, M2.5 final from 6 stations
+  magnitude  M2.8 2.5 s after the alarm, M2.6 final from 6 stations
   location   rms 1.31 s from 6 stations
-  AFAD       ML 2.7 at 10:53:54.00 UTC: alarm 10.5 s after origin, magnitude -0.2, epicentre 7.7 km off, origin +0.6 s
+  AFAD       ML 2.7 at 10:53:54.00 UTC: alarm 10.5 s after origin, magnitude -0.1, epicentre 7.7 km off, origin +0.6 s
   S wave     had travelled 36 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          32 km   10:54:05.14 UTC (picked)      +0.6 s  before S
@@ -1129,9 +1145,9 @@ Event #48: detected M2.5 earthquake at 40.880N 28.241E, origin 10:53:54.58 UTC
              DEMI         206 km   10:54:52.89 UTC (predicted)   +48.4 s  before S
              MANT         265 km   10:55:09.87 UTC (predicted)   +65.4 s  before S
 
-Event #49: detected M2.6 earthquake, not located
+Event #49: detected M2.7 earthquake, not located
   alarm      10:55:29.00 UTC by DEMI, SEMS
-  magnitude  M3.0 at the alarm, M2.6 final from 2 stations
+  magnitude  M3.3 at the alarm, M2.7 final from 2 stations
   AFAD       no matching catalogue event
 
 Event #50: detected M2.7 earthquake at 40.861N 28.316E, origin 10:57:20.92 UTC
@@ -1150,11 +1166,11 @@ Event #50: detected M2.7 earthquake at 40.861N 28.316E, origin 10:57:20.92 UTC
              DEMI         203 km   10:58:19.44 UTC (picked)     +48.4 s  before S
              MANT         262 km   10:58:35.06 UTC (predicted)   +64.1 s  before S
 
-Event #51: detected M2.3 earthquake at 40.822N 28.157E, origin 11:00:25.84 UTC
+Event #51: detected M2.4 earthquake at 40.822N 28.157E, origin 11:00:25.84 UTC
   alarm      11:00:37.50 UTC by ARNA, BAND, CATL, ELBA; later DEMI, KIRK, SEMS
-  magnitude  M2.5 2.0 s after the alarm, M2.3 final from 7 stations
+  magnitude  M2.7 2.0 s after the alarm, M2.4 final from 7 stations
   location   rms 1.28 s from 5 stations
-  AFAD       ML 2.6 at 11:00:29.00 UTC: alarm 8.5 s after origin, magnitude -0.3, epicentre 26.2 km off, origin -3.2 s
+  AFAD       ML 2.6 at 11:00:29.00 UTC: alarm 8.5 s after origin, magnitude -0.2, epicentre 26.2 km off, origin -3.2 s
   S wave     had travelled 29 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          28 km   11:00:39.08 UTC (picked)      +1.6 s  before S
@@ -1168,7 +1184,7 @@ Event #51: detected M2.3 earthquake at 40.822N 28.157E, origin 11:00:25.84 UTC
 
 Event #52: detected M2.3 earthquake at 40.868N 28.171E, origin 11:03:53.62 UTC
   alarm      11:04:03.50 UTC by CATL, ELBA; later BAND, SEMS
-  magnitude  M2.4 2.5 s after the alarm, M2.3 final from 4 stations
+  magnitude  M2.5 2.5 s after the alarm, M2.3 final from 4 stations
   location   rms 0.34 s from 4 stations
   AFAD       ML 1.6 at 11:03:53.00 UTC: alarm 10.5 s after origin, magnitude +0.7, epicentre 8.8 km off, origin +0.6 s
   S wave     had travelled 36 km from the epicentre when the alarm sounded (AFAD hypocentre)
@@ -1184,7 +1200,7 @@ Event #52: detected M2.3 earthquake at 40.868N 28.171E, origin 11:03:53.62 UTC
 
 Event #53: detected M2.4 earthquake at 41.726N 28.708E, origin 11:05:05.95 UTC
   alarm      11:05:32.50 UTC by CATL, SEMS
-  magnitude  M2.4 at the alarm, M2.4 final from 2 stations
+  magnitude  M2.6 at the alarm, M2.4 final from 2 stations
   location   rms 0.35 s from 2 stations
   AFAD       no matching catalogue event
   S wave     had travelled 92 km from the epicentre when the alarm sounded (ayzek location)
@@ -1198,11 +1214,11 @@ Event #53: detected M2.4 earthquake at 41.726N 28.708E, origin 11:05:05.95 UTC
              DEMI         298 km   11:06:31.24 UTC (predicted)   +58.7 s  before S
              MANT         360 km   11:06:48.83 UTC (predicted)   +76.3 s  before S
 
-Event #54: detected M2.4 earthquake at 40.903N 27.978E, origin 11:07:06.18 UTC
+Event #54: detected M2.3 earthquake at 40.903N 27.978E, origin 11:07:06.18 UTC
   alarm      11:07:17.50 UTC by CATL, ELBA; later BAND, SEMS
-  magnitude  M2.4 2.0 s after the alarm, M2.4 final from 4 stations
+  magnitude  M2.4 2.0 s after the alarm, M2.3 final from 4 stations
   location   rms 0.03 s from 2 stations
-  AFAD       ML 1.9 at 11:07:06.00 UTC: alarm 11.5 s after origin, magnitude +0.5, epicentre 41.3 km off, origin +0.2 s
+  AFAD       ML 1.9 at 11:07:06.00 UTC: alarm 11.5 s after origin, magnitude +0.4, epicentre 41.3 km off, origin +0.2 s
   S wave     had travelled 40 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          36 km   11:07:55.08 UTC (picked)     +37.6 s  before S
@@ -1214,11 +1230,11 @@ Event #54: detected M2.4 earthquake at 40.903N 27.978E, origin 11:07:06.18 UTC
              DEMI         199 km   11:08:02.91 UTC (predicted)   +45.4 s  before S
              MANT         259 km   11:08:20.13 UTC (predicted)   +62.6 s  before S
 
-Event #55: detected M2.3 earthquake at 40.873N 28.241E, origin 11:09:03.79 UTC
+Event #55: detected M2.4 earthquake at 40.873N 28.241E, origin 11:09:03.79 UTC
   alarm      11:09:15.50 UTC by CATL, ELBA; later BAND, SEMS
-  magnitude  M2.2 2.0 s after the alarm, M2.3 final from 4 stations
+  magnitude  M2.3 2.0 s after the alarm, M2.4 final from 4 stations
   location   rms 0.37 s from 4 stations
-  AFAD       ML 1.9 at 11:09:02.00 UTC: alarm 13.5 s after origin, magnitude +0.4, epicentre 12.4 km off, origin +1.8 s
+  AFAD       ML 1.9 at 11:09:02.00 UTC: alarm 13.5 s after origin, magnitude +0.5, epicentre 12.4 km off, origin +1.8 s
   S wave     had travelled 47 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          33 km   11:09:13.48 UTC (picked)      -2.0 s  after S
@@ -1230,11 +1246,11 @@ Event #55: detected M2.3 earthquake at 40.873N 28.241E, origin 11:09:03.79 UTC
              DEMI         203 km   11:10:00.00 UTC (predicted)   +44.5 s  before S
              MANT         263 km   11:10:17.09 UTC (predicted)   +61.6 s  before S
 
-Event #56: detected M2.3 earthquake at 40.856N 28.218E, origin 11:10:59.27 UTC
+Event #56: detected M2.2 earthquake at 40.856N 28.218E, origin 11:10:59.27 UTC
   alarm      11:11:26.50 UTC by KIRK, SEMS
-  magnitude  M2.3 1.0 s after the alarm, M2.3 final from 2 stations
+  magnitude  M2.2 1.0 s after the alarm, M2.2 final from 2 stations
   location   rms 0.34 s from 2 stations
-  AFAD       ML 1.9 at 11:10:57.00 UTC: alarm 29.5 s after origin, magnitude +0.4, epicentre 5.6 km off, origin +2.3 s
+  AFAD       ML 1.9 at 11:10:57.00 UTC: alarm 29.5 s after origin, magnitude +0.3, epicentre 5.6 km off, origin +2.3 s
   S wave     had travelled 103 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          35 km   11:11:07.06 UTC (predicted)   -19.4 s  after S
@@ -1246,11 +1262,11 @@ Event #56: detected M2.3 earthquake at 40.856N 28.218E, origin 11:10:59.27 UTC
              DEMI         205 km   11:11:55.62 UTC (predicted)   +29.1 s  before S
              MANT         264 km   11:12:12.49 UTC (predicted)   +46.0 s  before S
 
-Event #57: detected M2.9 earthquake at 40.841N 28.286E, origin 11:12:55.42 UTC
+Event #57: detected M3.0 earthquake at 40.841N 28.286E, origin 11:12:55.42 UTC
   alarm      11:13:05.00 UTC by CATL, ELBA; later ARNA, BAND, DEMI, KIRK, SEMS
-  magnitude  M2.9 2.5 s after the alarm, M2.9 final from 7 stations
+  magnitude  M3.0 2.5 s after the alarm, M3.0 final from 7 stations
   location   rms 1.15 s from 6 stations
-  AFAD       ML 3.1 at 11:12:54.00 UTC: alarm 11.0 s after origin, magnitude -0.2, epicentre 8.2 km off, origin +1.4 s
+  AFAD       ML 3.1 at 11:12:54.00 UTC: alarm 11.0 s after origin, magnitude -0.1, epicentre 8.2 km off, origin +1.4 s
   S wave     had travelled 38 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          35 km   11:13:05.40 UTC (picked)      +0.4 s  before S
@@ -1262,11 +1278,11 @@ Event #57: detected M2.9 earthquake at 40.841N 28.286E, origin 11:12:55.42 UTC
              DEMI         202 km   11:13:53.42 UTC (picked)     +48.4 s  before S
              MANT         261 km   11:14:08.69 UTC (predicted)   +63.7 s  before S
 
-Event #58: detected M2.6 earthquake at 40.056N 26.548E, origin 11:13:40.50 UTC
+Event #58: detected M2.8 earthquake at 40.056N 26.548E, origin 11:13:40.50 UTC
   alarm      11:14:29.00 UTC by CATL, SEMS
-  magnitude  M2.8 at the alarm, M2.6 final from 2 stations
+  magnitude  M3.1 at the alarm, M2.8 final from 2 stations
   location   rms 0.04 s from 2 stations
-  AFAD       ML 2.0 at 11:14:07.00 UTC: alarm 22.0 s after origin, magnitude +0.6, epicentre 186.8 km off, origin -26.5 s
+  AFAD       ML 2.0 at 11:14:07.00 UTC: alarm 22.0 s after origin, magnitude +0.8, epicentre 186.8 km off, origin -26.5 s
   S wave     had travelled 77 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          27 km   11:14:15.03 UTC (predicted)   -14.0 s  after S
@@ -1283,11 +1299,11 @@ Event #59: detected M2.6 earthquake, not located
   magnitude  M2.4 at the alarm, M2.6 final from 2 stations
   AFAD       no matching catalogue event
 
-Event #60: detected M2.4 earthquake at 40.838N 28.503E, origin 11:15:03.30 UTC
+Event #60: detected M2.5 earthquake at 40.838N 28.503E, origin 11:15:03.30 UTC
   alarm      11:15:19.00 UTC by BAND, CATL; later SEMS
-  magnitude  M2.3 1.5 s after the alarm, M2.4 final from 3 stations
+  magnitude  M2.4 1.5 s after the alarm, M2.5 final from 3 stations
   location   rms 0.12 s from 2 stations
-  AFAD       ML 1.6 at 11:15:03.00 UTC: alarm 16.0 s after origin, magnitude +0.8, epicentre 10.0 km off, origin +0.3 s
+  AFAD       ML 1.6 at 11:15:03.00 UTC: alarm 16.0 s after origin, magnitude +0.9, epicentre 10.0 km off, origin +0.3 s
   S wave     had travelled 56 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          34 km   11:15:12.92 UTC (predicted)    -6.1 s  after S
@@ -1299,10 +1315,10 @@ Event #60: detected M2.4 earthquake at 40.838N 28.503E, origin 11:15:03.30 UTC
              DEMI         202 km   11:16:00.79 UTC (predicted)   +41.8 s  before S
              MANT         262 km   11:16:17.87 UTC (predicted)   +58.9 s  before S
 
-Event #61: detected M2.3 earthquake, not located
+Event #61: detected M2.5 earthquake, not located
   alarm      11:18:10.00 UTC by BAND, CATL; later SEMS
-  magnitude  M2.2 at the alarm, M2.3 final from 3 stations
-  AFAD       ML 1.9 at 11:17:53.00 UTC: alarm 17.0 s after origin, magnitude +0.4
+  magnitude  M2.2 at the alarm, M2.5 final from 3 stations
+  AFAD       ML 1.9 at 11:17:53.00 UTC: alarm 17.0 s after origin, magnitude +0.6
   S wave     had travelled 59 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          46 km   11:18:06.25 UTC (predicted)    -3.7 s  after S
@@ -1314,9 +1330,9 @@ Event #61: detected M2.3 earthquake, not located
              DEMI         197 km   11:18:49.40 UTC (predicted)   +39.4 s  before S
              MANT         256 km   11:19:06.04 UTC (predicted)   +56.0 s  before S
 
-Event #62: detected M2.3 earthquake, not located
+Event #62: detected M2.5 earthquake, not located
   alarm      11:20:23.00 UTC by CATL, SEMS
-  magnitude  M2.3 at the alarm, M2.3 final from 2 stations
+  magnitude  M2.5 at the alarm, M2.5 final from 2 stations
   AFAD       no matching catalogue event
 
 Event #63: detected M2.4 earthquake at 40.841N 28.217E, origin 11:20:39.32 UTC
@@ -1335,11 +1351,11 @@ Event #63: detected M2.4 earthquake at 40.841N 28.217E, origin 11:20:39.32 UTC
              DEMI         204 km   11:21:37.80 UTC (predicted)   +34.3 s  before S
              MANT         263 km   11:21:54.51 UTC (predicted)   +51.0 s  before S
 
-Event #64: detected M3.0 earthquake at 40.857N 28.306E, origin 11:21:40.02 UTC
+Event #64: detected M3.1 earthquake at 40.857N 28.306E, origin 11:21:40.02 UTC
   alarm      11:21:47.50 UTC by CATL, ELBA; later ARNA, BAND, DEMI, KIRK, MANT, SEMS
-  magnitude  M3.2 3.5 s after the alarm, M3.0 final from 8 stations
+  magnitude  M3.1 3.5 s after the alarm, M3.1 final from 8 stations
   location   rms 1.70 s from 6 stations
-  AFAD       MW 3.6 at 11:21:40.00 UTC: alarm 7.5 s after origin, magnitude -0.6, epicentre 7.0 km off, origin +0.0 s
+  AFAD       MW 3.6 at 11:21:40.00 UTC: alarm 7.5 s after origin, magnitude -0.5, epicentre 7.0 km off, origin +0.0 s
   S wave     had travelled 25 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          34 km   11:21:50.64 UTC (picked)      +3.1 s  before S
@@ -1367,10 +1383,10 @@ Event #65: detected M3.2 earthquake at 40.851N 28.226E, origin 11:23:32.66 UTC
              DEMI         204 km   11:24:30.74 UTC (picked)     +48.2 s  before S
              MANT         263 km   11:24:47.09 UTC (predicted)   +64.6 s  before S
 
-Event #66: detected M2.4 earthquake, not located
+Event #66: detected M2.6 earthquake, not located
   alarm      11:25:59.00 UTC by CATL, ELBA; later KIRK, SEMS
-  magnitude  M2.3 2.0 s after the alarm, M2.4 final from 4 stations
-  AFAD       ML 1.9 at 11:25:44.00 UTC: alarm 15.0 s after origin, magnitude +0.5
+  magnitude  M2.3 2.0 s after the alarm, M2.6 final from 4 stations
+  AFAD       ML 1.9 at 11:25:44.00 UTC: alarm 15.0 s after origin, magnitude +0.7
   S wave     had travelled 52 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          44 km   11:25:56.98 UTC (picked)      -2.0 s  after S
@@ -1382,15 +1398,15 @@ Event #66: detected M2.4 earthquake, not located
              DEMI         195 km   11:26:39.88 UTC (predicted)   +40.9 s  before S
              MANT         257 km   11:26:57.47 UTC (predicted)   +58.5 s  before S
 
-Event #67: detected M2.7 earthquake, not located
+Event #67: detected M2.8 earthquake, not located
   alarm      11:27:06.50 UTC by CATL, SEMS
-  magnitude  M2.6 at the alarm, M2.7 final from 2 stations
+  magnitude  M2.6 at the alarm, M2.8 final from 2 stations
   AFAD       no matching catalogue event
 
-Event #68: detected M2.2 earthquake, not located
+Event #68: detected M2.3 earthquake, not located
   alarm      11:28:32.00 UTC by BAND, CATL; later SEMS
-  magnitude  M2.2 at the alarm, M2.2 final from 3 stations
-  AFAD       ML 2.3 at 11:28:19.00 UTC: alarm 13.0 s after origin, magnitude -0.1
+  magnitude  M2.3 at the alarm, M2.3 final from 3 stations
+  AFAD       ML 2.3 at 11:28:19.00 UTC: alarm 13.0 s after origin, magnitude +0.0
   S wave     had travelled 45 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              ELBA          33 km   11:28:28.56 UTC (predicted)    -3.4 s  after S
@@ -1425,7 +1441,7 @@ SUMMARY
 
   Correct alarms
     alarm after origin time             median 12.0 s
-    magnitude error                     mean 0.48 units
+    magnitude error                     mean 0.42 units
     located                             35 of 44
     alarm before the S wave             at 311 of 352 station arrivals, median warning 24.5 s, max 70.2 s
 
@@ -1445,42 +1461,42 @@ SUMMARY
     11:26:07.00 UTC  ML 1.8    56 km from the network centre
 
   False alarms (no AFAD event; small uncatalogued earthquakes are possible)
-    09:05:36.50 UTC  #1  M2.8, not located
+    09:05:36.50 UTC  #1  M3.1, not located
     09:28:31.00 UTC  #3  M2.5, located 39.22N 28.98E
-    10:10:29.00 UTC  #13  M2.3, not located
-    10:13:20.50 UTC  #14  M2.3, not located
-    10:16:03.00 UTC  #17  M2.3, not located
-    10:17:28.00 UTC  #19  M3.1, not located
-    10:26:16.50 UTC  #24  M2.3, not located
-    10:27:16.00 UTC  #26  M2.5, not located
-    10:31:16.00 UTC  #29  M2.3, located 40.34N 29.68E
-    10:33:38.50 UTC  #33  M2.6, located 40.16N 28.67E
-    10:35:45.50 UTC  #34  M2.4, not located
-    10:36:33.50 UTC  #35  M2.3, located 40.90N 28.06E
-    10:37:29.50 UTC  #36  M2.4, located 40.84N 28.29E
-    10:38:26.00 UTC  #37  M2.3, not located
+    10:10:29.00 UTC  #13  M2.1, not located
+    10:13:20.50 UTC  #14  M2.2, not located
+    10:16:03.00 UTC  #17  M2.2, not located
+    10:17:28.00 UTC  #19  M3.4, not located
+    10:26:16.50 UTC  #24  M2.1, not located
+    10:27:16.00 UTC  #26  M2.6, not located
+    10:31:16.00 UTC  #29  M2.2, located 40.34N 29.68E
+    10:33:38.50 UTC  #33  M2.8, located 40.16N 28.67E
+    10:35:45.50 UTC  #34  M2.2, not located
+    10:36:33.50 UTC  #35  M2.1, located 40.90N 28.06E
+    10:37:29.50 UTC  #36  M2.2, located 40.84N 28.29E
+    10:38:26.00 UTC  #37  M2.2, not located
     10:40:21.00 UTC  #39  M2.3, located 40.87N 28.16E
-    10:42:41.00 UTC  #41  M2.4, not located
-    10:47:13.50 UTC  #45  M3.4, not located
+    10:42:41.00 UTC  #41  M2.3, not located
+    10:47:13.50 UTC  #45  M3.5, not located
     10:52:45.50 UTC  #47  M2.5, located 40.86N 28.26E
-    10:55:29.00 UTC  #49  M2.6, not located
+    10:55:29.00 UTC  #49  M2.7, not located
     11:05:32.50 UTC  #53  M2.4, located 41.73N 28.71E
     11:14:53.00 UTC  #59  M2.6, not located
-    11:20:23.00 UTC  #62  M2.3, not located
+    11:20:23.00 UTC  #62  M2.5, not located
     11:21:03.50 UTC  #63  M2.4, located 40.84N 28.22E
-    11:27:06.50 UTC  #67  M2.7, not located
+    11:27:06.50 UTC  #67  M2.8, not located
 ------------------------------------------------------------------------------
 
 Station processing (scalar backend)
          windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
-  ARNA     21706         0       27     27             27/20     19.171 (36.057)        49           1176
-  BAND     21702         0       47     47             47/32     18.286 (33.986)        44           1126
-  CATL     21705         0       76     76             76/38     18.298 (34.956)        40           1071
-  DEMI     21706         0       28     28             28/14     18.808 (34.796)        44           1097
-  ELBA     21704         0       45     45             45/35     18.970 (35.713)        44           1112
-  KIRK     21703         0       52     52             52/23     18.434 (34.441)        41           1064
-  MANT     21702         0        8      8               8/4     19.146 (34.703)        39           1099
-  SEMS     21705         0      106    106            106/36     17.827 (36.006)        40           1051
+  ARNA     21706         0       27     27             27/20     18.889 (50.591)        47           1320
+  BAND     21702         0       47     47             47/32     18.932 (51.403)        43           1154
+  CATL     21705         0       76     76             76/38     18.535 (48.083)        41           1095
+  DEMI     21706         0       28     28             28/14     19.330 (45.850)        46           1136
+  ELBA     21704         0       45     45             45/35     18.825 (48.234)        47           1232
+  KIRK     21703         0       52     52             52/23     18.927 (46.073)        41           1106
+  MANT     21702         0        8      8               8/4     20.500 (49.222)        46           1144
+  SEMS     21705         0      106    106            106/36     19.255 (51.079)        40           1014
   P time from an STA/LTA onset for 176 of 389 triggers (213 from the window start)
   magnitude at the picked P: 202 estimated, 54 not (trigger not part of a declared event)
-  173633 windows in 504.5 s: 22x real time per station
+  173633 windows in 530.8 s: 20x real time per station

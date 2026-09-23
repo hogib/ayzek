@@ -1,93 +1,97 @@
 ayzek    3 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker + 3-model magnitude, replay 2025-11-10 18:04:04.65 to 18:35:03.22 UTC at full speed
 ayzek    catalogue: 9 events in the replay span
 ALARM    #1   18:07:34.00  earthquake detected by DEMI, MANT  (AFAD ML 1.4 at 18:07:17.00, 17.0 s ago)
-MAG      #1   18:07:34.00  magnitude M2.4 from 1 station (DEMI 2.4)
-MAG      #1   18:07:39.00  magnitude M2.3 from 2 stations (DEMI 2.4, MANT 2.2)
+MAG      #1   18:07:34.00  magnitude M2.6 from 1 station (DEMI 2.6)
+MAG      #1   18:07:39.00  magnitude M2.4 from 2 stations (DEMI 2.6, MANT 2.1)
 LOCATE   #1   18:08:25.50  located at 39.162N 28.182E, origin 18:07:18.89, rms 0.21 s from 2 stations
 ALARM    #2   18:16:36.50  earthquake detected by DEMI, MANT  (AFAD ML 1.9 at 18:16:19.00, 17.5 s ago)
 MAG      #2   18:16:36.50  magnitude M2.5 from 1 station (DEMI 2.5)
-MAG      #2   18:16:41.50  magnitude M2.5 from 2 stations (DEMI 2.5, MANT 2.4)
-MAG      #2   18:16:47.00  magnitude M2.4 from 3 stations (BAND 2.3, DEMI 2.5, MANT 2.4)
+MAG      #2   18:16:41.50  magnitude M2.5 from 2 stations (DEMI 2.5, MANT 2.6)
+MAG      #2   18:16:47.00  magnitude M2.5 from 3 stations (BAND 2.3, DEMI 2.5, MANT 2.6)
+MAG      #2   18:17:22.00  magnitude M2.6 from 3 stations (BAND 2.3, DEMI 2.8, MANT 2.6)
 LOCATE   #2   18:17:28.00  located at 39.202N 28.137E, origin 18:16:20.75, rms 0.17 s from 2 stations
-MAG      #2   18:17:28.00  magnitude M2.3 from 3 stations (BAND 2.3, DEMI 2.6, MANT 2.3)
+MAG      #2   18:17:28.00  magnitude M2.4 from 3 stations (BAND 2.3, DEMI 2.8, MANT 2.4)
 LOCATE   #2   18:17:33.50  located at 39.231N 28.108E, origin 18:16:19.86, rms 0.26 s from 3 stations
 ALARM    #3   18:21:09.00  earthquake detected by DEMI, MANT  (AFAD MW 4.9 at 18:20:51.00, 18.0 s ago)
 MAG      #3   18:21:09.00  magnitude M4.3 from 1 station (DEMI 4.3)
-MAG      #3   18:21:13.50  magnitude M4.3 from 2 stations (DEMI 4.3, MANT 4.3)
-MAG      #3   18:21:18.50  magnitude M4.3 from 3 stations (BAND 4.7, DEMI 4.3, MANT 4.3)
-MAG      #3   18:21:54.00  magnitude M4.6 from 3 stations (BAND 4.7, DEMI 4.6, MANT 4.3)
+MAG      #3   18:21:13.50  magnitude M4.5 from 2 stations (DEMI 4.3, MANT 4.7)
+MAG      #3   18:21:18.50  magnitude M4.7 from 3 stations (BAND 4.8, DEMI 4.3, MANT 4.7)
 LOCATE   #3   18:22:00.00  located at 39.202N 28.112E, origin 18:20:52.65, rms 0.14 s from 2 stations
 LOCATE   #3   18:22:05.00  located at 39.221N 28.088E, origin 18:20:52.02, rms 0.16 s from 3 stations
+MAG      #3   18:22:05.00  magnitude M4.5 from 3 stations (BAND 4.5, DEMI 4.6, MANT 4.1)
 ALARM    #4   18:23:48.00  earthquake detected by BAND, MANT  (AFAD ML 3.1 at 18:23:21.00, 27.0 s ago)
 MAG      #4   18:23:48.00  magnitude M3.5 from 1 station (MANT 3.5)
-MAG      #4   18:23:50.00  magnitude M3.6 from 2 stations (BAND 3.8, MANT 3.5)
+MAG      #4   18:23:50.00  magnitude M3.8 from 2 stations (BAND 4.1, MANT 3.5)
 LOCATE   #4   18:24:36.50  located at 38.683N 25.979E, origin 18:22:59.99, rms 0.23 s from 2 stations
+MAG      #4   18:24:36.50  magnitude M3.7 from 2 stations (BAND 3.8, MANT 3.5)
 ALARM    #5   18:26:09.00  earthquake detected by DEMI, MANT  (AFAD ML 3.6 at 18:25:51.00, 18.0 s ago)
-MAG      #5   18:26:09.00  magnitude M3.6 from 1 station (DEMI 3.6)
-MAG      #5   18:26:14.00  magnitude M3.5 from 2 stations (DEMI 3.6, MANT 3.4)
-MAG      #5   18:26:19.00  magnitude M3.6 from 3 stations (BAND 3.8, DEMI 3.6, MANT 3.4)
+MAG      #5   18:26:09.00  magnitude M3.8 from 1 station (DEMI 3.8)
+MAG      #5   18:26:14.00  magnitude M3.7 from 2 stations (DEMI 3.8, MANT 3.6)
+MAG      #5   18:26:19.00  magnitude M3.8 from 3 stations (BAND 3.9, DEMI 3.8, MANT 3.6)
+MAG      #5   18:26:54.50  magnitude M3.6 from 3 stations (BAND 3.9, DEMI 3.6, MANT 3.6)
 LOCATE   #5   18:27:00.50  located at 39.212N 28.117E, origin 18:25:52.95, rms 0.17 s from 2 stations
+MAG      #5   18:27:00.50  magnitude M3.6 from 3 stations (BAND 3.9, DEMI 3.6, MANT 3.5)
 LOCATE   #5   18:27:05.50  located at 39.231N 28.088E, origin 18:25:52.22, rms 0.25 s from 3 stations
 ALARM    #6   18:29:15.50  earthquake detected by DEMI, MANT
-MAG      #6   18:29:15.50  magnitude M2.9 from 1 station (DEMI 2.9)
-MAG      #6   18:29:17.50  magnitude M2.7 from 2 stations (DEMI 2.9, MANT 2.6)
-MAG      #6   18:29:39.50  magnitude M2.9 from 3 stations (BAND 2.9, DEMI 2.9, MANT 2.6)
+MAG      #6   18:29:15.50  magnitude M2.8 from 1 station (DEMI 2.8)
+MAG      #6   18:29:17.50  magnitude M2.6 from 2 stations (DEMI 2.8, MANT 2.3)
+MAG      #6   18:29:39.50  magnitude M2.8 from 3 stations (BAND 3.0, DEMI 2.8, MANT 2.3)
 ALARM    #7   18:30:20.00  earthquake detected by DEMI, MANT  (AFAD ML 2.7 at 18:30:02.00, 18.0 s ago)
-MAG      #7   18:30:20.00  magnitude M2.9 from 1 station (DEMI 2.9)
-MAG      #7   18:30:25.00  magnitude M2.9 from 2 stations (DEMI 2.9, MANT 2.8)
-MAG      #7   18:30:31.50  magnitude M2.8 from 3 stations (BAND 2.8, DEMI 2.9, MANT 2.8)
+MAG      #7   18:30:20.00  magnitude M3.0 from 1 station (DEMI 3.0)
+MAG      #7   18:30:25.00  magnitude M2.9 from 2 stations (DEMI 3.0, MANT 2.9)
+MAG      #7   18:30:31.50  magnitude M2.9 from 3 stations (BAND 2.9, DEMI 3.0, MANT 2.9)
 LOCATE   #7   18:31:11.50  located at 39.217N 28.087E, origin 18:30:03.72, rms 0.13 s from 2 stations
 LOCATE   #7   18:31:18.00  located at 39.221N 28.078E, origin 18:30:03.49, rms 0.16 s from 3 stations
 ALARM    #8   18:33:02.50  earthquake detected by DEMI, MANT  (AFAD ML 2.4 at 18:32:40.00, 22.5 s ago)
 MAG      #8   18:33:04.00  magnitude M2.6 from 1 station (MANT 2.6)
-MAG      #8   18:33:04.50  magnitude M2.8 from 2 stations (DEMI 3.1, MANT 2.6)
+MAG      #8   18:33:04.50  magnitude M2.9 from 2 stations (DEMI 3.3, MANT 2.6)
 LOCATE   #8   18:33:51.00  located at 38.962N 29.282E, origin 18:32:43.37, rms 0.02 s from 2 stations
 ALARM    #9   18:34:24.50  earthquake detected by DEMI, MANT
-MAG      #9   18:34:24.50  magnitude M2.7 from 1 station (DEMI 2.7)
-MAG      #9   18:34:28.00  magnitude M2.5 from 2 stations (DEMI 2.7, MANT 2.3)
+MAG      #9   18:34:24.50  magnitude M2.8 from 1 station (DEMI 2.8)
+MAG      #9   18:34:28.00  magnitude M2.5 from 2 stations (DEMI 2.8, MANT 2.2)
 
 ------------------------------------------------------------------------------
 REPORT  3 stations, 2025-11-10 18:04:04.65 to 18:35:03.22 UTC
 ------------------------------------------------------------------------------
 
-Event #1: detected M2.3 earthquake at 39.162N 28.182E, origin 18:07:18.89 UTC
+Event #1: detected M2.4 earthquake at 39.162N 28.182E, origin 18:07:18.89 UTC
   alarm      18:07:34.00 UTC by DEMI, MANT
-  magnitude  M2.4 at the alarm, M2.3 final from 2 stations
+  magnitude  M2.6 at the alarm, M2.4 final from 2 stations
   location   rms 0.21 s from 2 stations
-  AFAD       ML 1.4 at 18:07:17.00 UTC: alarm 17.0 s after origin, magnitude +0.9, epicentre 6.1 km off, origin +1.9 s
+  AFAD       ML 1.4 at 18:07:17.00 UTC: alarm 17.0 s after origin, magnitude +1.0, epicentre 6.1 km off, origin +1.9 s
   S wave     had travelled 59 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              DEMI          46 km   18:07:33.04 UTC (picked)      -1.0 s  after S
              MANT          84 km   18:07:42.18 UTC (picked)      +8.2 s  before S
              BAND         128 km   18:07:53.70 UTC (predicted)   +19.7 s  before S
 
-Event #2: detected M2.3 earthquake at 39.231N 28.108E, origin 18:16:19.86 UTC
+Event #2: detected M2.4 earthquake at 39.231N 28.108E, origin 18:16:19.86 UTC
   alarm      18:16:36.50 UTC by DEMI, MANT; later BAND
-  magnitude  M2.5 at the alarm, M2.3 final from 3 stations
+  magnitude  M2.5 at the alarm, M2.4 final from 3 stations
   location   rms 0.26 s from 3 stations
-  AFAD       ML 1.9 at 18:16:19.00 UTC: alarm 17.5 s after origin, magnitude +0.4, epicentre 3.7 km off, origin +0.9 s
+  AFAD       ML 1.9 at 18:16:19.00 UTC: alarm 17.5 s after origin, magnitude +0.5, epicentre 3.7 km off, origin +0.9 s
   S wave     had travelled 61 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              DEMI          55 km   18:16:36.28 UTC (picked)      -0.2 s  after S
              MANT          92 km   18:16:45.64 UTC (picked)      +9.1 s  before S
              BAND         122 km   18:16:55.46 UTC (picked)     +19.0 s  before S
 
-Event #3: detected M4.6 earthquake at 39.221N 28.088E, origin 18:20:52.02 UTC
+Event #3: detected M4.5 earthquake at 39.221N 28.088E, origin 18:20:52.02 UTC
   alarm      18:21:09.00 UTC by DEMI, MANT; later BAND
-  magnitude  M4.3 at the alarm, M4.6 final from 3 stations
+  magnitude  M4.3 at the alarm, M4.5 final from 3 stations
   location   rms 0.16 s from 3 stations
-  AFAD       MW 4.9 at 18:20:51.00 UTC: alarm 18.0 s after origin, magnitude -0.3, epicentre 5.3 km off, origin +1.0 s
+  AFAD       MW 4.9 at 18:20:51.00 UTC: alarm 18.0 s after origin, magnitude -0.4, epicentre 5.3 km off, origin +1.0 s
   S wave     had travelled 62 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              DEMI          54 km   18:21:08.76 UTC (picked)      -0.2 s  after S
              MANT          91 km   18:21:17.88 UTC (picked)      +8.9 s  before S
              BAND         124 km   18:21:28.16 UTC (picked)     +19.2 s  before S
 
-Event #4: detected M3.6 earthquake at 38.683N 25.979E, origin 18:22:59.99 UTC
+Event #4: detected M3.7 earthquake at 38.683N 25.979E, origin 18:22:59.99 UTC
   alarm      18:23:48.00 UTC by BAND, MANT
-  magnitude  M3.5 at the alarm, M3.6 final from 2 stations
+  magnitude  M3.5 at the alarm, M3.7 final from 2 stations
   location   rms 0.23 s from 2 stations
-  AFAD       ML 3.1 at 18:23:21.00 UTC: alarm 27.0 s after origin, magnitude +0.5, epicentre 198.6 km off, origin -21.0 s
+  AFAD       ML 3.1 at 18:23:21.00 UTC: alarm 27.0 s after origin, magnitude +0.6, epicentre 198.6 km off, origin -21.0 s
   S wave     had travelled 94 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
              DEMI          54 km   18:23:36.62 UTC (predicted)   -11.4 s  after S
@@ -96,7 +100,7 @@ Event #4: detected M3.6 earthquake at 38.683N 25.979E, origin 18:22:59.99 UTC
 
 Event #5: detected M3.6 earthquake at 39.231N 28.088E, origin 18:25:52.22 UTC
   alarm      18:26:09.00 UTC by DEMI, MANT; later BAND
-  magnitude  M3.6 at the alarm, M3.6 final from 3 stations
+  magnitude  M3.8 at the alarm, M3.6 final from 3 stations
   location   rms 0.25 s from 3 stations
   AFAD       ML 3.6 at 18:25:51.00 UTC: alarm 18.0 s after origin, magnitude +0.0, epicentre 4.7 km off, origin +1.2 s
   S wave     had travelled 63 km from the epicentre when the alarm sounded (AFAD hypocentre)
@@ -107,12 +111,12 @@ Event #5: detected M3.6 earthquake at 39.231N 28.088E, origin 18:25:52.22 UTC
 
 Event #6: detected M2.8 earthquake, not located
   alarm      18:29:15.50 UTC by DEMI, MANT; later BAND
-  magnitude  M2.9 at the alarm, M2.8 final from 3 stations
+  magnitude  M2.8 at the alarm, M2.8 final from 3 stations
   AFAD       no matching catalogue event
 
 Event #7: detected M2.9 earthquake at 39.221N 28.078E, origin 18:30:03.49 UTC
   alarm      18:30:20.00 UTC by DEMI, MANT; later BAND
-  magnitude  M2.9 at the alarm, M2.9 final from 3 stations
+  magnitude  M3.0 at the alarm, M2.9 final from 3 stations
   location   rms 0.16 s from 3 stations
   AFAD       ML 2.7 at 18:30:02.00 UTC: alarm 18.0 s after origin, magnitude +0.2, epicentre 4.4 km off, origin +1.5 s
   S wave     had travelled 63 km from the epicentre when the alarm sounded (AFAD hypocentre)
@@ -134,7 +138,7 @@ Event #8: detected M2.9 earthquake at 38.962N 29.282E, origin 18:32:43.37 UTC
 
 Event #9: detected M2.5 earthquake, not located
   alarm      18:34:24.50 UTC by DEMI, MANT
-  magnitude  M2.7 at the alarm, M2.5 final from 2 stations
+  magnitude  M2.8 at the alarm, M2.5 final from 2 stations
   AFAD       no matching catalogue event
 
 ------------------------------------------------------------------------------
@@ -159,7 +163,7 @@ SUMMARY
 
   Correct alarms
     alarm after origin time             median 18.0 s
-    magnitude error                     mean 0.40 units
+    magnitude error                     mean 0.45 units
     located                             7 of 7
     alarm before the S wave             at 16 of 21 station arrivals, median warning 11.5 s, max 26.5 s
 
@@ -174,9 +178,9 @@ SUMMARY
 
 Station processing (scalar backend)
          windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
-  DEMI      3700         0       11     10              11/6     15.306 (30.907)        36            871
-  MANT      3702         0       12     10              12/8     14.900 (29.128)        32            936
-  BAND      3701         0       10     10              10/6     15.024 (29.674)        29            908
+  DEMI      3700         0       11     10              11/6     12.419 (21.315)        30            806
+  MANT      3702         0       12     10              12/8     12.974 (25.955)        32            863
+  BAND      3701         0       10     10              10/6     12.452 (25.699)        35            785
   P time from an STA/LTA onset for 15 of 33 triggers (18 from the window start)
   magnitude at the picked P: 20 estimated, 3 not (trigger not part of a declared event)
-  11103 windows in 66.7 s: 28x real time per station
+  11103 windows in 58.6 s: 32x real time per station

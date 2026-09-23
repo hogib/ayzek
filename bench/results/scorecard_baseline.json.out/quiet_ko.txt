@@ -1,0 +1,47 @@
+ayzek    6 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker + 3-model magnitude, replay 2024-01-03 11:25:02.07 to 17:25:00.01 UTC at full speed
+ayzek    catalogue: 11 events in the replay span
+ALARM    #1   16:38:48.50  earthquake detected by KULA, TVSB
+MAG      #1   16:38:48.50  magnitude M2.3 from 1 station (TVSB 2.3)
+MAG      #1   16:38:50.50  magnitude M2.5 from 2 stations (KULA 2.8, TVSB 2.3)
+MAG      #1   16:39:07.50  magnitude M2.8 from 3 stations (KULA 2.8, TVSB 2.3, YAYO 3.2)
+
+------------------------------------------------------------------------------
+REPORT  6 stations, 2024-01-03 11:33:50.00 to 17:25:00.01 UTC
+------------------------------------------------------------------------------
+
+Event #1: detected M2.8 earthquake, not located
+  alarm      16:38:48.50 UTC by KULA, TVSB; later YAYO
+  magnitude  M2.3 at the alarm, M2.8 final from 3 stations
+  AFAD       no matching catalogue event
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                           1
+  single-station detections, no alarm     2
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)        0    0%
+    false    (no AFAD event)              1  100%
+
+  AFAD events within 250 km                0
+    detected                              0     -
+    missed                                0     -
+
+  By magnitude      AFAD events   detected   missed
+
+  False alarms (no AFAD event; small uncatalogued earthquakes are possible)
+    16:38:48.50 UTC  #1  M2.8, not located
+------------------------------------------------------------------------------
+
+Station processing (scalar backend)
+         windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
+  DKL      43034        13        0      0               0/0     13.654 (26.675)         0              0
+  GEDZ     43061        12        0      0               0/0     13.674 (27.053)         0              0
+  KULA     43147         4        2      2               2/0     13.801 (26.547)        20            567
+  SIMA     43105         8        0      0               0/0     13.807 (27.243)         0              0
+  TVSB     42943        22        3      3               3/0     14.267 (27.126)        33            815
+  YAYO     42144       103        1      1               1/0     14.121 (27.331)        20            629
+  P time from an STA/LTA onset for 4 of 6 triggers (2 from the window start)
+  magnitude at the picked P: 0 estimated, 0 not (trigger not part of a declared event)
+  257434 windows in 618.1 s: 34x real time per station

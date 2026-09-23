@@ -1,26 +1,27 @@
 ayzek    9 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker + 3-model magnitude, replay 2024-06-05 07:51:02.00 to 12:15:03.83 UTC at full speed
 ayzek    catalogue: 9 events in the replay span
 ALARM    #1   08:46:19.00  earthquake detected by BAND, GCAM
-MAG      #1   08:46:19.00  magnitude M2.6 from 1 station (BAND 2.6)
-MAG      #1   08:46:24.00  magnitude M2.5 from 2 stations (BAND 2.6, GCAM 2.3)
+MAG      #1   08:46:19.00  magnitude M3.4 from 1 station (BAND 3.4)
+MAG      #1   08:46:24.00  magnitude M2.8 from 2 stations (BAND 3.4, GCAM 2.3)
+MAG      #1   08:47:10.50  magnitude M2.9 from 2 stations (BAND 3.3, GCAM 2.4)
 ALARM    #2   11:01:45.50  earthquake detected by KIRK, SEMS
-MAG      #2   11:01:45.50  magnitude M3.3 from 1 station (KIRK 3.3)
-MAG      #2   11:01:51.00  magnitude M3.0 from 2 stations (KIRK 3.3, SEMS 2.6)
-MAG      #2   11:01:54.50  magnitude M2.7 from 2 stations (KIRK 2.9, SEMS 2.6)
-MAG      #2   11:02:37.50  magnitude M2.7 from 2 stations (KIRK 2.9, SEMS 2.5)
+MAG      #2   11:01:45.50  magnitude M3.8 from 1 station (KIRK 3.8)
+MAG      #2   11:01:51.00  magnitude M3.4 from 2 stations (KIRK 3.8, SEMS 3.0)
+MAG      #2   11:01:54.50  magnitude M3.3 from 2 stations (KIRK 3.6, SEMS 3.0)
+MAG      #2   11:02:37.50  magnitude M3.2 from 2 stations (KIRK 3.6, SEMS 2.9)
 
 ------------------------------------------------------------------------------
 REPORT  9 stations, 2024-06-05 07:54:50.00 to 12:15:03.83 UTC
 ------------------------------------------------------------------------------
 
-Event #1: detected M2.5 earthquake, not located
+Event #1: detected M2.9 earthquake, not located
   alarm      08:46:19.00 UTC by BAND, GCAM
-  magnitude  M2.6 at the alarm, M2.5 final from 2 stations
+  magnitude  M3.4 at the alarm, M2.9 final from 2 stations
   AFAD       no matching catalogue event
 
-Event #2: detected M2.7 earthquake, not located
+Event #2: detected M3.2 earthquake, not located
   alarm      11:01:45.50 UTC by KIRK, SEMS
-  magnitude  M3.3 at the alarm, M2.7 final from 2 stations
+  magnitude  M3.8 at the alarm, M3.2 final from 2 stations
   AFAD       no matching catalogue event
 
 ------------------------------------------------------------------------------
@@ -40,21 +41,21 @@ SUMMARY
   By magnitude      AFAD events   detected   missed
 
   False alarms (no AFAD event; small uncatalogued earthquakes are possible)
-    08:46:19.00 UTC  #1  M2.5, not located
-    11:01:45.50 UTC  #2  M2.7, not located
+    08:46:19.00 UTC  #1  M2.9, not located
+    11:01:45.50 UTC  #2  M3.2, not located
 ------------------------------------------------------------------------------
 
 Station processing (scalar backend)
          windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
-  BAND     31499        15        2      2               2/1     19.672 (36.147)        43           1248
-  CMH      31507        14        5      5               5/0     19.388 (35.401)        42            900
-  ELBA     31506        14        0      0               0/0     19.043 (36.168)         0              0
-  GCAM     31509        14        2      2               2/1     19.517 (35.877)        55           1276
-  KAND     31467        19        8      8               8/0     19.187 (34.867)        41           1144
-  KIRK     31504        14       16     16              16/1     18.776 (35.092)        42           1058
-  MANT     31321        30        0      0               0/0     19.823 (36.298)         0              0
-  SEMS     31501        14       16     16              16/1     19.262 (35.288)        42           1174
-  VIZE     31509        15        0      0               0/0     19.495 (35.668)         0              0
+  BAND     31499        15        2      2               2/1     17.497 (30.908)        42            850
+  CMH      31507        14        5      5               5/0     17.323 (30.700)        41            988
+  ELBA     31506        14        0      0               0/0     17.343 (31.367)         0              0
+  GCAM     31509        14        2      2               2/1     17.675 (31.249)        51           1123
+  KAND     31467        19        8      8               8/0     17.341 (31.379)        40           1031
+  KIRK     31504        14       16     16              16/1     17.166 (30.630)        45           1016
+  MANT     31321        30        0      0               0/0     17.900 (30.989)         0              0
+  SEMS     31501        14       16     16              16/1     17.158 (30.982)        40           1054
+  VIZE     31509        15        0      0               0/0     17.457 (31.377)         0              0
   P time from an STA/LTA onset for 32 of 49 triggers (17 from the window start)
   magnitude at the picked P: 4 estimated, 30 not (trigger not part of a declared event)
-  283323 windows in 628.4 s: 25x real time per station
+  283323 windows in 563.4 s: 28x real time per station

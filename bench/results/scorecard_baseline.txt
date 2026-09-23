@@ -5,44 +5,60 @@
   noise_a2: done
   noise_b: done
   noise_c: done
+  demo_ko: done
+  marmara_ko: done
+  quiet_ko: done
 
-scorecard  models=/home/oguzb/Projects/Codings/ayzek/ayzek_code/models  args=-  (2026-09-22T18:10:19Z, 707b3b8-dirty)
+scorecard  models=/home/oguzb/Projects/Codings/ayzek/ayzek_code/models  args=-  (2026-09-23T10:31:07Z, v0.1.0-beta.1-7-gd9f1fd8-dirty)
 
   detected (tuning)                  51/66
   unmatched alarms (tuning)          26
   detected (held out)                39/66
   unmatched alarms (held out)        7
+  detected (public)                  36/46
+  unmatched alarms (public)          25
   false alarms per day (noise)       4.33
-  noise hours                        33.3
-  magnitude MAE, all matched         0.427
-  magnitude MAE, AFAD M>=4           0.831
-  magnitude bias, AFAD M>=4          -0.831
-  epicentre error median km          10.0
+  hours (noise)                      33.3
+  false alarms per day (public noise) 4.11
+  hours (public noise)               5.8
+  magnitude MAE, all matched         0.385
+  magnitude MAE, AFAD M>=4           0.721
+  magnitude bias, AFAD M>=4          -0.721
+  epicentre error median km          8.4
 
-  dataset     role       st  detected  alarms unmatched  delay  mag MAE false/day
-  demo        tuning      3       7/9       9         2   18.0      0.4         -
-  marmara     tuning      8     44/57      68        24   12.0     0.48         -
-  sindirgi61  held out    6     39/66      46         7   17.5     0.37         -
-  noise_a1    noise       9       0/0       3         3      -        -      12.1
-  noise_a2    noise       9       0/0       2         2      -        -      11.1
-  noise_b     noise       6       0/0       0         0      -        -       0.0
-  noise_c     noise       7       0/0       1         1      -        -       2.2
+  dataset     role           st  detected  alarms unmatched  delay  mag MAE false/day
+  demo        tuning          3       7/9       9         2   18.0     0.45         -
+  marmara     tuning          8     44/57      68        24   12.0     0.42         -
+  sindirgi61  held out        6     39/66      46         7   17.5     0.31         -
+  noise_a1    noise           9       0/0       3         3      -        -      12.1
+  noise_a2    noise           9       0/0       2         2      -        -      11.1
+  noise_b     noise           6       0/0       0         0      -        -       0.0
+  noise_c     noise           7       0/0       1         1      -        -       2.2
+  demo_ko     public          6       8/9      10         2   17.8      0.4         -
+  marmara_ko  public          8     28/37      51        23   11.5     0.43         -
+  quiet_ko    public noise    6       0/0       1         1      -        -       4.1
 
   large events (AFAD M>=4)
-    demo        MW 4.9 at 18:20:51.00: alarm +18.0 s, M4.3 at the alarm, M4.6 final (-0.3), epicentre 5.3 km
-    marmara     MW 6.2 at 09:49:10.00: alarm +11.0 s, M4.6 at the alarm, M4.8 final (-1.4), epicentre 3.1 km
-    marmara     MW 5.9 at 09:51:19.00: alarm +12.5 s, M4.5 at the alarm, M4.3 final (-1.6), epicentre 21.1 km
-    marmara     ML 4.5 at 09:52:19.00: alarm +15.0 s, M3.9 at the alarm, M3.9 final (-0.6), epicentre 24.9 km
-    marmara     MW 4.8 at 10:01:02.00: alarm +11.0 s, M3.7 at the alarm, M3.6 final (-1.2), epicentre 6.3 km
-    marmara     MW 4.5 at 10:02:10.00: alarm +9.0 s, M4.2 at the alarm, M3.4 final (-1.1), epicentre 218.8 km
-    marmara     MW 4.0 at 10:46:13.00: alarm +25.5 s, M2.9 at the alarm, M2.9 final (-1.1), epicentre 12.3 km
-    sindirgi61  MW 6.1 at 16:53:46.00: alarm +17.0 s, M4.9 at the alarm, M4.7 final (-1.4), epicentre 32.5 km
+    demo        MW 4.9 at 18:20:51.00: alarm +18.0 s, M4.3 at the alarm, M4.5 final (-0.4), epicentre 5.3 km
+    marmara     MW 6.2 at 09:49:10.00: alarm +11.0 s, M5.0 at the alarm, M5.3 final (-0.9), epicentre 3.1 km
+    marmara     MW 5.9 at 09:51:19.00: alarm +12.5 s, M4.6 at the alarm, M4.5 final (-1.4), epicentre 21.1 km
+    marmara     ML 4.5 at 09:52:19.00: alarm +15.0 s, M4.2 at the alarm, M4.1 final (-0.4), epicentre 24.9 km
+    marmara     MW 4.8 at 10:01:02.00: alarm +11.0 s, M3.9 at the alarm, M3.7 final (-1.1), epicentre 6.3 km
+    marmara     MW 4.5 at 10:02:10.00: alarm +9.0 s, M4.1 at the alarm, M3.5 final (-1.0), epicentre 218.8 km
+    marmara     MW 4.0 at 10:46:13.00: alarm +25.5 s, M3.0 at the alarm, M3.1 final (-0.9), epicentre 12.3 km
+    sindirgi61  MW 6.1 at 16:53:46.00: alarm +17.0 s, M5.5 at the alarm, M5.2 final (-0.9), epicentre 32.5 km
     sindirgi61  ML 4.1 at 17:04:14.00: alarm +17.5 s, M4.0 at the alarm, M4.0 final (-0.1), epicentre 67.9 km
-    sindirgi61  ML 4.0 at 17:06:29.00: alarm +16.5 s, M4.1 at the alarm, M3.7 final (-0.3), epicentre 63.6 km
-    sindirgi61  MW 4.2 at 17:32:07.00: alarm +17.0 s, M3.8 at the alarm, M3.8 final (-0.4), epicentre 2.8 km
-    sindirgi61  MW 4.1 at 18:27:52.00: alarm +17.0 s, M3.3 at the alarm, M3.4 final (-0.7), epicentre 32.2 km
-    sindirgi61  MW 4.2 at 18:31:45.00: alarm +16.5 s, M3.2 at the alarm, M3.6 final (-0.6), epicentre 33.2 km
+    sindirgi61  ML 4.0 at 17:06:29.00: alarm +16.5 s, M4.1 at the alarm, M3.5 final (-0.5), epicentre 63.6 km
+    sindirgi61  MW 4.2 at 17:32:07.00: alarm +17.0 s, M3.7 at the alarm, M3.9 final (-0.3), epicentre 2.8 km
+    sindirgi61  MW 4.1 at 18:27:52.00: alarm +17.0 s, M3.5 at the alarm, M3.6 final (-0.5), epicentre 32.2 km
+    sindirgi61  MW 4.2 at 18:31:45.00: alarm +16.5 s, M3.2 at the alarm, M3.8 final (-0.4), epicentre 33.2 km
+    demo_ko     MW 4.9 at 18:20:51.00: alarm +18.0 s, M4.4 at the alarm, M4.6 final (-0.3), epicentre 3.7 km
+    marmara_ko  MW 6.2 at 09:49:10.00: alarm +10.5 s, M4.9 at the alarm, M5.2 final (-1.0), epicentre 10.9 km
+    marmara_ko  MW 5.9 at 09:51:19.00: alarm +11.0 s, M3.9 at the alarm, M4.2 final (-1.7), epicentre 3.8 km
+    marmara_ko  ML 4.5 at 09:52:19.00: alarm +16.5 s, M4.0 at the alarm, M4.4 final (-0.1), epicentre 6.2 km
+    marmara_ko  MW 4.8 at 10:01:02.00: alarm +10.0 s, M3.0 at the alarm, M3.7 final (-1.1), epicentre 3.8 km
+    marmara_ko  MW 4.5 at 10:02:10.00: alarm +10.0 s, M3.8 at the alarm, M3.8 final (-0.7), epicentre 229.1 km
 
-  speed (AMD Ryzen 5 5600 6-Core Processor): per-window total 5.9 ms, picker 12.9 ms, magnitude estimate (3 models) 306.7 ms
+  speed (AMD Ryzen 5 5600 6-Core Processor): per-window total 5.2 ms, picker 12.0 ms, magnitude estimate (3 models) 285.4 ms
 
 scorecard -> bench/results/scorecard_baseline.json

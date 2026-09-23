@@ -1,0 +1,1070 @@
+ayzek    8 stations, scalar backend, 3-seed detector + STA/LTA anchor + picker + 3-model magnitude, replay 2025-04-23 09:00:02.06 to 10:45:00.01 UTC at full speed
+ayzek    catalogue: 38 events in the replay span
+ALARM    #1   09:05:23.50  earthquake detected by BGKT, CTKS
+MAG      #1   09:05:24.00  magnitude M4.2 from 1 station (BGKT 4.2)
+MAG      #1   09:05:27.00  magnitude M4.3 from 2 stations (BGKT 4.2, CTKS 4.4)
+MAG      #1   09:06:10.50  magnitude M4.1 from 2 stations (BGKT 3.8, CTKS 4.4)
+ALARM    #2   09:13:15.00  earthquake detected by BOTS, SLVT  (AFAD ML 3.9 at 09:13:05.00, 10.0 s ago)
+MAG      #2   09:13:17.50  magnitude M3.4 from 1 station (BOTS 3.4)
+MAG      #2   09:13:20.50  magnitude M3.4 from 2 stations (BOTS 3.4, SLVT 3.4)
+MAG      #2   09:13:21.00  magnitude M3.4 from 3 stations (BOTS 3.4, CTKS 4.4, SLVT 3.4)
+MAG      #2   09:13:22.50  magnitude M3.4 from 4 stations (BGKT 3.5, BOTS 3.4, CTKS 4.4, SLVT 3.4)
+MAG      #2   09:13:23.00  magnitude M3.5 from 5 stations (ARMT 4.0, BGKT 3.5, BOTS 3.4, CTKS 4.4, SLVT 3.4)
+MAG      #2   09:13:23.00  magnitude M3.5 from 6 stations (ARMT 4.0, BGKT 3.5, BOTS 3.4, CTKS 4.4, EDC 3.5, SLVT 3.4)
+MAG      #2   09:13:23.50  magnitude M3.5 from 7 stations (ARMT 4.0, BGKT 3.5, BOTS 3.4, CTKS 4.4, EDC 3.5, SLVT 3.4, TKR 3.1)
+LOCATE   #2   09:14:07.00  located at 40.790N 28.276E, origin 09:13:05.96, rms 0.02 s from 2 stations
+LOCATE   #2   09:14:07.50  located at 40.682N 28.423E, origin 09:13:02.13, rms 1.34 s from 3 stations
+LOCATE   #2   09:14:09.00  located at 40.750N 28.293E, origin 09:13:04.58, rms 1.58 s from 4 stations
+MAG      #2   09:14:09.00  magnitude M3.4 from 7 stations (ARMT 4.0, BGKT 3.4, BOTS 3.1, CTKS 4.4, EDC 3.5, SLVT 3.3, TKR 3.1)
+LOCATE   #2   09:14:09.50  located at 40.866N 28.267E, origin 09:13:06.99, rms 1.57 s from 5 stations
+LOCATE   #2   09:14:10.00  located at 40.868N 28.277E, origin 09:13:07.07, rms 1.46 s from 6 stations
+pick     EDC   picker window at 09:49:14.50 crosses a gap, skipped
+ALARM    #3   09:49:20.50  earthquake detected by BOTS, SLVT  (AFAD MW 6.2 at 09:49:10.00, 10.5 s ago)
+MAG      #3   09:49:22.50  magnitude M4.9 from 1 station (BOTS 4.9)
+MAG      #3   09:49:24.50  magnitude M5.1 from 2 stations (BOTS 4.9, SLVT 5.4)
+MAG      #3   09:49:26.50  magnitude M5.4 from 3 stations (BOTS 4.9, CTKS 5.7, SLVT 5.4)
+MAG      #3   09:49:27.00  magnitude M5.4 from 4 stations (BGKT 5.5, BOTS 4.9, CTKS 5.7, SLVT 5.4)
+MAG      #3   09:49:28.00  magnitude M5.4 from 5 stations (BGKT 5.5, BOTS 4.9, CTKS 5.7, EDC 5.0, SLVT 5.4)
+MAG      #3   09:49:28.00  magnitude M5.2 from 6 stations (BGKT 5.5, BOTS 4.9, CTKS 5.7, EDC 5.0, SLVT 5.4, TKR 4.8)
+MAG      #3   09:49:28.50  magnitude M5.4 from 7 stations (ARMT 5.7, BGKT 5.5, BOTS 4.9, CTKS 5.7, EDC 5.0, SLVT 5.4, TKR 4.8)
+LOCATE   #3   09:50:13.00  located at 40.749N 28.349E, origin 09:49:09.95, rms 0.16 s from 2 stations
+MAG      #3   09:50:13.00  magnitude M5.2 from 7 stations (ARMT 5.7, BGKT 5.5, BOTS 5.2, CTKS 5.2, EDC 5.0, SLVT 5.3, TKR 4.8)
+LOCATE   #3   09:50:13.50  located at 41.721N 28.392E, origin 09:49:09.75, rms 0.38 s from 3 stations
+LOCATE   #3   09:50:14.50  located at 40.760N 28.281E, origin 09:49:10.35, rms 0.38 s from 4 stations
+ALARM    #4   09:51:30.00  earthquake detected by BGKT, BOTS  (AFAD MW 5.9 at 09:51:19.00, 11.0 s ago)
+MAG      #4   09:51:33.00  magnitude M3.9 from 1 station (BOTS 3.9)
+MAG      #4   09:51:35.50  magnitude M4.2 from 2 stations (BGKT 4.4, BOTS 3.9)
+MAG      #4   09:51:36.50  magnitude M4.4 from 3 stations (ARMT 4.7, BGKT 4.4, BOTS 3.9)
+MAG      #4   09:51:40.00  magnitude M4.2 from 4 stations (ARMT 4.7, BGKT 4.4, BOTS 3.9, CTKS 4.1)
+LOCATE   #4   09:52:22.00  located at 41.311N 28.147E, origin 09:51:20.29, rms 0.05 s from 2 stations
+MAG      #4   09:52:22.00  magnitude M4.2 from 4 stations (ARMT 4.7, BGKT 4.2, BOTS 3.7, CTKS 4.1)
+LOCATE   #4   09:52:23.00  located at 40.858N 28.345E, origin 09:51:21.15, rms 0.27 s from 3 stations
+ALARM    #5   09:52:35.50  earthquake detected by ARMT, BGKT  (AFAD ML 4.5 at 09:52:19.00, 16.5 s ago)
+MAG      #5   09:52:36.50  magnitude M4.0 from 1 station (BGKT 4.0)
+MAG      #5   09:52:37.50  magnitude M4.1 from 2 stations (ARMT 4.2, BGKT 4.0)
+MAG      #5   09:52:41.00  magnitude M4.2 from 3 stations (ARMT 4.2, BGKT 4.0, CTKS 4.3)
+pick     BOTS  picker window at 09:59:29.50 crosses a gap, skipped
+LOCATE   #5   09:53:24.00  located at 40.955N 29.405E, origin 09:52:20.60, rms 0.07 s from 2 stations
+MAG      #5   09:53:24.00  magnitude M4.3 from 3 stations (ARMT 4.4, BGKT 3.8, CTKS 4.3)
+LOCATE   #5   09:53:27.50  located at 40.861N 28.350E, origin 09:52:22.57, rms 0.79 s from 3 stations
+MAG      #5   09:53:27.50  magnitude M4.4 from 3 stations (ARMT 4.4, BGKT 3.8, CTKS 4.4)
+ALARM    #6   09:55:17.00  earthquake detected by BGKT, SLVT  (AFAD ML 3.3 at 09:55:03.00, 14.0 s ago)
+MAG      #6   09:55:19.00  magnitude M3.5 from 1 station (BGKT 3.5)
+MAG      #6   09:55:19.00  magnitude M3.5 from 2 stations (BGKT 3.5, SLVT 3.6)
+MAG      #6   09:55:23.50  magnitude M3.6 from 3 stations (BGKT 3.5, CTKS 4.1, SLVT 3.6)
+ALARM    #7   09:56:01.50  earthquake detected by BGKT, BOTS  (AFAD ML 2.8 at 09:55:49.00, 12.5 s ago)
+MAG      #7   09:56:03.50  magnitude M3.3 from 1 station (BOTS 3.3)
+MAG      #7   09:56:04.50  magnitude M3.5 from 2 stations (BGKT 3.7, BOTS 3.3)
+LOCATE   #6   09:56:05.50  located at 40.820N 28.437E, origin 09:55:04.34, rms 0.12 s from 2 stations
+MAG      #6   09:56:05.50  magnitude M3.5 from 3 stations (BGKT 3.5, CTKS 4.1, SLVT 2.9)
+MAG      #7   09:56:09.00  magnitude M3.7 from 3 stations (BGKT 3.7, BOTS 3.3, CTKS 4.0)
+MAG      #7   09:56:51.00  magnitude M3.5 from 3 stations (BGKT 3.5, BOTS 3.3, CTKS 4.0)
+pick     CTKS  picker window at 09:59:31.00 crosses a gap, skipped
+ALARM    #8   09:58:57.50  earthquake detected by BGKT, SLVT
+MAG      #8   09:58:59.00  magnitude M2.5 from 1 station (SLVT 2.5)
+MAG      #8   09:58:59.50  magnitude M2.5 from 2 stations (BGKT 2.4, SLVT 2.5)
+ALARM    #9   09:59:40.00  earthquake detected by BGKT, BOTS  (AFAD ML 3.6 at 09:59:29.00, 11.0 s ago)
+MAG      #9   09:59:42.00  magnitude M3.5 from 1 station (BGKT 3.5)
+MAG      #9   09:59:43.00  magnitude M3.4 from 2 stations (BGKT 3.5, BOTS 3.3)
+MAG      #9   09:59:44.50  magnitude M3.5 from 3 stations (BGKT 3.5, BOTS 3.3, CTKS 4.0)
+MAG      #9   09:59:45.00  magnitude M3.4 from 4 stations (BGKT 3.5, BOTS 3.3, CTKS 4.0, SLVT 3.0)
+MAG      #9   09:59:46.00  magnitude M3.5 from 5 stations (ARMT 3.8, BGKT 3.5, BOTS 3.3, CTKS 4.0, SLVT 3.0)
+MAG      #9   09:59:47.50  magnitude M3.5 from 6 stations (ARMT 3.8, BGKT 3.5, BOTS 3.3, CTKS 4.0, EDC 3.4, SLVT 3.0)
+MAG      #9   09:59:49.00  magnitude M3.4 from 7 stations (ARMT 3.8, BGKT 3.5, BOTS 3.3, CTKS 4.0, EDC 3.4, SLVT 3.0, TKR 2.7)
+pick     BOTS  picker window at 10:02:10.50 crosses a gap, skipped
+pick     BGKT  picker window at 10:02:11.00 crosses a gap, skipped
+pick     BOTS  picker window at 10:02:33.50 crosses a gap, skipped
+pick     BGKT  picker window at 10:02:36.00 crosses a gap, skipped
+LOCATE   #9   10:00:31.50  located at 41.635N 28.492E, origin 09:59:30.21, rms 0.03 s from 2 stations
+LOCATE   #9   10:00:32.50  located at 40.833N 28.356E, origin 09:59:31.21, rms 0.32 s from 3 stations
+LOCATE   #9   10:00:34.00  located at 40.821N 28.333E, origin 09:59:30.84, rms 0.36 s from 4 stations
+LOCATE   #9   10:00:35.50  located at 40.818N 28.344E, origin 09:59:30.92, rms 0.38 s from 5 stations
+ALARM    #10  10:01:12.00  earthquake detected by BOTS, SLVT  (AFAD MW 4.8 at 10:01:02.00, 10.0 s ago)
+MAG      #10  10:01:16.00  magnitude M3.0 from 1 station (BOTS 3.0)
+MAG      #10  10:01:17.00  magnitude M3.6 from 2 stations (BOTS 3.0, CTKS 4.1)
+MAG      #10  10:01:17.50  magnitude M3.6 from 3 stations (BOTS 3.0, CTKS 4.1, SLVT 3.6)
+MAG      #10  10:01:18.00  magnitude M3.8 from 4 stations (BGKT 3.9, BOTS 3.0, CTKS 4.1, SLVT 3.6)
+MAG      #10  10:01:19.00  magnitude M3.8 from 5 stations (ARMT 3.8, BGKT 3.9, BOTS 3.0, CTKS 4.1, SLVT 3.6)
+MAG      #10  10:01:21.00  magnitude M3.8 from 6 stations (ARMT 3.8, BGKT 3.9, BOTS 3.0, CTKS 4.1, EDC 3.8, SLVT 3.6)
+MAG      #10  10:01:22.00  magnitude M3.8 from 7 stations (ARMT 3.8, BGKT 3.9, BOTS 3.0, CTKS 4.1, EDC 3.8, MRMT 4.3, SLVT 3.6)
+MAG      #10  10:01:22.00  magnitude M3.8 from 8 stations (ARMT 3.8, BGKT 3.9, BOTS 3.0, CTKS 4.1, EDC 3.8, MRMT 4.3, SLVT 3.6, TKR 2.8)
+pick     BGKT  picker window at 10:05:47.00 crosses a gap, skipped
+pick     SLVT  picker window at 10:05:45.50 crosses a gap, skipped
+LOCATE   #10  10:02:04.00  located at 41.250N 27.601E, origin 10:01:02.69, rms 0.02 s from 2 stations
+LOCATE   #10  10:02:04.50  located at 40.809N 28.401E, origin 10:01:03.15, rms 0.15 s from 3 stations
+MAG      #10  10:02:04.50  magnitude M3.7 from 8 stations (ARMT 3.8, BGKT 3.7, BOTS 3.1, CTKS 4.1, EDC 3.8, MRMT 4.3, SLVT 3.5, TKR 2.8)
+LOCATE   #10  10:02:05.50  located at 40.852N 28.383E, origin 10:01:04.04, rms 0.36 s from 4 stations
+MAG      #10  10:02:05.50  magnitude M3.7 from 8 stations (ARMT 3.7, BGKT 3.7, BOTS 3.1, CTKS 4.1, EDC 3.8, MRMT 4.3, SLVT 3.5, TKR 2.8)
+LOCATE   #10  10:02:07.50  located at 40.838N 28.373E, origin 10:01:03.81, rms 0.45 s from 5 stations
+LOCATE   #10  10:02:08.50  located at 40.839N 28.380E, origin 10:01:03.84, rms 0.46 s from 6 stations
+pick     SLVT  picker window at 10:09:30.00 crosses a gap, skipped
+ALARM    #11  10:02:20.00  earthquake detected by ARMT, BGKT  (AFAD MW 4.5 at 10:02:10.00, 10.0 s ago)
+MAG      #11  10:02:24.00  magnitude M3.8 from 1 station (BOTS 3.8)
+MAG      #11  10:02:24.50  magnitude M3.8 from 2 stations (BGKT 3.8, BOTS 3.8)
+MAG      #11  10:02:24.50  magnitude M3.8 from 3 stations (BGKT 3.8, BOTS 3.8, CTKS 4.1)
+MAG      #11  10:02:25.00  magnitude M3.8 from 4 stations (BGKT 3.8, BOTS 3.8, CTKS 4.1, SLVT 3.7)
+MAG      #11  10:02:25.50  magnitude M3.8 from 5 stations (ARMT 3.9, BGKT 3.8, BOTS 3.8, CTKS 4.1, SLVT 3.7)
+MAG      #11  10:02:29.00  magnitude M3.8 from 6 stations (ARMT 3.9, BGKT 3.8, BOTS 3.8, CTKS 4.1, EDC 4.1, SLVT 3.7)
+MAG      #11  10:02:30.00  magnitude M3.8 from 7 stations (ARMT 3.9, BGKT 3.8, BOTS 3.8, CTKS 4.1, EDC 4.1, SLVT 3.7, TKR 3.8)
+MAG      #11  10:02:31.00  magnitude M3.8 from 8 stations (ARMT 3.9, BGKT 3.8, BOTS 3.8, CTKS 4.1, EDC 4.1, MRMT 4.3, SLVT 3.7, TKR 3.8)
+MAG      #11  10:03:11.50  magnitude M4.0 from 8 stations (ARMT 3.9, BGKT 3.8, BOTS 3.8, CTKS 4.1, EDC 4.1, MRMT 4.3, SLVT 4.1, TKR 3.8)
+LOCATE   #11  10:03:12.00  located at 42.199N 30.798E, origin 10:01:38.92, rms 0.05 s from 2 stations
+MAG      #11  10:03:15.50  magnitude M3.8 from 8 stations (ARMT 3.7, BGKT 3.8, BOTS 3.8, CTKS 4.1, EDC 3.8, MRMT 4.3, SLVT 4.1, TKR 3.8)
+LOCATE   #11  10:03:16.50  located at 42.579N 30.011E, origin 10:01:38.83, rms 0.05 s from 2 stations, left out EDC SLVT
+ALARM    #12  10:04:47.50  earthquake detected by BGKT, CTKS
+MAG      #12  10:04:47.50  magnitude M3.3 from 1 station (BGKT 3.3)
+MAG      #12  10:04:49.50  magnitude M3.7 from 2 stations (BGKT 3.3, CTKS 4.2)
+MAG      #12  10:05:31.00  magnitude M3.5 from 2 stations (BGKT 2.9, CTKS 4.2)
+ALARM    #13  10:05:55.50  earthquake detected by ARMT, BGKT  (AFAD ML 3.0 at 10:05:43.00, 12.5 s ago)
+MAG      #13  10:05:59.00  magnitude M2.1 from 1 station (SLVT 2.1)
+MAG      #13  10:06:00.50  magnitude M2.3 from 2 stations (ARMT 2.4, SLVT 2.1)
+MAG      #13  10:06:05.00  magnitude M2.4 from 3 stations (ARMT 2.4, CTKS 4.2, SLVT 2.1)
+ALARM    #14  10:06:42.00  earthquake detected by BGKT, SLVT
+MAG      #14  10:06:44.00  magnitude M2.2 from 1 station (BGKT 2.2)
+MAG      #14  10:06:44.00  magnitude M2.1 from 2 stations (BGKT 2.2, SLVT 2.1)
+MAG      #13  10:06:47.00  magnitude M2.5 from 3 stations (ARMT 2.5, CTKS 4.2, SLVT 2.1)
+MAG      #14  10:06:49.00  magnitude M2.2 from 3 stations (BGKT 2.2, CTKS 3.8, SLVT 2.1)
+ALARM    #15  10:07:11.00  earthquake detected by ARMT, BOTS  (AFAD ML 3.4 at 10:07:01.00, 10.0 s ago)
+MAG      #15  10:07:14.50  magnitude M2.6 from 1 station (BOTS 2.6)
+MAG      #15  10:07:16.00  magnitude M2.5 from 2 stations (ARMT 2.5, BOTS 2.6)
+MAG      #15  10:07:19.50  magnitude M2.6 from 3 stations (ARMT 2.5, BOTS 2.6, EDC 2.6)
+MAG      #15  10:07:20.50  magnitude M2.5 from 4 stations (ARMT 2.5, BOTS 2.6, EDC 2.6, TKR 2.3)
+ALARM    #16  10:07:48.00  earthquake detected by BGKT, CTKS  (AFAD ML 3.2 at 10:07:30.00, 18.0 s ago)
+MAG      #16  10:07:48.00  magnitude M2.5 from 1 station (BGKT 2.5)
+MAG      #16  10:07:52.00  magnitude M3.3 from 2 stations (BGKT 2.5, CTKS 4.0)
+LOCATE   #15  10:08:06.00  located at 43.172N 27.664E, origin 10:06:20.16, rms 0.76 s from 2 stations, left out BOTS
+ALARM    #17  10:08:45.50  earthquake detected by BGKT, CTKS
+MAG      #17  10:08:45.50  magnitude M2.1 from 1 station (BGKT 2.1)
+MAG      #17  10:08:47.50  magnitude M3.0 from 2 stations (BGKT 2.1, CTKS 3.8)
+ALARM    #18  10:09:41.50  earthquake detected by BGKT, SLVT
+MAG      #18  10:09:41.50  magnitude M2.1 from 1 station (BGKT 2.1)
+MAG      #18  10:09:43.50  magnitude M2.1 from 2 stations (BGKT 2.1, SLVT 2.2)
+ALARM    #19  10:10:24.00  earthquake detected by BGKT, CTKS
+MAG      #19  10:10:24.00  magnitude M2.2 from 1 station (BGKT 2.2)
+MAG      #19  10:10:26.00  magnitude M3.2 from 2 stations (BGKT 2.2, CTKS 4.3)
+ALARM    #20  10:11:18.50  earthquake detected by ARMT, BGKT
+MAG      #20  10:11:22.00  magnitude M2.1 from 1 station (BGKT 2.1)
+MAG      #20  10:11:23.50  magnitude M2.1 from 2 stations (ARMT 2.1, BGKT 2.1)
+MAG      #20  10:11:27.00  magnitude M2.1 from 3 stations (ARMT 2.1, BGKT 2.1, SLVT 2.1)
+LOCATE   #20  10:12:13.50  located at 40.895N 28.432E, origin 10:11:09.53, rms 0.65 s from 2 stations
+ALARM    #21  10:12:34.00  earthquake detected by CTKS, SLVT
+MAG      #21  10:12:34.00  magnitude M2.1 from 1 station (SLVT 2.1)
+MAG      #21  10:12:38.50  magnitude M3.0 from 2 stations (CTKS 3.8, SLVT 2.1)
+ALARM    #22  10:14:05.50  earthquake detected by BOTS, CTKS  (AFAD ML 2.7 at 10:13:56.00, 9.5 s ago)
+MAG      #22  10:14:10.50  magnitude M2.4 from 1 station (BOTS 2.4)
+MAG      #22  10:14:10.50  magnitude M3.2 from 2 stations (BOTS 2.4, CTKS 4.1)
+MAG      #22  10:14:11.00  magnitude M2.4 from 3 stations (BOTS 2.4, CTKS 4.1, SLVT 2.2)
+MAG      #22  10:14:11.50  magnitude M2.3 from 4 stations (BGKT 2.2, BOTS 2.4, CTKS 4.1, SLVT 2.2)
+MAG      #22  10:14:12.50  magnitude M2.2 from 5 stations (ARMT 2.2, BGKT 2.2, BOTS 2.4, CTKS 4.1, SLVT 2.2)
+LOCATE   #22  10:14:58.00  located at 42.805N 28.652E, origin 10:13:35.28, rms 0.13 s from 2 stations, left out BOTS
+MAG      #22  10:14:58.00  magnitude M2.3 from 5 stations (ARMT 2.2, BGKT 2.3, BOTS 2.6, CTKS 4.1, SLVT 2.2)
+LOCATE   #22  10:14:59.00  located at 40.624N 28.209E, origin 10:13:56.63, rms 0.03 s from 2 stations, left out SLVT BGKT
+ALARM    #23  10:15:18.50  earthquake detected by BGKT, CTKS
+MAG      #23  10:15:18.50  magnitude M2.2 from 1 station (BGKT 2.2)
+MAG      #23  10:15:23.00  magnitude M3.0 from 2 stations (BGKT 2.2, CTKS 3.9)
+MAG      #23  10:15:24.00  magnitude M2.2 from 3 stations (BGKT 2.2, CTKS 3.9, SLVT 2.1)
+ALARM    #24  10:15:33.00  earthquake detected by ARMT, BOTS  (AFAD ML 2.4 at 10:15:19.00, 14.0 s ago)
+MAG      #24  10:15:33.00  magnitude M2.4 from 1 station (BOTS 2.4)
+MAG      #24  10:15:36.50  magnitude M2.3 from 2 stations (ARMT 2.2, BOTS 2.4)
+ALARM    #25  10:16:02.00  earthquake detected by BGKT, SLVT
+MAG      #25  10:16:07.00  magnitude M2.3 from 1 station (BGKT 2.3)
+MAG      #25  10:16:07.00  magnitude M3.2 from 2 stations (BGKT 2.3, CTKS 4.1)
+MAG      #25  10:16:07.00  magnitude M2.3 from 3 stations (BGKT 2.3, CTKS 4.1, SLVT 2.1)
+MAG      #25  10:16:19.00  magnitude M2.3 from 4 stations (BGKT 2.3, CTKS 4.1, SLVT 2.1, TKR 2.2)
+ALARM    #26  10:16:39.00  earthquake detected by ARMT, EDC  (AFAD ML 3.4 at 10:16:23.00, 16.0 s ago)
+MAG      #26  10:16:39.50  magnitude M2.7 from 1 station (ARMT 2.7)
+MAG      #26  10:16:43.00  magnitude M2.8 from 2 stations (ARMT 2.7, EDC 2.9)
+MAG      #26  10:17:26.00  magnitude M2.9 from 2 stations (ARMT 2.9, EDC 2.9)
+LOCATE   #26  10:17:29.50  located at 40.932N 28.404E, origin 10:16:23.62, rms 0.15 s from 2 stations
+MAG      #26  10:17:29.50  magnitude M2.8 from 2 stations (ARMT 2.9, EDC 2.7)
+ALARM    #27  10:19:03.50  earthquake detected by BGKT, BOTS  (AFAD ML 2.1 at 10:18:51.00, 12.5 s ago)
+MAG      #27  10:19:04.50  magnitude M2.1 from 1 station (BOTS 2.1)
+MAG      #27  10:19:07.00  magnitude M2.9 from 2 stations (BOTS 2.1, CTKS 3.8)
+MAG      #27  10:19:07.50  magnitude M2.2 from 3 stations (BOTS 2.1, CTKS 3.8, SLVT 2.2)
+MAG      #27  10:19:08.50  magnitude M2.1 from 4 stations (BGKT 2.1, BOTS 2.1, CTKS 3.8, SLVT 2.2)
+MAG      #27  10:19:09.00  magnitude M2.2 from 5 stations (ARMT 2.2, BGKT 2.1, BOTS 2.1, CTKS 3.8, SLVT 2.2)
+MAG      #27  10:19:11.00  magnitude M2.2 from 6 stations (ARMT 2.2, BGKT 2.1, BOTS 2.1, CTKS 3.8, EDC 2.2, SLVT 2.2)
+pick     CTKS  picker window at 10:19:38.00 crosses a gap, skipped
+pick     CTKS  picker window at 10:20:08.50 crosses a gap, skipped
+ALARM    #28  10:19:51.00  earthquake detected by CTKS, SLVT
+MAG      #28  10:19:51.50  magnitude M3.9 from 1 station (CTKS 3.9)
+MAG      #28  10:19:53.00  magnitude M3.0 from 2 stations (CTKS 3.9, SLVT 2.1)
+LOCATE   #27  10:19:54.00  located at 40.710N 28.326E, origin 10:18:50.25, rms 0.55 s from 2 stations, left out CTKS
+LOCATE   #27  10:19:55.00  located at 40.799N 28.466E, origin 10:18:50.44, rms 1.61 s from 3 stations, left out CTKS
+LOCATE   #27  10:19:55.50  located at 40.917N 28.413E, origin 10:18:52.86, rms 1.85 s from 4 stations, left out CTKS
+pick     SLVT  picker window at 10:23:59.50 crosses a gap, skipped
+LOCATE   #27  10:19:57.50  located at 40.868N 28.363E, origin 10:18:52.12, rms 1.92 s from 5 stations, left out CTKS
+ALARM    #29  10:20:39.00  earthquake detected by ARMT, SLVT  (AFAD ML 2.0 at 10:20:26.00, 13.0 s ago)
+MAG      #29  10:20:42.00  magnitude M2.1 from 1 station (SLVT 2.1)
+MAG      #29  10:20:42.50  magnitude M2.1 from 2 stations (BGKT 2.1, SLVT 2.1)
+MAG      #29  10:20:44.00  magnitude M2.1 from 3 stations (ARMT 2.1, BGKT 2.1, SLVT 2.1)
+LOCATE   #29  10:21:29.00  located at 40.810N 28.397E, origin 10:20:27.71, rms 0.02 s from 2 stations
+LOCATE   #29  10:21:30.50  located at 40.868N 28.396E, origin 10:20:28.95, rms 0.38 s from 3 stations
+ALARM    #30  10:22:42.00  earthquake detected by BGKT, SLVT  (AFAD ML 2.2 at 10:22:31.00, 11.0 s ago)
+ALARM    #31  10:22:46.00  earthquake detected by CTKS, EDC  (AFAD ML 2.2 at 10:22:31.00, 15.0 s ago)
+MAG      #31  10:22:46.00  magnitude M3.9 from 1 station (CTKS 3.9)
+MAG      #30  10:22:46.00  magnitude M2.1 from 1 station (SLVT 2.1)
+MAG      #30  10:22:47.50  magnitude M2.1 from 2 stations (BGKT 2.2, SLVT 2.1)
+MAG      #31  10:22:49.00  magnitude M3.1 from 2 stations (BOTS 2.2, CTKS 3.9)
+MAG      #31  10:22:51.00  magnitude M2.2 from 3 stations (BOTS 2.2, CTKS 3.9, EDC 2.2)
+LOCATE   #30  10:23:34.00  located at 41.645N 28.447E, origin 10:22:31.61, rms 0.06 s from 2 stations
+LOCATE   #31  10:23:37.50  located at 40.823N 28.276E, origin 10:22:33.10, rms 0.23 s from 2 stations, left out CTKS
+ALARM    #32  10:24:12.00  earthquake detected by ARMT, CTKS
+MAG      #32  10:24:12.00  magnitude M3.9 from 1 station (CTKS 3.9)
+MAG      #32  10:24:14.00  magnitude M3.0 from 2 stations (ARMT 2.1, CTKS 3.9)
+ALARM    #33  10:26:04.00  earthquake detected by ARMT, BGKT
+MAG      #33  10:26:09.00  magnitude M2.1 from 1 station (BGKT 2.1)
+MAG      #33  10:26:09.00  magnitude M2.9 from 2 stations (BGKT 2.1, CTKS 3.7)
+MAG      #33  10:26:09.50  magnitude M2.2 from 3 stations (ARMT 2.2, BGKT 2.1, CTKS 3.7)
+MAG      #33  10:26:14.50  magnitude M2.2 from 4 stations (ARMT 2.2, BGKT 2.1, CTKS 3.7, SLVT 2.2)
+MAG      #33  10:26:17.00  magnitude M2.2 from 5 stations (ARMT 2.2, BGKT 2.1, BOTS 3.5, CTKS 3.7, SLVT 2.2)
+MAG      #33  10:26:23.00  magnitude M2.3 from 6 stations (ARMT 2.2, BGKT 2.1, BOTS 3.5, CTKS 3.7, EDC 2.3, SLVT 2.2)
+MAG      #33  10:26:24.00  magnitude M2.3 from 7 stations (ARMT 2.2, BGKT 2.1, BOTS 3.5, CTKS 3.7, EDC 2.3, SLVT 2.2, TKR 2.4)
+ALARM    #34  10:26:45.50  earthquake detected by ARMT, BGKT  (AFAD ML 2.7 at 10:26:33.00, 12.5 s ago)
+MAG      #34  10:26:49.50  magnitude M2.5 from 1 station (BGKT 2.5)
+MAG      #34  10:26:50.50  magnitude M2.5 from 2 stations (ARMT 2.6, BGKT 2.5)
+LOCATE   #33  10:27:09.50  located at 40.893N 27.696E, origin 10:26:07.40, rms 0.65 s from 2 stations
+MAG      #33  10:27:09.50  magnitude M2.4 from 7 stations (ARMT 2.2, BGKT 2.1, BOTS 3.3, CTKS 3.7, EDC 2.4, SLVT 2.2, TKR 2.4)
+LOCATE   #33  10:27:10.50  located at 40.846N 28.288E, origin 10:26:06.52, rms 0.61 s from 3 stations
+pick     SLVT  picker window at 10:32:17.00 crosses a gap, skipped
+LOCATE   #34  10:27:37.00  located at 40.860N 28.270E, origin 10:26:34.20, rms 0.01 s from 2 stations
+ALARM    #35  10:27:37.50  earthquake detected by BOTS, CTKS
+MAG      #35  10:27:37.50  magnitude M2.6 from 1 station (BOTS 2.6)
+MAG      #35  10:27:39.50  magnitude M3.4 from 2 stations (BOTS 2.6, CTKS 4.2)
+pick     SLVT  picker window at 10:33:18.00 crosses a gap, skipped
+pick     BGKT  picker window at 10:33:17.50 crosses a gap, skipped
+pick     BGKT  picker window at 10:33:50.00 crosses a gap, skipped
+LOCATE   #35  10:28:26.00  located at 41.219N 27.984E, origin 10:27:21.27, rms 0.79 s from 2 stations
+ALARM    #36  10:28:27.50  earthquake detected by ARMT, CTKS  (AFAD ML 2.7 at 10:28:18.00, 9.5 s ago)
+MAG      #36  10:28:27.50  magnitude M3.8 from 1 station (CTKS 3.8)
+ALARM    #37  10:28:27.50  earthquake detected by BGKT, SLVT  (AFAD ML 2.7 at 10:28:18.00, 9.5 s ago)
+MAG      #36  10:28:32.00  magnitude M3.3 from 2 stations (BOTS 2.8, CTKS 3.8)
+MAG      #37  10:28:32.50  magnitude M2.4 from 1 station (BGKT 2.4)
+MAG      #37  10:28:32.50  magnitude M2.3 from 2 stations (BGKT 2.4, SLVT 2.2)
+MAG      #36  10:28:33.00  magnitude M2.8 from 3 stations (ARMT 2.7, BOTS 2.8, CTKS 3.8)
+MAG      #36  10:28:37.00  magnitude M2.8 from 4 stations (ARMT 2.7, BOTS 2.8, CTKS 3.8, EDC 2.8)
+MAG      #36  10:28:37.50  magnitude M2.8 from 5 stations (ARMT 2.7, BOTS 2.8, CTKS 3.8, EDC 2.8, MRMT 3.4)
+MAG      #37  10:29:19.00  magnitude M2.5 from 2 stations (BGKT 2.9, SLVT 2.2)
+LOCATE   #37  10:29:19.00  located at 40.795N 28.447E, origin 10:28:17.56, rms 0.09 s from 2 stations
+pick     BOTS  picker window at 10:42:56.50 crosses a gap, skipped
+MAG      #37  10:29:19.00  magnitude M2.7 from 2 stations (BGKT 2.9, SLVT 2.6)
+LOCATE   #36  10:29:19.50  located at 39.774N 27.034E, origin 10:27:58.24, rms 0.88 s from 2 stations
+ALARM    #38  10:29:46.50  earthquake detected by BGKT, CTKS  (AFAD ML 2.5 at 10:29:33.00, 13.5 s ago)
+MAG      #38  10:29:48.50  magnitude M4.2 from 1 station (CTKS 4.2)
+MAG      #38  10:29:49.00  magnitude M3.2 from 2 stations (BGKT 2.3, CTKS 4.2)
+MAG      #38  10:29:53.50  magnitude M2.6 from 3 stations (BGKT 2.3, CTKS 4.2, EDC 2.6)
+MAG      #38  10:29:54.00  magnitude M2.5 from 4 stations (BGKT 2.3, BOTS 2.5, CTKS 4.2, EDC 2.6)
+MAG      #38  10:29:54.00  magnitude M2.5 from 5 stations (BGKT 2.3, BOTS 2.5, CTKS 4.2, EDC 2.6, SLVT 2.2)
+pick     SLVT  picker window at 10:37:19.00 crosses a gap, skipped
+pick     SLVT  picker window at 10:37:38.00 crosses a gap, skipped
+ALARM    #39  10:31:15.00  earthquake detected by BGKT, SLVT
+MAG      #39  10:31:19.50  magnitude M3.6 from 1 station (CTKS 3.6)
+MAG      #39  10:31:20.00  magnitude M2.9 from 2 stations (CTKS 3.6, SLVT 2.1)
+MAG      #39  10:31:20.50  magnitude M2.2 from 3 stations (BGKT 2.2, CTKS 3.6, SLVT 2.1)
+MAG      #39  10:31:21.50  magnitude M2.2 from 4 stations (ARMT 2.2, BGKT 2.2, CTKS 3.6, SLVT 2.1)
+MAG      #39  10:31:33.50  magnitude M2.2 from 5 stations (ARMT 2.2, BGKT 2.2, CTKS 3.6, EDC 2.6, SLVT 2.1)
+ALARM    #40  10:32:07.50  earthquake detected by BGKT, BOTS  (AFAD ML 3.1 at 10:31:56.00, 11.5 s ago)
+MAG      #40  10:32:09.50  magnitude M2.5 from 1 station (BOTS 2.5)
+MAG      #40  10:32:11.50  magnitude M3.4 from 2 stations (BOTS 2.5, CTKS 4.3)
+MAG      #40  10:32:11.50  magnitude M2.5 from 3 stations (BOTS 2.5, CTKS 4.3, SLVT 2.3)
+MAG      #40  10:32:12.50  magnitude M2.5 from 4 stations (BGKT 2.5, BOTS 2.5, CTKS 4.3, SLVT 2.3)
+MAG      #40  10:32:13.00  magnitude M2.5 from 5 stations (ARMT 2.5, BGKT 2.5, BOTS 2.5, CTKS 4.3, SLVT 2.3)
+ALARM    #41  10:32:31.00  earthquake detected by EDC, TKR  (AFAD ML 3.5 at 10:32:15.00, 16.0 s ago)
+MAG      #41  10:32:31.00  magnitude M2.6 from 1 station (TKR 2.6)
+MAG      #41  10:32:35.00  magnitude M2.5 from 2 stations (EDC 2.5, TKR 2.6)
+pick     SLVT  picker window at 10:40:08.00 crosses a gap, skipped
+ALARM    #42  10:33:25.50  earthquake detected by BOTS, CTKS  (AFAD ML 3.1 at 10:33:14.00, 11.5 s ago)
+MAG      #42  10:33:29.00  magnitude M3.1 from 1 station (BOTS 3.1)
+MAG      #42  10:33:29.00  magnitude M3.6 from 2 stations (BOTS 3.1, CTKS 4.1)
+MAG      #42  10:33:31.00  magnitude M3.1 from 3 stations (BGKT 3.1, BOTS 3.1, CTKS 4.1)
+MAG      #42  10:33:31.50  magnitude M3.1 from 4 stations (ARMT 3.0, BGKT 3.1, BOTS 3.1, CTKS 4.1)
+MAG      #42  10:33:31.50  magnitude M3.1 from 5 stations (ARMT 3.0, BGKT 3.1, BOTS 3.1, CTKS 4.1, SLVT 2.7)
+MAG      #42  10:33:35.50  magnitude M3.1 from 6 stations (ARMT 3.0, BGKT 3.1, BOTS 3.1, CTKS 4.1, EDC 3.0, SLVT 2.7)
+MAG      #42  10:33:36.00  magnitude M3.0 from 7 stations (ARMT 3.0, BGKT 3.1, BOTS 3.1, CTKS 4.1, EDC 3.0, SLVT 2.7, TKR 2.6)
+MAG      #42  10:34:15.50  magnitude M3.0 from 7 stations (ARMT 3.0, BGKT 3.1, BOTS 2.7, CTKS 4.1, EDC 3.0, SLVT 2.7, TKR 2.6)
+LOCATE   #42  10:34:15.50  located at 40.839N 28.464E, origin 10:33:15.38, rms 0.08 s from 2 stations
+LOCATE   #42  10:34:18.00  located at 40.867N 28.441E, origin 10:33:16.00, rms 0.18 s from 3 stations
+LOCATE   #42  10:34:22.00  located at 40.851N 28.424E, origin 10:33:15.79, rms 0.35 s from 4 stations
+MAG      #42  10:34:22.00  magnitude M2.9 from 7 stations (ARMT 3.0, BGKT 3.1, BOTS 2.7, CTKS 4.0, EDC 2.9, SLVT 2.7, TKR 2.6)
+LOCATE   #42  10:34:22.50  located at 40.846N 28.430E, origin 10:33:15.82, rms 0.33 s from 5 stations
+ALARM    #43  10:35:42.00  earthquake detected by BGKT, SLVT
+MAG      #43  10:35:44.00  magnitude M2.1 from 1 station (SLVT 2.1)
+MAG      #43  10:35:45.00  magnitude M2.3 from 2 stations (BGKT 2.5, SLVT 2.1)
+MAG      #43  10:35:46.00  magnitude M2.2 from 3 stations (ARMT 2.2, BGKT 2.5, SLVT 2.1)
+LOCATE   #43  10:36:31.50  located at 40.690N 28.102E, origin 10:35:25.78, rms 0.70 s from 2 stations
+LOCATE   #43  10:36:32.50  located at 40.723N 28.166E, origin 10:35:27.03, rms 1.01 s from 3 stations
+MAG      #43  10:36:32.50  magnitude M2.2 from 3 stations (ARMT 2.2, BGKT 2.4, SLVT 2.1)
+ALARM    #44  10:36:32.50  earthquake detected by BGKT, CTKS
+MAG      #44  10:36:34.50  magnitude M3.9 from 1 station (CTKS 3.9)
+MAG      #44  10:36:35.50  magnitude M3.1 from 2 stations (BGKT 2.3, CTKS 3.9)
+MAG      #44  10:36:41.50  magnitude M2.3 from 3 stations (BGKT 2.3, CTKS 3.9, SLVT 2.1)
+LOCATE   #44  10:37:22.00  located at 40.859N 28.375E, origin 10:36:21.18, rms 0.15 s from 2 stations
+ALARM    #45  10:37:28.00  earthquake detected by ARMT, BGKT
+MAG      #45  10:37:31.00  magnitude M2.4 from 1 station (BGKT 2.4)
+MAG      #45  10:37:31.00  magnitude M3.0 from 2 stations (BGKT 2.4, CTKS 3.5)
+MAG      #45  10:37:32.50  magnitude M2.4 from 3 stations (ARMT 2.2, BGKT 2.4, CTKS 3.5)
+MAG      #45  10:37:32.50  magnitude M2.3 from 4 stations (ARMT 2.2, BGKT 2.4, CTKS 3.5, SLVT 2.2)
+ALARM    #46  10:38:29.00  earthquake detected by BGKT, CTKS
+MAG      #46  10:38:31.00  magnitude M3.7 from 1 station (CTKS 3.7)
+MAG      #46  10:38:31.50  magnitude M3.1 from 2 stations (BGKT 2.5, CTKS 3.7)
+MAG      #46  10:38:32.50  magnitude M2.5 from 3 stations (ARMT 2.2, BGKT 2.5, CTKS 3.7)
+MAG      #46  10:38:35.50  magnitude M2.4 from 4 stations (ARMT 2.2, BGKT 2.5, BOTS 2.3, CTKS 3.7)
+MAG      #46  10:38:36.00  magnitude M2.3 from 5 stations (ARMT 2.2, BGKT 2.5, BOTS 2.3, CTKS 3.7, EDC 2.3)
+ALARM    #47  10:39:10.50  earthquake detected by BOTS, CTKS  (AFAD ML 2.7 at 10:39:02.00, 8.5 s ago)
+MAG      #47  10:39:12.50  magnitude M3.5 from 1 station (CTKS 3.5)
+MAG      #47  10:39:16.00  magnitude M3.0 from 2 stations (BOTS 2.5, CTKS 3.5)
+MAG      #47  10:39:18.50  magnitude M2.5 from 3 stations (BOTS 2.5, CTKS 3.5, SLVT 2.2)
+MAG      #47  10:39:20.50  magnitude M2.5 from 4 stations (ARMT 2.4, BOTS 2.5, CTKS 3.5, SLVT 2.2)
+MAG      #47  10:39:20.50  magnitude M2.4 from 5 stations (ARMT 2.4, BOTS 2.5, CTKS 3.5, EDC 2.2, SLVT 2.2)
+LOCATE   #47  10:40:05.00  located at 39.110N 30.186E, origin 10:38:23.75, rms 0.45 s from 2 stations
+MAG      #47  10:40:07.00  magnitude M2.6 from 5 stations (ARMT 2.8, BOTS 2.6, CTKS 3.5, EDC 2.2, SLVT 2.2)
+LOCATE   #47  10:40:07.00  located at 42.031N 24.918E, origin 10:38:23.85, rms 0.55 s from 3 stations, left out ARMT
+ALARM    #48  10:40:17.50  earthquake detected by BOTS, SLVT
+MAG      #48  10:40:19.50  magnitude M2.3 from 1 station (BOTS 2.3)
+MAG      #48  10:40:21.50  magnitude M2.2 from 2 stations (BOTS 2.3, SLVT 2.2)
+MAG      #48  10:40:23.50  magnitude M2.2 from 3 stations (BGKT 2.2, BOTS 2.3, SLVT 2.2)
+MAG      #48  10:40:27.50  magnitude M2.3 from 4 stations (BGKT 2.2, BOTS 2.3, CTKS 4.0, SLVT 2.2)
+MAG      #48  10:41:06.00  magnitude M2.4 from 4 stations (BGKT 2.2, BOTS 2.5, CTKS 4.0, SLVT 2.2)
+LOCATE   #48  10:41:10.00  located at 41.306N 28.067E, origin 10:40:06.98, rms 0.07 s from 2 stations
+ALARM    #49  10:41:28.50  earthquake detected by BGKT, BOTS  (AFAD ML 3.2 at 10:41:19.00, 9.5 s ago)
+MAG      #49  10:41:33.50  magnitude M2.6 from 1 station (BOTS 2.6)
+MAG      #49  10:41:33.50  magnitude M3.3 from 2 stations (BOTS 2.6, CTKS 4.0)
+MAG      #49  10:41:34.00  magnitude M2.8 from 3 stations (BGKT 2.8, BOTS 2.6, CTKS 4.0)
+MAG      #49  10:41:34.00  magnitude M2.7 from 4 stations (BGKT 2.8, BOTS 2.6, CTKS 4.0, SLVT 2.5)
+MAG      #49  10:41:34.50  magnitude M2.8 from 5 stations (ARMT 2.8, BGKT 2.8, BOTS 2.6, CTKS 4.0, SLVT 2.5)
+MAG      #49  10:41:38.50  magnitude M2.7 from 6 stations (ARMT 2.8, BGKT 2.8, BOTS 2.6, CTKS 4.0, EDC 2.5, SLVT 2.5)
+MAG      #49  10:41:39.50  magnitude M2.6 from 7 stations (ARMT 2.8, BGKT 2.8, BOTS 2.6, CTKS 4.0, EDC 2.5, SLVT 2.5, TKR 2.5)
+MAG      #49  10:42:20.00  magnitude M2.8 from 7 stations (ARMT 2.8, BGKT 2.8, BOTS 2.9, CTKS 4.0, EDC 2.5, SLVT 2.5, TKR 2.5)
+LOCATE   #49  10:42:20.00  located at 40.794N 28.514E, origin 10:41:18.51, rms 0.26 s from 2 stations
+LOCATE   #49  10:42:20.50  located at 40.836N 28.450E, origin 10:41:19.95, rms 0.48 s from 3 stations
+LOCATE   #49  10:42:20.50  located at 40.815N 28.463E, origin 10:41:19.61, rms 0.45 s from 4 stations
+MAG      #49  10:42:20.50  magnitude M2.9 from 7 stations (ARMT 2.8, BGKT 2.9, BOTS 2.9, CTKS 4.2, EDC 2.5, SLVT 2.9, TKR 2.5)
+LOCATE   #49  10:42:21.00  located at 40.856N 28.442E, origin 10:41:20.52, rms 0.50 s from 5 stations
+LOCATE   #49  10:42:25.00  located at 40.841N 28.427E, origin 10:41:20.25, rms 0.53 s from 6 stations
+LOCATE   #49  10:42:26.00  located at 40.845N 28.433E, origin 10:41:20.31, rms 0.51 s from 7 stations
+ALARM    #50  10:42:37.00  earthquake detected by BOTS, CTKS
+MAG      #50  10:42:37.50  magnitude M2.5 from 1 station (BOTS 2.5)
+MAG      #50  10:42:39.00  magnitude M2.3 from 2 stations (BOTS 2.5, SLVT 2.2)
+MAG      #50  10:42:40.00  magnitude M2.5 from 3 stations (BOTS 2.5, CTKS 3.5, SLVT 2.2)
+MAG      #50  10:42:41.50  magnitude M2.6 from 4 stations (BGKT 2.6, BOTS 2.5, CTKS 3.5, SLVT 2.2)
+ALARM    #51  10:44:04.50  earthquake detected by BGKT, SLVT  (AFAD ML 2.2 at 10:43:53.00, 11.5 s ago)
+MAG      #51  10:44:08.50  magnitude M3.7 from 1 station (CTKS 3.7)
+MAG      #51  10:44:09.00  magnitude M3.0 from 2 stations (CTKS 3.7, SLVT 2.2)
+MAG      #51  10:44:09.50  magnitude M2.4 from 3 stations (BGKT 2.4, CTKS 3.7, SLVT 2.2)
+MAG      #51  10:44:10.50  magnitude M2.4 from 4 stations (ARMT 2.4, BGKT 2.4, CTKS 3.7, SLVT 2.2)
+MAG      #51  10:44:14.00  magnitude M2.4 from 5 stations (ARMT 2.4, BGKT 2.4, CTKS 3.7, EDC 2.1, SLVT 2.2)
+LOCATE   #51  10:44:56.00  located at 41.615N 28.542E, origin 10:43:54.44, rms 0.03 s from 2 stations
+
+------------------------------------------------------------------------------
+REPORT  8 stations, 2025-04-23 09:00:02.06 to 10:45:00.01 UTC
+------------------------------------------------------------------------------
+
+Event #1: detected M4.1 earthquake, not located
+  alarm      09:05:23.50 UTC by BGKT, CTKS
+  magnitude  M4.2 0.5 s after the alarm, M4.1 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #2: detected M3.4 earthquake at 40.868N 28.277E, origin 09:13:07.07 UTC
+  alarm      09:13:15.00 UTC by BOTS, SLVT; later ARMT, BGKT, CTKS, EDC, TKR
+  magnitude  M3.4 2.5 s after the alarm, M3.4 final from 7 stations
+  location   rms 1.46 s from 6 stations
+  AFAD       ML 3.9 at 09:13:05.00 UTC: alarm 10.0 s after origin, magnitude -0.5, epicentre 6.1 km off, origin +2.1 s
+  S wave     had travelled 34 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          26 km   09:13:15.88 UTC (picked)      +0.9 s  before S
+             SLVT          44 km   09:13:20.32 UTC (picked)      +5.3 s  before S
+             CTKS          51 km   09:13:21.06 UTC (picked)      +6.1 s  before S
+             MRMT          59 km   09:13:22.01 UTC (predicted)    +7.0 s  before S
+             TKR           60 km   09:13:26.20 UTC (picked)     +11.2 s  before S
+             BGKT          60 km   09:13:23.76 UTC (picked)      +8.8 s  before S
+             EDC           62 km   09:13:22.92 UTC (predicted)    +7.9 s  before S
+             ARMT          62 km   09:13:25.22 UTC (picked)     +10.2 s  before S
+
+Event #3: detected M5.2 earthquake at 40.760N 28.281E, origin 09:49:10.35 UTC
+  alarm      09:49:20.50 UTC by BOTS, SLVT; later ARMT, BGKT, CTKS, EDC, TKR
+  magnitude  M4.9 2.0 s after the alarm, M5.2 final from 7 stations
+  location   rms 0.38 s from 4 stations
+  AFAD       MW 6.2 at 09:49:10.00 UTC: alarm 10.5 s after origin, magnitude -1.0, epicentre 10.9 km off, origin +0.4 s
+  S wave     had travelled 36 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          26 km   09:49:17.43 UTC (predicted)    -3.1 s  after S
+             SLVT          43 km   09:49:26.00 UTC (picked)      +5.5 s  before S
+             CTKS          50 km   09:49:26.08 UTC (picked)      +5.6 s  before S
+             MRMT          59 km   09:49:27.00 UTC (predicted)    +6.5 s  before S
+             TKR           59 km   09:49:30.22 UTC (picked)      +9.7 s  before S
+             BGKT          60 km   09:49:28.98 UTC (picked)      +8.5 s  before S
+             ARMT          63 km   09:49:28.00 UTC (predicted)    +7.5 s  before S
+             EDC           63 km   09:49:28.00 UTC (predicted)    +7.5 s  before S
+
+Event #4: detected M4.2 earthquake at 40.858N 28.345E, origin 09:51:21.15 UTC
+  alarm      09:51:30.00 UTC by BGKT, BOTS; later ARMT, CTKS
+  magnitude  M3.9 3.0 s after the alarm, M4.2 final from 4 stations
+  location   rms 0.27 s from 3 stations
+  AFAD       MW 5.9 at 09:51:19.00 UTC: alarm 11.0 s after origin, magnitude -1.7, epicentre 3.8 km off, origin +2.2 s
+  S wave     had travelled 38 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          34 km   09:51:31.62 UTC (picked)      +1.6 s  before S
+             SLVT          46 km   09:51:32.20 UTC (predicted)    +2.2 s  before S
+             CTKS          48 km   09:51:32.86 UTC (predicted)    +2.9 s  before S
+             ARMT          54 km   09:51:37.28 UTC (picked)      +7.3 s  before S
+             BGKT          54 km   09:51:36.04 UTC (picked)      +6.0 s  before S
+             EDC           66 km   09:51:38.03 UTC (predicted)    +8.0 s  before S
+             MRMT          67 km   09:51:38.23 UTC (predicted)    +8.2 s  before S
+             TKR           69 km   09:51:38.70 UTC (predicted)    +8.7 s  before S
+
+Event #5: detected M4.4 earthquake at 40.861N 28.350E, origin 09:52:22.57 UTC
+  alarm      09:52:35.50 UTC by ARMT, BGKT; later CTKS
+  magnitude  M4.0 1.0 s after the alarm, M4.4 final from 3 stations
+  location   rms 0.79 s from 3 stations
+  AFAD       ML 4.5 at 09:52:19.00 UTC: alarm 16.5 s after origin, magnitude -0.1, epicentre 6.2 km off, origin +3.6 s
+  S wave     had travelled 57 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          31 km   09:52:28.08 UTC (predicted)    -7.4 s  after S
+             SLVT          45 km   09:52:31.88 UTC (predicted)    -3.6 s  after S
+             CTKS          49 km   09:52:34.58 UTC (picked)      -0.9 s  after S
+             BGKT          56 km   09:52:37.52 UTC (picked)      +2.0 s  before S
+             ARMT          57 km   09:52:38.76 UTC (picked)      +3.3 s  before S
+             MRMT          64 km   09:52:37.48 UTC (predicted)    +2.0 s  before S
+             EDC           65 km   09:52:37.66 UTC (predicted)    +2.2 s  before S
+             TKR           65 km   09:52:37.80 UTC (predicted)    +2.3 s  before S
+
+Event #6: detected M3.5 earthquake at 40.820N 28.437E, origin 09:55:04.34 UTC
+  alarm      09:55:17.00 UTC by BGKT, SLVT; later CTKS
+  magnitude  M3.5 2.0 s after the alarm, M3.5 final from 3 stations
+  location   rms 0.12 s from 2 stations
+  AFAD       ML 3.3 at 09:55:03.00 UTC: alarm 14.0 s after origin, magnitude +0.2, epicentre 5.3 km off, origin +1.3 s
+  S wave     had travelled 49 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          38 km   09:55:14.14 UTC (predicted)    -2.9 s  after S
+             CTKS          43 km   09:55:15.34 UTC (predicted)    -1.7 s  after S
+             SLVT          44 km   09:55:18.82 UTC (picked)      +1.8 s  before S
+             BGKT          47 km   09:55:18.58 UTC (picked)      +1.6 s  before S
+             ARMT          51 km   09:55:17.62 UTC (predicted)    +0.6 s  before S
+             EDC           73 km   09:55:24.05 UTC (predicted)    +7.1 s  before S
+             TKR           74 km   09:55:24.35 UTC (predicted)    +7.4 s  before S
+             MRMT          75 km   09:55:24.44 UTC (predicted)    +7.4 s  before S
+
+Event #7: detected M3.5 earthquake, not located
+  alarm      09:56:01.50 UTC by BGKT, BOTS; later CTKS
+  magnitude  M3.3 2.0 s after the alarm, M3.5 final from 3 stations
+  AFAD       ML 2.8 at 09:55:49.00 UTC: alarm 12.5 s after origin, magnitude +0.7
+  S wave     had travelled 43 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          38 km   09:55:59.93 UTC (predicted)    -1.6 s  after S
+             CTKS          43 km   09:56:01.43 UTC (predicted)    -0.1 s  after S
+             SLVT          44 km   09:56:01.70 UTC (predicted)    +0.2 s  before S
+             BGKT          48 km   09:56:28.80 UTC (picked)     +27.3 s  before S
+             ARMT          51 km   09:56:03.80 UTC (predicted)    +2.3 s  before S
+             EDC           73 km   09:56:09.87 UTC (predicted)    +8.4 s  before S
+             TKR           74 km   09:56:10.12 UTC (predicted)    +8.6 s  before S
+             MRMT          74 km   09:56:10.20 UTC (predicted)    +8.7 s  before S
+
+Event #8: detected M2.5 earthquake, not located
+  alarm      09:58:57.50 UTC by BGKT, SLVT
+  magnitude  M2.5 1.5 s after the alarm, M2.5 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #9: detected M3.4 earthquake at 40.818N 28.344E, origin 09:59:30.92 UTC
+  alarm      09:59:40.00 UTC by BGKT, BOTS, CTKS, SLVT; later ARMT, EDC, TKR
+  magnitude  M3.5 2.0 s after the alarm, M3.4 final from 7 stations
+  location   rms 0.38 s from 5 stations
+  AFAD       ML 3.6 at 09:59:29.00 UTC: alarm 11.0 s after origin, magnitude -0.2, epicentre 4.3 km off, origin +1.9 s
+  S wave     had travelled 38 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          32 km   09:59:38.34 UTC (predicted)    -1.7 s  after S
+             SLVT          45 km   09:59:45.06 UTC (picked)      +5.1 s  before S
+             CTKS          49 km   09:59:43.09 UTC (predicted)    +3.1 s  before S
+             BGKT          56 km   09:59:46.38 UTC (picked)      +6.4 s  before S
+             ARMT          56 km   09:59:46.78 UTC (picked)      +6.8 s  before S
+             MRMT          65 km   09:59:47.61 UTC (predicted)    +7.6 s  before S
+             EDC           65 km   09:59:49.96 UTC (picked)     +10.0 s  before S
+             TKR           66 km   09:59:51.70 UTC (picked)     +11.7 s  before S
+
+Event #10: detected M3.7 earthquake at 40.839N 28.380E, origin 10:01:03.84 UTC
+  alarm      10:01:12.00 UTC by BOTS, SLVT; later ARMT, BGKT, CTKS, EDC, MRMT, TKR
+  magnitude  M3.0 4.0 s after the alarm, M3.7 final from 8 stations
+  location   rms 0.46 s from 6 stations
+  AFAD       MW 4.8 at 10:01:02.00 UTC: alarm 10.0 s after origin, magnitude -1.1, epicentre 3.8 km off, origin +1.8 s
+  S wave     had travelled 34 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          34 km   10:01:15.34 UTC (picked)      +3.3 s  before S
+             SLVT          45 km   10:01:17.56 UTC (picked)      +5.6 s  before S
+             CTKS          47 km   10:01:15.63 UTC (predicted)    +3.6 s  before S
+             BGKT          53 km   10:01:18.30 UTC (picked)      +6.3 s  before S
+             ARMT          54 km   10:01:19.54 UTC (picked)      +7.5 s  before S
+             EDC           67 km   10:01:23.94 UTC (picked)     +11.9 s  before S
+             MRMT          68 km   10:01:21.54 UTC (predicted)    +9.5 s  before S
+             TKR           69 km   10:01:25.42 UTC (picked)     +13.4 s  before S
+
+Event #11: detected M3.8 earthquake at 42.579N 30.011E, origin 10:01:38.83 UTC
+  alarm      10:02:20.00 UTC by ARMT, BGKT, BOTS, SLVT; later CTKS, EDC, MRMT, TKR
+  magnitude  M3.8 4.0 s after the alarm, M3.8 final from 8 stations
+  location   rms 0.05 s from 2 stations
+  AFAD       MW 4.5 at 10:02:10.00 UTC: alarm 10.0 s after origin, magnitude -0.7, epicentre 229.1 km off, origin -31.2 s
+  S wave     had travelled 34 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             CTKS          39 km   10:02:21.45 UTC (predicted)    +1.5 s  before S
+             BOTS          40 km   10:02:21.60 UTC (predicted)    +1.6 s  before S
+             SLVT          43 km   10:02:47.62 UTC (picked)     +27.6 s  before S
+             BGKT          43 km   10:02:22.51 UTC (predicted)    +2.5 s  before S
+             ARMT          51 km   10:02:48.36 UTC (picked)     +28.4 s  before S
+             TKR           77 km   10:02:56.22 UTC (picked)     +36.2 s  before S
+             EDC           77 km   10:02:54.74 UTC (picked)     +34.7 s  before S
+             MRMT          78 km   10:02:32.44 UTC (predicted)   +12.4 s  before S
+
+Event #12: detected M3.5 earthquake, not located
+  alarm      10:04:47.50 UTC by BGKT, CTKS
+  magnitude  M3.3 at the alarm, M3.5 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #13: detected M2.5 earthquake, not located
+  alarm      10:05:55.50 UTC by ARMT, BGKT; later CTKS, SLVT
+  magnitude  M2.1 3.5 s after the alarm, M2.5 final from 3 stations
+  AFAD       ML 3.0 at 10:05:43.00 UTC: alarm 12.5 s after origin, magnitude -0.5
+  S wave     had travelled 43 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          28 km   10:05:51.35 UTC (predicted)    -4.1 s  after S
+             SLVT          44 km   10:05:55.81 UTC (predicted)    +0.3 s  before S
+             CTKS          50 km   10:05:57.43 UTC (predicted)    +1.9 s  before S
+             BGKT          59 km   10:05:59.90 UTC (predicted)    +4.4 s  before S
+             ARMT          60 km   10:06:01.52 UTC (picked)      +6.0 s  before S
+             MRMT          61 km   10:06:00.60 UTC (predicted)    +5.1 s  before S
+             TKR           62 km   10:06:00.90 UTC (predicted)    +5.4 s  before S
+             EDC           63 km   10:06:01.13 UTC (predicted)    +5.6 s  before S
+
+Event #14: detected M2.2 earthquake, not located
+  alarm      10:06:42.00 UTC by BGKT, SLVT; later CTKS
+  magnitude  M2.2 2.0 s after the alarm, M2.2 final from 3 stations
+  AFAD       no matching catalogue event
+
+Event #15: detected M2.6 earthquake at 43.172N 27.664E, origin 10:06:20.16 UTC
+  alarm      10:07:11.00 UTC by ARMT, BOTS; later EDC, TKR
+  magnitude  M2.6 3.5 s after the alarm, M2.6 final from 4 stations
+  location   rms 0.76 s from 2 stations
+  AFAD       ML 3.4 at 10:07:01.00 UTC: alarm 10.0 s after origin, magnitude -0.8, epicentre 263.0 km off, origin -40.8 s
+  S wave     had travelled 34 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          37 km   10:07:13.84 UTC (picked)      +2.8 s  before S
+             CTKS          42 km   10:07:13.20 UTC (predicted)    +2.2 s  before S
+             SLVT          43 km   10:07:13.41 UTC (predicted)    +2.4 s  before S
+             BGKT          47 km   10:07:14.67 UTC (predicted)    +3.7 s  before S
+             ARMT          52 km   10:07:48.22 UTC (picked)     +37.2 s  before S
+             TKR           73 km   10:07:24.64 UTC (picked)     +13.6 s  before S
+             EDC           73 km   10:07:49.56 UTC (picked)     +38.6 s  before S
+             MRMT          74 km   10:07:22.17 UTC (predicted)   +11.2 s  before S
+
+Event #16: detected M3.2 earthquake, not located
+  alarm      10:07:48.00 UTC by BGKT, CTKS
+  magnitude  M2.5 at the alarm, M3.2 final from 2 stations
+  AFAD       ML 3.2 at 10:07:30.00 UTC: alarm 18.0 s after origin, magnitude +0.0
+  S wave     had travelled 63 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          34 km   10:07:39.87 UTC (predicted)    -8.1 s  after S
+             SLVT          48 km   10:07:43.75 UTC (predicted)    -4.3 s  after S
+             CTKS          51 km   10:07:44.63 UTC (predicted)    -3.4 s  after S
+             ARMT          54 km   10:07:45.67 UTC (predicted)    -2.3 s  after S
+             BGKT          57 km   10:07:48.26 UTC (picked)      +0.3 s  before S
+             EDC           63 km   10:07:48.22 UTC (predicted)    +0.2 s  before S
+             MRMT          65 km   10:07:48.55 UTC (predicted)    +0.6 s  before S
+             TKR           68 km   10:07:49.42 UTC (predicted)    +1.4 s  before S
+
+Event #17: detected M3.0 earthquake, not located
+  alarm      10:08:45.50 UTC by BGKT, CTKS
+  magnitude  M2.1 at the alarm, M3.0 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #18: detected M2.1 earthquake, not located
+  alarm      10:09:41.50 UTC by BGKT, SLVT
+  magnitude  M2.1 at the alarm, M2.1 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #19: detected M3.3 earthquake, not located
+  alarm      10:10:24.00 UTC by BGKT, CTKS
+  magnitude  M2.2 at the alarm, M3.3 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #20: detected M2.1 earthquake at 40.895N 28.432E, origin 10:11:09.53 UTC
+  alarm      10:11:18.50 UTC by ARMT, BGKT; later SLVT
+  magnitude  M2.1 3.5 s after the alarm, M2.1 final from 3 stations
+  location   rms 0.65 s from 2 stations
+  AFAD       no matching catalogue event
+  S wave     had travelled 30 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             CTKS          39 km   10:11:20.91 UTC (predicted)    +2.4 s  before S
+             BOTS          39 km   10:11:21.11 UTC (predicted)    +2.6 s  before S
+             SLVT          42 km   10:11:21.30 UTC (picked)      +2.8 s  before S
+             BGKT          43 km   10:11:22.54 UTC (picked)      +4.0 s  before S
+             ARMT          52 km   10:11:24.55 UTC (predicted)    +6.1 s  before S
+             TKR           76 km   10:11:31.43 UTC (predicted)   +12.9 s  before S
+             EDC           78 km   10:11:31.92 UTC (predicted)   +13.4 s  before S
+             MRMT          78 km   10:11:32.07 UTC (predicted)   +13.6 s  before S
+
+Event #21: detected M3.0 earthquake, not located
+  alarm      10:12:34.00 UTC by CTKS, SLVT
+  magnitude  M2.1 at the alarm, M3.0 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #22: detected M2.3 earthquake at 40.624N 28.209E, origin 10:13:56.63 UTC
+  alarm      10:14:05.50 UTC by BOTS, CTKS; later ARMT, BGKT, SLVT
+  magnitude  M2.4 5.0 s after the alarm, M2.3 final from 5 stations
+  location   rms 0.03 s from 2 stations
+  AFAD       ML 2.7 at 10:13:56.00 UTC: alarm 9.5 s after origin, magnitude -0.4, epicentre 33.5 km off, origin +0.6 s
+  S wave     had travelled 33 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          39 km   10:14:09.84 UTC (picked)      +4.3 s  before S
+             CTKS          41 km   10:14:07.77 UTC (predicted)    +2.3 s  before S
+             SLVT          43 km   10:14:26.42 UTC (picked)     +20.9 s  before S
+             BGKT          45 km   10:14:27.16 UTC (picked)     +21.7 s  before S
+             ARMT          51 km   10:14:12.80 UTC (picked)      +7.3 s  before S
+             TKR           76 km   10:14:17.68 UTC (predicted)   +12.2 s  before S
+             EDC           76 km   10:14:17.72 UTC (predicted)   +12.2 s  before S
+             MRMT          77 km   10:14:18.02 UTC (predicted)   +12.5 s  before S
+
+Event #23: detected M2.2 earthquake, not located
+  alarm      10:15:18.50 UTC by BGKT, CTKS; later SLVT
+  magnitude  M2.2 at the alarm, M2.2 final from 3 stations
+  AFAD       no matching catalogue event
+
+Event #24: detected M2.3 earthquake, not located
+  alarm      10:15:33.00 UTC by ARMT, BOTS
+  magnitude  M2.4 at the alarm, M2.3 final from 2 stations
+  AFAD       ML 2.4 at 10:15:19.00 UTC: alarm 14.0 s after origin, magnitude -0.1
+  S wave     had travelled 48 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          31 km   10:15:28.13 UTC (predicted)    -4.9 s  after S
+             SLVT          38 km   10:15:30.01 UTC (predicted)    -3.0 s  after S
+             CTKS          40 km   10:15:30.61 UTC (predicted)    -2.4 s  after S
+             BGKT          48 km   10:15:32.90 UTC (predicted)    -0.1 s  after S
+             ARMT          58 km   10:15:35.75 UTC (predicted)    +2.8 s  before S
+             TKR           68 km   10:15:38.45 UTC (predicted)    +5.5 s  before S
+             MRMT          71 km   10:15:39.41 UTC (predicted)    +6.4 s  before S
+             EDC           73 km   10:15:40.09 UTC (predicted)    +7.1 s  before S
+
+Event #25: detected M2.3 earthquake, not located
+  alarm      10:16:02.00 UTC by BGKT, SLVT; later CTKS, TKR
+  magnitude  M2.3 5.0 s after the alarm, M2.3 final from 4 stations
+  AFAD       no matching catalogue event
+
+Event #26: detected M2.8 earthquake at 40.932N 28.404E, origin 10:16:23.62 UTC
+  alarm      10:16:39.00 UTC by ARMT, EDC
+  magnitude  M2.7 0.5 s after the alarm, M2.8 final from 2 stations
+  location   rms 0.15 s from 2 stations
+  AFAD       ML 3.4 at 10:16:23.00 UTC: alarm 16.0 s after origin, magnitude -0.6, epicentre 9.2 km off, origin +0.6 s
+  S wave     had travelled 56 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          41 km   10:16:34.78 UTC (predicted)    -4.2 s  after S
+             CTKS          43 km   10:16:35.54 UTC (predicted)    -3.5 s  after S
+             SLVT          46 km   10:16:36.25 UTC (predicted)    -2.7 s  after S
+             BGKT          47 km   10:16:36.47 UTC (predicted)    -2.5 s  after S
+             ARMT          49 km   10:16:39.80 UTC (picked)      +0.8 s  before S
+             EDC           74 km   10:16:46.66 UTC (picked)      +7.7 s  before S
+             MRMT          76 km   10:16:44.85 UTC (predicted)    +5.9 s  before S
+             TKR           77 km   10:16:44.97 UTC (predicted)    +6.0 s  before S
+
+Event #27: detected M2.2 earthquake at 40.868N 28.363E, origin 10:18:52.12 UTC
+  alarm      10:19:03.50 UTC by BGKT, BOTS, SLVT; later ARMT, CTKS, EDC
+  magnitude  M2.1 1.0 s after the alarm, M2.2 final from 6 stations
+  location   rms 1.92 s from 5 stations
+  AFAD       ML 2.1 at 10:18:51.00 UTC: alarm 12.5 s after origin, magnitude +0.1, epicentre 10.6 km off, origin +1.1 s
+  S wave     had travelled 43 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          28 km   10:19:03.12 UTC (picked)      -0.4 s  after S
+             SLVT          44 km   10:19:06.84 UTC (picked)      +3.3 s  before S
+             CTKS          50 km   10:19:45.46 UTC (picked)     +42.0 s  before S
+             BGKT          59 km   10:19:02.56 UTC (picked)      -0.9 s  after S
+             ARMT          60 km   10:19:10.74 UTC (picked)      +7.2 s  before S
+             MRMT          61 km   10:19:08.59 UTC (predicted)    +5.1 s  before S
+             TKR           62 km   10:19:08.77 UTC (predicted)    +5.3 s  before S
+             EDC           63 km   10:19:12.02 UTC (picked)      +8.5 s  before S
+
+Event #28: detected M3.0 earthquake, not located
+  alarm      10:19:51.00 UTC by CTKS, SLVT
+  magnitude  M3.9 0.5 s after the alarm, M3.0 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #29: detected M2.1 earthquake at 40.868N 28.396E, origin 10:20:28.95 UTC
+  alarm      10:20:39.00 UTC by ARMT, BGKT, SLVT
+  magnitude  M2.1 3.0 s after the alarm, M2.1 final from 3 stations
+  location   rms 0.38 s from 3 stations
+  AFAD       ML 2.0 at 10:20:26.00 UTC: alarm 13.0 s after origin, magnitude +0.1, epicentre 3.7 km off, origin +3.0 s
+  S wave     had travelled 45 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          34 km   10:20:35.85 UTC (predicted)    -3.1 s  after S
+             SLVT          41 km   10:20:42.06 UTC (picked)      +3.1 s  before S
+             CTKS          42 km   10:20:38.25 UTC (predicted)    -0.7 s  after S
+             BGKT          49 km   10:20:42.80 UTC (picked)      +3.8 s  before S
+             ARMT          55 km   10:20:44.54 UTC (picked)      +5.5 s  before S
+             TKR           70 km   10:20:46.05 UTC (predicted)    +7.1 s  before S
+             MRMT          71 km   10:20:46.45 UTC (predicted)    +7.5 s  before S
+             EDC           72 km   10:20:46.63 UTC (predicted)    +7.6 s  before S
+
+Event #30: detected M2.2 earthquake at 41.645N 28.447E, origin 10:22:31.61 UTC
+  alarm      10:22:42.00 UTC by BGKT, SLVT
+  magnitude  M2.1 4.0 s after the alarm, M2.2 final from 2 stations
+  location   rms 0.06 s from 2 stations
+  AFAD       no matching catalogue event
+  S wave     had travelled 35 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             CTKS          46 km   10:22:44.97 UTC (predicted)    +3.0 s  before S
+             SLVT          50 km   10:22:46.30 UTC (picked)      +4.3 s  before S
+             BGKT          58 km   10:22:48.52 UTC (picked)      +6.5 s  before S
+             BOTS          83 km   10:22:55.38 UTC (predicted)   +13.4 s  before S
+             TKR          105 km   10:23:01.84 UTC (predicted)   +19.8 s  before S
+             ARMT         125 km   10:23:07.39 UTC (predicted)   +25.4 s  before S
+             MRMT         136 km   10:23:10.59 UTC (predicted)   +28.6 s  before S
+             EDC          153 km   10:23:15.29 UTC (predicted)   +33.3 s  before S
+
+Event #31: detected M2.2 earthquake at 40.823N 28.276E, origin 10:22:33.10 UTC
+  alarm      10:22:46.00 UTC by CTKS, EDC; later BOTS
+  magnitude  M3.9 at the alarm, M2.2 final from 3 stations
+  location   rms 0.23 s from 2 stations
+  AFAD       ML 2.2 at 10:22:31.00 UTC: alarm 15.0 s after origin, magnitude +0.0, epicentre 1.4 km off, origin +2.1 s
+  S wave     had travelled 52 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          31 km   10:22:42.58 UTC (picked)      -3.4 s  after S
+             SLVT          45 km   10:22:43.95 UTC (predicted)    -2.0 s  after S
+             CTKS          49 km   10:22:46.20 UTC (picked)      +0.2 s  before S
+             BGKT          56 km   10:22:47.19 UTC (predicted)    +1.2 s  before S
+             ARMT          57 km   10:22:47.34 UTC (predicted)    +1.3 s  before S
+             MRMT          64 km   10:22:49.50 UTC (predicted)    +3.5 s  before S
+             EDC           65 km   10:22:51.30 UTC (picked)      +5.3 s  before S
+             TKR           66 km   10:22:49.87 UTC (predicted)    +3.9 s  before S
+
+Event #32: detected M3.0 earthquake, not located
+  alarm      10:24:12.00 UTC by ARMT, CTKS
+  magnitude  M3.9 at the alarm, M3.0 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #33: detected M2.4 earthquake at 40.846N 28.288E, origin 10:26:06.52 UTC
+  alarm      10:26:04.00 UTC by ARMT, BGKT; later BOTS, CTKS, EDC, SLVT, TKR
+  magnitude  M2.1 5.0 s after the alarm, M2.4 final from 7 stations
+  location   rms 0.61 s from 3 stations
+  AFAD       ML 3.0 at 10:26:05.00 UTC: alarm -1.0 s after origin, magnitude -0.6, epicentre 4.9 km off, origin +1.5 s
+  S wave     had travelled 0 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          26 km   10:26:15.86 UTC (picked)     +11.9 s  before S
+             SLVT          43 km   10:26:17.33 UTC (predicted)   +13.3 s  before S
+             CTKS          49 km   10:26:19.20 UTC (predicted)   +15.2 s  before S
+             BGKT          59 km   10:26:21.90 UTC (predicted)   +17.9 s  before S
+             TKR           60 km   10:26:25.74 UTC (picked)     +21.7 s  before S
+             MRMT          61 km   10:26:22.43 UTC (predicted)   +18.4 s  before S
+             ARMT          62 km   10:26:22.81 UTC (predicted)   +18.8 s  before S
+             EDC           64 km   10:26:24.98 UTC (picked)     +21.0 s  before S
+
+Event #34: detected M2.5 earthquake at 40.860N 28.270E, origin 10:26:34.20 UTC
+  alarm      10:26:45.50 UTC by ARMT, BGKT
+  magnitude  M2.5 4.0 s after the alarm, M2.5 final from 2 stations
+  location   rms 0.01 s from 2 stations
+  AFAD       ML 2.7 at 10:26:33.00 UTC: alarm 12.5 s after origin, magnitude -0.2, epicentre 4.8 km off, origin +1.2 s
+  S wave     had travelled 43 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          33 km   10:26:42.64 UTC (predicted)    -2.9 s  after S
+             SLVT          45 km   10:26:46.02 UTC (predicted)    +0.5 s  before S
+             CTKS          48 km   10:26:46.81 UTC (predicted)    +1.3 s  before S
+             BGKT          55 km   10:26:50.28 UTC (picked)      +4.8 s  before S
+             ARMT          55 km   10:26:51.52 UTC (picked)      +6.0 s  before S
+             EDC           66 km   10:26:52.00 UTC (predicted)    +6.5 s  before S
+             MRMT          66 km   10:26:52.07 UTC (predicted)    +6.6 s  before S
+             TKR           68 km   10:26:52.44 UTC (predicted)    +6.9 s  before S
+
+Event #35: detected M3.3 earthquake at 41.219N 27.984E, origin 10:27:21.27 UTC
+  alarm      10:27:37.50 UTC by BOTS, CTKS
+  magnitude  M2.6 at the alarm, M3.3 final from 2 stations
+  location   rms 0.79 s from 2 stations
+  AFAD       no matching catalogue event
+  S wave     had travelled 56 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             SLVT          19 km   10:27:27.38 UTC (predicted)   -10.1 s  after S
+             BOTS          25 km   10:27:29.64 UTC (picked)      -7.9 s  after S
+             CTKS          44 km   10:27:33.56 UTC (picked)      -3.9 s  after S
+             TKR           45 km   10:27:34.54 UTC (predicted)    -3.0 s  after S
+             BGKT          66 km   10:27:40.38 UTC (predicted)    +2.9 s  before S
+             MRMT          76 km   10:27:43.09 UTC (predicted)    +5.6 s  before S
+             EDC           98 km   10:27:49.28 UTC (predicted)   +11.8 s  before S
+             ARMT         104 km   10:27:50.99 UTC (predicted)   +13.5 s  before S
+
+Event #36: detected M2.8 earthquake at 39.774N 27.034E, origin 10:27:58.24 UTC
+  alarm      10:28:27.50 UTC by ARMT, BOTS, CTKS; later EDC, MRMT
+  magnitude  M3.8 at the alarm, M2.8 final from 5 stations
+  location   rms 0.88 s from 2 stations
+  AFAD       ML 2.7 at 10:28:18.00 UTC: alarm 9.5 s after origin, magnitude +0.1, epicentre 175.2 km off, origin -19.8 s
+  S wave     had travelled 33 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             CTKS          37 km   10:28:28.81 UTC (predicted)    +1.3 s  before S
+             BGKT          40 km   10:28:29.52 UTC (predicted)    +2.0 s  before S
+             SLVT          43 km   10:28:30.31 UTC (predicted)    +2.8 s  before S
+             BOTS          43 km   10:28:42.62 UTC (picked)     +15.1 s  before S
+             ARMT          50 km   10:28:50.10 UTC (picked)     +22.6 s  before S
+             TKR           79 km   10:28:40.79 UTC (predicted)   +13.3 s  before S
+             EDC           81 km   10:28:39.22 UTC (picked)     +11.7 s  before S
+             MRMT          82 km   10:28:41.49 UTC (predicted)   +14.0 s  before S
+
+Event #37: detected M2.7 earthquake at 40.795N 28.447E, origin 10:28:17.56 UTC
+  alarm      10:28:27.50 UTC by BGKT, SLVT
+  magnitude  M2.4 5.0 s after the alarm, M2.7 final from 2 stations
+  location   rms 0.09 s from 2 stations
+  AFAD       no matching catalogue event
+  S wave     had travelled 33 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             ARMT          43 km   10:28:30.30 UTC (predicted)    +2.8 s  before S
+             BOTS          45 km   10:28:30.65 UTC (predicted)    +3.2 s  before S
+             CTKS          49 km   10:28:31.95 UTC (predicted)    +4.5 s  before S
+             BGKT          51 km   10:28:32.32 UTC (picked)      +4.8 s  before S
+             SLVT          52 km   10:28:32.80 UTC (picked)      +5.3 s  before S
+             EDC           70 km   10:28:37.82 UTC (predicted)   +10.3 s  before S
+             MRMT          76 km   10:28:39.37 UTC (predicted)   +11.9 s  before S
+             TKR           80 km   10:28:40.47 UTC (predicted)   +13.0 s  before S
+
+Event #38: detected M2.5 earthquake, not located
+  alarm      10:29:46.50 UTC by BGKT, CTKS; later BOTS, EDC, SLVT
+  magnitude  M4.2 2.0 s after the alarm, M2.5 final from 5 stations
+  AFAD       ML 2.5 at 10:29:33.00 UTC: alarm 13.5 s after origin, magnitude +0.0
+  S wave     had travelled 47 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          39 km   10:29:44.42 UTC (predicted)    -2.1 s  after S
+             CTKS          45 km   10:29:45.93 UTC (predicted)    -0.6 s  after S
+             SLVT          46 km   10:29:46.34 UTC (predicted)    -0.2 s  after S
+             BGKT          49 km   10:29:47.03 UTC (predicted)    +0.5 s  before S
+             ARMT          49 km   10:29:47.21 UTC (predicted)    +0.7 s  before S
+             EDC           72 km   10:29:55.96 UTC (picked)      +9.5 s  before S
+             MRMT          74 km   10:29:54.26 UTC (predicted)    +7.8 s  before S
+             TKR           75 km   10:29:54.52 UTC (predicted)    +8.0 s  before S
+
+Event #39: detected M2.2 earthquake, not located
+  alarm      10:31:15.00 UTC by BGKT, SLVT; later ARMT, CTKS, EDC
+  magnitude  M3.6 4.5 s after the alarm, M2.2 final from 5 stations
+  AFAD       no matching catalogue event
+
+Event #40: detected M2.5 earthquake, not located
+  alarm      10:32:07.50 UTC by BGKT, BOTS; later ARMT, CTKS, SLVT
+  magnitude  M2.5 2.0 s after the alarm, M2.5 final from 5 stations
+  AFAD       ML 3.1 at 10:31:56.00 UTC: alarm 11.5 s after origin, magnitude -0.6
+  S wave     had travelled 40 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          35 km   10:32:06.25 UTC (predicted)    -1.2 s  after S
+             SLVT          47 km   10:32:09.65 UTC (predicted)    +2.2 s  before S
+             CTKS          49 km   10:32:10.23 UTC (predicted)    +2.7 s  before S
+             ARMT          53 km   10:32:11.23 UTC (predicted)    +3.7 s  before S
+             BGKT          55 km   10:32:11.89 UTC (predicted)    +4.4 s  before S
+             EDC           65 km   10:32:14.77 UTC (predicted)    +7.3 s  before S
+             MRMT          67 km   10:32:15.22 UTC (predicted)    +7.7 s  before S
+             TKR           70 km   10:32:15.96 UTC (predicted)    +8.5 s  before S
+
+Event #41: detected M2.5 earthquake, not located
+  alarm      10:32:31.00 UTC by EDC, TKR
+  magnitude  M2.6 at the alarm, M2.5 final from 2 stations
+  AFAD       ML 3.5 at 10:32:15.00 UTC: alarm 16.0 s after origin, magnitude -1.0
+  S wave     had travelled 55 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          38 km   10:32:26.19 UTC (predicted)    -4.8 s  after S
+             CTKS          46 km   10:32:28.34 UTC (predicted)    -2.7 s  after S
+             SLVT          46 km   10:32:28.45 UTC (predicted)    -2.5 s  after S
+             BGKT          50 km   10:32:29.63 UTC (predicted)    -1.4 s  after S
+             ARMT          50 km   10:32:29.71 UTC (predicted)    -1.3 s  after S
+             EDC           70 km   10:32:37.22 UTC (picked)      +6.2 s  before S
+             MRMT          72 km   10:32:35.80 UTC (predicted)    +4.8 s  before S
+             TKR           73 km   10:32:36.12 UTC (predicted)    +5.1 s  before S
+
+Event #42: detected M2.9 earthquake at 40.846N 28.430E, origin 10:33:15.82 UTC
+  alarm      10:33:25.50 UTC by BOTS, CTKS; later ARMT, BGKT, EDC, SLVT, TKR
+  magnitude  M3.1 3.5 s after the alarm, M2.9 final from 7 stations
+  location   rms 0.33 s from 5 stations
+  AFAD       ML 3.1 at 10:33:14.00 UTC: alarm 11.5 s after origin, magnitude -0.2, epicentre 2.7 km off, origin +1.8 s
+  S wave     had travelled 40 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          41 km   10:33:28.34 UTC (picked)      +2.8 s  before S
+             CTKS          46 km   10:33:28.34 UTC (picked)      +2.8 s  before S
+             ARMT          48 km   10:33:30.36 UTC (picked)      +4.9 s  before S
+             SLVT          48 km   10:33:27.90 UTC (predicted)    +2.4 s  before S
+             BGKT          50 km   10:33:28.32 UTC (predicted)    +2.8 s  before S
+             EDC           71 km   10:33:36.52 UTC (picked)     +11.0 s  before S
+             MRMT          74 km   10:33:35.27 UTC (predicted)    +9.8 s  before S
+             TKR           76 km   10:33:38.22 UTC (picked)     +12.7 s  before S
+
+Event #43: detected M2.2 earthquake at 40.723N 28.166E, origin 10:35:27.03 UTC
+  alarm      10:35:42.00 UTC by BGKT, SLVT; later ARMT
+  magnitude  M2.1 2.0 s after the alarm, M2.2 final from 3 stations
+  location   rms 1.01 s from 3 stations
+  AFAD       no matching catalogue event
+  S wave     had travelled 51 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             BOTS          34 km   10:35:37.03 UTC (predicted)    -5.0 s  after S
+             EDC           49 km   10:35:41.36 UTC (predicted)    -0.6 s  after S
+             MRMT          51 km   10:35:41.82 UTC (predicted)    -0.2 s  after S
+             SLVT          56 km   10:35:42.86 UTC (picked)      +0.9 s  before S
+             TKR           61 km   10:35:44.63 UTC (predicted)    +2.6 s  before S
+             ARMT          61 km   10:35:43.66 UTC (picked)      +1.7 s  before S
+             CTKS          64 km   10:35:45.52 UTC (predicted)    +3.5 s  before S
+             BGKT          72 km   10:35:48.90 UTC (picked)      +6.9 s  before S
+
+Event #44: detected M2.3 earthquake at 40.859N 28.375E, origin 10:36:21.18 UTC
+  alarm      10:36:32.50 UTC by BGKT, CTKS; later SLVT
+  magnitude  M3.9 2.0 s after the alarm, M2.3 final from 3 stations
+  location   rms 0.15 s from 2 stations
+  AFAD       no matching catalogue event
+  S wave     had travelled 38 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             BOTS          36 km   10:36:31.90 UTC (predicted)    -0.6 s  after S
+             CTKS          43 km   10:36:33.84 UTC (picked)      +1.3 s  before S
+             SLVT          43 km   10:36:33.93 UTC (predicted)    +1.4 s  before S
+             BGKT          49 km   10:36:35.56 UTC (picked)      +3.1 s  before S
+             ARMT          53 km   10:36:36.45 UTC (predicted)    +4.0 s  before S
+             EDC           72 km   10:36:41.84 UTC (predicted)    +9.3 s  before S
+             TKR           72 km   10:36:41.95 UTC (predicted)    +9.5 s  before S
+             MRMT          72 km   10:36:42.03 UTC (predicted)    +9.5 s  before S
+
+Event #45: detected M2.4 earthquake, not located
+  alarm      10:37:28.00 UTC by ARMT, BGKT; later CTKS, SLVT
+  magnitude  M2.4 3.0 s after the alarm, M2.4 final from 4 stations
+  AFAD       no matching catalogue event
+
+Event #46: detected M2.3 earthquake, not located
+  alarm      10:38:29.00 UTC by BGKT, CTKS; later ARMT, BOTS, EDC
+  magnitude  M3.7 2.0 s after the alarm, M2.3 final from 5 stations
+  AFAD       no matching catalogue event
+
+Event #47: detected M2.6 earthquake at 42.031N 24.918E, origin 10:38:23.85 UTC
+  alarm      10:39:10.50 UTC by BOTS, CTKS; later ARMT, EDC, SLVT
+  magnitude  M3.5 2.0 s after the alarm, M2.6 final from 5 stations
+  location   rms 0.55 s from 3 stations
+  AFAD       ML 2.7 at 10:39:02.00 UTC: alarm 8.5 s after origin, magnitude -0.1, epicentre 310.2 km off, origin -38.1 s
+  S wave     had travelled 29 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          31 km   10:39:44.38 UTC (picked)     +33.9 s  before S
+             SLVT          48 km   10:39:46.16 UTC (picked)     +35.7 s  before S
+             CTKS          53 km   10:39:17.35 UTC (predicted)    +6.9 s  before S
+             ARMT          57 km   10:39:21.28 UTC (picked)     +10.8 s  before S
+             EDC           60 km   10:39:52.48 UTC (picked)     +42.0 s  before S
+             MRMT          60 km   10:39:19.37 UTC (predicted)    +8.9 s  before S
+             BGKT          61 km   10:39:19.51 UTC (predicted)    +9.0 s  before S
+             TKR           64 km   10:39:20.44 UTC (predicted)    +9.9 s  before S
+
+Event #48: detected M2.3 earthquake at 41.306N 28.067E, origin 10:40:06.98 UTC
+  alarm      10:40:17.50 UTC by BOTS, SLVT; later BGKT, CTKS
+  magnitude  M2.3 2.0 s after the alarm, M2.3 final from 4 stations
+  location   rms 0.07 s from 2 stations
+  AFAD       no matching catalogue event
+  S wave     had travelled 35 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             SLVT          15 km   10:40:12.04 UTC (predicted)    -5.5 s  after S
+             BOTS          36 km   10:40:17.64 UTC (picked)      +0.1 s  before S
+             CTKS          38 km   10:40:18.09 UTC (predicted)    +0.6 s  before S
+             TKR           57 km   10:40:23.42 UTC (predicted)    +5.9 s  before S
+             BGKT          61 km   10:40:24.52 UTC (picked)      +7.0 s  before S
+             MRMT          87 km   10:40:32.13 UTC (predicted)   +14.6 s  before S
+             ARMT         106 km   10:40:37.39 UTC (predicted)   +19.9 s  before S
+             EDC          108 km   10:40:37.98 UTC (predicted)   +20.5 s  before S
+
+Event #49: detected M2.9 earthquake at 40.845N 28.433E, origin 10:41:20.31 UTC
+  alarm      10:41:28.50 UTC by BGKT, BOTS; later ARMT, CTKS, EDC, SLVT, TKR
+  magnitude  M2.6 5.0 s after the alarm, M2.9 final from 7 stations
+  location   rms 0.51 s from 7 stations
+  AFAD       ML 3.2 at 10:41:19.00 UTC: alarm 9.5 s after origin, magnitude -0.3, epicentre 2.5 km off, origin +1.3 s
+  S wave     had travelled 32 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          40 km   10:41:32.84 UTC (picked)      +4.3 s  before S
+             CTKS          46 km   10:41:33.08 UTC (picked)      +4.6 s  before S
+             SLVT          48 km   10:41:34.78 UTC (picked)      +6.3 s  before S
+             ARMT          48 km   10:41:34.80 UTC (picked)      +6.3 s  before S
+             BGKT          50 km   10:41:34.06 UTC (picked)      +5.6 s  before S
+             EDC           71 km   10:41:40.96 UTC (picked)     +12.5 s  before S
+             MRMT          74 km   10:41:40.23 UTC (predicted)   +11.7 s  before S
+             TKR           76 km   10:41:42.92 UTC (picked)     +14.4 s  before S
+
+Event #50: detected M2.5 earthquake, not located
+  alarm      10:42:37.00 UTC by BOTS, CTKS, SLVT; later BGKT
+  magnitude  M2.5 0.5 s after the alarm, M2.5 final from 4 stations
+  AFAD       no matching catalogue event
+
+Event #51: detected M2.3 earthquake at 41.615N 28.542E, origin 10:43:54.44 UTC
+  alarm      10:44:04.50 UTC by BGKT, SLVT; later ARMT, CTKS, EDC
+  magnitude  M3.7 4.0 s after the alarm, M2.3 final from 5 stations
+  location   rms 0.03 s from 2 stations
+  AFAD       ML 2.2 at 10:43:53.00 UTC: alarm 11.5 s after origin, magnitude +0.1, epicentre 85.5 km off, origin +1.4 s
+  S wave     had travelled 40 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             BOTS          38 km   10:44:03.93 UTC (predicted)    -0.6 s  after S
+             CTKS          44 km   10:44:05.61 UTC (predicted)    +1.1 s  before S
+             SLVT          44 km   10:44:09.30 UTC (picked)      +4.8 s  before S
+             BGKT          48 km   10:44:09.56 UTC (picked)      +5.1 s  before S
+             ARMT          51 km   10:44:07.75 UTC (predicted)    +3.3 s  before S
+             EDC           72 km   10:44:13.69 UTC (predicted)    +9.2 s  before S
+             MRMT          73 km   10:44:14.06 UTC (predicted)    +9.6 s  before S
+             TKR           73 km   10:44:14.07 UTC (predicted)    +9.6 s  before S
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                          51
+  single-station detections, no alarm    19
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)       28   55%
+    false    (no AFAD event)             23   45%
+
+  AFAD events within 250 km               37
+    detected                             28   76%
+    missed                                9   24%
+
+  By magnitude      AFAD events   detected   missed
+    M 2-3                  18         11        7
+    M 3-4                  13         12        1
+    M 4-5                   4          3        1
+    M 5+                    2          2        0
+
+  Correct alarms
+    alarm after origin time             median 11.5 s
+    magnitude error                     mean 0.43 units
+    located                             21 of 28
+    alarm before the S wave             at 185 of 224 station arrivals, median warning 6.4 s, max 42.0 s
+
+  Missed AFAD events
+    09:56:13.00 UTC  ML 3.2    20 km from the network centre
+    09:58:00.00 UTC  ML 2.8    39 km from the network centre
+    10:02:32.00 UTC  MW 4.9    19 km from the network centre
+    10:12:33.00 UTC  ML 2.3    20 km from the network centre
+    10:24:10.00 UTC  ML 2.2    12 km from the network centre
+    10:30:00.00 UTC  ML 2.7    11 km from the network centre
+    10:31:15.00 UTC  ML 2.9    13 km from the network centre
+    10:39:31.00 UTC  ML 2.5    22 km from the network centre
+    10:42:34.00 UTC  ML 2.8     9 km from the network centre
+
+  False alarms (no AFAD event; small uncatalogued earthquakes are possible)
+    09:05:23.50 UTC  #1  M4.1, not located
+    09:58:57.50 UTC  #8  M2.5, not located
+    10:04:47.50 UTC  #12  M3.5, not located
+    10:06:42.00 UTC  #14  M2.2, not located
+    10:08:45.50 UTC  #17  M3.0, not located
+    10:09:41.50 UTC  #18  M2.1, not located
+    10:10:24.00 UTC  #19  M3.3, not located
+    10:11:18.50 UTC  #20  M2.1, located 40.90N 28.43E
+    10:12:34.00 UTC  #21  M3.0, not located
+    10:15:18.50 UTC  #23  M2.2, not located
+    10:16:02.00 UTC  #25  M2.3, not located
+    10:19:51.00 UTC  #28  M3.0, not located
+    10:22:42.00 UTC  #30  M2.2, located 41.65N 28.45E
+    10:24:12.00 UTC  #32  M3.0, not located
+    10:27:37.50 UTC  #35  M3.3, located 41.22N 27.98E
+    10:28:27.50 UTC  #37  M2.7, located 40.80N 28.45E
+    10:31:15.00 UTC  #39  M2.2, not located
+    10:35:42.00 UTC  #43  M2.2, located 40.72N 28.17E
+    10:36:32.50 UTC  #44  M2.3, located 40.86N 28.38E
+    10:37:28.00 UTC  #45  M2.4, not located
+    10:38:29.00 UTC  #46  M2.3, not located
+    10:40:17.50 UTC  #48  M2.3, located 41.31N 28.07E
+    10:42:37.00 UTC  #50  M2.5, not located
+------------------------------------------------------------------------------
+
+Station processing (scalar backend)
+         windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
+  ARMT     12557         2       34     33             34/21     16.243 (29.178)        37            896
+  BGKT     12250        33       53     48             52/25     15.971 (30.281)        33            901
+  BOTS     12236        32       32     28             32/16     15.864 (28.694)        34            896
+  CTKS     12540         5       65     62             65/11     15.640 (28.650)        35            864
+  EDC      12493        10       22     20             22/16     16.601 (29.219)        39           1005
+  MRMT     12256        30        3      3               3/0     16.039 (29.094)        30           1200
+  SLVT     12263        31       46     38             45/17     16.155 (29.550)        36            894
+  TKR      12558         3       15     15              15/9     16.317 (29.071)        37            945
+  P time from an STA/LTA onset for 104 of 270 triggers (166 from the window start)
+  magnitude at the picked P: 115 estimated, 38 not (trigger not part of a declared event)
+  99153 windows in 259.3 s: 24x real time per station

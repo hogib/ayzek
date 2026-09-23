@@ -24,12 +24,12 @@ SUMMARY
 
 Station processing (scalar backend)
          windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
-  BAND     92262         0        8      8               8/0     13.858 (31.207)        38            894
-  CMH      92263         0        2      2               2/0     13.928 (30.985)        21            689
-  DEMI     92262         0        8      8               8/0     13.826 (31.475)        30            718
-  GCAM     88571       329        6      6               6/0     14.140 (31.587)        28            787
-  KAND     92262         0        1      1               1/0     13.854 (30.805)        21           1009
-  MANT     85277       661        0      0               0/0     14.088 (31.571)         0              0
+  BAND     92262         0        8      8               8/0     15.519 (28.906)        33            974
+  CMH      92263         0        2      2               2/0     15.474 (28.980)        31            858
+  DEMI     92262         0        8      8               8/0     15.431 (28.871)        35            944
+  GCAM     88571       329        6      6               6/0     15.486 (28.789)        36            859
+  KAND     92262         0        1      1               1/0     15.298 (28.681)        40           1006
+  MANT     85277       661        0      0               0/0     15.699 (28.986)         0              0
   P time from an STA/LTA onset for 12 of 25 triggers (13 from the window start)
   magnitude at the picked P: 0 estimated, 14 not (trigger not part of a declared event)
-  542897 windows in 1292.0 s: 34x real time per station
+  542897 windows in 1446.3 s: 30x real time per station
