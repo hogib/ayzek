@@ -12,10 +12,17 @@ compared side by side.
 
 Datasets (data/, not tracked; a missing one is skipped and says so):
 
-  demo        Sindirgi 2025-11-10, 30 min, DEMI MANT BAND     tuning
-  marmara     Marmara Sea 2025-04-23, 3 h, 8 stations         tuning
-  sindirgi61  Sindirgi 2025-08-10, 3 h, 6 stations            held out
-  noise_*     four catalogue-quiet windows, 33 h in total     false alarms
+  demo        Sindirgi 2025-11-10, 30 min, DEMI MANT BAND     tuning (AFAD)
+  marmara     Marmara Sea 2025-04-23, 3 h, 8 stations         tuning (AFAD)
+  sindirgi61  Sindirgi 2025-08-10, 3 h, 6 stations            held out (AFAD)
+  noise_*     four catalogue-quiet windows, 33 h in total     false alarms (AFAD)
+  demo_ko     the same Mw 4.9 on six KO stations              public
+  marmara_ko  the Mw 6.2 and the hour after it, eight KO      public
+  quiet_ko    6 h on six KO stations, no event within 250 km  false alarms (public)
+
+The AFAD sets are the ones the published numbers were measured on and cannot be
+redistributed; the KO sets ship with the release, so a score on them is
+reproducible by anyone (`tools/fetch_ko_data.py`).
 
 Catalogues are the excerpts in tests/catalogs/ (AFAD events within a day of each
 dataset), so a score does not move when AFAD revises its catalogue.
@@ -52,6 +59,13 @@ DATASETS = {
                 "2024-10-02T13:00:00", "2024-10-03T01:08:00", "noise"),
     "noise_c": (["data/noise_c/*.mseed"], "noise_c",
                 "2025-03-31T04:17:00", "2025-03-31T15:10:00", "noise"),
+    # KOERI (network KO) sets, the ones the release ships: open data under
+    # citation, so these are the datasets anyone can reproduce a score on.
+    # `tools/fetch_ko_data.py` rebuilds them from the KOERI FDSN service.
+    "demo_ko": (["data/demo_ko/*.mseed"], "demo_ko", None, None, "public"),
+    "marmara_ko": (["data/marmara_ko/*.mseed"], "marmara_ko", None, None, "public"),
+    "quiet_ko": (["data/quiet_ko/*.mseed"], "quiet_ko",
+                 "2024-01-03T11:35:00", "2024-01-03T17:25:00", "public noise"),
 }
 
 # One matched alarm's report block: ayzek's magnitudes, and the AFAD comparison.
@@ -110,7 +124,7 @@ def score_dataset(name, out):
                        "epicentre_km": float(e.group(11)) if e.group(11) else None,
                        "stations": e.group(3).replace("; later", " +")})
     s["events"] = events
-    if role == "noise":
+    if "noise" in role:
         hours = (dt.datetime.fromisoformat(end) - dt.datetime.fromisoformat(start)).total_seconds() / 3600
         s["hours"] = hours
         s["false_per_day"] = 24 * s["unmatched"] / hours
@@ -139,16 +153,18 @@ def summarise(sets):
     def total(role, key):
         return sum(v[key] for v in sets.values() if v["role"] == role)
     h = {}
-    for role in ("tuning", "held out"):
-        if any(v["role"] == role for v in sets.values()):
-            h[f"detected ({role})"] = f"{total(role, 'detected')}/{total(role, 'catalogue')}"
-            h[f"unmatched alarms ({role})"] = total(role, "unmatched")
-    noise = [v for v in sets.values() if v["role"] == "noise"]
-    if noise:
+    roles = list(dict.fromkeys(v["role"] for v in sets.values()))
+    for role in [r for r in roles if "noise" not in r]:
+        h[f"detected ({role})"] = f"{total(role, 'detected')}/{total(role, 'catalogue')}"
+        h[f"unmatched alarms ({role})"] = total(role, "unmatched")
+    # False alarms are pooled per role, so the AFAD windows and the KO one are
+    # not mixed into a rate that belongs to neither.
+    for role in [r for r in roles if "noise" in r]:
+        noise = [v for v in sets.values() if v["role"] == role]
         hrs = sum(v["hours"] for v in noise)
-        h["false alarms per day (noise)"] = round(24 * sum(v["unmatched"] for v in noise) / hrs, 2)
-        h["noise hours"] = round(hrs, 1)
-    evs = [e for v in sets.values() if v["role"] != "noise" for e in v["events"]]
+        h[f"false alarms per day ({role})"] = round(24 * sum(v["unmatched"] for v in noise) / hrs, 2)
+        h[f"hours ({role})"] = round(hrs, 1)
+    evs = [e for v in sets.values() if "noise" not in v["role"] for e in v["events"]]
     if evs:
         h["magnitude MAE, all matched"] = round(statistics.mean(abs(e["M_error"]) for e in evs), 3)
         big = [e for e in evs if e["afad_M"] >= 4.0]
@@ -165,10 +181,10 @@ def print_card(card):
     print(f"\nscorecard  models={card['models']}  args={card['args'] or '-'}  "
           f"({card['date']}, {card['version']})")
     print("\n  " + "\n  ".join(f"{k:34s} {v}" for k, v in card["summary"].items()))
-    print(f"\n  {'dataset':11s} {'role':9s} {'st':>3} {'detected':>9} {'alarms':>7} "
+    print(f"\n  {'dataset':11s} {'role':13s} {'st':>3} {'detected':>9} {'alarms':>7} "
           f"{'unmatched':>9} {'delay':>6} {'mag MAE':>8} {'false/day':>9}")
     for n, v in card["datasets"].items():
-        print(f"  {n:11s} {v['role']:9s} {v['stations']:>3} "
+        print(f"  {n:11s} {v['role']:13s} {v['stations']:>3} "
               f"{str(v['detected']) + '/' + str(v['catalogue']):>9} {v['alarms']:>7} "
               f"{v['unmatched']:>9} "
               f"{(str(v['alarm_delay_median_s']) if v['alarm_delay_median_s'] else '-'):>6} "
