@@ -97,8 +97,22 @@ floating-point difference.
 coefficients and the station table, about 5 MB. A clone can run the pipeline
 without the PyTorch checkpoints they were exported from.
 
-`data/` is not tracked: the waveforms are cut from AFAD archive chunks with
-`tools/make_demo_data.py`, one file per station.
+`data/` is not tracked. The quickest way to get a dataset is the release: the
+KOERI sets attached to it unpack straight into `data/`.
+
+```bash
+# the 2025-11-10 Sındırgı Mw 4.9 on six KO stations, 4 MB
+mkdir -p data/demo_ko && curl -L https://github.com/hogib/ayzek/releases/download/v0.1.0-beta.1/ayzek-demo_ko.tar.gz | tar xz -C data/demo_ko
+build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 \
+    --catalog data/demo_ko/demo_ko.csv data/demo_ko/*.mseed
+```
+
+`tools/fetch_ko_data.py` rebuilds those sets from the KOERI FDSN service, and
+pulls new ones: `probe` reports which stations have a span, `quiet-scan` finds
+spans with no catalogue event near them, and `pull` downloads.
+
+The AFAD replays the results below were measured on are cut from archive chunks
+with `tools/make_demo_data.py`, one file per station.
 
 ```bash
 python3 tools/make_demo_data.py --out data/demo \
@@ -123,17 +137,17 @@ Each file holds one station's HH? channels. The station code is read from the
 records and its coordinates from `models/stations.csv`.
 
 ```bash
-CAT=tests/catalogs/demo.csv   # AFAD events within a day of the demo data; any AFAD export works
+CAT=tests/catalogs/demo_ko.csv   # AFAD catalogue excerpt; any AFAD export works
 
-# three stations at 10x real time, triggers from 18:20 on
+# six KO stations at 10x real time, triggers from 18:20 on
 build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 --catalog $CAT \
-    data/demo/DEMI.mseed data/demo/MANT.mseed data/demo/BAND.mseed
+    data/demo_ko/*.mseed
 
-# all stations as fast as possible, with S-wave warning times for two cities
+# as fast as possible, with S-wave warning times for two cities
 build-release/app/ayzek --speed 0 --catalog $CAT \
-    --site Istanbul,41.0082,28.9784 --site Bursa,40.1828,29.0667 data/demo/*.mseed
+    --site Istanbul,41.0082,28.9784 --site Bursa,40.1828,29.0667 data/demo_ko/*.mseed
 
-# the same through the demo script
+# the AFAD demo, for the numbers under Results
 tools/demo.sh          # 3 stations, 10x
 tools/demo.sh all      # 7 stations, full speed
 ```
@@ -210,6 +224,7 @@ especially during aftershock sequences.
 | `tools/mseed_dump`, `tools/validate_mseed.py` | record-level inspection, and a decoding check against ObsPy |
 | `tools/replay_check`, `tools/gaps_vs_events.py` | gap statistics of the archive, and their relation to earthquake times |
 | `tools/scan_encodings.py` | counts the miniSEED data encodings in archive chunks |
+| `tools/fetch_ko_data.py` | pulls continuous KOERI (KO) waveforms into the replay layout: `probe` which stations have a span, `quiet-scan` for spans with no catalogue event nearby, `pull` to download |
 | `bench/ayzek_bench` | time per stage and per layer, the stations that fit in real time; `meson test -C build-release --benchmark` (`docs/impl/10-benchmarks.md`) |
 | `tools/scorecard.py` | detection, unmatched and false alarms, magnitude and location on the fixed datasets, for judging a model change; `--compare A.json B.json` |
 | `tools/bench_compare.py` | two `ayzek_bench` results side by side, flags regressions |
@@ -267,6 +282,33 @@ catalogue (events within 250 km):
   estimate, of which 91% is one attention layer. One core sustains 95 stations,
   four cores 372. The aarch64 NEON build passes the same agreement tests under
   qemu; timing on a Raspberry Pi has not been measured yet.
+
+### On the published datasets
+
+The results above are from AFAD recordings, which cannot be redistributed. The
+KOERI sets attached to the release are the reproducible equivalents, and
+`tools/scorecard.py` scores them:
+
+| dataset | result |
+|---|---|
+| `demo_ko`, 6 stations, 30 min | Mw 4.9 declared 18.0 s after origin, 8 of 9 catalogue events detected, 2 unmatched alarms, magnitude error 0.35 |
+| `marmara_ko`, 8 stations, 1 h | Mw 6.2 declared **10.5 s** after origin, Mw 5.9 at +11.0 s, 27 of 36 detected |
+| `quiet_ko`, 6 stations, 6 h, no catalogue event within 250 km | **1 alarm, 4.1 a day**; STA/LTA on the same data raises 25, 103 a day |
+
+## Data sources
+
+Waveforms in the published datasets are from the **Kandilli Observatory and
+Earthquake Research Institute (KOERI), Boğaziçi University**, network KO, open
+data under citation:
+
+> Kandilli Observatory And Earthquake Research Institute (KOERI), Boğaziçi
+> University (1971). *Kandilli Observatory And Earthquake Research Institute
+> (KOERI)*. International Federation of Digital Seismograph Networks.
+> https://doi.org/10.7914/SN/KO
+
+Catalogue excerpts in `tests/catalogs/`, and the AFAD replays used for the
+results above, are from AFAD (Disaster and Emergency Management Presidency of
+Türkiye), https://deprem.afad.gov.tr/.
 
 ## Documentation
 
