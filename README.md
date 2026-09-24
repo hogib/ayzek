@@ -223,6 +223,7 @@ especially during aftershock sequences.
 | `tools/station_geometry.py` | coverage, alert time, blind zone and location error of station subsets over a grid of epicentres, without waveforms |
 | `tools/mseed_dump`, `tools/validate_mseed.py` | record-level inspection, and a decoding check against ObsPy |
 | `tools/replay_check`, `tools/gaps_vs_events.py` | gap statistics of the archive, and their relation to earthquake times |
+| `tools/gap_scan.py` | spans and gaps of any miniSEED files, from the record headers alone; flags gaps longer than the sample ring |
 | `tools/scan_encodings.py` | counts the miniSEED data encodings in archive chunks |
 | `tools/fetch_ko_data.py` | pulls continuous KOERI (KO) waveforms into the replay layout: `probe` which stations have a span, `quiet-scan` for spans with no catalogue event nearby, `pull` to download |
 | `bench/ayzek_bench` | time per stage and per layer, the stations that fit in real time; `meson test -C build-release --benchmark` (`docs/impl/10-benchmarks.md`) |

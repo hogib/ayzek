@@ -42,11 +42,19 @@
 - **Gaps are written into the ring** as `INT32_MIN` samples, so ring index and
   absolute position stay in lockstep and a window over a gap is recognisable by
   content.
-- **Replay backpressure.** A full ring makes ingest wait for the processor
-  rather than drop, which is right for replay and would be wrong live. The wait
-  is capped at a minute of wall time. Beyond that it drops, counts and warns.
-  The cap exists because a component silent for longer than the ring holds
-  would otherwise stall its siblings forever.
+- **Writes never wait** (`pipeline/writer.hpp`). What does not fit in a ring is
+  queued for that component and written by later `drain()` calls, so a
+  component whose ring is full cannot stop its siblings from being fed. A
+  queued gap is held as a count, not as samples: an outage of any length is
+  free to hold. This is what makes an over-long gap safe — see *A gap longer
+  than the ring* below.
+- **Replay backpressure.** It is applied to the source, not inside a write:
+  ingest stops reading records while a station holds more than a ring's worth
+  of real samples (`kMaxQueuedSamples`), and resumes as the processor catches
+  up. Nothing is dropped, because a dropped sample does not shift time by the
+  length of the loss alone — every later sample of that component moves earlier
+  with it, since position is ring index plus base. Live input will drop in the
+  socket instead, which is the one place where a loss stays a gap.
 
 ## Processor
 
@@ -353,6 +361,34 @@ Marmara replays, three of them run concurrently, which now give identical
 reports, and by a full-inference replay of the Sındırgı demo that equals a
 replay from cached probabilities. With the second fix every trigger gets a
 pick; the results in this document were recomputed with it.
+
+**A gap longer than the ring.** The quiet window of 2024-06-05 contains a
+35-minute archive outage (2,095.6–2,103.4 s per component, `tools/gap_scan.py`)
+on all 27 components of the nine stations. A gap is written as sentinel
+samples, so filling 210,000 of them needs a ring that holds 131,072; the writer
+waited for the floor, the floor could not rise until the *other* components had
+passed the same stretch, and those components were fed by the same thread. The
+station deadlocked. The 60 s cap above was what the pipeline had instead of a
+fix, and it was worse than a stall: `push_bulk` advances the write counter only
+by what it writes, so dropped samples do not leave a hole, they shorten the
+stream and move everything after the outage earlier in time — by a different
+amount on each component, so Z, N and E also stop being aligned with each
+other. The dataset was split in two around the outage to get the false-alarm
+runs done.
+
+What it cost, measured on the Marmara replay with a 25-minute hole cut 14
+minutes before the Mw 6.2: 112 stalls, 329,439 samples dropped, **29 of 57
+catalogue events detected against 44, and 47 false alarms against 24** — the
+Mw 6.2 alarmed twice from the wrong pair of stations and the Mw 5.9 not at all,
+on records that were complete. With the fix the same cut changes nothing: 68
+alarms either way, the same 44 detections, the two big events to the hundredth
+of a second.
+
+Fixed by never waiting inside a write (*Ingest* above, `pipeline/writer.hpp`).
+The unsplit replay now completes with no dropped samples and reproduces the
+two split runs; `tests/test_writer.cpp` holds the property as a unit test.
+The minimal reproduction is one station, 31 minutes of demo data with 25
+minutes cut out: 3.6 s now, 886.8 s and 41,236 dropped samples before.
 
 ## Not done yet
 

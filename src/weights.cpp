@@ -125,7 +125,6 @@ std::vector<float> Weights::vec(const std::string &name,
   return {s.begin(), s.end()};
 }
 
-
 std::string Weights::meta_string(std::string_view key) const {
   const std::string needle = std::format("\"{}\"", key);
   auto i = meta_.find(needle);

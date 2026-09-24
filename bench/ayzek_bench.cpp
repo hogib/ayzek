@@ -1,5 +1,6 @@
-// ayzek_bench: how long each part of the pipeline takes on this machine, and how
-// many stations it can therefore run in real time. docs/impl/10-benchmarks.md.
+// ayzek_bench: how long each part of the pipeline takes on this machine, and
+// how many stations it can therefore run in real time.
+// docs/impl/10-benchmarks.md.
 //
 //   ayzek_bench [--models DIR] [--group stages,layers,shapes,capacity]
 //               [--layer SPEC]... [--min-time S] [--threads N] [--quick]
@@ -184,15 +185,18 @@ volatile float g_sink = 0; // keeps results observable to the optimiser
 
 double pct(std::vector<double> v, double q) {
   std::ranges::sort(v);
-  const auto i = static_cast<std::size_t>(q * static_cast<double>(v.size() - 1) + 0.5);
+  const auto i =
+      static_cast<std::size_t>(q * static_cast<double>(v.size() - 1) + 0.5);
   return v[std::min(i, v.size() - 1)];
 }
 
 // Times `f` per call: warm-up, then calls until `min_time` seconds and at least
-// ten samples. `reps` calls make one sample, for calls too short to time singly.
+// ten samples. `reps` calls make one sample, for calls too short to time
+// singly.
 template <class F>
 Result time_it(const Options &o, std::string group, std::string name,
-               std::string shape, F &&f, double macs = 0, std::size_t reps = 1) {
+               std::string shape, F &&f, double macs = 0,
+               std::size_t reps = 1) {
   for (int i = 0; i < 3; ++i)
     f();
   std::vector<double> ms;
@@ -201,24 +205,33 @@ Result time_it(const Options &o, std::string group, std::string name,
     const auto t0 = Clock::now();
     for (std::size_t r = 0; r < reps; ++r)
       f();
-    ms.push_back(std::chrono::duration<double, std::milli>(Clock::now() - t0).count() /
-                 static_cast<double>(reps));
+    ms.push_back(
+        std::chrono::duration<double, std::milli>(Clock::now() - t0).count() /
+        static_cast<double>(reps));
   }
-  Result r{std::move(group), std::move(name), std::move(shape), ms.size() * reps,
-           *std::ranges::min_element(ms), pct(ms, 0.5), pct(ms, 0.9), pct(ms, 0.99),
-           std::accumulate(ms.begin(), ms.end(), 0.0) / static_cast<double>(ms.size()),
+  Result r{std::move(group),
+           std::move(name),
+           std::move(shape),
+           ms.size() * reps,
+           *std::ranges::min_element(ms),
+           pct(ms, 0.5),
+           pct(ms, 0.9),
+           pct(ms, 0.99),
+           std::accumulate(ms.begin(), ms.end(), 0.0) /
+               static_cast<double>(ms.size()),
            macs};
-  std::println("  {:<34} {:>10.4f} {:>10.4f} {:>10.4f} {:>9}{}", r.name, r.p50_ms,
-               r.p90_ms, r.p99_ms, r.iters,
-               macs > 0 ? std::format("  {:7.2f} GMAC/s", macs / (r.p50_ms * 1e6)) : "");
+  std::println(
+      "  {:<34} {:>10.4f} {:>10.4f} {:>10.4f} {:>9}{}", r.name, r.p50_ms,
+      r.p90_ms, r.p99_ms, r.iters,
+      macs > 0 ? std::format("  {:7.2f} GMAC/s", macs / (r.p50_ms * 1e6)) : "");
   g_results.push_back(r);
   return r;
 }
 
 void header(const char *title) {
   std::println("\n{}", title);
-  std::println("  {:<34} {:>10} {:>10} {:>10} {:>9}", "", "p50 ms", "p90 ms", "p99 ms",
-               "calls");
+  std::println("  {:<34} {:>10} {:>10} {:>10} {:>9}", "", "p50 ms", "p90 ms",
+               "p99 ms", "calls");
 }
 
 // --- synthetic inputs -----------------------------------------------------
@@ -245,7 +258,8 @@ std::vector<float> randn(std::size_t n, float scale = 1.0f) {
 
 // --- synthetic layers, for any shape --------------------------------------
 
-nn::Conv1d conv1d(std::size_t cin, std::size_t cout, std::size_t k, std::size_t s) {
+nn::Conv1d conv1d(std::size_t cin, std::size_t cout, std::size_t k,
+                  std::size_t s) {
   nn::Conv1d c;
   c.cin = cin, c.cout = cout, c.k = k, c.stride = s, c.pad = k / 2;
   c.w = randn(cout * cin * k, 0.1f);
@@ -253,7 +267,8 @@ nn::Conv1d conv1d(std::size_t cin, std::size_t cout, std::size_t k, std::size_t 
   return c;
 }
 
-nn::Conv2d conv2d(std::size_t cin, std::size_t cout, std::size_t k, std::size_t s) {
+nn::Conv2d conv2d(std::size_t cin, std::size_t cout, std::size_t k,
+                  std::size_t s) {
   nn::Conv2d c;
   c.cin = cin, c.cout = cout, c.k = k, c.stride = s, c.pad = k / 2;
   c.w = randn(cout * cin * k * k, 0.1f);
@@ -299,12 +314,12 @@ nn::Linear linear(std::size_t in, std::size_t out) {
 }
 
 // Multiply-accumulates per forward call.
-double macs_conv1d(std::size_t L, std::size_t cin, std::size_t cout, std::size_t k,
-                   std::size_t s) {
+double macs_conv1d(std::size_t L, std::size_t cin, std::size_t cout,
+                   std::size_t k, std::size_t s) {
   return static_cast<double>((L + 2 * (k / 2) - k) / s + 1) * cout * cin * k;
 }
-double macs_conv2d(std::size_t H, std::size_t W, std::size_t cin, std::size_t cout,
-                   std::size_t k, std::size_t s) {
+double macs_conv2d(std::size_t H, std::size_t W, std::size_t cin,
+                   std::size_t cout, std::size_t k, std::size_t s) {
   const auto o = [&](std::size_t n) { return (n + 2 * (k / 2) - k) / s + 1; };
   return static_cast<double>(o(H) * o(W)) * cout * cin * k * k;
 }
@@ -316,8 +331,9 @@ double macs_attn(std::size_t T, std::size_t d) {
 }
 
 // One layer benchmark from a kind and its sizes.
-void bench_layer(const Options &o, const std::string &group, const std::string &name,
-                 const std::string &kind, std::map<std::string, std::size_t> p) {
+void bench_layer(const Options &o, const std::string &group,
+                 const std::string &name, const std::string &kind,
+                 std::map<std::string, std::size_t> p) {
   auto need = [&](const char *k) {
     if (!p.contains(k))
       usage(std::format("layer {} needs {}=", kind, k).c_str());
@@ -327,56 +343,74 @@ void bench_layer(const Options &o, const std::string &group, const std::string &
   for (const auto &[k, v] : p)
     shape += std::format("{}{}={}", shape.empty() ? "" : ",", k, v);
   if (kind == "conv1d") {
-    const auto L = need("L"), cin = need("cin"), cout = need("cout"), k = need("k");
+    const auto L = need("L"), cin = need("cin"), cout = need("cout"),
+               k = need("k");
     const auto s = p.contains("s") ? p["s"] : 1;
     auto c = conv1d(cin, cout, k, s);
     auto x = randn(cin * L);
     std::vector<float> y(cout * c.out_len(L));
-    time_it(o, group, name, "conv1d:" + shape, [&] {
-      c.forward(x.data(), L, y.data());
-      g_sink = y[0];
-    }, macs_conv1d(L, cin, cout, k, s));
+    time_it(
+        o, group, name, "conv1d:" + shape,
+        [&] {
+          c.forward(x.data(), L, y.data());
+          g_sink = y[0];
+        },
+        macs_conv1d(L, cin, cout, k, s));
   } else if (kind == "conv2d") {
-    const auto H = need("H"), W = need("W"), cin = need("cin"), cout = need("cout"),
-               k = need("k");
+    const auto H = need("H"), W = need("W"), cin = need("cin"),
+               cout = need("cout"), k = need("k");
     const auto s = p.contains("s") ? p["s"] : 1;
     auto c = conv2d(cin, cout, k, s);
     auto x = randn(cin * H * W);
     std::vector<float> y(cout * c.out_len(H) * c.out_len(W));
-    time_it(o, group, name, "conv2d:" + shape, [&] {
-      c.forward(x.data(), H, W, y.data());
-      g_sink = y[0];
-    }, macs_conv2d(H, W, cin, cout, k, s));
+    time_it(
+        o, group, name, "conv2d:" + shape,
+        [&] {
+          c.forward(x.data(), H, W, y.data());
+          g_sink = y[0];
+        },
+        macs_conv2d(H, W, cin, cout, k, s));
   } else if (kind == "lstm") {
     const auto T = need("T"), in = need("in"), h = need("h");
     auto l = bilstm(in, h);
     auto x = randn(T * in);
     std::vector<float> y(T * 2 * h);
-    time_it(o, group, name, "lstm:" + shape, [&] {
-      l.forward(x.data(), T, y.data());
-      g_sink = y[0];
-    }, macs_lstm(T, in, h));
+    time_it(
+        o, group, name, "lstm:" + shape,
+        [&] {
+          l.forward(x.data(), T, y.data());
+          g_sink = y[0];
+        },
+        macs_lstm(T, in, h));
   } else if (kind == "attn") {
     const auto T = need("T"), d = need("d");
     const auto heads = p.contains("heads") ? p["heads"] : 4;
     auto a = attention(d, heads);
     auto x = randn(T * d);
     std::vector<float> y(T * d);
-    time_it(o, group, name, "attn:" + shape, [&] {
-      a.forward(x.data(), T, y.data());
-      g_sink = y[0];
-    }, macs_attn(T, d));
+    time_it(
+        o, group, name, "attn:" + shape,
+        [&] {
+          a.forward(x.data(), T, y.data());
+          g_sink = y[0];
+        },
+        macs_attn(T, d));
   } else if (kind == "linear") {
     const auto T = need("T"), in = need("in"), out = need("out");
     auto l = linear(in, out);
     auto x = randn(T * in);
     std::vector<float> y(T * out);
-    time_it(o, group, name, "linear:" + shape, [&] {
-      l.forward(x.data(), T, y.data());
-      g_sink = y[0];
-    }, static_cast<double>(T) * in * out);
+    time_it(
+        o, group, name, "linear:" + shape,
+        [&] {
+          l.forward(x.data(), T, y.data());
+          g_sink = y[0];
+        },
+        static_cast<double>(T) * in * out);
   } else {
-    usage(("unknown layer kind " + kind + " (conv1d, conv2d, lstm, attn, linear)").c_str());
+    usage(
+        ("unknown layer kind " + kind + " (conv1d, conv2d, lstm, attn, linear)")
+            .c_str());
   }
 }
 
@@ -391,7 +425,8 @@ void bench_spec(const Options &o, const std::string &spec) {
     const auto eq = kv.find('=');
     std::size_t v = 0;
     if (eq == std::string::npos ||
-        std::from_chars(kv.data() + eq + 1, kv.data() + kv.size(), v).ec != std::errc{})
+        std::from_chars(kv.data() + eq + 1, kv.data() + kv.size(), v).ec !=
+            std::errc{})
       usage(("bad size in layer spec: " + kv).c_str());
     p[kv.substr(0, eq)] = v;
   }
@@ -408,9 +443,11 @@ struct Models {
 Models load_models(const std::string &dir) {
   Models m;
   for (int seed : {42, 43, 44})
-    m.detectors.push_back(Weights::load(std::format("{}/detector_s{}.ayzw", dir, seed)));
+    m.detectors.push_back(
+        Weights::load(std::format("{}/detector_s{}.ayzw", dir, seed)));
   for (int p = 0; p < 3; ++p)
-    m.magnitude.push_back(Weights::load(std::format("{}/magnitude_p{}.ayzw", dir, p)));
+    m.magnitude.push_back(
+        Weights::load(std::format("{}/magnitude_p{}.ayzw", dir, p)));
   m.picker = std::make_unique<Weights>(Weights::load(dir + "/spicker.ayzw"));
   m.bandpass = std::make_unique<Weights>(Weights::load(dir + "/bandpass.ayzw"));
   return m;
@@ -467,8 +504,10 @@ void bench_stages(const Options &o, const Models &m) {
     });
     Detector one(m.detectors[0]);
     std::vector<float> in(x.size());
-    std::ranges::transform(x, in.begin(), [](float v) { return std::asinh(v); });
-    time_it(o, "stages", "detector, one model", "600x3", [&] { g_sink = one.logit(in); });
+    std::ranges::transform(x, in.begin(),
+                           [](float v) { return std::asinh(v); });
+    time_it(o, "stages", "detector, one model", "600x3",
+            [&] { g_sink = one.logit(in); });
     DetectorEnsemble ens(m.detectors);
     time_it(o, "stages", "detector ensemble (3 models)", "600x3",
             [&] { g_sink = ens.probability(x); });
@@ -477,16 +516,21 @@ void bench_stages(const Options &o, const Models &m) {
     dsp::StaLta sl(dsp::StaLtaConfig{});
     auto raw = raw_counts(Detector::kWindow, 3);
     std::size_t t = 0;
-    time_it(o, "stages", "STA/LTA, 50 samples", "50x3", [&] {
-      for (int i = 0; i < 50; ++i, t = (t + 1) % Detector::kWindow) {
-        const std::array<double, 3> s{raw[t * 3], raw[t * 3 + 1], raw[t * 3 + 2]};
-        g_sink = static_cast<float>(sl.step(s));
-      }
-    }, 0, 100);
+    time_it(
+        o, "stages", "STA/LTA, 50 samples", "50x3",
+        [&] {
+          for (int i = 0; i < 50; ++i, t = (t + 1) % Detector::kWindow) {
+            const std::array<double, 3> s{raw[t * 3], raw[t * 3 + 1],
+                                          raw[t * 3 + 2]};
+            g_sink = static_cast<float>(sl.step(s));
+          }
+        },
+        0, 100);
   }
   {
     WindowWork w(bp, m.detectors);
-    time_it(o, "stages", "per-window total", "every 0.5 s", [&] { g_sink = w(); });
+    time_it(o, "stages", "per-window total", "every 0.5 s",
+            [&] { g_sink = w(); });
   }
 
   // Picker: 60 s, planar.
@@ -526,21 +570,31 @@ void bench_layers(const Options &o) {
   header("layers (shapes of the shipped models)");
   using P = std::map<std::string, std::size_t>;
   const std::vector<std::tuple<std::string, std::string, P>> L = {
-      {"detector conv 1", "conv1d", P{{"L", 600}, {"cin", 3}, {"cout", 24}, {"k", 7}, {"s", 2}}},
-      {"detector conv 2", "conv1d", P{{"L", 300}, {"cin", 24}, {"cout", 48}, {"k", 5}, {"s", 2}}},
-      {"detector conv 3", "conv1d", P{{"L", 150}, {"cin", 48}, {"cout", 96}, {"k", 5}, {"s", 2}}},
+      {"detector conv 1", "conv1d",
+       P{{"L", 600}, {"cin", 3}, {"cout", 24}, {"k", 7}, {"s", 2}}},
+      {"detector conv 2", "conv1d",
+       P{{"L", 300}, {"cin", 24}, {"cout", 48}, {"k", 5}, {"s", 2}}},
+      {"detector conv 3", "conv1d",
+       P{{"L", 150}, {"cin", 48}, {"cout", 96}, {"k", 5}, {"s", 2}}},
       {"detector BiLSTM", "lstm", P{{"T", 75}, {"in", 96}, {"h", 48}}},
       {"detector attention", "attn", P{{"T", 75}, {"d", 96}, {"heads", 4}}},
-      {"picker conv 1", "conv1d", P{{"L", 6000}, {"cin", 3}, {"cout", 32}, {"k", 9}, {"s", 2}}},
-      {"picker conv 2", "conv1d", P{{"L", 3000}, {"cin", 32}, {"cout", 64}, {"k", 9}, {"s", 2}}},
-      {"picker conv 3", "conv1d", P{{"L", 1500}, {"cin", 64}, {"cout", 64}, {"k", 7}, {"s", 2}}},
+      {"picker conv 1", "conv1d",
+       P{{"L", 6000}, {"cin", 3}, {"cout", 32}, {"k", 9}, {"s", 2}}},
+      {"picker conv 2", "conv1d",
+       P{{"L", 3000}, {"cin", 32}, {"cout", 64}, {"k", 9}, {"s", 2}}},
+      {"picker conv 3", "conv1d",
+       P{{"L", 1500}, {"cin", 64}, {"cout", 64}, {"k", 7}, {"s", 2}}},
       {"picker BiLSTM", "lstm", P{{"T", 250}, {"in", 64}, {"h", 32}}},
       {"picker attention", "attn", P{{"T", 250}, {"d", 64}, {"heads", 4}}},
       {"magnitude BiLSTM (1D)", "lstm", P{{"T", 1000}, {"in", 3}, {"h", 64}}},
-      {"magnitude attention (1D)", "attn", P{{"T", 1000}, {"d", 128}, {"heads", 4}}},
-      {"magnitude conv 1 (2D)", "conv2d", P{{"H", 65}, {"W", 32}, {"cin", 3}, {"cout", 32}, {"k", 3}, {"s", 1}}},
-      {"magnitude conv 2 (2D)", "conv2d", P{{"H", 65}, {"W", 32}, {"cin", 32}, {"cout", 64}, {"k", 3}, {"s", 2}}},
-      {"magnitude conv 3 (2D)", "conv2d", P{{"H", 33}, {"W", 16}, {"cin", 64}, {"cout", 128}, {"k", 3}, {"s", 2}}},
+      {"magnitude attention (1D)", "attn",
+       P{{"T", 1000}, {"d", 128}, {"heads", 4}}},
+      {"magnitude conv 1 (2D)", "conv2d",
+       P{{"H", 65}, {"W", 32}, {"cin", 3}, {"cout", 32}, {"k", 3}, {"s", 1}}},
+      {"magnitude conv 2 (2D)", "conv2d",
+       P{{"H", 65}, {"W", 32}, {"cin", 32}, {"cout", 64}, {"k", 3}, {"s", 2}}},
+      {"magnitude conv 3 (2D)", "conv2d",
+       P{{"H", 33}, {"W", 16}, {"cin", 64}, {"cout", 128}, {"k", 3}, {"s", 2}}},
   };
   for (const auto &[name, kind, p] : L)
     bench_layer(o, "layers", name, kind, p);
@@ -567,9 +621,10 @@ void bench_capacity(const Options &o, const Models &m) {
   const std::size_t hw = std::max(1u, std::thread::hardware_concurrency());
   const std::size_t n = o.threads ? o.threads : hw;
   const double secs = std::max(o.min_time, o.quick ? 0.1 : 2.0);
-  std::println("\ncapacity (detector windows per second, all threads together)");
-  std::println("  {:>7} {:>12} {:>14} {:>16}", "threads", "windows/s", "per thread",
-               "stations (0.5 s)");
+  std::println(
+      "\ncapacity (detector windows per second, all threads together)");
+  std::println("  {:>7} {:>12} {:>14} {:>16}", "threads", "windows/s",
+               "per thread", "stations (0.5 s)");
   std::vector<std::size_t> counts;
   for (std::size_t t = 1; t <= n; t = (t < 4 ? t + 1 : t * 2)) {
     counts.push_back(t);
@@ -600,10 +655,12 @@ void bench_capacity(const Options &o, const Models &m) {
     for (auto &th : pool)
       th.join();
     const double el = std::chrono::duration<double>(Clock::now() - t0).count();
-    const double wps = static_cast<double>(std::accumulate(done.begin(), done.end(), 0ul)) / el;
+    const double wps =
+        static_cast<double>(std::accumulate(done.begin(), done.end(), 0ul)) /
+        el;
     g_capacity.push_back({t, wps, wps / 2.0});
-    std::println("  {:>7} {:>12.0f} {:>14.0f} {:>16.0f}", t, wps, wps / static_cast<double>(t),
-                 wps / 2.0);
+    std::println("  {:>7} {:>12.0f} {:>14.0f} {:>16.0f}", t, wps,
+                 wps / static_cast<double>(t), wps / 2.0);
   }
 
   // The magnitude estimate runs on a station's own thread and holds up that
@@ -617,7 +674,8 @@ void bench_capacity(const Options &o, const Models &m) {
     for (std::size_t i = 0; i < k; ++i) {
       const auto t0 = Clock::now();
       g_sink = est.estimate(raw, noise);
-      ms.push_back(std::chrono::duration<double, std::milli>(Clock::now() - t0).count());
+      ms.push_back(
+          std::chrono::duration<double, std::milli>(Clock::now() - t0).count());
     }
     return ms;
   };
@@ -637,7 +695,8 @@ void bench_capacity(const Options &o, const Models &m) {
     th.join();
   g_mag_loaded_p50 = pct(loaded, 0.5);
   g_mag_loaded_p99 = pct(loaded, 0.99);
-  std::println("\nmagnitude estimate (3 models): {:.1f} ms alone, {:.1f} ms (p99 {:.1f}) "
+  std::println("\nmagnitude estimate (3 models): {:.1f} ms alone, {:.1f} ms "
+               "(p99 {:.1f}) "
                "with {} detector threads running",
                g_mag_idle_p50, g_mag_loaded_p50, g_mag_loaded_p99, n - 1);
 }
@@ -662,29 +721,35 @@ void write_json(const Options &o) {
   }
   const auto now = std::chrono::system_clock::now();
   f << "{\n";
-  f << std::format("  \"host\": \"{}\",\n  \"cpu\": \"{}\",\n  \"cores\": {},\n",
-                   esc(hostname()), esc(cpu_name()), std::thread::hardware_concurrency());
-  f << std::format("  \"backend\": \"{}\",\n  \"optimized\": {},\n  \"compiler\": \"{}\",\n",
-                   simd::kBackend, kOptimized, esc(__VERSION__));
-  f << std::format("  \"version\": \"{}\",\n  \"models\": \"{}\",\n  \"date\": \"{:%FT%TZ}\",\n",
+  f << std::format(
+      "  \"host\": \"{}\",\n  \"cpu\": \"{}\",\n  \"cores\": {},\n",
+      esc(hostname()), esc(cpu_name()), std::thread::hardware_concurrency());
+  f << std::format(
+      "  \"backend\": \"{}\",\n  \"optimized\": {},\n  \"compiler\": \"{}\",\n",
+      simd::kBackend, kOptimized, esc(__VERSION__));
+  f << std::format("  \"version\": \"{}\",\n  \"models\": \"{}\",\n  \"date\": "
+                   "\"{:%FT%TZ}\",\n",
                    AYZEK_BENCH_VERSION, esc(o.models),
                    std::chrono::floor<std::chrono::seconds>(now));
-  f << std::format("  \"min_time_s\": {},\n  \"quick\": {},\n", o.min_time, o.quick);
+  f << std::format("  \"min_time_s\": {},\n  \"quick\": {},\n", o.min_time,
+                   o.quick);
   f << "  \"results\": [\n";
   for (std::size_t i = 0; i < g_results.size(); ++i) {
     const auto &r = g_results[i];
-    f << std::format("    {{\"group\": \"{}\", \"name\": \"{}\", \"shape\": \"{}\", "
-                     "\"iters\": {}, \"min_ms\": {:.6g}, \"p50_ms\": {:.6g}, "
-                     "\"p90_ms\": {:.6g}, \"p99_ms\": {:.6g}, \"mean_ms\": {:.6g}, "
-                     "\"macs\": {:.6g}}}{}\n",
-                     r.group, esc(r.name), esc(r.shape), r.iters, r.min_ms, r.p50_ms,
-                     r.p90_ms, r.p99_ms, r.mean_ms, r.macs,
-                     i + 1 < g_results.size() ? "," : "");
+    f << std::format(
+        "    {{\"group\": \"{}\", \"name\": \"{}\", \"shape\": \"{}\", "
+        "\"iters\": {}, \"min_ms\": {:.6g}, \"p50_ms\": {:.6g}, "
+        "\"p90_ms\": {:.6g}, \"p99_ms\": {:.6g}, \"mean_ms\": {:.6g}, "
+        "\"macs\": {:.6g}}}{}\n",
+        r.group, esc(r.name), esc(r.shape), r.iters, r.min_ms, r.p50_ms,
+        r.p90_ms, r.p99_ms, r.mean_ms, r.macs,
+        i + 1 < g_results.size() ? "," : "");
   }
   f << "  ],\n  \"capacity\": [\n";
   for (std::size_t i = 0; i < g_capacity.size(); ++i) {
     const auto &c = g_capacity[i];
-    f << std::format("    {{\"threads\": {}, \"windows_per_s\": {:.6g}, \"stations\": {:.6g}}}{}\n",
+    f << std::format("    {{\"threads\": {}, \"windows_per_s\": {:.6g}, "
+                     "\"stations\": {:.6g}}}{}\n",
                      c.threads, c.windows_per_s, c.stations,
                      i + 1 < g_capacity.size() ? "," : "");
   }
@@ -698,14 +763,16 @@ void write_json(const Options &o) {
 
 int main(int argc, char **argv) {
   const auto o = parse(argc, argv);
-  std::println("ayzek_bench {}  |  {}  |  {} cores  |  {} backend  |  {}", AYZEK_BENCH_VERSION,
-               cpu_name(), std::thread::hardware_concurrency(), simd::kBackend,
+  std::println("ayzek_bench {}  |  {}  |  {} cores  |  {} backend  |  {}",
+               AYZEK_BENCH_VERSION, cpu_name(),
+               std::thread::hardware_concurrency(), simd::kBackend,
                kOptimized ? "optimised build" : "UNOPTIMISED build");
   if (!kOptimized && !o.allow_debug) {
     // A -O0 build runs the models about 17 times slower; its numbers would be
     // read as the pipeline's.
-    std::println(stderr, "ayzek_bench: this build is not optimised; configure with "
-                         "--buildtype=release, or pass --allow-debug to run anyway");
+    std::println(stderr,
+                 "ayzek_bench: this build is not optimised; configure with "
+                 "--buildtype=release, or pass --allow-debug to run anyway");
     return 1;
   }
   try {

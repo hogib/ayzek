@@ -1,5 +1,5 @@
 # Unit tests.
-foreach t : ['test_ring', 'test_steim', 'test_reorder']
+foreach t : ['test_ring', 'test_steim', 'test_reorder', 'test_writer']
   exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
   test(t, exe)
 endforeach
