@@ -167,6 +167,8 @@ tools/demo.sh all      # 7 stations, full speed
 | `--release P` | 0.3 | a trigger re-arms after two windows below P |
 | `--detector KIND` | `6s` | `6s` (also `model`): the 3-seed 6 s window detector. `transformer`: the streaming onset transformer, one output per 0.1 s, P dated by its own `dt` (`docs/impl/14-transformer.md`). `stalta`: a recursive STA/LTA. Picking, association, location and magnitude are unchanged |
 | `--transformer FILE` | `MODELS/transformer.ayzw` | transformer weights; its `--threshold` and `--release` default to the model's validation operating point |
+| `--dt-reset BELOW,FROM` | `2,5` | transformer: also trigger while p stays at or above the threshold when dt falls back to BELOW s or less (2 tokens in a row) after reaching FROM s: a new onset in the coda of the last event (`docs/impl/14-transformer.md`) |
+| `--no-dt-reset` | | transformer: rising edges only, the rule before `--dt-reset` |
 | `--sta S`, `--lta S` | 1, 30 | STA/LTA averaging lengths in seconds |
 | `--stalta-on R`, `--stalta-off R` | 8, 1.5 | STA/LTA ratio that triggers, and below which a trigger re-arms |
 | `--stalta-band LO,HI` | 2,20 | STA/LTA pass band in Hz (4th-order Butterworth high- and low-pass) |

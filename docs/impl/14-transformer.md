@@ -30,8 +30,18 @@ stage alone.
      with ALiBi distance bias;
    - cross-attention to the 8 context tokens;
    - output: p (an event is under way) and dt (seconds since it began).
-4. **Trigger.** The first token with p ≥ threshold after p last fell below the
-   release level.
+4. **Trigger** (`src/pipeline/trigger.hpp`). Either of:
+   - **rising edge**: the first token with p ≥ threshold after p last fell
+     below the release level;
+   - **dt restart** (`--dt-reset BELOW,FROM`, default 2,5; `--no-dt-reset`
+     turns it off): p still ≥ threshold, and dt back at ≤ 2 s for two tokens
+     in a row after it had reached ≥ 5 s since the last trigger. In an
+     aftershock sequence p stays high between events, so the next onset has
+     no rising edge; a restarted dt says it is a new event, not the coda of
+     the old one.
+
+   The 15 s minimum between triggers applies to both. The other detectors'
+   trigger rules are unchanged.
    - P is dated at the token's end minus dt.
    - The Detection carries a window start 3.5 s before that P, the network
      stage's convention. The picker and early magnitude windows are therefore
@@ -66,6 +76,45 @@ the 2025-11-10 M4.9:
 | network, with station context, 300 tokens | p 4.8e-7, dt 3.8e-6 s |
 | network, null context | p 3.7e-7, dt 3.3e-6 s |
 | raw counts → tokens (filter, first scale, gap), 500 tokens | p 6.6e-7, dt 1.9e-6 s |
+
+### What the dt restart recovers
+
+Measured with `tools/sweep_transformer_trigger.py` on the v2 model's token
+streams (`--scores`, which for the transformer now includes dt), threshold
+0.989:
+
+| set | rising edges only | + dt restart 2,5 | unmatched/h | restarts |
+|---|---:|---:|---:|---:|
+| demo_ko | 18 / 36 | 21 / 36 | 8.71 → 8.71 | 3 |
+| marmara_ko | 112 / 296 | 114 / 296 | 6.07 → 6.21 | 4 |
+| quiet_ko | – | – | 0.19 → 0.19 | 0 |
+
+Why the rest are missed, marmara_ko, with the restart on:
+
+| | arrivals |
+|---|---:|
+| detected | 114 |
+| p never reaches the threshold within 20 s | 66 |
+| p reaches it, but the trigger is not re-armed and dt does not restart | 116 |
+
+On those 116, dt stays in the coda: its median minimum after P is 9.4 s,
+against 10 s before, so no setting of the rule sees them. The v2 model reads an
+aftershock inside a coda as more coda. Its training crops hold one event
+each, so the dt head has never seen a second onset whose dt should restart.
+A training example with a second event spliced into the coda, labelled to
+restart dt at its P, is what would teach it that. The trigger rule then turns
+those restarts into detections without further change.
+
+The saved `compare_detectors.py` runs cannot be re-scored for this: their
+records hold only each trigger's Detection. Replay the transformer with
+`--scores` once, then sweep from the CSVs:
+
+```bash
+build-release/app/ayzek --speed 0 --detector transformer --no-dt-reset --no-pick \
+    --no-magnitude --scores cmp/scores_marmara_ko data/marmara_ko/*.mseed
+uv run --project tools python tools/sweep_transformer_trigger.py --threshold 0.989013 \
+    cmp/scores_marmara_ko:tests/catalogs/marmara_ko.csv
+```
 
 ## Comparing the two detectors
 
