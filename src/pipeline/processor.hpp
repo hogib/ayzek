@@ -14,12 +14,14 @@
 #include "stalta.hpp"
 #include "station.hpp"
 #include "transformer.hpp"
+#include "trigger.hpp"
 
 #include <atomic>
 #include <cstdint>
 #include <deque>
 #include <fstream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -91,6 +93,15 @@ struct ProcessorConfig {
   // reaches `threshold`, re-arm when it falls below `release`. The detection
   // dates P at the token's end minus its dt output. main() sets both from the
   // model's validation operating point unless given on the command line.
+  // With `dt_reset`, a token with p still at or above the threshold also
+  // triggers when dt restarts: back to `dt_reset_below` s or less for
+  // `dt_reset_tokens` tokens after reaching `dt_reset_from` s, i.e. a new
+  // onset inside the coda of the last one (trigger.hpp). Other detectors
+  // ignore these.
+  bool dt_reset = true;
+  float dt_reset_below = 2.0f;
+  float dt_reset_from = 5.0f;
+  std::size_t dt_reset_tokens = 2;
   //
   // With the geometry head and `geometry` set, each trigger is followed by a
   // StationGeometry at the trigger token and every `geometry_every` seconds
@@ -119,6 +130,7 @@ struct ProcessorStats {
       0; // runs of windows dropped for want of an onset (require_onset)
   std::uint64_t context_refreshes = 0; // transformer: station context updates
   std::uint64_t geometry = 0; // transformer: StationGeometry messages sent
+  std::uint64_t dt_resets = 0; // transformer: detections from a dt restart
   std::size_t noise_windows = 0;
   std::vector<float>
       window_ms; // conditioning + ensemble (or STA/LTA update), per window
@@ -169,7 +181,7 @@ private:
   std::unique_ptr<dsp::StaLta> stalta_;
   std::unique_ptr<OnsetStream> onset_;
   std::vector<OnsetStream::Token> tokens_;
-  bool armed_ = true; // transformer trigger: re-armed since the last crossing
+  std::optional<TokenTrigger> token_trigger_; // transformer
   // Geometry after the last trigger: next token end to report, the last
   // position to report at (0: not tracking), P and the detection's window.
   std::uint64_t geo_next_ = 0, geo_until_ = 0, geo_p_ = 0;

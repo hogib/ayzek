@@ -37,6 +37,9 @@ Processor::Processor(Station &st, const std::vector<Weights> &detector,
     if (!transformer)
       throw std::runtime_error("--detector transformer needs transformer weights");
     onset_ = std::make_unique<OnsetStream>(*transformer);
+    token_trigger_.emplace(TokenTriggerConfig{
+        cfg_.threshold, cfg_.release, cfg_.dt_reset, cfg_.dt_reset_below,
+        cfg_.dt_reset_from, cfg_.dt_reset_tokens});
   }
   if (cfg_.pick)
     picker_ = std::make_unique<Picker>(picker);
@@ -54,7 +57,10 @@ Processor::Processor(Station &st, const std::vector<Weights> &detector,
   stats_.window_ms.reserve(1 << 16);
   if (!scores_path.empty()) {
     scores_.open(scores_path);
-    scores_ << "station,window_start,probability\n";
+    // The transformer's rows are tokens, dated by their last sample, with dt.
+    scores_ << (cfg_.detector == DetectorKind::Transformer
+                    ? "station,token_end,probability,dt\n"
+                    : "station,window_start,probability\n");
   }
   // Detector probabilities from an earlier run with --scores. They do not
   // depend on trigger settings, so re-using them makes a run with different
@@ -185,9 +191,10 @@ bool Processor::feed_stream(std::uint64_t limit, std::size_t max) {
   return progressed;
 }
 
-// One transformer output. The trigger fires on the first token at or above
-// the threshold after the probability last fell below `release`, and dates P
-// at the token's end minus its dt output. With `geometry`, the station's
+// One transformer output. The trigger (trigger.hpp) fires on the first token
+// at or above the threshold after the probability last fell below `release`,
+// or, with `dt_reset`, when dt restarts while p stays high, and dates P at the
+// token's end minus its dt output. With `geometry`, the station's
 // geometry estimate follows the trigger (ProcessorConfig). The detection carries a window start
 // 3.5 s before that P, the convention the network stage and the picker and
 // magnitude windows share with the window detector. `fed` is the newest
@@ -206,37 +213,35 @@ void Processor::on_token(const OnsetStream::Token &tok, std::uint64_t fed,
   while (recent_.size() > 200)
     recent_.pop_front();
   if (scores_.is_open())
-    scores_ << std::format("{},{:.2f},{}\n", st_.code, pos_to_epoch(tok.end),
-                           tok.p);
+    scores_ << std::format("{},{:.2f},{},{}\n", st_.code, pos_to_epoch(tok.end),
+                           tok.p, tok.dt);
 
   const bool warmup = cfg_.from > 0 && pos_to_epoch(tok.end) < cfg_.from;
-  if (tok.p >= cfg_.threshold) {
-    if (armed_ && !warmup) {
-      const double max_dt = onset_->config().max_dt;
-      const auto back = static_cast<std::uint64_t>(
-          std::lround(std::clamp(static_cast<double>(tok.dt), 0.0, max_dt) * kFs));
-      const std::uint64_t p_pos = tok.end - std::min(back, tok.end);
-      const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
-      const std::uint64_t ws = p_pos > lead ? p_pos - lead : 0;
-      if (pos_to_epoch(ws) - last_trigger_ >= cfg_.retrigger_seconds) {
-        last_trigger_ = pos_to_epoch(ws);
-        trigger(ws, p_pos, ws, pos_to_epoch(fed + 1), tok.p,
-                static_cast<double>(ms));
-        if (cfg_.geometry && tok.geo) {
-          geo_trigger_ = last_trigger_;
-          geo_p_ = p_pos;
-          geo_next_ = tok.end;
-          geo_until_ = p_pos + static_cast<std::uint64_t>(
-                                   cfg_.geometry_seconds * kFs);
-        }
+  const auto fire = token_trigger_->step(tok.p, tok.dt, warmup);
+  if (tok.p < cfg_.release)
+    geo_until_ = 0; // the event is over, or was never one
+  if (fire != TokenTrigger::Fire::None) {
+    const double max_dt = onset_->config().max_dt;
+    const auto back = static_cast<std::uint64_t>(
+        std::lround(std::clamp(static_cast<double>(tok.dt), 0.0, max_dt) * kFs));
+    const std::uint64_t p_pos = tok.end - std::min(back, tok.end);
+    const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
+    const std::uint64_t ws = p_pos > lead ? p_pos - lead : 0;
+    if (pos_to_epoch(ws) - last_trigger_ >= cfg_.retrigger_seconds) {
+      last_trigger_ = pos_to_epoch(ws);
+      stats_.dt_resets += fire == TokenTrigger::Fire::DtReset ? 1 : 0;
+      trigger(ws, p_pos, ws, pos_to_epoch(fed + 1), tok.p,
+              static_cast<double>(ms));
+      if (cfg_.geometry && tok.geo) {
+        geo_trigger_ = last_trigger_;
+        geo_p_ = p_pos;
+        geo_next_ = tok.end;
+        geo_until_ = p_pos + static_cast<std::uint64_t>(
+                                 cfg_.geometry_seconds * kFs);
       }
     }
-    armed_ = false;
-  } else if (tok.p < cfg_.release) {
-    armed_ = true;
-    geo_until_ = 0; // the event is over, or was never one
   }
-  active_ = !armed_;
+  active_ = token_trigger_->active();
   if (geo_until_ && tok.geo && tok.end >= geo_next_) {
     const auto &g = *tok.geo;
     bus_.send(StationGeometry{st_.code, geo_trigger_, pos_to_epoch(geo_p_),

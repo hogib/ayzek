@@ -67,6 +67,11 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
                         transformer: the streaming onset transformer, every 0.1 s
                         stalta: the reference STA/LTA trigger
   --transformer FILE    transformer weights (default: MODELS/transformer.ayzw)
+  --dt-reset BELOW,FROM transformer: also trigger while p stays high when dt falls
+                        back to BELOW s or less after reaching FROM s since the
+                        last trigger: a new onset in the coda of the last one
+                        (default 2,5)
+  --no-dt-reset         transformer: rising edges only
   --no-anchor           do not date model triggers by the STA/LTA onset
   --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
   --require-onset       a detector trigger also needs an STA/LTA onset
@@ -171,6 +176,18 @@ int main(int argc, char **argv) try {
       threshold_set = true;
     } else if (a == "--transformer")
       transformer_path = next();
+    else if (a == "--dt-reset") {
+      const auto v = next();
+      const auto comma = v.find(',');
+      if (comma == std::string::npos)
+        throw std::runtime_error("--dt-reset: BELOW,FROM");
+      pcfg.dt_reset_below = std::stof(v.substr(0, comma));
+      pcfg.dt_reset_from = std::stof(v.substr(comma + 1));
+      if (!(pcfg.dt_reset_below < pcfg.dt_reset_from))
+        throw std::runtime_error("--dt-reset: BELOW must be less than FROM");
+      pcfg.dt_reset = true;
+    } else if (a == "--no-dt-reset")
+      pcfg.dt_reset = false;
     else if (a == "--trigger-windows")
       pcfg.trigger_windows = std::stoul(next());
     else if (a == "--instant-threshold")
@@ -351,8 +368,12 @@ int main(int argc, char **argv) try {
                     : t_first; // 70 s covers a picker window before `from`
   const std::string detector_name =
       pcfg.detector == DetectorKind::Transformer
-          ? std::format("onset transformer (p >= {:g}, release {:g}, P from dt)",
-                        pcfg.threshold, pcfg.release)
+          ? std::format("onset transformer (p >= {:g}, release {:g}, {}P from dt)",
+                        pcfg.threshold, pcfg.release,
+                        pcfg.dt_reset
+                            ? std::format("dt restart {:g}/{:g} s, ",
+                                          pcfg.dt_reset_below, pcfg.dt_reset_from)
+                            : std::string())
       : pcfg.detector == DetectorKind::Model
           ? std::string(pcfg.anchor ? "3-seed 6 s detector + STA/LTA anchor"
                                     : "3-seed 6 s detector")
@@ -552,15 +573,16 @@ int main(int argc, char **argv) try {
               w.p99, pk.mean, mg.mean);
   }
   if (pcfg.detector == DetectorKind::Transformer) {
-    std::uint64_t refreshes = 0, geometry = 0;
+    std::uint64_t refreshes = 0, geometry = 0, dt_resets = 0;
     for (const auto &pr : procs) {
       refreshes += pr->stats().context_refreshes;
       geometry += pr->stats().geometry;
+      dt_resets += pr->stats().dt_resets;
     }
     log.plain(false,
               "  transformer: \"windows\" are 0.1 s tokens; {} station context "
-              "refreshes{}",
-              refreshes,
+              "refreshes; {} of {} triggers from a dt restart{}",
+              refreshes, dt_resets, triggers,
               pcfg.geometry
                   ? std::format("; {} geometry estimates sent", geometry)
                   : std::string());
