@@ -19,8 +19,9 @@ Recorder::Recorder(const std::string &path,
 
 void Recorder::write(const Message &m) {
   if (auto *d = std::get_if<Detection>(&m)) {
-    out_ << std::format("D\t{}\t{}\t{}\t{}\t{}\n", d->station, d->window_start,
-                        d->declared_at, d->probability, d->compute_ms);
+    out_ << std::format("D\t{}\t{}\t{}\t{}\t{}\t{}\n", d->station,
+                        d->window_start, d->declared_at, d->probability,
+                        d->compute_ms, d->restart ? 1 : 0);
   } else if (auto *p = std::get_if<Pick>(&m)) {
     out_ << std::format("P\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", p->station,
                         p->trigger_window, p->p_time, p->s_time, p->p_prob,
@@ -63,6 +64,16 @@ Recording Recording::load(const std::string &path) {
       Detection d;
       f >> d.station >> d.window_start >> d.declared_at >> d.probability >>
           d.compute_ms;
+      // The restart flag is absent in recordings made before it existed.
+      if (!f.fail()) {
+        int restart = 0;
+        if (f >> restart)
+          d.restart = restart != 0;
+        else if (!f.eof())
+          throw std::runtime_error(
+              std::format("{}:{}: malformed record", path, lineno));
+        f.clear();
+      }
       r.messages.emplace_back(std::move(d));
     } else if (tag == "P") {
       Pick p;

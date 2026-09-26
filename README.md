@@ -169,6 +169,7 @@ tools/demo.sh all      # 7 stations, full speed
 | `--transformer FILE` | `MODELS/transformer.ayzw` | transformer weights; its `--threshold` and `--release` default to the model's validation operating point |
 | `--dt-reset BELOW,FROM` | `2,5` | transformer: also trigger while p stays at or above the threshold when dt falls back to BELOW s or less (2 tokens in a row) after reaching FROM s: a new onset in the coda of the last event (`docs/impl/14-transformer.md`) |
 | `--no-dt-reset` | | transformer: rising edges only, the rule before `--dt-reset` |
+| `--geo-sd-scale X`, `--geo-max-z Z`, `--geo-max-err-km KM` | 1, off, off | geometry locator: widen every station's distance sd, leave out or refuse stations whose distance disagrees with the solution, refuse a location with a 68% radius over KM (`docs/impl/15-geometry-location.md`) |
 | `--sta S`, `--lta S` | 1, 30 | STA/LTA averaging lengths in seconds |
 | `--stalta-on R`, `--stalta-off R` | 8, 1.5 | STA/LTA ratio that triggers, and below which a trigger re-arms |
 | `--stalta-band LO,HI` | 2,20 | STA/LTA pass band in Hz (4th-order Butterworth high- and low-pass) |

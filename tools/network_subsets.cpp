@@ -10,7 +10,8 @@
 // Output: one CSV row per subset. The main event is the largest catalogue
 // event within the evaluation radius; its columns give the alert delay, the
 // S-wave blind-zone radius at the alert, the first and final magnitude, and
-// the location error. A summary of the best subsets per size and of the
+// the location error; the last two columns count catalogue events located
+// within 30 km and beyond 50 km. A summary of the best subsets per size and of the
 // marginal gain from adding each station is written to stderr.
 //
 // Options:
@@ -21,6 +22,8 @@
 //   --radius KM         evaluation radius around the full network's centroid
 //   (default 250)
 //   --min-stations N    detections required to declare an event (default 2)
+//   --geo-sd-scale X, --geo-max-z Z, --geo-max-err-km KM
+//                       geometry locator settings, as for ayzek
 
 #include "pipeline/network.hpp"
 #include "pipeline/recording.hpp"
@@ -42,6 +45,7 @@ constexpr double kVs = 3.5; // km/s, for the blind-zone radius
 struct Row {
   std::vector<std::string> stations;
   std::size_t catalogue = 0, declared = 0, located = 0, unmatched = 0;
+  std::size_t located_30km = 0, located_far = 0; // within 30 km; beyond 50 km
   double mean_alert = NAN, median_location_error = NAN,
          mean_abs_magnitude_error = NAN;
   // main event
@@ -111,6 +115,12 @@ int main(int argc, char **argv) try {
       base.catalog_radius_km = std::stod(next());
     else if (a == "--min-stations")
       base.min_stations = std::stoul(next());
+    else if (a == "--geo-sd-scale")
+      base.geo_sd_scale = std::stod(next());
+    else if (a == "--geo-max-z")
+      base.geo_max_dist_z = std::stod(next());
+    else if (a == "--geo-max-err-km")
+      base.geo_max_err_km = std::stod(next());
     else
       throw std::runtime_error("unknown option " + a);
   }
@@ -194,6 +204,8 @@ int main(int argc, char **argv) try {
         loc_error =
             distance_km(e->location->lat, e->location->lon, c.lat, c.lon);
         loc_errors.push_back(loc_error);
+        row.located_30km += loc_error <= 30.0;
+        row.located_far += loc_error > 50.0;
       }
       if (e->magnitude)
         mag_errors.push_back(std::abs(*e->magnitude - c.magnitude));
@@ -225,18 +237,20 @@ int main(int argc, char **argv) try {
       "location_error_km,"
       "mean_abs_magnitude_error,main_declared,main_alert_s,main_blind_zone_km,"
       "main_first_magnitude,"
-      "main_first_magnitude_s,main_final_magnitude,main_location_error_km");
+      "main_first_magnitude_s,main_final_magnitude,main_location_error_km,"
+      "located_within_30km,located_beyond_50km");
   for (const auto &r : rows) {
     std::string names;
     for (const auto &s : r.stations)
       names += (names.empty() ? "" : "+") + s;
-    std::println("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
+    std::println("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
                  r.stations.size(), names, r.catalogue, r.declared, r.located,
                  r.unmatched, fmt(r.mean_alert), fmt(r.median_location_error),
                  fmt(r.mean_abs_magnitude_error), r.main_declared ? 1 : 0,
                  fmt(r.main_alert), fmt(r.main_blind_km, 1),
                  fmt(r.main_first_mag), fmt(r.main_first_mag_delay),
-                 fmt(r.main_final_mag), fmt(r.main_location_error));
+                 fmt(r.main_final_mag), fmt(r.main_location_error),
+                 r.located_30km, r.located_far);
   }
 
   // stderr summary: per size, the subset with the earliest main-event alert

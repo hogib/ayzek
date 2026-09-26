@@ -86,10 +86,39 @@ The export prints the head's estimate on DEMI 0, 5 and 10 s after the first
 trigger, next to the AFAD epicentre of the Sındırgı M4.9, as a first sanity
 check. `--verbose` prints every station estimate as a `geo` line.
 
+## Settings and what geo_v1 says about them
+
+| flag | default | effect |
+|---|---|---|
+| `--geo-sd-scale X` | 1 | multiplies every station's distance sd |
+| `--geo-max-z Z` | off | while a station's distance is more than Z (scaled) sds from the solution and more than two stations remain, the worst station is left out; a solution still failing is not reported |
+| `--geo-max-err-km KM` | off | a solution whose 68% radius exceeds KM is not reported |
+
+`tools/network_subsets` takes the same flags and re-runs the network stage
+from a `--record` file in seconds, and now counts located catalogue events
+within 30 km and beyond 50 km. On the geo_v1 recordings of demo_ko (6
+catalogue events declared) and marmara_ko (19):
+
+| settings | demo_ko: median, ≤30 / >50 km | marmara_ko: median, ≤30 / >50 km |
+|---|---|---|
+| defaults | 6.6 km, 4 / 2 | 11.7 km, 14 / 3 |
+| sd × 2 | 3.4 km, 4 / 2 | 19.5 km, 14 / 3 |
+| sd × 2, z 3 | 15.6 km, 4 / 2 | 8.7 km, 14 / 3 |
+| sd × 2, z 3, 30 km | 6.8 km, 3 / 1 (5 located) | 7.6 km, 13 / 2 (17 located) |
+
+None of them removes the far-off solutions: those are distant events on
+which every station's head says about 45 km (the training set ends at 55
+km), so the stations agree with each other and there is no disagreement to
+gate on. The medians move in opposite directions on the two sets, which is
+noise at 6 and 19 events. So the defaults stay off, and the fix is the head
+itself: a model trained on wider distances.
+
+The head's distance sd is overconfident on these sets (29–42% of true
+distances within one sd instead of 68%), which is what `--geo-sd-scale` is
+for once a model's calibration has been measured.
+
 ## Open questions
 
-- The shipped `models/transformer.ayzw` has no geometry head yet; until one
-  is exported the default stays `picks`.
 - σ_p = 0.5 s is a guess at the dt-dated P error; `compare_detectors.py`
   measures that error and should set it.
 - The KO training set is regional: stations beyond the training distances

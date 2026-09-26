@@ -142,6 +142,23 @@ void network() {
   CHECK(e.first_located_at > 0 && e.first_located_at <= kOrigin + 20.2);
 }
 
+// A re-trigger within the coda window is absorbed as coda, unless it is a
+// transformer dt restart: two of those declare a second event.
+void restart_is_not_coda() {
+  std::map<std::string, StationInfo> st;
+  for (const auto &s : kStations)
+    st[s.code] = {s.lat, s.lon};
+  for (const bool restart : {false, true}) {
+    Network net(st, NetworkConfig{});
+    net.on(Detection{"A", 1000.0, 1004.0, 0.99f, 0.0});
+    net.on(Detection{"B", 1001.0, 1005.0, 0.99f, 0.0});
+    net.on(Detection{"A", 1020.0, 1024.0, 0.99f, 0.0, restart});
+    net.on(Detection{"B", 1021.0, 1025.0, 0.99f, 0.0, restart});
+    CHECK(net.declared_count() == (restart ? 2u : 1u));
+    CHECK(net.events().front().coda == (restart ? 0u : 2u));
+  }
+}
+
 } // namespace
 
 int main() {
@@ -153,5 +170,6 @@ int main() {
   uncertainty_weights();
   error_radius();
   network();
+  restart_is_not_coda();
   std::println("geometry locator agrees with onset.locate");
 }

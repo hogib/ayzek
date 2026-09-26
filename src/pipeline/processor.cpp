@@ -231,7 +231,7 @@ void Processor::on_token(const OnsetStream::Token &tok, std::uint64_t fed,
       last_trigger_ = pos_to_epoch(ws);
       stats_.dt_resets += fire == TokenTrigger::Fire::DtReset ? 1 : 0;
       trigger(ws, p_pos, ws, pos_to_epoch(fed + 1), tok.p,
-              static_cast<double>(ms));
+              static_cast<double>(ms), fire == TokenTrigger::Fire::DtReset);
       if (cfg_.geometry && tok.geo) {
         geo_trigger_ = last_trigger_;
         geo_p_ = p_pos;
@@ -433,12 +433,12 @@ std::uint64_t Processor::onset_for(std::uint64_t run_start) const {
 // `anchor_picker` or `anchor_magnitude` is set.
 void Processor::trigger(std::uint64_t run_start, std::uint64_t p_pos,
                         std::uint64_t model_start, double declared_at, float p,
-                        double ms) {
+                        double ms, bool restart) {
   const double run_t = pos_to_epoch(run_start);
   const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
   const auto mag_lead = static_cast<std::uint64_t>(cfg_.magnitude_lead * kFs);
   ++stats_.detections;
-  bus_.send(Detection{st_.code, run_t, declared_at, p, ms});
+  bus_.send(Detection{st_.code, run_t, declared_at, p, ms, restart});
   if (cfg_.pick) {
     const std::uint64_t from = cfg_.anchor_picker ? p_pos - lead : model_start;
     picks_.emplace_back(

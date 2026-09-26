@@ -163,7 +163,7 @@ private:
   [[nodiscard]] std::uint64_t onset_for(std::uint64_t run_start) const;
   void trigger(std::uint64_t run_start, std::uint64_t p_pos,
                std::uint64_t model_start, double declared_at, float p,
-               double ms);
+               double ms, bool restart = false);
   void run_jobs(std::uint64_t limit);
   void run_pick(std::uint64_t start, double trigger);
   void run_early_magnitude(std::uint64_t start, double trigger);

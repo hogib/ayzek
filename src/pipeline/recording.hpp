@@ -12,7 +12,8 @@
 // shortest form that reads back to the same value.
 //   S  code  lat  lon
 //   T  t_first  t_last
-//   D  station  window_start  declared_at  probability  compute_ms
+//   D  station  window_start  declared_at  probability  compute_ms  [restart]
+//      (restart 1 for a transformer dt restart; absent in older recordings)
 //   P  station  trigger_window  p_time  s_time  p_prob  s_prob  declared_at
 //      compute_ms
 //   M  station  trigger_window  at_pick  window_start  magnitude

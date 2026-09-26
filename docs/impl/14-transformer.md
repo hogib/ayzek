@@ -41,7 +41,10 @@ stage alone.
      the old one.
 
    The 15 s minimum between triggers applies to both. The other detectors'
-   trigger rules are unchanged.
+   trigger rules are unchanged. A detection from a dt restart is flagged
+   (`Detection::restart`), and the network stage does not absorb it as coda
+   of the event the station last detected: it can join or declare a new
+   event, as an aftershock inside the 40 s coda window should.
    - P is dated at the token's end minus dt.
    - The Detection carries a window start 3.5 s before that P, the network
      stage's convention. The picker and early magnitude windows are therefore
@@ -137,6 +140,11 @@ reports two levels:
   unmatched alarms, alarm delay, false alarms per day and magnitude error.
 
 `--workdir DIR --reuse` rescores saved runs without replaying them.
+
+A third table compares location: the locator each run used, how many
+catalogue-matched events it located, the median time from alarm to first
+location, the epicentre error, and the error on only the events both runs
+located (15-geometry-location.md).
 
 ## Results
 

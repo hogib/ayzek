@@ -43,7 +43,17 @@ enum class Locator { Picks, Geometry };
 
 struct NetworkConfig {
   Locator locator = Locator::Picks;
-  double sigma_p = 0.5; // geometry locator: P-time uncertainty, seconds
+  // Geometry locator (locate.hpp): the P-time uncertainty; a factor on every
+  // station's stated distance sd (the head's is overconfident, 15-geometry-
+  // location.md); and the quality gates. While a station's distance is more
+  // than `geo_max_dist_z` of its (scaled) sds from the solution, or the P rms
+  // exceeds `max_rms`, and more than two stations remain, the station
+  // contributing most to the misfit is left out; a solution still failing
+  // either, or with a 68% radius over `geo_max_err_km`, is not reported.
+  double sigma_p = 0.5;
+  double geo_sd_scale = 1.0;
+  double geo_max_dist_z = 1e9;
+  double geo_max_err_km = 1e9;
   std::size_t min_stations = 2; // detections needed to declare an event
   double slack_seconds =
       3.0; // tolerance added to the inter-station P travel time
@@ -66,6 +76,7 @@ struct Location {
   std::size_t n_stations;
   std::vector<std::string> dropped; // stations removed during relocation
   double err_km = NAN; // geometry: radius of the 68% region; picks: not known
+  double dist_z = NAN; // geometry: largest station distance residual, in sds
 };
 
 struct Event {
@@ -121,6 +132,11 @@ public:
 private:
   [[nodiscard]] bool compatible(const Detection &a, const Detection &b) const;
   [[nodiscard]] std::optional<Location> locate(const Event &e) const;
+  // P rms over max_rms, or (geometry) a station's distance over geo_max_dist_z.
+  [[nodiscard]] bool failing(const Location &l) const {
+    return l.rms > cfg_.max_rms ||
+           (!std::isnan(l.dist_z) && l.dist_z > cfg_.geo_max_dist_z);
+  }
   [[nodiscard]] std::optional<Location>
   locate(const std::map<std::string, Pick> &picks, std::string *worst) const;
   [[nodiscard]] std::optional<Location>

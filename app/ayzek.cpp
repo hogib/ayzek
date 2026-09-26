@@ -91,6 +91,12 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
                         picks: grid search on P and S picks (60 s picker window)
                         (default: geometry when the transformer has the geometry
                         head, otherwise picks)
+  --geo-sd-scale X      geometry: multiply every station's distance sd by X
+                        (default 1)
+  --geo-max-z Z         geometry: leave out, or else refuse, a station whose
+                        distance is more than Z sds from the solution (default off)
+  --geo-max-err-km KM   geometry: refuse a location whose 68% radius exceeds KM
+                        (default off)
   --no-pick             detector only
   --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
@@ -245,7 +251,13 @@ int main(int argc, char **argv) try {
       locate_kind = next();
       if (locate_kind != "geometry" && locate_kind != "picks")
         throw std::runtime_error("--locate: geometry or picks");
-    } else if (a == "--no-pick")
+    } else if (a == "--geo-sd-scale")
+      ncfg.geo_sd_scale = std::stod(next());
+    else if (a == "--geo-max-z")
+      ncfg.geo_max_dist_z = std::stod(next());
+    else if (a == "--geo-max-err-km")
+      ncfg.geo_max_err_km = std::stod(next());
+    else if (a == "--no-pick")
       pcfg.pick = false;
     else if (a == "--no-magnitude")
       pcfg.magnitude = false;

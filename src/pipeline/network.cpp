@@ -75,8 +75,12 @@ void Network::on(const Detection &d) {
   // The detector can trigger again on the S wave and coda of an event. A later
   // detection at a station within `coda_seconds` of that station's detection
   // of a declared event is assigned to that event. A separate event in that
-  // interval is therefore not declared from this station.
+  // interval is therefore not declared from this station, unless the
+  // detection is a transformer dt restart: the model itself says a new onset
+  // began inside the coda, which is what an aftershock looks like.
   for (auto &e : events_) {
+    if (d.restart)
+      break;
     auto it = e.detections.find(d.station);
     if (e.declared && it != e.detections.end() &&
         d.window_start > it->second.window_start &&
@@ -90,9 +94,9 @@ void Network::on(const Detection &d) {
     }
   }
   if (cfg_.verbose)
-    Log::get().line("detect", "36", "{:<5} p={:.2f}  window {}  ({:.1f} ms)",
+    Log::get().line("detect", "36", "{:<5} p={:.2f}  window {}  ({:.1f} ms){}",
                     d.station, d.probability, hms(d.window_start),
-                    d.compute_ms);
+                    d.compute_ms, d.restart ? "  new onset in a coda" : "");
 
   Event *ev = nullptr;
   for (auto &e : events_) {
@@ -275,7 +279,7 @@ std::optional<Location> Network::locate(const Event &e) const {
     for (;;) {
       std::string worst;
       auto loc = locate(obs, &worst);
-      if (!loc || loc->rms <= cfg_.max_rms || obs.size() <= 2) {
+      if (!loc || !failing(*loc) || obs.size() <= 2) {
         if (loc)
           loc->dropped = dropped;
         return loc;
@@ -299,7 +303,7 @@ Network::locate(const std::map<std::string, StationGeometry> &geo,
     if (it == stations_.end())
       continue;
     obs.push_back({code, it->second.lat, it->second.lon, g.p_time, g.log_dist,
-                   g.log_dist_sd, g.baz, g.kappa});
+                   g.log_dist_sd * cfg_.geo_sd_scale, g.baz, g.kappa});
   }
   const auto fit = locate_geometry(
       obs, {.vp = cfg_.vp, .depth_km = cfg_.depth_km, .sigma_p = cfg_.sigma_p},
@@ -308,6 +312,7 @@ Network::locate(const std::map<std::string, StationGeometry> &geo,
     return std::nullopt;
   Location loc{fit->lat, fit->lon, fit->origin, fit->rms, fit->n_stations, {}};
   loc.err_km = fit->err_km;
+  loc.dist_z = fit->dist_z_max;
   return loc;
 }
 
@@ -381,11 +386,17 @@ void Network::report_location(Event &e, double now) {
   auto loc = locate(e);
   if (!loc)
     return;
-  if (loc->rms > cfg_.max_rms) {
+  if (failing(*loc) || loc->err_km > cfg_.geo_max_err_km) {
     if (cfg_.verbose)
       Log::get().line("LOCATE", "33",
-                      "#{} rejected: best fit rms {:.1f} s from {} stations",
-                      e.id, loc->rms, loc->n_stations);
+                      "#{} rejected: best fit rms {:.1f} s{} from {} stations",
+                      e.id, loc->rms,
+                      std::isnan(loc->dist_z)
+                          ? std::string()
+                          : std::format(", a station's distance {:.1f} sd "
+                                        "off, +-{:.0f} km",
+                                        loc->dist_z, loc->err_km),
+                      loc->n_stations);
     return;
   }
   // Do not print an unchanged solution.

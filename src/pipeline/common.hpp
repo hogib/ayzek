@@ -119,6 +119,10 @@ struct Detection {
                        // end)
   float probability;
   double compute_ms; // conditioning + ensemble for that window
+  // Transformer: fired on a dt restart inside a running event, i.e. a new
+  // onset in another event's coda (trigger.hpp). The network stage does not
+  // absorb it as coda.
+  bool restart = false;
 };
 
 struct MagnitudeWindow; // processor.hpp

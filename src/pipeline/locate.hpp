@@ -41,6 +41,9 @@ struct GeometryFit {
   double misfit; // J at the solution
   double err_km; // radius of the 68% region (J <= min + 1.15) on the coarse grid
   std::size_t n_stations;
+  // The largest |log D_i - log_dist_i| / sd_i at the solution: how far the
+  // station that disagrees most is from its own distance, in its own sds.
+  double dist_z_max;
 };
 
 struct GeometryLocatorConfig {

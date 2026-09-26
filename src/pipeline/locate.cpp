@@ -126,8 +126,15 @@ std::optional<GeometryFit> locate_geometry(const std::vector<GeometryObs> &obs,
     *worst = obs[static_cast<std::size_t>(
                      std::ranges::max_element(parts) - parts.begin())]
                  .station;
-  return GeometryFit{best.lat, best.lon, e.origin, e.rms,
-                     e.j,      err,      obs.size()};
+  double z = 0;
+  for (const auto &o : obs)
+    z = std::max(z, std::abs(std::log(std::max(
+                                 distance_km(o.lat, o.lon, best.lat, best.lon),
+                                 1.0)) -
+                             o.log_dist) /
+                        o.log_dist_sd);
+  return GeometryFit{best.lat, best.lon, e.origin, e.rms, e.j,
+                     err,      obs.size(), z};
 }
 
 } // namespace ayzek::pipeline

@@ -26,6 +26,13 @@ the TauP time is kept and flagged). Against that P:
 events detected, unmatched alarms, median alarm delay after origin, false
 alarms per day on the quiet sets, magnitude error.
 
+**Location**, from each run's final report: which locator ran (the
+transformer's geometry head, or P and S picks), how many catalogue-matched
+events it located, how long after the alarm the first location came, and the
+epicentre error; then the same error on only the catalogue events both runs
+located, which compares the locators without the easy-event bias of the one
+that locates less.
+
 Both detectors must see identical input, so this compares what each detector
 does with a real stream, gaps and all, rather than their test-set numbers:
 the transformer's test set is FDSN KO windows within 55 km, and several of these
@@ -95,6 +102,40 @@ def parse_record(text):
             dets[f[1]].append({"window_start": float(f[2]), "declared_at": float(f[3]),
                                "p": float(f[4]), "ms": float(f[5])})
     return stations, dets, span
+
+
+LOCATION = re.compile(r"  location   .*first ([\d.]+) s after the alarm \(([^)]*)\)")
+AFAD_ORIGIN = re.compile(r"^  AFAD\s+\S+ [\d.]+ at (\S+) UTC:(.*)$", re.M)
+EPICENTRE = re.compile(r"epicentre ([\d.]+) km off")
+
+
+def locations(stdout):
+    """Per catalogue-matched event in the report: its AFAD origin (the key),
+    whether and by what it was located, when, and the epicentre error."""
+    out = {}
+    for block in re.split(r"\nEvent #", stdout)[1:]:
+        a = AFAD_ORIGIN.search(block)
+        if not a:
+            continue
+        loc, epi = LOCATION.search(block), EPICENTRE.search(a.group(2))
+        out[a.group(1)] = {"located": loc is not None,
+                           "locator": loc.group(2) if loc else None,
+                           "first_s": float(loc.group(1)) if loc else None,
+                           "epicentre_km": float(epi.group(1)) if epi else None}
+    return out
+
+
+def location_summary(locs, keys=None):
+    keys = locs.keys() if keys is None else keys
+    err = np.array([locs[k]["epicentre_km"] for k in keys if locs[k]["epicentre_km"] is not None])
+    first = [locs[k]["first_s"] for k in keys if locs[k]["first_s"] is not None]
+    kinds = {locs[k]["locator"] for k in keys if locs[k]["locator"]}
+    return {"matched": len(list(keys)), "located": len(err),
+            "locator": ", ".join(sorted(kinds)) or None,
+            "first_after_alarm_p50_s": float(np.median(first)) if first else None,
+            "epicentre_p50_km": float(np.median(err)) if len(err) else None,
+            "within_10km": float(np.mean(err <= 10)) if len(err) else None,
+            "within_30km": float(np.mean(err <= 30)) if len(err) else None}
 
 
 def cpu_per_hour(stdout):
@@ -266,6 +307,12 @@ def evaluate(name, runs, truth):
                     "arrivals": recs}
     res["refined_fraction"] = float(np.mean([a["refined"] for v in arrivals.values() for a in v])) \
         if arrivals and any(arrivals.values()) else None
+    locs = {det: locations(r["stdout"]) for det, r in runs.items()}
+    both = [k for k in locs[DETECTORS[0]]
+            if all(k in locs[d] and locs[d][k]["epicentre_km"] is not None for d in DETECTORS)]
+    for det in DETECTORS:
+        res[det]["location"] = location_summary(locs[det])
+        res[det]["location_both"] = location_summary(locs[det], both)
     return res
 
 
@@ -316,6 +363,18 @@ def print_report(results):
                   f"{n['alarms']:>7} {n['unmatched']:>9} {fmt(n['alarm_delay_median_s'], '{:.1f}'):>6} "
                   f"{fmt(n['magnitude_mae']):>8} {fmt(n.get('false_per_day'), '{:.1f}'):>9} "
                   f"{fmt(r[det]['detector_ms_per_station_hour'], '{:.0f}'):>12}")
+    print("\nLOCATION (catalogue-matched events; 'both': only those both runs located)")
+    print(f"  {'dataset':11s} {'detector':11s} {'locator':22s} {'located':>9} {'first':>6} "
+          f"{'epi p50':>7} {'≤10km':>6} {'≤30km':>6}   {'both: n':>7} {'epi p50':>7}")
+    for name, r in results.items():
+        for det in DETECTORS:
+            lo, lb = r[det]["location"], r[det]["location_both"]
+            print(f"  {name:11s} {det:11s} {fmt(lo['locator'], '{}'):22s} "
+                  f"{str(lo['located']) + '/' + str(lo['matched']):>9} "
+                  f"{fmt(lo['first_after_alarm_p50_s'], '{:.1f}'):>6} "
+                  f"{fmt(lo['epicentre_p50_km'], '{:.1f}'):>7} {fmt(lo['within_10km'], '{:.0%}'):>6} "
+                  f"{fmt(lo['within_30km'], '{:.0%}'):>6}   {lb['located']:>7} "
+                  f"{fmt(lb['epicentre_p50_km'], '{:.1f}'):>7}")
     ref = [r["refined_fraction"] for r in results.values() if r["refined_fraction"] is not None]
     if ref:
         print(f"\n  P reference: AIC-refined for {np.mean(ref):.0%} of arrivals (TauP otherwise)")
