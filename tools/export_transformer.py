@@ -7,7 +7,9 @@ Writes (AYZW, docs/impl/02-weights.md):
 
   models/transformer.ayzw          weights, geometry, the causal band-pass as
                                    second-order sections, and the validation
-                                   operating threshold
+                                   operating threshold; `geo_head.*` too for a
+                                   run trained with --geometry 1, which makes
+                                   ayzek locate from it (--locate geometry)
   data/fixtures/transformer.ayzw   PyTorch/scipy outputs on DEMI around the
                                    2025-11-10 M4.9, for tests/test_transformer.cpp
 
@@ -39,6 +41,16 @@ def load_onset(src):
     from onset.config import load_run_config
     from onset.model import OnsetDetector
     return conditioning, dsp, load_run_config, OnsetDetector
+
+
+def geometry(out):
+    """(T, 4) float32: log distance, its sd, back-azimuth (radians, clockwise
+    from north) and von Mises concentration, as ayzek's `Geometry`."""
+    v = out["baz_vec"][0].float()
+    return torch.stack([out["log_dist"][0].float(),
+                        torch.exp(0.5 * out["log_dist_var"][0].float()),
+                        torch.atan2(v[:, 0], v[:, 1]),
+                        torch.exp(out["baz_log_kappa"][0].float())], dim=1).numpy()
 
 
 def demi(t0, seconds):
@@ -96,6 +108,7 @@ def main():
         "threshold": thr, "val_epoch": best["epoch"],
         "val_recall_1s": best["summary"]["recall@1.0s"],
         "val_false_per_hour": best["summary"]["false_per_hour"],
+        "geometry": bool(mcfg.geometry),
         "filter": "butter(4, [1, 45], bandpass, fs=100) as sos, causal, restart after gaps"})
 
     # --- fixtures -----------------------------------------------------------
@@ -127,6 +140,8 @@ def main():
                "net.dt_ctx": with_ctx["dt"][0].numpy(),
                "net.p_null": torch.sigmoid(without["logit"])[0].numpy(),
                "net.dt_null": without["dt"][0].numpy()})
+    if mcfg.geometry:
+        fx.update({"net.geo_ctx": geometry(with_ctx), "net.geo_null": geometry(without)})
 
     # 3. The whole front end: 50 s of raw counts with a 1.5 s horizontal gap,
     #    through filter, first-second scale and the null context. Shorter than
@@ -142,6 +157,8 @@ def main():
     fx.update({"stream.raw": sr, "stream.missing": sm.astype(np.uint8),
                "stream.p": torch.sigmoid(out["logit"])[0].numpy(),
                "stream.dt": out["dt"][0].numpy()})
+    if mcfg.geometry:
+        fx["stream.geo"] = geometry(out)
     write_ayzw(Path("data/fixtures/transformer.ayzw"), fx,
                {"source": "data/demo/DEMI.mseed", "checkpoint": str(ckpt)})
 
@@ -150,6 +167,24 @@ def main():
     print(f"  threshold {thr:.6f}; stream fixture: max p {p.max():.4f}"
           + (f", first crossing at {(j * 10 + 9) / FS:.2f} s into the 18:20:20 window, "
              f"P dated {(j * 10 + 9) / FS - fx['stream.dt'][j]:.2f} s" if j is not None else ""))
+    if mcfg.geometry and j is not None:
+        # DEMI and the 2025-11-10 Sındırgı M4.9 (AFAD 39.2250N 28.1715E), for a
+        # sanity check of the head on data it may never have seen.
+        g = fx["stream.geo"]
+        sta = next(l.split(",") for l in Path("models/stations.csv").read_text().splitlines()
+                   if l.startswith("DEMI,"))
+        slat, slon, elat, elon = np.radians([float(sta[1]), float(sta[2]), 39.2250, 28.1715])
+        true_km = 2 * 6371.0 * np.arcsin(np.sqrt(
+            np.sin((elat - slat) / 2) ** 2
+            + np.cos(slat) * np.cos(elat) * np.sin((elon - slon) / 2) ** 2))
+        true_baz = np.degrees(np.arctan2(
+            np.sin(elon - slon) * np.cos(elat),
+            np.cos(slat) * np.sin(elat) - np.sin(slat) * np.cos(elat) * np.cos(elon - slon))) % 360
+        print(f"  DEMI to the AFAD epicentre: {true_km:.0f} km, baz {true_baz:.0f} deg")
+        for k in (j, min(j + 50, len(g) - 1), min(j + 100, len(g) - 1)):
+            print(f"  geometry {(k - j) / 10:4.1f} s after the trigger: "
+                  f"{np.exp(g[k, 0]):.0f} km (x/{np.exp(g[k, 1]):.2f}), "
+                  f"baz {np.degrees(g[k, 2]) % 360:.0f} deg (kappa {g[k, 3]:.1f})")
 
 
 if __name__ == "__main__":

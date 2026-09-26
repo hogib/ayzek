@@ -1,7 +1,7 @@
 #pragma once
 
 // Recording of the station processors' outputs (detections, picks, magnitude
-// estimates) in the order the network stage processed them.
+// estimates, geometry estimates) in the order the network stage processed them.
 //
 // Station processing is independent per station; only the network stage
 // combines stations. A recording of all stations therefore allows the network
@@ -14,8 +14,11 @@
 //   T  t_first  t_last
 //   D  station  window_start  declared_at  probability  compute_ms
 //   P  station  trigger_window  p_time  s_time  p_prob  s_prob  declared_at
-//   compute_ms M  station  trigger_window  at_pick  window_start  magnitude
-//   noise_windows  declared_at  compute_ms
+//      compute_ms
+//   M  station  trigger_window  at_pick  window_start  magnitude
+//      noise_windows  declared_at  compute_ms
+//   G  station  trigger_window  p_time  since_p  log_dist  log_dist_sd  baz
+//      kappa  declared_at
 
 #include "common.hpp"
 #include "network.hpp"
@@ -41,12 +44,13 @@ private:
 struct Recording {
   std::map<std::string, StationInfo> stations;
   double t_first = 0, t_last = 0;
-  std::vector<Message> messages; // Detection, Pick, MagnitudeEstimate
+  std::vector<Message> messages; // Detection, Pick, MagnitudeEstimate,
+                                 // StationGeometry
 
   static Recording load(const std::string &path);
 };
 
-// Station code of a Detection, Pick or MagnitudeEstimate.
+// Station code of a Detection, Pick, MagnitudeEstimate or StationGeometry.
 const std::string &station_of(const Message &m);
 
 } // namespace ayzek::pipeline

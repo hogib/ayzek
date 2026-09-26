@@ -30,6 +30,11 @@ void Recorder::write(const Message &m) {
                         g->trigger_window, g->at_pick ? 1 : 0, g->window_start,
                         g->magnitude, g->noise_windows, g->declared_at,
                         g->compute_ms);
+  } else if (auto *o = std::get_if<StationGeometry>(&m)) {
+    out_ << std::format("G\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
+                        o->station, o->trigger_window, o->p_time, o->since_p,
+                        o->log_dist, o->log_dist_sd, o->baz, o->kappa,
+                        o->declared_at);
   }
 }
 
@@ -71,6 +76,11 @@ Recording Recording::load(const std::string &path) {
           g.magnitude >> g.noise_windows >> g.declared_at >> g.compute_ms;
       g.at_pick = at_pick != 0;
       r.messages.emplace_back(std::move(g));
+    } else if (tag == "G") {
+      StationGeometry o;
+      f >> o.station >> o.trigger_window >> o.p_time >> o.since_p >>
+          o.log_dist >> o.log_dist_sd >> o.baz >> o.kappa >> o.declared_at;
+      r.messages.emplace_back(std::move(o));
     } else {
       throw std::runtime_error(
           std::format("{}:{}: unknown record type '{}'", path, lineno, tag));
@@ -89,6 +99,8 @@ const std::string &station_of(const Message &m) {
     return p->station;
   if (auto *g = std::get_if<MagnitudeEstimate>(&m))
     return g->station;
+  if (auto *o = std::get_if<StationGeometry>(&m))
+    return o->station;
   throw std::invalid_argument("message has no station");
 }
 

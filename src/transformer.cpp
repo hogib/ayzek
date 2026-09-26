@@ -163,6 +163,12 @@ OnsetTransformer::OnsetTransformer(const Weights &w) {
   head_ = nn::Linear(w, "head");
   if (head_.out != 2 || stem_.front().conv.cin != 4)
     throw std::runtime_error(w.path() + ": unexpected input or head width");
+  if (w.has("geo_head.weight")) {
+    geo_head_ = nn::Linear(w, "geo_head");
+    if (geo_head_.out != 5 || geo_head_.in != cfg_.d)
+      throw std::runtime_error(w.path() + ": unexpected geometry head shape");
+    cfg_.geometry = true;
+  }
   slopes_ = alibi_slopes(cfg_.heads);
   set_context({});
 }
@@ -331,7 +337,17 @@ OnsetTransformer::Out OnsetTransformer::step(std::span<const float> x) {
   ln_out_.forward(h_.data(), 1);
   float o[2];
   head_.forward(h_.data(), 1, o);
-  return {sigmoid(o[0]), static_cast<float>(cfg_.max_dt) * sigmoid(o[1])};
+  Out out{sigmoid(o[0]), static_cast<float>(cfg_.max_dt) * sigmoid(o[1]), {}};
+  if (cfg_.geometry) {
+    // log distance, its log-variance, the back-azimuth as an unnormalised
+    // (sin, cos) and the log of its concentration; clamps as in onset.
+    float g[5];
+    geo_head_.forward(h_.data(), 1, g);
+    out.geo = Geometry{g[0], std::exp(0.5f * std::clamp(g[1], -8.0f, 6.0f)),
+                       std::atan2(g[2], g[3]),
+                       std::exp(std::clamp(g[4], -4.0f, 8.0f))};
+  }
+  return out;
 }
 
 // --- causal band-pass
@@ -475,7 +491,7 @@ void OnsetStream::emit(std::uint64_t pos, std::array<double, 3> x, bool missing,
     const auto block = static_cast<std::uint64_t>(kBlockSeconds * 100.0) / c.stride;
     if (tokens_ % block == 0)
       maybe_refresh();
-    out.push_back({p, o.p, o.dt, refreshed_});
+    out.push_back({p, o.p, o.dt, refreshed_, o.geo});
   };
 
   if (scaled_) {

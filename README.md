@@ -7,7 +7,9 @@ three-component waveforms from several stations and, for each earthquake:
    ensemble; a recursive STA/LTA is available for comparison)
 2. declares an event when stations agree within the P travel time between them
 3. estimates the magnitude from 10 s of waveform per station
-4. picks P and S and locates the event by grid search
+4. locates the event by grid search: from the streaming transformer's
+   per-station distance and back-azimuth when it has the geometry head
+   (`docs/impl/15-geometry-location.md`), otherwise from P and S picks
 
 All inference is hand-written (no ML runtime), with NEON kernels on aarch64.
 The target platform is a Raspberry Pi 4 or 5. The input is currently a replay
@@ -177,7 +179,8 @@ tools/demo.sh all      # 7 stations, full speed
 | `--step N` | 50 | samples between detector windows (0.5 s at 100 Hz) |
 | `--min-stations N` | 2 | station detections needed to declare an event; 3 halves the unmatched alarms in a dense network but costs warning time (`docs/impl/05-pipeline.md`) |
 | `--slack S` | 3 | tolerance on the inter-station P travel time, seconds |
-| `--no-pick` | | no P/S picker, and so no location |
+| `--locate KIND` | | `geometry`: locate from the transformer's geometry head, from the trigger on; the picker is not run. `picks`: from P and S picks. Default: `geometry` when `--detector transformer` and the model has the head, else `picks` |
+| `--no-pick` | | no P/S picker, and so no location unless `--locate geometry` |
 | `--no-magnitude` | | no magnitude regressor. Otherwise each trigger gets an early estimate, and triggers of declared events a second one at the picked P |
 | `--catalog CSV` | | AFAD catalogue export; each alarm is compared with it |
 | `--site NAME,LAT,LON` | | also report the S-wave warning time at this place (repeatable) |

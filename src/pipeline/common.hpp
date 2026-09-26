@@ -148,6 +148,23 @@ struct MagnitudeEstimate {
   double compute_ms;
 };
 
+// Transformer with the geometry head: where the event is as seen from one
+// station (transformer.hpp, Geometry), at one token after its trigger. Sent at
+// the trigger and then every `geometry_every` seconds while the estimate
+// sharpens; the network stage keeps the latest per station and locates from
+// them (locate.hpp) instead of from S-P picks.
+struct StationGeometry {
+  std::string station;
+  double trigger_window; // window_start of the Detection this follows
+  double p_time;         // epoch, the detector's P (trigger token end - dt)
+  double since_p;        // seconds from P to the end of the token
+  double log_dist;       // log km
+  double log_dist_sd;
+  double baz;   // station -> event, radians clockwise from north
+  double kappa; // von Mises concentration of baz
+  double declared_at;
+};
+
 struct StationDone {
   std::string station;
 };
@@ -161,8 +178,8 @@ struct Progress {
   double until;
 };
 
-using Message =
-    std::variant<Detection, Pick, MagnitudeEstimate, StationDone, Progress>;
+using Message = std::variant<Detection, Pick, MagnitudeEstimate,
+                             StationGeometry, StationDone, Progress>;
 
 inline double declared_at(const Message &m) {
   if (auto *d = std::get_if<Detection>(&m))
@@ -170,6 +187,8 @@ inline double declared_at(const Message &m) {
   if (auto *p = std::get_if<Pick>(&m))
     return p->declared_at;
   if (auto *g = std::get_if<MagnitudeEstimate>(&m))
+    return g->declared_at;
+  if (auto *g = std::get_if<StationGeometry>(&m))
     return g->declared_at;
   return 0;
 }
