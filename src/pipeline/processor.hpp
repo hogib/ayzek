@@ -91,6 +91,15 @@ struct ProcessorConfig {
   // reaches `threshold`, re-arm when it falls below `release`. The detection
   // dates P at the token's end minus its dt output. main() sets both from the
   // model's validation operating point unless given on the command line.
+  //
+  // With the geometry head and `geometry` set, each trigger is followed by a
+  // StationGeometry at the trigger token and every `geometry_every` seconds
+  // after it, until `geometry_seconds` after P or until p falls below
+  // `release`. The estimate sharpens once S is inside the model's ~32 s
+  // lookback, which covers S-P times up to ~20 s (~160 km).
+  bool geometry = false;
+  double geometry_every = 1.0;
+  double geometry_seconds = 20.0;
 };
 
 // The 10 s window starting 2 s before a picked P and the station's noise
@@ -109,6 +118,7 @@ struct ProcessorStats {
   std::uint64_t unconfirmed =
       0; // runs of windows dropped for want of an onset (require_onset)
   std::uint64_t context_refreshes = 0; // transformer: station context updates
+  std::uint64_t geometry = 0; // transformer: StationGeometry messages sent
   std::size_t noise_windows = 0;
   std::vector<float>
       window_ms; // conditioning + ensemble (or STA/LTA update), per window
@@ -160,6 +170,10 @@ private:
   std::unique_ptr<OnsetStream> onset_;
   std::vector<OnsetStream::Token> tokens_;
   bool armed_ = true; // transformer trigger: re-armed since the last crossing
+  // Geometry after the last trigger: next token end to report, the last
+  // position to report at (0: not tracking), P and the detection's window.
+  std::uint64_t geo_next_ = 0, geo_until_ = 0, geo_p_ = 0;
+  double geo_trigger_ = 0;
   std::uint64_t stalta_next_ =
       kUnset; // next sample to feed to the STA/LTA; kUnset after a gap
   bool stalta_armed_ =

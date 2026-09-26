@@ -3,6 +3,8 @@
 `--detector transformer` replaces the 3-seed 6 s window detector with the
 onset project's streaming transformer. Everything after the trigger is the
 same code: the picker, association, location, magnitude and catalogue scoring.
+A model with the geometry head also locates events itself, replacing the
+picker (`15-geometry-location.md`).
 So, as with STA/LTA (`09-sta-lta.md`), a comparison measures the detection
 stage alone.
 

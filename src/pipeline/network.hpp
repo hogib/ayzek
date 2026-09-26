@@ -1,11 +1,14 @@
 #pragma once
 
 // Network stage (one instance): associates station detections into events,
-// declares an event when enough stations detect it, locates it from the picks,
-// combines station magnitudes, and optionally compares events with a catalogue.
+// declares an event when enough stations detect it, locates it (from the
+// transformer's per-station geometry, or from P and S picks), combines station
+// magnitudes, and optionally compares events with a catalogue.
 
 #include "common.hpp"
+#include "locate.hpp"
 
+#include <cmath>
 #include <map>
 #include <optional>
 #include <string>
@@ -33,7 +36,14 @@ struct Site {
   double lat = 0, lon = 0;
 };
 
+// Picks: grid search on P and S picks (the 60 s picker window). Geometry: the
+// transformer's per-station distance and back-azimuth with its P times
+// (locate.hpp), available from the trigger on.
+enum class Locator { Picks, Geometry };
+
 struct NetworkConfig {
+  Locator locator = Locator::Picks;
+  double sigma_p = 0.5; // geometry locator: P-time uncertainty, seconds
   std::size_t min_stations = 2; // detections needed to declare an event
   double slack_seconds =
       3.0; // tolerance added to the inter-station P travel time
@@ -55,6 +65,7 @@ struct Location {
   double lat, lon, origin, rms;
   std::size_t n_stations;
   std::vector<std::string> dropped; // stations removed during relocation
+  double err_km = NAN; // geometry: radius of the 68% region; picks: not known
 };
 
 struct Event {
@@ -71,6 +82,9 @@ struct Event {
   std::optional<double> first_magnitude; // first reported event magnitude
   double first_magnitude_at = 0;         // and the stream time it was reported
   std::optional<Location> location;
+  double first_located_at = 0; // stream time of the first accepted location
+  // Geometry locator: the latest estimate per station (common.hpp).
+  std::map<std::string, StationGeometry> geometry;
 };
 
 // One catalogue event within the evaluation radius and the declared event
@@ -87,6 +101,7 @@ public:
   void on(const Detection &d);
   void on(const Pick &p);
   void on(const MagnitudeEstimate &m);
+  void on(const StationGeometry &g);
   // True if the detection at `station` dated `trigger_window` belongs to a
   // declared event. Magnitude estimates at the picked P are computed only then.
   [[nodiscard]] bool declared(const std::string &station,
@@ -108,8 +123,11 @@ private:
   [[nodiscard]] std::optional<Location> locate(const Event &e) const;
   [[nodiscard]] std::optional<Location>
   locate(const std::map<std::string, Pick> &picks, std::string *worst) const;
+  [[nodiscard]] std::optional<Location>
+  locate(const std::map<std::string, StationGeometry> &geo,
+         std::string *worst) const;
   [[nodiscard]] const CatalogEvent *match(const Event &e) const;
-  void report_location(Event &e);
+  void report_location(Event &e, double now);
   void report_magnitude(Event &e, double now);
 
   struct Warning {

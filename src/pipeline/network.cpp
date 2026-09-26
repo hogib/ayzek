@@ -130,6 +130,8 @@ void Network::on(const Detection &d) {
     report_magnitude(
         *ev,
         ev->declared_at); // estimates received before the event was declared
+    if (cfg_.locator == Locator::Geometry)
+      report_location(*ev, ev->declared_at); // likewise
   } else if (ev->declared && cfg_.verbose) {
     Log::get().line("EVENT", "31", "#{} joined by {}", ev->id, d.station);
   }
@@ -168,8 +170,28 @@ void Network::on(const Pick &p) {
     if (it == e.detections.end() || it->second.window_start != p.trigger_window)
       continue;
     e.picks.emplace(p.station, p);
-    if (e.declared)
-      report_location(e);
+    if (e.declared && cfg_.locator == Locator::Picks)
+      report_location(e, p.declared_at);
+    return;
+  }
+}
+
+void Network::on(const StationGeometry &g) {
+  if (cfg_.verbose)
+    Log::get().line(
+        "geo", "35",
+        "{:<5} P {} +{:.1f} s  {:.0f} km (x/{:.2f})  baz {:.0f} deg "
+        "(kappa {:.1f})",
+        g.station, hms(g.p_time), g.since_p, std::exp(g.log_dist),
+        std::exp(g.log_dist_sd), std::fmod(g.baz * 180.0 / std::numbers::pi + 360.0, 360.0),
+        g.kappa);
+  for (auto &e : events_) {
+    auto it = e.detections.find(g.station);
+    if (it == e.detections.end() || it->second.window_start != g.trigger_window)
+      continue;
+    e.geometry.insert_or_assign(g.station, g);
+    if (e.declared && cfg_.locator == Locator::Geometry)
+      report_location(e, g.declared_at);
     return;
   }
 }
@@ -248,19 +270,45 @@ void Network::report_magnitude(Event &e, double now) {
 }
 
 std::optional<Location> Network::locate(const Event &e) const {
-  auto picks = e.picks;
-  std::vector<std::string> dropped;
-  for (;;) {
-    std::string worst;
-    auto loc = locate(picks, &worst);
-    if (!loc || loc->rms <= cfg_.max_rms || picks.size() <= 2) {
-      if (loc)
-        loc->dropped = dropped;
-      return loc;
+  auto relocate = [&](auto obs) -> std::optional<Location> {
+    std::vector<std::string> dropped;
+    for (;;) {
+      std::string worst;
+      auto loc = locate(obs, &worst);
+      if (!loc || loc->rms <= cfg_.max_rms || obs.size() <= 2) {
+        if (loc)
+          loc->dropped = dropped;
+        return loc;
+      }
+      dropped.push_back(worst);
+      obs.erase(worst);
     }
-    dropped.push_back(worst);
-    picks.erase(worst);
+  };
+  return cfg_.locator == Locator::Geometry ? relocate(e.geometry)
+                                           : relocate(e.picks);
+}
+
+// Geometry locator (locate.hpp): each station's latest distance, back-azimuth
+// and P time. `worst` is the station contributing most to the misfit.
+std::optional<Location>
+Network::locate(const std::map<std::string, StationGeometry> &geo,
+                std::string *worst) const {
+  std::vector<GeometryObs> obs;
+  for (const auto &[code, g] : geo) {
+    auto it = stations_.find(code);
+    if (it == stations_.end())
+      continue;
+    obs.push_back({code, it->second.lat, it->second.lon, g.p_time, g.log_dist,
+                   g.log_dist_sd, g.baz, g.kappa});
   }
+  const auto fit = locate_geometry(
+      obs, {.vp = cfg_.vp, .depth_km = cfg_.depth_km, .sigma_p = cfg_.sigma_p},
+      worst);
+  if (!fit)
+    return std::nullopt;
+  Location loc{fit->lat, fit->lon, fit->origin, fit->rms, fit->n_stations, {}};
+  loc.err_km = fit->err_km;
+  return loc;
 }
 
 std::optional<Location>
@@ -329,7 +377,7 @@ Network::locate(const std::map<std::string, Pick> &picks,
   return best;
 }
 
-void Network::report_location(Event &e) {
+void Network::report_location(Event &e, double now) {
   auto loc = locate(e);
   if (!loc)
     return;
@@ -341,23 +389,33 @@ void Network::report_location(Event &e) {
     return;
   }
   // Do not print an unchanged solution.
-  const bool same = e.location && e.location->lat == loc->lat &&
-                    e.location->lon == loc->lon &&
-                    e.location->origin == loc->origin;
+  // Geometry estimates arrive every second per station: print a solution
+  // only when it moves by 2 km or more, or its station count changes.
+  const bool same =
+      e.location &&
+      (cfg_.locator == Locator::Geometry
+           ? distance_km(e.location->lat, e.location->lon, loc->lat,
+                         loc->lon) < 2.0 &&
+                 e.location->n_stations == loc->n_stations
+           : e.location->lat == loc->lat && e.location->lon == loc->lon &&
+                 e.location->origin == loc->origin);
+  if (!e.location)
+    e.first_located_at = now;
   e.location = loc;
   if (same)
     return;
   std::string left_out;
   for (const auto &d : loc->dropped)
     left_out += (left_out.empty() ? ", left out " : " ") + d;
-  const double now =
-      std::ranges::max(e.picks | std::views::values, {}, &Pick::declared_at)
-          .declared_at;
   Log::get().line("LOCATE", "1;32",
-                  "#{:<3} {}  located at {:.3f}N {:.3f}E, origin {}, rms "
-                  "{:.2f} s from {} stations{}",
-                  e.id, hms(now), loc->lat, loc->lon, hms(loc->origin),
-                  loc->rms, loc->n_stations, left_out);
+                  "#{:<3} {}  located at {:.3f}N {:.3f}E{}, origin {}, rms "
+                  "{:.2f} s from {} station{}{}",
+                  e.id, hms(now), loc->lat, loc->lon,
+                  std::isnan(loc->err_km)
+                      ? std::string()
+                      : std::format(" +-{:.0f} km", loc->err_km),
+                  hms(loc->origin), loc->rms, loc->n_stations,
+                  loc->n_stations == 1 ? "" : "s", left_out);
 }
 
 // Matching catalogue event, if any. A catalogue event matches if the location
@@ -527,8 +585,16 @@ void Network::report(double t_first, double t_last) const {
                 e->magnitude_stations == 1 ? "" : "s");
     }
     if (e->location)
-      log.plain(false, "  location   rms {:.2f} s from {} stations",
-                e->location->rms, e->location->n_stations);
+      log.plain(false, "  location   rms {:.2f} s from {} station{}{}, first {:.1f} s "
+                "after the alarm ({})",
+                e->location->rms, e->location->n_stations,
+                e->location->n_stations == 1 ? "" : "s",
+                std::isnan(e->location->err_km)
+                    ? std::string()
+                    : std::format(", +-{:.0f} km", e->location->err_km),
+                e->first_located_at - e->declared_at,
+                cfg_.locator == Locator::Geometry ? "transformer geometry"
+                                                  : "P and S picks");
 
     const double origin =
         c ? c->time : (e->location ? e->location->origin : NAN);

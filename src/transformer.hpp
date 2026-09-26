@@ -13,6 +13,11 @@
 //   p   probability that an event is under way
 //   dt  seconds since its onset, so a trigger at time t puts P at t - dt
 //
+// and, for a model trained with the geometry head (onset ModelConfig.geometry),
+// where the event is as seen from this station: epicentral distance and
+// back-azimuth, each with the model's own uncertainty (Geometry below). The
+// network stage locates events from these (pipeline/locate.hpp).
+//
 // Weights, geometry and the operating threshold come from
 // models/transformer.ayzw (tools/export_transformer.py). docs/impl/14-transformer.md.
 
@@ -31,6 +36,7 @@ namespace ayzek {
 struct TransformerConfig {
   std::size_t d = 0, heads = 0, layers = 0, window = 0, ctx_tokens = 0,
               ctx_layers = 0;
+  bool geometry = false; // the export has the geometry head
   std::vector<std::array<std::size_t, 3>> stem; // (kernel, stride, channels)
   std::size_t stride = 0;  // samples per token
   std::size_t history = 0; // samples the stem needs for the newest token
@@ -55,10 +61,20 @@ struct TransformerAttention {
               std::size_t n, const float *bias, float *y) const;
 };
 
+// `onset.model.OnsetDetector.geometry` at one token: the distance is Gaussian
+// in log km, the back-azimuth von Mises. Only meaningful after P.
+struct Geometry {
+  float log_dist;    // log km
+  float log_dist_sd; // standard deviation of log_dist
+  float baz;         // station -> event, radians clockwise from north
+  float kappa;       // von Mises concentration of baz
+};
+
 class OnsetTransformer {
 public:
   struct Out {
     float p, dt;
+    std::optional<Geometry> geo; // with the geometry head only
   };
 
   explicit OnsetTransformer(const Weights &w);
@@ -111,7 +127,7 @@ private:
   nn::Linear ctx_ff1_, ctx_ff2_;
   std::vector<ContextLayer> ctx_layers_;
   nn::LayerNorm ln_out_;
-  nn::Linear head_;
+  nn::Linear head_, geo_head_;
   std::vector<float> slopes_;
   std::vector<float> samples_; // last `history` samples, (n, 4)
   std::vector<float> e_, h_, a_, hidden_, tokens_, planar_, next_, qbuf_, bias_;
@@ -151,6 +167,7 @@ public:
     std::uint64_t end; // position of the token's last sample
     float p, dt;
     bool refreshed; // the station context was refreshed after this token
+    std::optional<Geometry> geo;
   };
   explicit OnsetStream(const Weights &w);
   [[nodiscard]] const TransformerConfig &config() const noexcept {

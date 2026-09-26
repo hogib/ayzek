@@ -86,6 +86,12 @@ int main(int argc, char **argv) try {
   std::size_t min_k = 2, max_k = rec.stations.size();
   double min_mag = 0;
   NetworkConfig base;
+  // A recording made with the geometry locator holds geometry estimates and
+  // no picks; locate its events the same way.
+  if (std::ranges::any_of(rec.messages, [](const Message &m) {
+        return std::holds_alternative<StationGeometry>(m);
+      }))
+    base.locator = Locator::Geometry;
   for (int i = 2; i < argc; ++i) {
     const std::string a = argv[i];
     auto next = [&] {
@@ -168,6 +174,8 @@ int main(int argc, char **argv) try {
         net.on(*p);
       else if (auto *g = std::get_if<MagnitudeEstimate>(&m))
         net.on(*g);
+      else if (auto *o = std::get_if<StationGeometry>(&m))
+        net.on(*o);
     }
 
     std::vector<double> alerts, loc_errors, mag_errors;

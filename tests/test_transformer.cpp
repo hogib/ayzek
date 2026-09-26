@@ -1,17 +1,33 @@
 // Compares the streaming transformer with PyTorch and scipy on DEMI data
 // (tools/export_transformer.py): the causal band-pass across a gap, the network
 // one token at a time with and without a station context, and the whole front
-// end from raw counts to token outputs.
+// end from raw counts to token outputs. For a model with the geometry head,
+// its outputs are compared at every token too.
 
 #include "fixture.hpp"
 #include "transformer.hpp"
 
+#include <algorithm>
+#include <cmath>
+#include <format>
 #include <optional>
 #include <vector>
 
 using namespace ayzek;
 
 namespace {
+
+// Largest difference between a token's geometry and the reference row
+// (log_dist, log_dist_sd, baz, kappa); relative for the sd and kappa, and the
+// back-azimuth as an angle.
+double geo_err(const Geometry &g, std::span<const float> ref) {
+  const double pi = 3.14159265358979323846;
+  double db = std::fmod(std::abs(static_cast<double>(g.baz) - ref[2]), 2 * pi);
+  db = std::min(db, 2 * pi - db);
+  return std::max({std::abs(static_cast<double>(g.log_dist) - ref[0]),
+                   std::abs(static_cast<double>(g.log_dist_sd) / ref[1] - 1),
+                   db, std::abs(static_cast<double>(g.kappa) / ref[3] - 1)});
+}
 
 void filter(const Weights &model, const Weights &fx) {
   const auto sos = model.at("filter.sos").f64(), zi = model.at("filter.zi").f64();
@@ -52,15 +68,23 @@ void network(const Weights &model, const Weights &fx) {
     net.set_context(with_ctx ? fx.at("net.ctx").f32() : std::span<const float>{});
     const auto p = fx.at(with_ctx ? "net.p_ctx" : "net.p_null").f32();
     const auto dt = fx.at(with_ctx ? "net.dt_ctx" : "net.dt_null").f32();
-    double ep = 0, ed = 0;
+    const bool geo = net.config().geometry;
+    CHECK(geo == fx.has(with_ctx ? "net.geo_ctx" : "net.geo_null"));
+    const auto gref = geo ? fx.at(with_ctx ? "net.geo_ctx" : "net.geo_null").f32()
+                          : std::span<const float>{};
+    double ep = 0, ed = 0, eg = 0;
     for (std::size_t t = 0; t < p.size(); ++t) {
       const auto o = net.step(x.subspan(t * stride * 4, stride * 4));
       ep = std::max(ep, static_cast<double>(std::abs(o.p - p[t])));
       ed = std::max(ed, static_cast<double>(std::abs(o.dt - dt[t])));
+      CHECK(o.geo.has_value() == geo);
+      if (geo)
+        eg = std::max(eg, geo_err(*o.geo, gref.subspan(t * 4, 4)));
     }
-    std::println("  network, {:<10} {} tokens: max |p| err {:.2e}, max |dt| err {:.2e} s",
-                 with_ctx ? "context" : "no context", p.size(), ep, ed);
-    CHECK(ep < 1e-4 && ed < 1e-3);
+    std::println("  network, {:<10} {} tokens: max |p| err {:.2e}, max |dt| err {:.2e} s{}",
+                 with_ctx ? "context" : "no context", p.size(), ep, ed,
+                 geo ? std::format(", geometry {:.2e}", eg) : std::string());
+    CHECK(ep < 1e-4 && ed < 1e-3 && eg < 1e-3);
   }
 }
 
@@ -79,15 +103,22 @@ void stream(const Weights &model, const Weights &fx) {
     s.push(1000 + i, x, out);
   }
   CHECK(out.size() == p.size());
-  double ep = 0, ed = 0;
+  const bool geo = s.config().geometry;
+  CHECK(geo == fx.has("stream.geo"));
+  const auto gref = geo ? fx.at("stream.geo").f32() : std::span<const float>{};
+  double ep = 0, ed = 0, eg = 0;
   for (std::size_t t = 0; t < out.size(); ++t) {
     CHECK(out[t].end == 1000 + t * 10 + 9);
     ep = std::max(ep, static_cast<double>(std::abs(out[t].p - p[t])));
     ed = std::max(ed, static_cast<double>(std::abs(out[t].dt - dt[t])));
+    CHECK(out[t].geo.has_value() == geo);
+    if (geo)
+      eg = std::max(eg, geo_err(*out[t].geo, gref.subspan(t * 4, 4)));
   }
-  std::println("  raw counts -> tokens, {} tokens: max |p| err {:.2e}, max |dt| err {:.2e} s",
-               out.size(), ep, ed);
-  CHECK(ep < 1e-4 && ed < 1e-3);
+  std::println("  raw counts -> tokens, {} tokens: max |p| err {:.2e}, max |dt| err {:.2e} s{}",
+               out.size(), ep, ed,
+               geo ? std::format(", geometry {:.2e}", eg) : std::string());
+  CHECK(ep < 1e-4 && ed < 1e-3 && eg < 1e-3);
 }
 
 } // namespace

@@ -187,7 +187,8 @@ bool Processor::feed_stream(std::uint64_t limit, std::size_t max) {
 
 // One transformer output. The trigger fires on the first token at or above
 // the threshold after the probability last fell below `release`, and dates P
-// at the token's end minus its dt output. The detection carries a window start
+// at the token's end minus its dt output. With `geometry`, the station's
+// geometry estimate follows the trigger (ProcessorConfig). The detection carries a window start
 // 3.5 s before that P, the convention the network stage and the picker and
 // magnitude windows share with the window detector. `fed` is the newest
 // position read when the token completed: the decision is available then.
@@ -221,13 +222,32 @@ void Processor::on_token(const OnsetStream::Token &tok, std::uint64_t fed,
         last_trigger_ = pos_to_epoch(ws);
         trigger(ws, p_pos, ws, pos_to_epoch(fed + 1), tok.p,
                 static_cast<double>(ms));
+        if (cfg_.geometry && tok.geo) {
+          geo_trigger_ = last_trigger_;
+          geo_p_ = p_pos;
+          geo_next_ = tok.end;
+          geo_until_ = p_pos + static_cast<std::uint64_t>(
+                                   cfg_.geometry_seconds * kFs);
+        }
       }
     }
     armed_ = false;
   } else if (tok.p < cfg_.release) {
     armed_ = true;
+    geo_until_ = 0; // the event is over, or was never one
   }
   active_ = !armed_;
+  if (geo_until_ && tok.geo && tok.end >= geo_next_) {
+    const auto &g = *tok.geo;
+    bus_.send(StationGeometry{st_.code, geo_trigger_, pos_to_epoch(geo_p_),
+                              pos_to_epoch(tok.end) - pos_to_epoch(geo_p_),
+                              g.log_dist, g.log_dist_sd, g.baz, g.kappa,
+                              pos_to_epoch(fed + 1)});
+    ++stats_.geometry;
+    geo_next_ = tok.end + static_cast<std::uint64_t>(cfg_.geometry_every * kFs);
+    if (geo_next_ > geo_until_)
+      geo_until_ = 0;
+  }
   if (cfg_.magnitude)
     maybe_add_noise(as_window);
 }

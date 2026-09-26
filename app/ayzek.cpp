@@ -81,6 +81,11 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2)
   --slack S             tolerance on the inter-station P travel time, seconds (default 3)
+  --locate KIND         geometry: from the transformer's per-station distance and
+                        back-azimuth, from the trigger on; the picker is not run
+                        picks: grid search on P and S picks (60 s picker window)
+                        (default: geometry when the transformer has the geometry
+                        head, otherwise picks)
   --no-pick             detector only
   --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
@@ -142,6 +147,7 @@ int main(int argc, char **argv) try {
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
               record_path, transformer_path;
   bool threshold_set = false, release_set = false;
+  std::string locate_kind; // "", "geometry" or "picks"
   double speed = 1.0;
   ProcessorConfig pcfg;
   NetworkConfig ncfg;
@@ -218,7 +224,11 @@ int main(int argc, char **argv) try {
       ncfg.slack_seconds = std::stod(next());
     else if (a == "--min-stations")
       ncfg.min_stations = std::stoul(next());
-    else if (a == "--no-pick")
+    else if (a == "--locate") {
+      locate_kind = next();
+      if (locate_kind != "geometry" && locate_kind != "picks")
+        throw std::runtime_error("--locate: geometry or picks");
+    } else if (a == "--no-pick")
       pcfg.pick = false;
     else if (a == "--no-magnitude")
       pcfg.magnitude = false;
@@ -284,6 +294,18 @@ int main(int argc, char **argv) try {
     pcfg.anchor = false;
     pcfg.require_onset = false;
   }
+  // Location from the transformer's geometry head replaces the S-P picks: it
+  // is available from the trigger on instead of after the 60 s picker window.
+  const bool has_geometry = transformer && transformer->has("geo_head.weight");
+  if (locate_kind == "geometry" && !has_geometry)
+    throw std::runtime_error(
+        "--locate geometry needs --detector transformer with a model exported "
+        "with the geometry head");
+  if (locate_kind == "geometry" || (locate_kind.empty() && has_geometry)) {
+    ncfg.locator = Locator::Geometry;
+    pcfg.geometry = true;
+    pcfg.pick = false;
+  }
   std::vector<Weights> magnitude;
   if (pcfg.magnitude) {
     for (int p = 0; p < 3; ++p) {
@@ -343,7 +365,9 @@ int main(int argc, char **argv) try {
       "ayzek", "1",
       "{} stations, {} backend, {}{}{}, replay {} to {} UTC at {}",
       stations.size(), simd::kBackend, detector_name,
-      pcfg.pick ? " + picker" : "",
+      pcfg.geometry ? " + geometry locator"
+      : pcfg.pick   ? " + picker"
+                    : "",
       pcfg.magnitude ? std::format(" + {}-model magnitude", magnitude.size())
                      : "",
       ymd_hms(t_first), hms(t_last),
@@ -429,6 +453,8 @@ int main(int argc, char **argv) try {
         net.on(*p);
       else if (auto *g = std::get_if<MagnitudeEstimate>(&m))
         net.on(*g);
+      else if (auto *o = std::get_if<StationGeometry>(&m))
+        net.on(*o);
       if (recorder)
         recorder->write(m);
 
@@ -526,13 +552,18 @@ int main(int argc, char **argv) try {
               w.p99, pk.mean, mg.mean);
   }
   if (pcfg.detector == DetectorKind::Transformer) {
-    std::uint64_t refreshes = 0;
-    for (const auto &pr : procs)
+    std::uint64_t refreshes = 0, geometry = 0;
+    for (const auto &pr : procs) {
       refreshes += pr->stats().context_refreshes;
+      geometry += pr->stats().geometry;
+    }
     log.plain(false,
               "  transformer: \"windows\" are 0.1 s tokens; {} station context "
-              "refreshes",
-              refreshes);
+              "refreshes{}",
+              refreshes,
+              pcfg.geometry
+                  ? std::format("; {} geometry estimates sent", geometry)
+                  : std::string());
   }
   if (pcfg.detector == DetectorKind::Model && pcfg.anchor)
     log.plain(false,
