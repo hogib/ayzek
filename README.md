@@ -163,7 +163,8 @@ tools/demo.sh all      # 7 stations, full speed
 | `--trigger-windows N` | 8 | see `--threshold`; 8 windows add 3.5 s to a trigger |
 | `--instant-threshold P` | 0.9 | also trigger on a single window at or above P; a value > 1 disables this |
 | `--release P` | 0.3 | a trigger re-arms after two windows below P |
-| `--detector KIND` | `model` | `stalta` replaces the detector with a recursive STA/LTA; picking, association, location and magnitude are unchanged |
+| `--detector KIND` | `6s` | `6s` (also `model`): the 3-seed 6 s window detector. `transformer`: the streaming onset transformer, one output per 0.1 s, P dated by its own `dt` (`docs/impl/14-transformer.md`). `stalta`: a recursive STA/LTA. Picking, association, location and magnitude are unchanged |
+| `--transformer FILE` | `MODELS/transformer.ayzw` | transformer weights; its `--threshold` and `--release` default to the model's validation operating point |
 | `--sta S`, `--lta S` | 1, 30 | STA/LTA averaging lengths in seconds |
 | `--stalta-on R`, `--stalta-off R` | 8, 1.5 | STA/LTA ratio that triggers, and below which a trigger re-arms |
 | `--stalta-band LO,HI` | 2,20 | STA/LTA pass band in Hz (4th-order Butterworth high- and low-pass) |

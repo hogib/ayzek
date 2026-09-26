@@ -7,7 +7,7 @@ endforeach
 # Comparisons with reference outputs from tools/export_models.py,
 # tools/export_magnitude.py and tools/export_stalta.py. Skipped (exit 77) if
 # those files are missing.
-foreach t : ['test_dsp', 'test_models', 'test_magnitude', 'test_stalta']
+foreach t : ['test_dsp', 'test_models', 'test_magnitude', 'test_stalta', 'test_transformer']
   exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
   test(t, exe, args: [meson.project_source_root()], timeout: 300)
 endforeach

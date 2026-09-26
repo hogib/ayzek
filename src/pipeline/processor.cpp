@@ -1,7 +1,10 @@
 #include "processor.hpp"
 
 #include <algorithm>
+#include <array>
 #include <chrono>
+#include <cmath>
+#include <optional>
 #include <stdexcept>
 #include <thread>
 
@@ -26,9 +29,15 @@ Processor::Processor(Station &st, const std::vector<Weights> &detector,
                      const std::vector<Weights> &magnitude,
                      const dsp::Bandpass &bp, ProcessorConfig cfg, Bus &bus,
                      const std::string &scores_path,
-                     const std::string &scores_in_path)
+                     const std::string &scores_in_path,
+                     const Weights *transformer)
     : st_(st), cfg_(cfg), bus_(bus), detector_(detector), noise_(bp),
       cond6_(bp, Detector::kWindow), cond60_(bp, Picker::kWindow) {
+  if (cfg_.detector == DetectorKind::Transformer) {
+    if (!transformer)
+      throw std::runtime_error("--detector transformer needs transformer weights");
+    onset_ = std::make_unique<OnsetStream>(*transformer);
+  }
   if (cfg_.pick)
     picker_ = std::make_unique<Picker>(picker);
   if (cfg_.detector == DetectorKind::StaLta || cfg_.anchor)
@@ -129,6 +138,98 @@ void Processor::score_window(std::uint64_t start) {
   if (cfg_.magnitude)
     maybe_add_noise(start);
   next_ = start + cfg_.step;
+}
+
+// Transformer: reads positions [next_, limit), at most `max` of them, and feeds
+// them to the station's stream one at a time. A missing sample (a gap, or a
+// component that has not started) is fed as missing: unlike the window
+// detector, the transformer runs through gaps, and its gap channel tells it
+// which samples are not real.
+bool Processor::feed_stream(std::uint64_t limit, std::size_t max) {
+  constexpr std::size_t kChunk = 50;
+  std::array<std::array<std::int32_t, kChunk>, 3> buf{};
+  bool progressed = false;
+  while (next_ < limit && max > 0) {
+    const auto n = static_cast<std::size_t>(
+        std::min<std::uint64_t>({kChunk, limit - next_, max}));
+    for (std::size_t c = 0; c < 3; ++c) {
+      auto &cs = st_.comp[c];
+      auto &b = buf[c];
+      std::fill(b.begin(), b.begin() + static_cast<std::ptrdiff_t>(n), kGap);
+      const auto base = cs.base.load(std::memory_order_acquire);
+      if (base == kUnset || next_ + n <= base)
+        continue;
+      const std::uint64_t from = std::max(next_, base);
+      const std::size_t skip = static_cast<std::size_t>(from - next_);
+      if (!cs.ring.copy_out(from - base,
+                            std::span<std::int32_t>(b.data() + skip, n - skip)))
+        std::fill(b.begin() + static_cast<std::ptrdiff_t>(skip),
+                  b.begin() + static_cast<std::ptrdiff_t>(n), kGap);
+    }
+    for (std::size_t i = 0; i < n; ++i) {
+      std::array<std::optional<double>, 3> x;
+      for (std::size_t c = 0; c < 3; ++c)
+        if (buf[c][i] != kGap)
+          x[c] = static_cast<double>(buf[c][i]);
+      tokens_.clear();
+      const auto t0 = Clock::now();
+      onset_->push(next_ + i, x, tokens_);
+      const double ms = ms_since(t0);
+      for (const auto &tok : tokens_)
+        on_token(tok, next_ + i, ms / static_cast<double>(tokens_.size()));
+    }
+    next_ += n;
+    max -= n;
+    progressed = true;
+  }
+  return progressed;
+}
+
+// One transformer output. The trigger fires on the first token at or above
+// the threshold after the probability last fell below `release`, and dates P
+// at the token's end minus its dt output. The detection carries a window start
+// 3.5 s before that P, the convention the network stage and the picker and
+// magnitude windows share with the window detector. `fed` is the newest
+// position read when the token completed: the decision is available then.
+void Processor::on_token(const OnsetStream::Token &tok, std::uint64_t fed,
+                         double ms) {
+  ++stats_.windows;
+  stats_.context_refreshes += tok.refreshed ? 1 : 0;
+  stats_.window_ms.push_back(static_cast<float>(ms));
+  // The noise baseline gate reads `recent_` as (window start, probability) of
+  // 6 s windows; a token is entered as the 6 s ending with it. 200 tokens keep
+  // the 10 s the gate looks back over.
+  const std::uint64_t as_window =
+      tok.end + 1 >= Detector::kWindow ? tok.end + 1 - Detector::kWindow : 0;
+  recent_.emplace_back(as_window, tok.p);
+  while (recent_.size() > 200)
+    recent_.pop_front();
+  if (scores_.is_open())
+    scores_ << std::format("{},{:.2f},{}\n", st_.code, pos_to_epoch(tok.end),
+                           tok.p);
+
+  const bool warmup = cfg_.from > 0 && pos_to_epoch(tok.end) < cfg_.from;
+  if (tok.p >= cfg_.threshold) {
+    if (armed_ && !warmup) {
+      const double max_dt = onset_->config().max_dt;
+      const auto back = static_cast<std::uint64_t>(
+          std::lround(std::clamp(static_cast<double>(tok.dt), 0.0, max_dt) * kFs));
+      const std::uint64_t p_pos = tok.end - std::min(back, tok.end);
+      const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
+      const std::uint64_t ws = p_pos > lead ? p_pos - lead : 0;
+      if (pos_to_epoch(ws) - last_trigger_ >= cfg_.retrigger_seconds) {
+        last_trigger_ = pos_to_epoch(ws);
+        trigger(ws, p_pos, ws, pos_to_epoch(fed + 1), tok.p,
+                static_cast<double>(ms));
+      }
+    }
+    armed_ = false;
+  } else if (tok.p < cfg_.release) {
+    armed_ = true;
+  }
+  active_ = !armed_;
+  if (cfg_.magnitude)
+    maybe_add_noise(as_window);
 }
 
 // Detector ensemble on the window; returns its probability after applying the
@@ -460,7 +561,7 @@ void Processor::run(const std::atomic<bool> &stop) {
       // STA/LTA also needs its long-term average before `from`.
       if (cfg_.from > 0 && !cfg_.magnitude && !stalta_)
         first = std::max(first, epoch_to_pos(cfg_.from));
-      next_ = align_up(first, cfg_.step);
+      next_ = align_up(first, onset_ ? onset_->config().stride : cfg_.step);
     }
 
     // At most 256 windows (about 2 minutes of data) per pass, so that the
@@ -469,13 +570,19 @@ void Processor::run(const std::atomic<bool> &stop) {
     // for a processor slower than ~20x real time, block ingest past its
     // backpressure limit and drop data.
     bool progressed = false;
-    for (int n = 0; n < 256 && next_ + Detector::kWindow <= available &&
-                    !stop.load(std::memory_order_relaxed);
-         ++n) {
-      const std::uint64_t end = next_ + Detector::kWindow;
-      score_window(next_);
-      progressed = true;
-      run_jobs(end);
+    if (onset_) {
+      // The same ~2 minutes of data per pass as the window loop below.
+      progressed = feed_stream(available, 256 * cfg_.step);
+      run_jobs(next_);
+    } else {
+      for (int n = 0; n < 256 && next_ + Detector::kWindow <= available &&
+                      !stop.load(std::memory_order_relaxed);
+           ++n) {
+        const std::uint64_t end = next_ + Detector::kWindow;
+        score_window(next_);
+        progressed = true;
+        run_jobs(end);
+      }
     }
 
     // Raise the ring floor, keeping the picker lead, one noise window before
@@ -497,7 +604,9 @@ void Processor::run(const std::atomic<bool> &stop) {
     // detector window (for STA/LTA, the next sample to be fed) or of a
     // scheduled job's window. After a gap, the STA/LTA restarts at a later
     // window start.
-    double until = pos_to_epoch(next_ + Detector::kWindow);
+    // For the transformer, the next token can complete no earlier than the
+    // next position read.
+    double until = pos_to_epoch(onset_ ? next_ : next_ + Detector::kWindow);
     if (stalta_)
       until = pos_to_epoch(stalta_next_ != kUnset ? stalta_next_ : next_);
     if (!picks_.empty())

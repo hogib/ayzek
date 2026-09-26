@@ -58,10 +58,15 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --speed X             replay speed; 1 = real time, 0 = as fast as possible (default 1)
   --from TIME           start detecting at this UTC time, e.g. 2025-11-10T18:19:00
   --threshold P         trigger when N consecutive windows reach P (default 0.8) ...
+                        (transformer: when one token reaches P; default from the model)
   --trigger-windows N   ... (default 8, which adds 3.5 s)
   --instant-threshold P or when one window reaches P (default 0.9; > 1 disables)
-  --release P           probability below which a trigger resets (default 0.3)
-  --detector KIND       model (default) or stalta, the reference STA/LTA trigger
+  --release P           probability below which a trigger resets (default 0.3;
+                        transformer: the model's release ratio times the threshold)
+  --detector KIND       6s (default; also "model"): the 3-seed 6 s window detector
+                        transformer: the streaming onset transformer, every 0.1 s
+                        stalta: the reference STA/LTA trigger
+  --transformer FILE    transformer weights (default: MODELS/transformer.ayzw)
   --no-anchor           do not date model triggers by the STA/LTA onset
   --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
   --require-onset       a detector trigger also needs an STA/LTA onset
@@ -135,7 +140,8 @@ Percentiles percentiles(std::vector<float> v) {
 
 int main(int argc, char **argv) try {
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
-              record_path;
+              record_path, transformer_path;
+  bool threshold_set = false, release_set = false;
   double speed = 1.0;
   ProcessorConfig pcfg;
   NetworkConfig ncfg;
@@ -154,22 +160,29 @@ int main(int argc, char **argv) try {
       speed = std::stod(next());
     else if (a == "--from")
       pcfg.from = parse_time(next());
-    else if (a == "--threshold")
+    else if (a == "--threshold") {
       pcfg.threshold = std::stof(next());
+      threshold_set = true;
+    } else if (a == "--transformer")
+      transformer_path = next();
     else if (a == "--trigger-windows")
       pcfg.trigger_windows = std::stoul(next());
     else if (a == "--instant-threshold")
       pcfg.instant_threshold = std::stof(next());
-    else if (a == "--release")
+    else if (a == "--release") {
       pcfg.release = std::stof(next());
+      release_set = true;
+    }
     else if (a == "--detector") {
       const auto kind = next();
-      if (kind == "model")
+      if (kind == "6s" || kind == "model")
         pcfg.detector = DetectorKind::Model;
+      else if (kind == "transformer")
+        pcfg.detector = DetectorKind::Transformer;
       else if (kind == "stalta")
         pcfg.detector = DetectorKind::StaLta;
       else
-        throw std::runtime_error("--detector: model or stalta");
+        throw std::runtime_error("--detector: 6s, transformer or stalta");
     } else if (a == "--sta")
       pcfg.stalta.sta_seconds = std::stod(next());
     else if (a == "--lta")
@@ -244,8 +257,8 @@ int main(int argc, char **argv) try {
     std::print(stderr, "{}", kUsage);
     return 2;
   }
-  if (pcfg.detector == DetectorKind::StaLta && !scores_in_dir.empty())
-    throw std::runtime_error("--scores-in applies to the model detector only");
+  if (pcfg.detector != DetectorKind::Model && !scores_in_dir.empty())
+    throw std::runtime_error("--scores-in applies to the 6 s detector only");
   if (!stdout_is_tty())
     Log::get().color = false;
   std::signal(SIGINT, [](int) { g_stop = true; });
@@ -257,6 +270,20 @@ int main(int argc, char **argv) try {
     detector.push_back(
         Weights::load(std::format("{}/detector_s{}.ayzw", models, seed)));
   const Weights picker = Weights::load(models + "/spicker.ayzw");
+  // The transformer dates P itself (dt), so the STA/LTA anchor is not used,
+  // and its threshold is the validation operating point it was exported with.
+  std::unique_ptr<Weights> transformer;
+  if (pcfg.detector == DetectorKind::Transformer) {
+    transformer = std::make_unique<Weights>(Weights::load(
+        transformer_path.empty() ? models + "/transformer.ayzw" : transformer_path));
+    const auto f = transformer->at("config.floats").f64();
+    if (!threshold_set)
+      pcfg.threshold = static_cast<float>(f[3]);
+    if (!release_set)
+      pcfg.release = static_cast<float>(f[4] * pcfg.threshold);
+    pcfg.anchor = false;
+    pcfg.require_onset = false;
+  }
   std::vector<Weights> magnitude;
   if (pcfg.magnitude) {
     for (int p = 0; p < 3; ++p) {
@@ -301,9 +328,12 @@ int main(int argc, char **argv) try {
       pcfg.from > 0 ? pcfg.from - 70.0
                     : t_first; // 70 s covers a picker window before `from`
   const std::string detector_name =
-      pcfg.detector == DetectorKind::Model
-          ? std::string(pcfg.anchor ? "3-seed detector + STA/LTA anchor"
-                                    : "3-seed detector")
+      pcfg.detector == DetectorKind::Transformer
+          ? std::format("onset transformer (p >= {:g}, release {:g}, P from dt)",
+                        pcfg.threshold, pcfg.release)
+      : pcfg.detector == DetectorKind::Model
+          ? std::string(pcfg.anchor ? "3-seed 6 s detector + STA/LTA anchor"
+                                    : "3-seed 6 s detector")
           : std::format(
                 "STA/LTA {:g}/{:g} s on {:g} off {:g}, {:g}-{:g} Hz, {}",
                 pcfg.stalta.sta_seconds, pcfg.stalta.lta_seconds,
@@ -337,7 +367,8 @@ int main(int argc, char **argv) try {
     const std::string in_path =
         scores_in_dir.empty() ? "" : scores_in_dir + "/" + st->code + ".csv";
     procs.push_back(std::make_unique<Processor>(
-        *st, detector, picker, magnitude, bp, pcfg, bus, path, in_path));
+        *st, detector, picker, magnitude, bp, pcfg, bus, path, in_path,
+        transformer.get()));
   }
   std::vector<std::jthread> threads;
   for (std::size_t i = 0; i < stations.size(); ++i) {
@@ -493,6 +524,15 @@ int main(int argc, char **argv) try {
               stations[i]->code, s.windows, s.gap_windows, s.detections,
               s.picks, std::format("{}/{}", s.magnitudes, ps.estimated), w.mean,
               w.p99, pk.mean, mg.mean);
+  }
+  if (pcfg.detector == DetectorKind::Transformer) {
+    std::uint64_t refreshes = 0;
+    for (const auto &pr : procs)
+      refreshes += pr->stats().context_refreshes;
+    log.plain(false,
+              "  transformer: \"windows\" are 0.1 s tokens; {} station context "
+              "refreshes",
+              refreshes);
   }
   if (pcfg.detector == DetectorKind::Model && pcfg.anchor)
     log.plain(false,

@@ -1,7 +1,7 @@
 #pragma once
 
 // Processing stage, one thread per station: sliding windows -> preprocessing ->
-// detector ensemble (or STA/LTA) -> trigger. A trigger schedules an early
+// detector ensemble (or STA/LTA, or the streaming transformer) -> trigger. A trigger schedules an early
 // magnitude estimate and a 60 s picker window. A confident P pick carries the
 // 10 s window for a magnitude estimate at the picked P, which the network stage
 // runs only for declared events. Windows scored as noise update the station's
@@ -13,6 +13,7 @@
 #include "models.hpp"
 #include "stalta.hpp"
 #include "station.hpp"
+#include "transformer.hpp"
 
 #include <atomic>
 #include <cstdint>
@@ -25,7 +26,10 @@
 
 namespace ayzek::pipeline {
 
-enum class DetectorKind { Model, StaLta };
+// Model: the 3-seed 6 s window detector. Transformer: the streaming onset
+// transformer (transformer.hpp), one output per 0.1 s. StaLta: the reference
+// STA/LTA trigger.
+enum class DetectorKind { Model, StaLta, Transformer };
 
 struct ProcessorConfig {
   DetectorKind detector = DetectorKind::Model;
@@ -82,6 +86,11 @@ struct ProcessorConfig {
   // they see (09-sta-lta.md).
   bool anchor_picker = false;
   bool anchor_magnitude = false;
+
+  // Transformer (detector = Transformer): trigger when a token's probability
+  // reaches `threshold`, re-arm when it falls below `release`. The detection
+  // dates P at the token's end minus its dt output. main() sets both from the
+  // model's validation operating point unless given on the command line.
 };
 
 // The 10 s window starting 2 s before a picked P and the station's noise
@@ -99,6 +108,7 @@ struct ProcessorStats {
       0; // detections whose P time came from an STA/LTA onset
   std::uint64_t unconfirmed =
       0; // runs of windows dropped for want of an onset (require_onset)
+  std::uint64_t context_refreshes = 0; // transformer: station context updates
   std::size_t noise_windows = 0;
   std::vector<float>
       window_ms; // conditioning + ensemble (or STA/LTA update), per window
@@ -112,7 +122,8 @@ public:
             const Weights &picker, const std::vector<Weights> &magnitude,
             const dsp::Bandpass &bp, ProcessorConfig cfg, Bus &bus,
             const std::string &scores_path,
-            const std::string &scores_in_path = "");
+            const std::string &scores_in_path = "",
+            const Weights *transformer = nullptr);
   void run(const std::atomic<bool> &stop);
   [[nodiscard]] const ProcessorStats &stats() const noexcept { return stats_; }
 
@@ -120,6 +131,9 @@ private:
   bool extract(std::uint64_t start, std::size_t n, std::vector<double> &out,
                std::uint64_t &resume);
   void score_window(std::uint64_t start);
+  // Transformer: feeds positions [next_, limit) to the stream, at most `max`.
+  bool feed_stream(std::uint64_t limit, std::size_t max);
+  void on_token(const OnsetStream::Token &tok, std::uint64_t fed, double ms);
   float score_model(std::uint64_t start, double &ms);
   float score_stalta(std::uint64_t start, double &ms);
   float update_stalta(std::uint64_t start, double on, double off, double &ms);
@@ -143,6 +157,9 @@ private:
   std::unique_ptr<Picker> picker_;
   std::unique_ptr<MagnitudeEstimator> magnitude_;
   std::unique_ptr<dsp::StaLta> stalta_;
+  std::unique_ptr<OnsetStream> onset_;
+  std::vector<OnsetStream::Token> tokens_;
+  bool armed_ = true; // transformer trigger: re-armed since the last crossing
   std::uint64_t stalta_next_ =
       kUnset; // next sample to feed to the STA/LTA; kUnset after a gap
   bool stalta_armed_ =
