@@ -183,6 +183,8 @@ tools/demo.sh all      # 7 stations, full speed
 | `--min-stations N` | 2 | station detections needed to declare an event; 3 halves the unmatched alarms in a dense network but costs warning time (`docs/impl/05-pipeline.md`) |
 | `--slack S` | 3 | tolerance on the inter-station P travel time, seconds |
 | `--locate KIND` | | `geometry`: locate from the transformer's geometry head, from the trigger on; the picker is not run. `picks`: from P and S picks. Default: `geometry` when `--detector transformer` and the model has the head, else `picks` |
+| `--assess` | | diagnostic: judge every alarm earthquake, possible, misfire or unclassified from its S-P picks (runs the picker even with the geometry locator); `ASSESS` lines while running, a report section (`docs/impl/16-alarm-assessment.md`) |
+| `--assess-csv FILE` | | with `--assess`: one row per alarm, readable by `tools/plot_candidates.py` |
 | `--no-pick` | | no P/S picker, and so no location unless `--locate geometry` |
 | `--no-magnitude` | | no magnitude regressor. Otherwise each trigger gets an early estimate, and triggers of declared events a second one at the picked P |
 | `--catalog CSV` | | AFAD catalogue export; each alarm is compared with it |

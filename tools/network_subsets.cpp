@@ -24,6 +24,9 @@
 //   --min-stations N    detections required to declare an event (default 2)
 //   --geo-sd-scale X, --geo-max-z Z, --geo-max-err-km KM
 //                       geometry locator settings, as for ayzek
+//   --assess            add the alarm assessment's counts (assess.hpp): alarms
+//                       judged earthquake or possible, catalogued and not
+//                       (the recording must hold picks: ayzek --assess --record)
 
 #include "pipeline/network.hpp"
 #include "pipeline/recording.hpp"
@@ -46,6 +49,10 @@ struct Row {
   std::vector<std::string> stations;
   std::size_t catalogue = 0, declared = 0, located = 0, unmatched = 0;
   std::size_t located_30km = 0, located_far = 0; // within 30 km; beyond 50 km
+  // --assess: alarms judged earthquake or possible, and misfire, catalogued /
+  // unmatched
+  std::size_t real_matched = 0, real_unmatched = 0, misfire_matched = 0,
+              misfire_unmatched = 0;
   double mean_alert = NAN, median_location_error = NAN,
          mean_abs_magnitude_error = NAN;
   // main event
@@ -115,6 +122,8 @@ int main(int argc, char **argv) try {
       base.catalog_radius_km = std::stod(next());
     else if (a == "--min-stations")
       base.min_stations = std::stoul(next());
+    else if (a == "--assess")
+      base.assess = true;
     else if (a == "--geo-sd-scale")
       base.geo_sd_scale = std::stod(next());
     else if (a == "--geo-max-z")
@@ -226,6 +235,20 @@ int main(int argc, char **argv) try {
       }
     }
     row.unmatched = net.unmatched_count();
+    if (base.assess) {
+      const auto sc = net.score();
+      for (const auto &e : net.events()) {
+        if (!e.declared)
+          continue;
+        const auto v = net.assess(e, rec.t_first, rec.t_last).verdict;
+        const bool matched = std::ranges::any_of(
+            sc, [&](const CatalogScore &s) { return s.detected == &e; });
+        if (v == Verdict::Earthquake || v == Verdict::Possible)
+          ++(matched ? row.real_matched : row.real_unmatched);
+        else if (v == Verdict::Misfire)
+          ++(matched ? row.misfire_matched : row.misfire_unmatched);
+      }
+    }
     row.mean_alert = mean(alerts);
     row.median_location_error = median(loc_errors);
     row.mean_abs_magnitude_error = mean(mag_errors);
@@ -238,19 +261,27 @@ int main(int argc, char **argv) try {
       "mean_abs_magnitude_error,main_declared,main_alert_s,main_blind_zone_km,"
       "main_first_magnitude,"
       "main_first_magnitude_s,main_final_magnitude,main_location_error_km,"
-      "located_within_30km,located_beyond_50km");
+      "located_within_30km,located_beyond_50km,assessed_real_catalogued,"
+      "assessed_real_unmatched,assessed_misfire_catalogued,"
+      "assessed_misfire_unmatched");
   for (const auto &r : rows) {
     std::string names;
     for (const auto &s : r.stations)
       names += (names.empty() ? "" : "+") + s;
-    std::println("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
+    std::println(
+        "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
                  r.stations.size(), names, r.catalogue, r.declared, r.located,
                  r.unmatched, fmt(r.mean_alert), fmt(r.median_location_error),
                  fmt(r.mean_abs_magnitude_error), r.main_declared ? 1 : 0,
                  fmt(r.main_alert), fmt(r.main_blind_km, 1),
                  fmt(r.main_first_mag), fmt(r.main_first_mag_delay),
                  fmt(r.main_final_mag), fmt(r.main_location_error),
-                 r.located_30km, r.located_far);
+                 r.located_30km, r.located_far,
+                 base.assess ? std::to_string(r.real_matched) : std::string(),
+                 base.assess ? std::to_string(r.real_unmatched) : std::string(),
+                 base.assess ? std::to_string(r.misfire_matched) : std::string(),
+                 base.assess ? std::to_string(r.misfire_unmatched)
+                             : std::string());
   }
 
   // stderr summary: per size, the subset with the earliest main-event alert

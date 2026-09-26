@@ -72,6 +72,9 @@ bool Network::compatible(const Detection &a, const Detection &b) const {
 }
 
 void Network::on(const Detection &d) {
+  ++triggers_[d.station];
+  if (std::isnan(first_seen_))
+    first_seen_ = d.window_start;
   // The detector can trigger again on the S wave and coda of an event. A later
   // detection at a station within `coda_seconds` of that station's detection
   // of a declared event is assigned to that event. A separate event in that
@@ -161,6 +164,16 @@ void Network::on(const Pick &p) {
       Log::get().line(
           "pick", "2", "{:<5} P {} ({:.2f})  S {} ({:.2f})  -- not used: {}",
           p.station, hms(p.p_time), p.p_prob, hms(p.s_time), p.s_prob, reject);
+    for (auto &e : events_) {
+      auto it = e.detections.find(p.station);
+      if (it != e.detections.end() &&
+          it->second.window_start == p.trigger_window) {
+        ++e.picks_rejected;
+        if (e.declared && cfg_.assess)
+          print_assessment(e, p.declared_at);
+        break;
+      }
+    }
     return;
   }
   if (cfg_.verbose)
@@ -176,6 +189,8 @@ void Network::on(const Pick &p) {
     e.picks.emplace(p.station, p);
     if (e.declared && cfg_.locator == Locator::Picks)
       report_location(e, p.declared_at);
+    if (e.declared && cfg_.assess)
+      print_assessment(e, p.declared_at);
     return;
   }
 }
@@ -631,6 +646,15 @@ void Network::report(double t_first, double t_last) const {
     } else {
       log.plain(false, "  AFAD       no matching catalogue event");
     }
+    if (cfg_.assess) {
+      const auto a = assess(*e, t_first, t_last);
+      log.plain(false, "  assessed   {}: {}", verdict_name(a.verdict),
+                a.reasons.empty() ? std::string("-") : a.reasons.front());
+      for (std::size_t i = 1; i < a.reasons.size(); ++i)
+        log.plain(false, "             {}", a.reasons[i]);
+      if (!a.context.empty() && !c)
+        log.plain(false, "             context: {}", a.context);
+    }
 
     const auto ws = warnings(*e, c);
     if (ws.empty())
@@ -699,9 +723,43 @@ void Network::report(double t_first, double t_last) const {
             declared.size());
   log.plain(false, "  single-station detections, no alarm  {:>4}",
             events_.size() - declared.size());
+  // --assess: verdict counts, catalogued alarms against the rest. The
+  // catalogued ones measure how often a real event passes the assessment.
+  auto assessment_summary = [&] {
+    if (!cfg_.assess || declared.empty())
+      return;
+    std::map<Verdict, std::size_t> on_matched, on_unmatched;
+    for (const Event *e : declared) {
+      const bool matched = std::ranges::any_of(
+          scores, [&](const CatalogScore &s) { return s.detected == e; });
+      ++(matched || cfg_.catalog.empty() ? on_matched : on_unmatched)
+          [assess(*e, t_first, t_last).verdict];
+    }
+    auto row = [&](const std::map<Verdict, std::size_t> &m) {
+      std::string out;
+      for (auto v : {Verdict::Earthquake, Verdict::Possible, Verdict::Misfire,
+                     Verdict::Unclassified})
+        out += std::format("{}{} {}", out.empty() ? "" : ", ",
+                           m.contains(v) ? m.at(v) : 0, verdict_name(v));
+      return out;
+    };
+    log.plain(false, "");
+    log.plain(false, "  Alarm assessment (S-P test; "
+                     "docs/impl/16-alarm-assessment.md)");
+    if (cfg_.catalog.empty()) {
+      log.plain(false, "    all alarms                          {}",
+                row(on_matched));
+    } else {
+      log.plain(false, "    catalogued alarms                   {}",
+                row(on_matched));
+      log.plain(false, "    unmatched alarms                    {}",
+                row(on_unmatched));
+    }
+  };
   if (cfg_.catalog.empty()) {
     log.plain(false, "  (no catalogue given: correct, false and missed alarms "
                      "not evaluated)");
+    assessment_summary();
     log.plain(true, "{}", rule);
     return;
   }
@@ -782,13 +840,17 @@ void Network::report(double t_first, double t_last) const {
     log.plain(false, "  False alarms (no AFAD event; small uncatalogued "
                      "earthquakes are possible)");
     for (const Event *e : unmatched)
-      log.plain(false, "    {} UTC  #{}  {}{}", hms(e->declared_at), e->id,
+      log.plain(false, "    {} UTC  #{}  {}{}{}", hms(e->declared_at), e->id,
                 e->magnitude ? std::format("M{:.1f}", *e->magnitude)
                              : std::string("no magnitude"),
                 e->location ? std::format(", located {:.2f}N {:.2f}E",
                                           e->location->lat, e->location->lon)
-                            : std::string(", not located"));
+                            : std::string(", not located"),
+                cfg_.assess ? std::format(", assessed {}",
+                                          verdict_name(assess(*e, t_first, t_last).verdict))
+                            : std::string());
   }
+  assessment_summary();
   log.plain(true, "{}", rule);
 }
 

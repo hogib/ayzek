@@ -5,6 +5,7 @@
 // transformer's per-station geometry, or from P and S picks), combines station
 // magnitudes, and optionally compares events with a catalogue.
 
+#include "assess.hpp"
 #include "common.hpp"
 #include "locate.hpp"
 
@@ -69,6 +70,17 @@ struct NetworkConfig {
       250;                 // evaluation radius around the station centroid
   std::vector<Site> sites; // additional places for the warning-time report
   bool verbose = false;    // per-station detection, pick and magnitude lines
+  // --assess (assess.hpp): an ASSESS line while running and a section in the
+  // report. `context_catalog` reaches further back than `catalog`, for the
+  // aftershock-zone context; empty means `catalog`.
+  bool assess = false;
+  std::vector<CatalogEvent> context_catalog;
+  double assess_max_rms = 2.5;     // S-P fit rms, seconds
+  double assess_station_tol = 3.5; // largest P or S residual at one station, s
+  double assess_max_sp_km = 200;   // an S-P distance beyond this is a bad pick
+  double assess_mag_spread = 0.5; // station magnitudes agree within this sd
+  double assess_p_chance = 0.01;  // below this, not a chance coincidence
+  double assess_geo_z = 2.0;      // geometry agrees within this many sds
 };
 
 struct Location {
@@ -96,6 +108,10 @@ struct Event {
   double first_located_at = 0; // stream time of the first accepted location
   // Geometry locator: the latest estimate per station (common.hpp).
   std::map<std::string, StationGeometry> geometry;
+  std::size_t picks_rejected = 0; // picks for this event that failed QC
+  // --assess: what the last ASSESS line said, so it prints on changes only.
+  int assessed_verdict = -1;
+  std::size_t assessed_stations = 0;
 };
 
 // One catalogue event within the evaluation radius and the declared event
@@ -128,6 +144,12 @@ public:
   [[nodiscard]] std::size_t declared_count() const;
   [[nodiscard]] std::size_t
   unmatched_count() const; // declared events with no catalogue match
+  // --assess: event `e` over stream times [t0, t1] (for trigger rates).
+  [[nodiscard]] Assessment assess(const Event &e, double t0, double t1) const;
+  // One CSV row per declared event; `record` is the --record file's name, for
+  // tools/plot_candidates.py. Returns false if the file cannot be written.
+  bool write_assessments(const std::string &path, double t0, double t1,
+                         const std::string &record) const;
 
 private:
   [[nodiscard]] bool compatible(const Detection &a, const Detection &b) const;
@@ -163,6 +185,10 @@ private:
   NetworkConfig cfg_;
   std::vector<Event> events_;
   int next_id_ = 1;
+  // Every detection per station, coda included, for trigger rates.
+  std::map<std::string, std::size_t> triggers_;
+  double first_seen_ = NAN; // window start of the first detection
+  void print_assessment(Event &e, double now);
 };
 
 double distance_km(double lat1, double lon1, double lat2, double lon2);

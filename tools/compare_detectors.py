@@ -354,15 +354,24 @@ def print_report(results):
         print(f"    {k:>12s}  n={n:<5d} " + "   ".join(cells))
 
     print("\nNETWORK LEVEL (the whole pipeline: association, picker, magnitude)")
+    assessed = any(r[d]["network"].get("assessed") for r in results.values() for d in DETECTORS)
     print(f"  {'dataset':11s} {'detector':11s} {'detected':>9} {'alarms':>7} {'unmatched':>9} "
-          f"{'delay':>6} {'mag MAE':>8} {'false/day':>9} {'det. ms/st-h':>12}")
+          f"{'delay':>6} {'mag MAE':>8} {'false/day':>9} {'det. ms/st-h':>12}"
+          + (f" {'unm. real':>9}" if assessed else ""))
     for name, r in results.items():
         for det in DETECTORS:
             n = r[det]["network"]
+            real = ""
+            if assessed:
+                u = n.get("assessed", {}).get("unmatched", {})
+                real = f" {str(u.get('earthquake', 0) + u.get('possible', 0)) if u else '-':>9}"
             print(f"  {name:11s} {det:11s} {str(n['detected']) + '/' + str(n['catalogue']):>9} "
                   f"{n['alarms']:>7} {n['unmatched']:>9} {fmt(n['alarm_delay_median_s'], '{:.1f}'):>6} "
                   f"{fmt(n['magnitude_mae']):>8} {fmt(n.get('false_per_day'), '{:.1f}'):>9} "
-                  f"{fmt(r[det]['detector_ms_per_station_hour'], '{:.0f}'):>12}")
+                  f"{fmt(r[det]['detector_ms_per_station_hour'], '{:.0f}'):>12}" + real)
+    if assessed:
+        print("  unm. real: unmatched alarms --assess judges earthquake or possible "
+              "(pass --args '--assess')")
     print("\nLOCATION (catalogue-matched events; 'both': only those both runs located)")
     print(f"  {'dataset':11s} {'detector':11s} {'locator':22s} {'located':>9} {'first':>6} "
           f"{'epi p50':>7} {'≤10km':>6} {'≤30km':>6}   {'both: n':>7} {'epi p50':>7}")

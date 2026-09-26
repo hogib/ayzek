@@ -78,6 +78,18 @@ EVENT = re.compile(
     r"magnitude ([+-][\d.]+)(?:, epicentre ([\d.]+) km off)?", re.M)
 
 
+# ayzek --assess: "    unmatched alarms   3 earthquake, 1 possible, 4 misfire, 2 unclassified".
+ASSESSED = re.compile(r"^    (catalogued|unmatched|all) alarms\s+(\d+) earthquake, (\d+) possible, "
+                      r"(\d+) misfire, (\d+) unclassified", re.M)
+
+
+def assessed(out):
+    """--assess verdict counts by alarm group, or {} for a run without it."""
+    return {m.group(1): dict(zip(("earthquake", "possible", "misfire", "unclassified"),
+                                 map(int, m.groups()[1:])))
+            for m in ASSESSED.finditer(out)}
+
+
 def files_of(patterns):
     out = []
     for p in patterns:
@@ -124,6 +136,7 @@ def score_dataset(name, out):
                        "epicentre_km": float(e.group(11)) if e.group(11) else None,
                        "stations": e.group(3).replace("; later", " +")})
     s["events"] = events
+    s["assessed"] = assessed(out)
     if "noise" in role:
         hours = (dt.datetime.fromisoformat(end) - dt.datetime.fromisoformat(start)).total_seconds() / 3600
         s["hours"] = hours
@@ -157,6 +170,19 @@ def summarise(sets):
     for role in [r for r in roles if "noise" not in r]:
         h[f"detected ({role})"] = f"{total(role, 'detected')}/{total(role, 'catalogue')}"
         h[f"unmatched alarms ({role})"] = total(role, "unmatched")
+    # --assess: of the unmatched alarms, how many the S-P test calls real, and
+    # how many catalogued alarms pass it (its sensitivity).
+    runs = [v for v in sets.values() if v.get("assessed")]
+    if runs:
+        def verdicts(group, *which):
+            return sum(v["assessed"].get(group, {}).get(w, 0) for v in runs for w in which)
+        real = verdicts("unmatched", "earthquake", "possible")
+        h["unmatched alarms assessed real"] = (
+            f"{real}/{real + verdicts('unmatched', 'misfire', 'unclassified')} "
+            f"({verdicts('unmatched', 'earthquake')} earthquake)")
+        ok = verdicts("catalogued", "earthquake", "possible")
+        h["catalogued alarms assessed real"] = (
+            f"{ok}/{ok + verdicts('catalogued', 'misfire', 'unclassified')}")
     # False alarms are pooled per role, so the AFAD windows and the KO one are
     # not mixed into a rate that belongs to neither.
     for role in [r for r in roles if "noise" in r]:

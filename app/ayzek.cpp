@@ -97,6 +97,12 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
                         distance is more than Z sds from the solution (default off)
   --geo-max-err-km KM   geometry: refuse a location whose 68% radius exceeds KM
                         (default off)
+  --assess              diagnostic: judge each alarm earthquake, possible, misfire
+                        or unclassified from its S-P picks (the picker runs even
+                        with the geometry locator); an ASSESS line as picks
+                        arrive and a section in the report
+  --assess-csv FILE     with --assess: one row per alarm, readable by
+                        tools/plot_candidates.py
   --no-pick             detector only
   --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
@@ -156,7 +162,7 @@ Percentiles percentiles(std::vector<float> v) {
 
 int main(int argc, char **argv) try {
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
-              record_path, transformer_path;
+              record_path, transformer_path, assess_csv;
   bool threshold_set = false, release_set = false;
   std::string locate_kind; // "", "geometry" or "picks"
   double speed = 1.0;
@@ -283,6 +289,10 @@ int main(int argc, char **argv) try {
       catalog_path = next();
     else if (a == "--record")
       record_path = next();
+    else if (a == "--assess")
+      ncfg.assess = true;
+    else if (a == "--assess-csv")
+      assess_csv = next();
     else if (a == "-h" || a == "--help") {
       std::print("{}", kUsage);
       return 0;
@@ -335,6 +345,11 @@ int main(int argc, char **argv) try {
     pcfg.geometry = true;
     pcfg.pick = false;
   }
+  // The assessment needs S-P: the picker runs for it whatever locates.
+  if (!assess_csv.empty() && !ncfg.assess)
+    throw std::runtime_error("--assess-csv needs --assess");
+  if (ncfg.assess)
+    pcfg.pick = true;
   std::vector<Weights> magnitude;
   if (pcfg.magnitude) {
     for (int p = 0; p < 3; ++p) {
@@ -411,6 +426,10 @@ int main(int argc, char **argv) try {
         catalog_path, std::max(t_first, pcfg.from) - 30, t_last - 30);
     Log::get().line("ayzek", "1", "catalogue: {} events in the replay span",
                     ncfg.catalog.size());
+    // For the assessment's aftershock-zone context: the 30 days before too.
+    if (ncfg.assess)
+      ncfg.context_catalog = load_afad_catalog(
+          catalog_path, std::max(t_first, pcfg.from) - 30 * 86400.0, t_last);
   }
 
   // --- run
@@ -543,6 +562,13 @@ int main(int argc, char **argv) try {
   // -----------------------------------------------------------------
   const double stream_seconds = t_last - std::max(start, t_first);
   net.report(std::max(start, t_first), t_last);
+  if (!assess_csv.empty()) {
+    const auto slash = record_path.find_last_of("/\\");
+    if (!net.write_assessments(
+            assess_csv, std::max(start, t_first), t_last,
+            slash == std::string::npos ? record_path : record_path.substr(slash + 1)))
+      throw std::runtime_error("cannot write " + assess_csv);
+  }
 
   auto &log = Log::get();
   log.plain(false, "");
