@@ -7,78 +7,452 @@
   "the document, or the reproduction reports a mismatch."
  ],
  "claims": [
-  {"id": "detect_tuning", "where": "README Results, docs/impl/09",
+  {
+   "id": "detect_tuning",
+   "where": "README Results, docs/impl/09",
    "claim": "51 of 66 catalogue events detected on the tuning replays",
-   "source": "scorecard", "key": "summary.detected (tuning)", "expect": "51/66"},
-  {"id": "unmatched_tuning", "where": "README Results, docs/impl/09",
+   "source": "scorecard",
+   "key": "summary.detected (tuning)",
+   "expect": "51/66"
+  },
+  {
+   "id": "unmatched_tuning",
+   "where": "README Results, docs/impl/09",
    "claim": "26 alarms without a catalogue event on the tuning replays",
-   "source": "scorecard", "key": "summary.unmatched alarms (tuning)", "expect": 26, "tolerance": 0},
-  {"id": "detect_heldout", "where": "README Results, docs/impl/09",
+   "source": "scorecard",
+   "key": "summary.unmatched alarms (tuning)",
+   "expect": 26,
+   "tolerance": 0
+  },
+  {
+   "id": "detect_heldout",
+   "where": "README Results, docs/impl/09",
    "claim": "39 of 66 detected on the held-out replay",
-   "source": "scorecard", "key": "summary.detected (held out)", "expect": "39/66"},
-  {"id": "unmatched_heldout", "where": "README Results, docs/impl/09",
+   "source": "scorecard",
+   "key": "summary.detected (held out)",
+   "expect": "39/66"
+  },
+  {
+   "id": "unmatched_heldout",
+   "where": "README Results, docs/impl/09",
    "claim": "7 unmatched alarms on the held-out replay",
-   "source": "scorecard", "key": "summary.unmatched alarms (held out)", "expect": 7, "tolerance": 0},
-  {"id": "false_alarms_afad", "where": "README Results, docs/impl/10",
+   "source": "scorecard",
+   "key": "summary.unmatched alarms (held out)",
+   "expect": 7,
+   "tolerance": 0
+  },
+  {
+   "id": "false_alarms_afad",
+   "where": "README Results, docs/impl/10",
    "claim": "4.33 false alarms a day over 33.3 h of catalogue-quiet AFAD data",
-   "source": "scorecard", "key": "summary.false alarms per day (noise)", "expect": 4.33, "tolerance": 0.01},
-  {"id": "false_alarms_ko", "where": "README, release notes",
+   "source": "scorecard",
+   "key": "summary.false alarms per day (noise)",
+   "expect": 4.33,
+   "tolerance": 0.01
+  },
+  {
+   "id": "false_alarms_ko",
+   "where": "README, release notes",
    "claim": "4.1 false alarms a day on the published KO quiet window",
-   "source": "scorecard", "key": "summary.false alarms per day (public noise)", "expect": 4.1, "tolerance": 0.05},
-  {"id": "detect_ko", "where": "README On the published datasets",
+   "source": "scorecard",
+   "key": "summary.false alarms per day (public noise)",
+   "expect": 4.1,
+   "tolerance": 0.05
+  },
+  {
+   "id": "detect_ko",
+   "where": "README On the published datasets",
    "claim": "8 of 9 detected on demo_ko, 27 of 36 on marmara_ko",
-   "source": "scorecard", "key": "summary.detected (public)", "expect": "35/45"},
-  {"id": "demo_alarm", "where": "README Results",
+   "source": "scorecard",
+   "key": "summary.detected (public)",
+   "expect": "35/45"
+  },
+  {
+   "id": "demo_alarm",
+   "where": "README Results",
    "claim": "the Sindirgi Mw 4.9 is declared 18.0 s after origin",
-   "source": "scorecard", "key": "event.demo.MW 4.9.alarm_delay_s", "expect": 18.0, "tolerance": 0.51},
-  {"id": "marmara_alarm", "where": "README Results",
+   "source": "scorecard",
+   "key": "event.demo.MW 4.9.alarm_delay_s",
+   "expect": 18.0,
+   "tolerance": 0.51
+  },
+  {
+   "id": "marmara_alarm",
+   "where": "README Results",
    "claim": "the Marmara Mw 6.2 is declared 11.0 s after origin (AFAD stations)",
-   "source": "scorecard", "key": "event.marmara.MW 6.2.alarm_delay_s", "expect": 11.0, "tolerance": 0.51},
-  {"id": "marmara_ko_alarm", "where": "README On the published datasets, release notes",
+   "source": "scorecard",
+   "key": "event.marmara.MW 6.2.alarm_delay_s",
+   "expect": 11.0,
+   "tolerance": 0.51
+  },
+  {
+   "id": "marmara_ko_alarm",
+   "where": "README On the published datasets, release notes",
    "claim": "the Marmara Mw 6.2 is declared 10.5 s after origin (KO stations)",
-   "source": "scorecard", "key": "event.marmara_ko.MW 6.2.alarm_delay_s", "expect": 10.5, "tolerance": 0.51},
-  {"id": "sindirgi61_alarm", "where": "README Results",
+   "source": "scorecard",
+   "key": "event.marmara_ko.MW 6.2.alarm_delay_s",
+   "expect": 10.5,
+   "tolerance": 0.51
+  },
+  {
+   "id": "sindirgi61_alarm",
+   "where": "README Results",
    "claim": "the Sindirgi Mw 6.1 is declared 17.0 s after origin",
-   "source": "scorecard", "key": "event.sindirgi61.MW 6.1.alarm_delay_s", "expect": 17.0, "tolerance": 0.51},
-  {"id": "magnitude_bias_big", "where": "release notes, docs/impl/07",
+   "source": "scorecard",
+   "key": "event.sindirgi61.MW 6.1.alarm_delay_s",
+   "expect": 17.0,
+   "tolerance": 0.51
+  },
+  {
+   "id": "magnitude_bias_big",
+   "where": "release notes, docs/impl/07",
    "claim": "events of AFAD M>=4 are underestimated, mean bias -0.68",
-   "source": "scorecard", "key": "summary.magnitude bias, AFAD M>=4", "expect": -0.68, "tolerance": 0.05},
-  {"id": "epicentre", "where": "README Results",
+   "source": "scorecard",
+   "key": "summary.magnitude bias, AFAD M>=4",
+   "expect": -0.68,
+   "tolerance": 0.05
+  },
+  {
+   "id": "epicentre",
+   "where": "README Results",
    "claim": "median epicentre error 10 km over the matched events",
-   "source": "scorecard", "key": "summary.epicentre error median km", "expect": 10.0, "tolerance": 1.0},
-  {"id": "stalta_heldout_detect", "where": "docs/impl/09",
+   "source": "scorecard",
+   "key": "summary.epicentre error median km",
+   "expect": 10.0,
+   "tolerance": 1.0
+  },
+  {
+   "id": "stalta_heldout_detect",
+   "where": "docs/impl/09",
    "claim": "STA/LTA at equal unmatched alarms detects 25 of 66 held out",
-   "source": "scorecard_stalta_eqfa", "key": "summary.detected (held out)", "expect": "25/66"},
-  {"id": "stalta_heldout_unmatched", "where": "docs/impl/09",
+   "source": "scorecard_stalta_eqfa",
+   "key": "summary.detected (held out)",
+   "expect": "25/66"
+  },
+  {
+   "id": "stalta_heldout_unmatched",
+   "where": "docs/impl/09",
    "claim": "STA/LTA at equal unmatched alarms raises 9 unmatched alarms held out",
-   "source": "scorecard_stalta_eqfa", "key": "summary.unmatched alarms (held out)", "expect": 9, "tolerance": 0},
-  {"id": "stalta_false_alarms", "where": "README Results, docs/impl/10",
+   "source": "scorecard_stalta_eqfa",
+   "key": "summary.unmatched alarms (held out)",
+   "expect": 9,
+   "tolerance": 0
+  },
+  {
+   "id": "stalta_false_alarms",
+   "where": "README Results, docs/impl/10",
    "claim": "STA/LTA raises 81.5 false alarms a day on the quiet AFAD windows",
-   "source": "scorecard_stalta_eqfa", "key": "summary.false alarms per day (noise)", "expect": 81.5, "tolerance": 0.5},
-  {"id": "stalta_false_alarms_ko", "where": "release notes, KO quiet README",
+   "source": "scorecard_stalta_eqfa",
+   "key": "summary.false alarms per day (noise)",
+   "expect": 81.5,
+   "tolerance": 0.5
+  },
+  {
+   "id": "stalta_false_alarms_ko",
+   "where": "release notes, KO quiet README",
    "claim": "STA/LTA raises 103 false alarms a day on the KO quiet window",
-   "source": "scorecard_stalta_eqfa", "key": "summary.false alarms per day (public noise)", "expect": 103.0, "tolerance": 1.0},
-  {"id": "window_ms", "where": "README Results, docs/impl/10",
+   "source": "scorecard_stalta_eqfa",
+   "key": "summary.false alarms per day (public noise)",
+   "expect": 103.0,
+   "tolerance": 1.0
+  },
+  {
+   "id": "window_ms",
+   "where": "README Results, docs/impl/10",
    "claim": "5.2 ms per detector window on the development machine (scalar)",
-   "source": "bench_stages", "key": "result.per-window total.p50_ms", "expect": 5.2, "tolerance": 1.5},
-  {"id": "magnitude_ms", "where": "README Results, docs/impl/10",
+   "source": "bench_stages",
+   "key": "result.per-window total.p50_ms",
+   "expect": 5.2,
+   "tolerance": 1.5
+  },
+  {
+   "id": "magnitude_ms",
+   "where": "README Results, docs/impl/10",
    "claim": "288 ms per magnitude estimate, three models",
-   "source": "bench_stages", "key": "result.magnitude estimate (3 models).p50_ms", "expect": 288.0, "tolerance": 60.0},
-  {"id": "attention_share", "where": "docs/impl/10",
+   "source": "bench_stages",
+   "key": "result.magnitude estimate (3 models).p50_ms",
+   "expect": 288.0,
+   "tolerance": 60.0
+  },
+  {
+   "id": "attention_share",
+   "where": "docs/impl/10",
    "claim": "the 1D attention layer is 85.6 ms of the magnitude model's 94 ms",
-   "source": "bench_layers", "key": "result.magnitude attention (1D).p50_ms", "expect": 85.6, "tolerance": 20.0},
-  {"id": "capacity", "where": "README Results, docs/impl/10",
+   "source": "bench_layers",
+   "key": "result.magnitude attention (1D).p50_ms",
+   "expect": 85.6,
+   "tolerance": 20.0
+  },
+  {
+   "id": "capacity",
+   "where": "README Results, docs/impl/10",
    "claim": "one core sustains 95 stations at a window every 0.5 s",
-   "source": "bench_capacity", "key": "capacity.1.stations", "expect": 95.0, "tolerance": 25.0}
+   "source": "bench_capacity",
+   "key": "capacity.1.stations",
+   "expect": 95.0,
+   "tolerance": 25.0
+  },
+  {
+   "id": "ring_gap_longest",
+   "where": "revisions2 R1.2",
+   "claim": "the 2024-06-05 outage is 2103.37 s at its longest component",
+   "artifact": "data/runs/ringfix/noise_a_gaps.csv",
+   "probe": "csv:seconds@samples=210337",
+   "expect": 2103.37,
+   "tolerance": 0.01,
+   "repro": "python3 tools/gap_scan.py --min-seconds 60 --csv data/runs/ringfix/noise_a_gaps.csv 'data/noise_a?/*.mseed'"
+  },
+  {
+   "id": "ring_gap_components",
+   "where": "revisions2 R1.2",
+   "claim": "the outage hits all 27 components of the nine stations",
+   "artifact": "data/runs/ringfix/noise_a_gaps.csv",
+   "probe": "csvcount:seconds>=1500",
+   "expect": 27,
+   "tolerance": 0,
+   "repro": "python3 tools/gap_scan.py --min-seconds 60 --csv data/runs/ringfix/noise_a_gaps.csv 'data/noise_a?/*.mseed'"
+  },
+  {
+   "id": "ring_fixed_no_stall",
+   "where": "revisions2 R1.6",
+   "claim": "the fixed build replays the unsplit window with no stall",
+   "artifact": "data/runs/ringfix/final_noise_a.txt",
+   "probe": "grep:processor stalled",
+   "expect": 0,
+   "tolerance": 0,
+   "repro": "build-release/app/ayzek --speed 0 --no-color --catalog $CAT --from 2024-06-05T01:20:00 <unsplit>/*.mseed"
+  },
+  {
+   "id": "ring_fixed_windows",
+   "where": "revisions2 R1.6",
+   "claim": "711,760 windows, equal to the two split runs summed",
+   "artifact": "data/runs/ringfix/final_noise_a.txt",
+   "probe": "regex:(\\d+) windows in",
+   "expect": "711760",
+   "tolerance": 0,
+   "repro": "as ring_fixed_no_stall"
+  },
+  {
+   "id": "ring_v3_stalls",
+   "where": "revisions2 R1.4",
+   "claim": "the v3 binary stalls 14 times on the minimal case",
+   "artifact": "data/runs/ringfix/biggap_old.txt",
+   "probe": "grep:processor stalled",
+   "expect": 14,
+   "tolerance": 0,
+   "repro": "build the b489a48 worktree, replay the 25-minute-hole demo file"
+  },
+  {
+   "id": "ring_v3_dropped",
+   "where": "revisions2 R1.4",
+   "claim": "the v3 binary drops 41,236 samples on the minimal case",
+   "artifact": "data/runs/ringfix/biggap_old.txt",
+   "probe": "regex:(\\d+) samples dropped by the ring",
+   "expect": "41236",
+   "tolerance": 0,
+   "repro": "as ring_v3_stalls"
+  },
+  {
+   "id": "ring_gapped_marmara_detect",
+   "where": "revisions2 R1.4",
+   "claim": "with the fix, the gapped Marmara still detects 44 of 57",
+   "artifact": "data/runs/ringfix/gapmarmara_new.txt",
+   "probe": "regex:detected\\s+(\\d+)",
+   "expect": "44",
+   "tolerance": 0,
+   "repro": "cut 08:35-09:00 from data/marmara, replay with build-release"
+  },
+  {
+   "id": "ring_gapped_marmara_v3",
+   "where": "revisions2 R1.4",
+   "claim": "without the fix the same input detects only 29 of 57",
+   "artifact": "data/runs/ringfix/gapmarmara_old.txt",
+   "probe": "regex:detected\\s+(\\d+)",
+   "expect": "29",
+   "tolerance": 0,
+   "repro": "as ring_gapped_marmara_detect with the b489a48 binary"
+  },
+  {
+   "id": "quiet100_hours",
+   "where": "revisions2 R4.1",
+   "claim": "the quiet set is 102.8 scored hours over 23 windows",
+   "artifact": "data/quiet100/quiet_index.csv",
+   "probe": "csvcount:",
+   "expect": 23,
+   "tolerance": 0,
+   "repro": "tools/extract_quiet.py --archive <afad_raw> --catalog $CAT --stations-csv models/stations.csv --stations BAND,CMH,ELBA,KAND,KIRK,MANT,SEMS,VIZE --min-window 2 --hours 100 --out data/quiet100"
+  },
+  {
+   "id": "quiet100_pairs",
+   "where": "revisions2 R4.4",
+   "claim": "22 coincident pairs on the quiet set, learned detector",
+   "artifact": "data/runs/quiet100/misfires.csv",
+   "probe": "csvcount:",
+   "expect": 22,
+   "tolerance": 0,
+   "repro": "python3 tools/misfire_review.py --records 'data/runs/quiet100/*.rec' --csv data/runs/quiet100/misfires.csv"
+  },
+  {
+   "id": "quiet100_earthquakes",
+   "where": "revisions2 R4.6",
+   "claim": "4 of those pairs pass the S-P location test",
+   "artifact": "data/runs/quiet100/misfires.csv",
+   "probe": "csvcount:verdict==earthquake",
+   "expect": 4,
+   "tolerance": 0,
+   "repro": "python3 tools/misfire_review.py --records 'data/runs/quiet100/*.rec' --csv data/runs/quiet100/misfires.csv"
+  },
+  {
+   "id": "quiet100_stalta_pairs",
+   "where": "revisions2 R4.8",
+   "claim": "STA/LTA gives 385 coincident pairs on the same hours",
+   "artifact": "data/runs/quiet100_stalta/misfires.csv",
+   "probe": "csvcount:",
+   "expect": 385,
+   "tolerance": 0,
+   "repro": "python3 tools/misfire_review.py --records 'data/runs/quiet100_stalta/*.rec' --csv data/runs/quiet100_stalta/misfires.csv"
+  },
+  {
+   "id": "quiet100_stalta_earthquakes",
+   "where": "revisions2 R4.8",
+   "claim": "5 of STA/LTA's pairs pass the S-P test",
+   "artifact": "data/runs/quiet100_stalta/misfires.csv",
+   "probe": "csvcount:verdict==earthquake",
+   "expect": 5,
+   "tolerance": 0,
+   "repro": "python3 tools/misfire_review.py --records 'data/runs/quiet100_stalta/*.rec' --csv data/runs/quiet100_stalta/misfires.csv"
+  },
+  {
+   "id": "corpus_windows",
+   "where": "revisions2 R3.1",
+   "claim": "the enlarged magnitude corpus holds 25,594 windows",
+   "artifact": "cascade_impl:dataset_magreg_fdsn_10s_v2/manifest.csv",
+   "probe": "csvcount:",
+   "expect": 25594,
+   "tolerance": 0,
+   "repro": "cascade_impl: recut --seconds 10 then encode-magnitude --dual (revisions2 R3.2)"
+  },
+  {
+   "id": "corpus_m6",
+   "where": "revisions2 R3.1",
+   "claim": "413 windows above M6 in the enlarged corpus",
+   "artifact": "cascade_impl:dataset_magreg_fdsn_10s_v2/manifest.csv",
+   "probe": "csvcount:magnitude>=6.0",
+   "expect": 413,
+   "tolerance": 0,
+   "repro": "as corpus_windows"
+  },
+  {
+   "id": "corpus_m55",
+   "where": "revisions2 R3.1",
+   "claim": "1,214 windows at M>=5.5 in the enlarged corpus",
+   "artifact": "cascade_impl:dataset_magreg_fdsn_10s_v2/manifest.csv",
+   "probe": "csvcount:magnitude>=5.5",
+   "expect": 1214,
+   "tolerance": 0,
+   "repro": "as corpus_windows"
+  },
+  {
+   "id": "corpus_nan_distance",
+   "where": "revisions2 R3.2",
+   "claim": "2,798 manifest rows have no distance",
+   "artifact": "cascade_impl:dataset_magreg_fdsn_10s_v2/manifest.csv",
+   "probe": "grep:,nan$",
+   "expect": 2798,
+   "tolerance": 0,
+   "repro": "as corpus_windows"
+  },
+  {
+   "id": "m1_gain_channels",
+   "where": "revisions2 R6.M1",
+   "claim": "KOERI publishes channel metadata for 612 KO HH channels",
+   "artifact": "cascade_impl:inputs/ko_channels_2026-09-26.txt",
+   "probe": "grep:^KO\\|",
+   "expect": 612,
+   "tolerance": 0,
+   "repro": "curl 'http://eida.koeri.boun.edu.tr/fdsnws/station/1/query?network=KO&channel=HH?&level=channel&format=text'"
+  },
+  {
+   "id": "m1_features_rows",
+   "where": "revisions2 R6.M1",
+   "claim": "18,229 windows at M>=3 carry amplitude features",
+   "artifact": "cascade_impl:data/runs/magreg_r6/amplitude_features.csv",
+   "probe": "csvcount:",
+   "expect": 18229,
+   "tolerance": 40,
+   "repro": "cascade_impl: uv run python experiments/magsat/amplitude_features.py --manifest dataset_magreg_fdsn_10s_v2/manifest.csv --channels inputs/ko_channels_2026-09-26.txt --out data/runs/magreg_r6"
+  },
+  {
+   "id": "table6_6s_100day",
+   "where": "revisions2 R2 / Table 6",
+   "claim": "the 6 s detector recalls 0.864 at 100 declarations a day",
+   "artifact": "cnn_earthquake:runs_mant/final_6s_thresholds.csv",
+   "probe": "csv:recall_snr3@target_per_day=100.0",
+   "expect": 0.864,
+   "tolerance": 0.002,
+   "repro": "cn"
+  },
+  {
+   "id": "table6_6s_1day",
+   "where": "revisions2 R2 / Table 6",
+   "claim": "the 6 s detector recalls 0.316 at one declaration a day",
+   "artifact": "cnn_earthquake:runs_mant/final_6s_thresholds.csv",
+   "probe": "csv:recall_snr3@target_per_day=1.0",
+   "expect": 0.316,
+   "tolerance": 0.002,
+   "repro": "cn"
+  },
+  {
+   "id": "table6_stalta_1day",
+   "where": "revisions2 R2 / Table 6",
+   "claim": "STA/LTA recalls 0.132 at one declaration a day",
+   "artifact": "cnn_earthquake:runs_mant/final_stalta_thresholds.csv",
+   "probe": "csv:recall_snr3@target_per_day=1.0",
+   "expect": 0.132,
+   "tolerance": 0.002,
+   "repro": "cn"
+  },
+  {
+   "id": "table6_pnat_10day",
+   "where": "revisions2 R2 / Table 6",
+   "claim": "the P-wave natural-negative detector recalls 0.573 at ten a day",
+   "artifact": "cnn_earthquake:runs_mant/final_pnat_thresholds.csv",
+   "probe": "csv:recall_snr3@target_per_day=10.0",
+   "expect": 0.573,
+   "tolerance": 0.002,
+   "repro": "cn"
+  },
+  {
+   "id": "mant_range_events",
+   "where": "revisions2 R2",
+   "claim": "the MANT SNR file measures 47,522 catalogue events",
+   "artifact": "cnn_earthquake:runs_mant/mant_range_full.csv",
+   "probe": "csvcount:",
+   "expect": 47522,
+   "tolerance": 0,
+   "repro": "cnn_earthquake: sk station-range --zips '<archive>/MANT/*.zip' --station MANT --out runs_mant/mant_range_full.csv"
+  }
  ],
  "not_reproducible_here": [
-  {"claim": "the aarch64 build agrees numerically with PyTorch",
-   "how": "meson test -C build-pi, under qemu; tools/reproduce_all.sh runs it when build-pi exists"},
-  {"claim": "Raspberry Pi timing", "how": "tools/bench_pi.sh on real hardware; never measured"},
-  {"claim": "the Windows binaries run", "how": "meson test -C build-win under wine, or on Windows; never run"},
-  {"claim": "the magnitude regressor's corpus MAE 0.42 +- 0.02",
-   "how": "cascade_impl, its REPRODUCING.md; needs the training corpus and a GPU"},
-  {"claim": "the detector's 0.954 accuracy and 0.979 ROC AUC",
-   "how": "cascade_impl, recipe B; needs the training corpus and a GPU"}
+  {
+   "claim": "the aarch64 build agrees numerically with PyTorch",
+   "how": "meson test -C build-pi, under qemu; tools/reproduce_all.sh runs it when build-pi exists"
+  },
+  {
+   "claim": "Raspberry Pi timing",
+   "how": "tools/bench_pi.sh on real hardware; never measured"
+  },
+  {
+   "claim": "the Windows binaries run",
+   "how": "meson test -C build-win under wine, or on Windows; never run"
+  },
+  {
+   "claim": "the magnitude regressor's corpus MAE 0.42 +- 0.02",
+   "how": "cascade_impl, its REPRODUCING.md; needs the training corpus and a GPU"
+  },
+  {
+   "claim": "the detector's 0.954 accuracy and 0.979 ROC AUC",
+   "how": "cascade_impl, recipe B; needs the training corpus and a GPU"
+  }
  ]
 }

@@ -29,7 +29,13 @@ BUILD=${BUILD:-build-release}
 mkdir -p "$OUT"
 echo "reproduce: results in $OUT"
 
+ROOT=${ROOT:-$(cd "$(dirname "$0")/.." && pwd)}
 say() { printf '\n=== %s\n' "$1"; }
+
+say "0. published numbers against the files they came from"
+# Cheap: reads artefacts earlier runs wrote and checks the published figure is
+# still the one in the file. Catches drift in seconds; needs no replay.
+python3 "$ROOT/tools/verify_claims.py" | tee "$OUT/verify_claims.txt" || VERIFY_FAILED=1
 
 say "1. build and unit tests"
 meson setup "$BUILD" --buildtype=release >/dev/null 2>&1 || true
@@ -73,6 +79,10 @@ else
 fi
 
 say "report"
+if [ "${VERIFY_FAILED:-0}" = 1 ]; then
+    echo "stage 0 found a published number that no longer matches its artefact;"
+    echo "see $OUT/verify_claims.txt"
+fi
 python3 tools/reproduce_report.py "$OUT" | tee "$OUT/report.txt"
 echo
 echo "reproduce: done, $OUT/report.txt"

@@ -31,6 +31,13 @@ from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
+# TrueType, not Type 3: many journals reject Type-3 fonts outright, and this
+# keeps the text selectable and editable in the vector file. Nothing in the
+# figure is rasterised, so the PDF is vector throughout at any zoom.
+matplotlib.rcParams["pdf.fonttype"] = 42
+matplotlib.rcParams["ps.fonttype"] = 42
+matplotlib.rcParams["pdf.compression"] = 6
+matplotlib.rcParams["savefig.transparent"] = False
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
@@ -93,7 +100,8 @@ def panel(ax, path, station, pick, freqmin, freqmax, pre, post):
             continue
         tr = max(sel, key=lambda t: len(t.data))
         x = np.arange(len(tr.data)) * tr.stats.delta - pre
-        ax.plot(x, tr.data / peak + offset, color=INK, lw=0.45, solid_joinstyle="bevel")
+        ax.plot(x, tr.data / peak + offset, color=INK, lw=0.45,
+                solid_joinstyle="bevel", rasterized=False, antialiased=True)
         ax.text(-pre + 0.2, offset + 0.95, f"HH{comp}", color=MUTED, fontsize=7,
                 va="top", ha="left")
         drawn += 1
@@ -131,7 +139,8 @@ def main():
     ap.add_argument("--freqmin", type=float, default=1.0)
     ap.add_argument("--freqmax", type=float, default=20.0)
     ap.add_argument("--pre", type=float, default=5.0)
-    ap.add_argument("--dpi", type=int, default=300)
+    ap.add_argument("--dpi", type=int, default=600,
+                   help="raster dpi for the PNG; the PDF is vector regardless")
     ap.add_argument("--verdict", default="earthquake",
                    help="which rows to plot: earthquake (default), misfire, unclassified")
     ap.add_argument("--limit", type=int, default=0, help="plot at most N of them")
