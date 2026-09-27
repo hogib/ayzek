@@ -9,3 +9,5 @@ docs/paper/*
 
 # the tools/ uv environment
 tools/.venv/
+
+scores*/
