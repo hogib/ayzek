@@ -168,6 +168,11 @@ OnsetTransformer::OnsetTransformer(const Weights &w) {
     if (geo_head_.out != 5 || geo_head_.in != cfg_.d)
       throw std::runtime_error(w.path() + ": unexpected geometry head shape");
     cfg_.geometry = true;
+    if (w.has("config.geo")) {
+      const auto c = w.at("config.geo", {4}).f64();
+      for (std::size_t i = 0; i < 4; ++i)
+        cfg_.geo_clamp[i] = static_cast<float>(c[i]);
+    }
   }
   slopes_ = alibi_slopes(cfg_.heads);
   set_context({});
@@ -343,9 +348,10 @@ OnsetTransformer::Out OnsetTransformer::step(std::span<const float> x) {
     // (sin, cos) and the log of its concentration; clamps as in onset.
     float g[5];
     geo_head_.forward(h_.data(), 1, g);
-    out.geo = Geometry{g[0], std::exp(0.5f * std::clamp(g[1], -8.0f, 6.0f)),
+    const auto &c = cfg_.geo_clamp;
+    out.geo = Geometry{g[0], std::exp(0.5f * std::clamp(g[1], c[0], c[1])),
                        std::atan2(g[2], g[3]),
-                       std::exp(std::clamp(g[4], -4.0f, 8.0f))};
+                       std::exp(std::clamp(g[4], c[2], c[3]))};
   }
   return out;
 }

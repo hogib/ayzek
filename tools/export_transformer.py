@@ -99,6 +99,11 @@ def main():
     tensors["config.floats"] = np.array([mcfg.max_dt_s, dcfg.ctx_seconds,
                                          dcfg.fallback_scale_s, thr, RELEASE_RATIO,
                                          mcfg.sample_rate], np.float64)
+    if mcfg.geometry:
+        # The geometry head's output clamps (onset model.geometry): log-variance
+        # of log distance, then log concentration of back-azimuth.
+        tensors["config.geo"] = np.array([2 * np.log(getattr(mcfg, "geo_min_sd", np.exp(-4.0))),
+                                          6.0, -4.0, 8.0], np.float64)
     sos = dsp.bandpass_sos(FS)
     tensors["filter.sos"] = np.asarray(sos, np.float64)
     tensors["filter.zi"] = signal.sosfilt_zi(sos).astype(np.float64)

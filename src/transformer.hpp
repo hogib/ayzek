@@ -37,6 +37,9 @@ struct TransformerConfig {
   std::size_t d = 0, heads = 0, layers = 0, window = 0, ctx_tokens = 0,
               ctx_layers = 0;
   bool geometry = false; // the export has the geometry head
+  // Clamps on the head's log-variance of log distance and log concentration
+  // of back-azimuth; exports without `config.geo` used these.
+  std::array<float, 4> geo_clamp{-8.0f, 6.0f, -4.0f, 8.0f};
   std::vector<std::array<std::size_t, 3>> stem; // (kernel, stride, channels)
   std::size_t stride = 0;  // samples per token
   std::size_t history = 0; // samples the stem needs for the newest token
