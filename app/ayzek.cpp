@@ -17,6 +17,7 @@
 #include <chrono>
 #include <csignal>
 #include <cstdio>
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <map>
@@ -618,6 +619,11 @@ int main(int argc, char **argv) try {
             assess_csv, std::max(start, t_first), t_last,
             slash == std::string::npos ? record_path : record_path.substr(slash + 1)))
       throw std::runtime_error("cannot write " + assess_csv);
+  }
+  if (recorder) {
+    recorder.reset(); // flush and close
+    Log::get().plain(true, "Recording written to {}",
+                     std::filesystem::absolute(record_path).string());
   }
 
   auto &log = Log::get();
