@@ -6,8 +6,9 @@
 Writes (AYZW, docs/impl/02-weights.md):
 
   models/transformer.ayzw          weights, geometry, the causal band-pass as
-                                   second-order sections, and the validation
-                                   operating threshold; `geo_head.*` too for a
+                                   second-order sections, the validation
+                                   operating threshold and the default dt
+                                   restart (--dt-reset); `geo_head.*` too for a
                                    run trained with --geometry 1, which makes
                                    ayzek locate from it (--locate geometry)
   data/fixtures/transformer.ayzw   PyTorch/scipy outputs on DEMI around the
@@ -78,6 +79,9 @@ def main():
                     default=Path(__file__).resolve().parents[3] / "onset" / "src")
     ap.add_argument("--threshold", type=float, default=None,
                     help="Operating threshold; default: the run's val_best.json.")
+    ap.add_argument("--dt-reset", default=None, metavar="BELOW,FROM",
+                    help="ayzek's default dt restart for this model; default: the "
+                         "run's training rule (dt_reset_below, dt_reset_from)")
     a = ap.parse_args()
     conditioning, dsp, load_run_config, OnsetDetector = load_onset(a.onset_src)
     torch.set_grad_enabled(False)
@@ -104,13 +108,18 @@ def main():
         # of log distance, then log concentration of back-azimuth.
         tensors["config.geo"] = np.array([2 * np.log(getattr(mcfg, "geo_min_sd", np.exp(-4.0))),
                                           6.0, -4.0, 8.0], np.float64)
+    # ayzek's default dt restart: [below, from, tokens] (trigger.hpp).
+    below, frm = (map(float, a.dt_reset.split(",")) if a.dt_reset else
+                  (getattr(tcfg, "dt_reset_below", 2.0), getattr(tcfg, "dt_reset_from", 5.0)))
+    tensors["config.trigger"] = np.array([below, frm, getattr(tcfg, "dt_reset_tokens", 2)],
+                                         np.float64)
     sos = dsp.bandpass_sos(FS)
     tensors["filter.sos"] = np.asarray(sos, np.float64)
     tensors["filter.zi"] = signal.sosfilt_zi(sos).astype(np.float64)
     write_ayzw(Path("models/transformer.ayzw"), tensors, {
         "model": "onset-transformer", "source": str(ckpt),
         "sha256_16": hashlib.sha256(ckpt.read_bytes()).hexdigest()[:16],
-        "threshold": thr, "val_epoch": best["epoch"],
+        "threshold": thr, "dt_reset": [below, frm], "val_epoch": best["epoch"],
         "val_recall_1s": best["summary"]["recall@1.0s"],
         "val_false_per_hour": best["summary"]["false_per_hour"],
         "geometry": bool(mcfg.geometry),

@@ -33,9 +33,12 @@ therefore measures the detection stage and those two choices together.
 4. **Trigger** (`src/pipeline/trigger.hpp`). Either of:
    - **rising edge**: the first token with p ≥ threshold after p last fell
      below the release level;
-   - **dt restart** (`--dt-reset BELOW,FROM`, default 2,5; `--no-dt-reset`
-     turns it off): p still ≥ threshold, and dt back at ≤ 2 s for two tokens
-     in a row after it had reached ≥ 5 s since the last trigger. In an
+   - **dt restart** (`--dt-reset BELOW,FROM`; `--no-dt-reset` turns it
+     off): p still ≥ threshold, and dt back at ≤ BELOW s for two tokens in a
+     row after it had reached ≥ FROM s since the last trigger. The default
+     comes with the model (`config.trigger`, written by
+     `export_transformer.py --dt-reset`; 2,5 for a model without it); see
+     [The restart setting per model](#the-restart-setting-per-model). In an
      aftershock sequence p stays high between events, so the next onset has
      no rising edge; a restarted dt says it is a new event, not the coda of
      the old one.
@@ -170,6 +173,27 @@ away; an M ≥ 2.5 every two minutes on average):
 Per-station rules did not help. A longer retrigger gate, or a coda window
 scaled by the station's magnitude, removed about two false alarms for every
 event lost.
+
+### The restart setting per model
+
+How far dt falls at a new onset differs between models, so the restart
+setting travels with the exported weights. The model before the stronger
+second-onset training (onset `781a36c`) brought dt down only to 2–3 s at
+most missed aftershocks; the one after it restarts fully, and at 2 s it
+fires on coda too. Network replays at 3 stations (found / false):
+
+| model, restart at dt ≤ | Sındırgı | marmara_ko | demo_ko | quiet_ko, 6 h |
+|---|---:|---:|---:|---:|
+| before, 2 s | 28/66 +7 | 29/37 +9 | 8/9 +4 | 1 alarm |
+| before, 2.5 s | 33/66 +11 | 31/37 +14 | 8/9 +4 | 1 alarm |
+| after, 1 s | 33/66 +10 | 32/37 +12 | 8/9 +5 | 1 alarm |
+| after, 1.5 s | 44/66 +24 | 33/37 +13 | 8/9 +8 | 1 alarm |
+| after, 2 s | 47/66 +35 | 33/37 +13 | 8/9 +8 | 1 alarm |
+
+The current model ships with 1,5: about the old false-alarm level with a
+few more events. 1.5 finds many more aftershocks for many more alarms.
+Replays of the Sındırgı alarms show only a minority of the extra ones fit a
+source in the aftershock zone as well as catalogued alarms do.
 
 ## Comparing the two detectors
 

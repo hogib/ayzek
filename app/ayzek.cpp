@@ -71,7 +71,7 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --dt-reset BELOW,FROM transformer: also trigger while p stays high when dt falls
                         back to BELOW s or less after reaching FROM s since the
                         last trigger: a new onset in the coda of the last one
-                        (default 2,5)
+                        (default: the model's, config.trigger; 2,5 without)
   --no-dt-reset         transformer: rising edges only
   --pick-anywhere       transformer: let the picker search the whole 60 s window
                         (default: P within 3 s of the transformer's P, S before
@@ -169,7 +169,8 @@ Percentiles percentiles(std::vector<float> v) {
 int main(int argc, char **argv) try {
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
               record_path, transformer_path, assess_csv;
-  bool threshold_set = false, release_set = false, min_stations_set = false;
+  bool threshold_set = false, release_set = false, min_stations_set = false,
+       dt_reset_set = false;
   std::string locate_kind; // "", "geometry" or "picks"
   double speed = 1.0;
   ProcessorConfig pcfg;
@@ -203,9 +204,9 @@ int main(int argc, char **argv) try {
       pcfg.dt_reset_from = std::stof(v.substr(comma + 1));
       if (!(pcfg.dt_reset_below < pcfg.dt_reset_from))
         throw std::runtime_error("--dt-reset: BELOW must be less than FROM");
-      pcfg.dt_reset = true;
+      pcfg.dt_reset = true, dt_reset_set = true;
     } else if (a == "--no-dt-reset")
-      pcfg.dt_reset = false;
+      pcfg.dt_reset = false, dt_reset_set = true;
     else if (a == "--pick-anywhere")
       pcfg.pick_on_onset = false;
     else if (a == "--trigger-windows")
@@ -338,6 +339,14 @@ int main(int argc, char **argv) try {
       pcfg.threshold = static_cast<float>(f[3]);
     if (!release_set)
       pcfg.release = static_cast<float>(f[4] * pcfg.threshold);
+    // The dt restart the model was exported with: how far dt must fall
+    // depends on how deep a given model's restarts go.
+    if (!dt_reset_set && transformer->has("config.trigger")) {
+      const auto g = transformer->at("config.trigger", {3}).f64();
+      pcfg.dt_reset_below = static_cast<float>(g[0]);
+      pcfg.dt_reset_from = static_cast<float>(g[1]);
+      pcfg.dt_reset_tokens = static_cast<std::size_t>(g[2]);
+    }
     pcfg.anchor = false;
     pcfg.require_onset = false;
     // Two stations are too easy to satisfy for a detector that also fires in
