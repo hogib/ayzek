@@ -112,6 +112,7 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --no-magnitude        skip the magnitude regressor
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
+                        (DIR is created if missing)
   --scores-in DIR       use probabilities from an earlier --scores run instead of the detector
   --record FILE         write all station outputs for tools/network_subsets
   --site NAME,LAT,LON   report the S-wave warning time at this place (repeatable)
@@ -448,6 +449,8 @@ int main(int argc, char **argv) try {
 
   // --- run
   // ----------------------------------------------------------------------
+  if (!scores_dir.empty())
+    std::filesystem::create_directories(scores_dir);
   Bus bus;
   StreamClock clock(start, speed);
   std::vector<std::unique_ptr<Processor>> procs;

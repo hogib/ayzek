@@ -57,6 +57,8 @@ Processor::Processor(Station &st, const std::vector<Weights> &detector,
   stats_.window_ms.reserve(1 << 16);
   if (!scores_path.empty()) {
     scores_.open(scores_path);
+    if (!scores_)
+      throw std::runtime_error("cannot write " + scores_path);
     // The transformer's rows are tokens, dated by their last sample, with dt.
     scores_ << (cfg_.detector == DetectorKind::Transformer
                     ? "station,token_end,probability,dt\n"

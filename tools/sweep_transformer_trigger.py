@@ -74,7 +74,10 @@ def trigger(t, p, dt, thr, rel, below, frm, ntok, reset=True, max_dt=10.0):
 
 def load(scores, catalog, stations):
     streams = {}
-    for f in sorted(glob.glob(f"{scores}/*.csv")):
+    files = sorted(glob.glob(f"{scores}/*.csv"))
+    if not files:
+        raise SystemExit(f"{scores}: no score CSVs (ayzek --scores {scores} ...)")
+    for f in files:
         s = pd.read_csv(f)
         if "dt" not in s:
             raise SystemExit(f"{f}: no dt column; re-run ayzek --scores with this build")
@@ -139,6 +142,8 @@ def main():
     data = {}
     for s in a.sets:
         scores, _, cat = s.partition(":")
+        if not scores or (cat and not os.path.isfile(cat)):
+            raise SystemExit(f"{s}: expected SCORES_DIR[:CATALOG.csv], no space after the colon")
         data[os.path.basename(scores.rstrip("/"))] = load(scores, cat or None, stations)
     floats = lambda s: [float(x) for x in s.split(",")]
     grid = [dict(below=0.0, frm=0.0, ntok=1, reset=False)] + [
