@@ -1,12 +1,12 @@
 # 14 · The streaming transformer detector
 
 `--detector transformer` replaces the 3-seed 6 s window detector with the
-onset project's streaming transformer. Everything after the trigger is the
-same code: the picker, association, location, magnitude and catalogue scoring.
-A model with the geometry head also locates events itself, replacing the
-picker (`15-geometry-location.md`).
-So, as with STA/LTA (`09-sta-lta.md`), a comparison measures the detection
-stage alone.
+onset project's streaming transformer. Association, magnitude and catalogue
+scoring are the same code as for the 6 s detector. Three things differ: the
+trigger (below), the picker, which is placed on the transformer's own P, and
+location, which a model with the geometry head does itself instead of the
+picker (`15-geometry-location.md`). A comparison with the 6 s detector
+therefore measures the detection stage and those two choices together.
 
 ## What runs
 
@@ -49,6 +49,12 @@ stage alone.
    - The Detection carries a window start 3.5 s before that P, the network
      stage's convention. The picker and early magnitude windows are therefore
      placed from the transformer's own P, with no STA/LTA anchor.
+   - The picker searches for P only within 3 s of that P, and for S only
+     after it and before this station's next accepted trigger
+     (`Picker::Search`). In an aftershock sequence the 60 s window often holds
+     a later event, and an unconstrained search picks its P or S instead:
+     on marmara_ko, 39 of 201 picks had P outside the trigger window and 26
+     an S not after P. `--pick-anywhere` restores the whole-window search.
    - The decision time is the newest sample read when the token completed.
    - Missing samples are fed as missing, not skipped: the model has a gap
      channel and runs through gaps. The 6 s detector instead drops every

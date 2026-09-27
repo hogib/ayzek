@@ -61,6 +61,7 @@ Assessment Network::assess(const Event &e, double t0, double t1) const {
   }
   for (const auto &[code, pk] : picks) {
     StationSP s{code, pk.s_time - pk.p_time, (pk.s_time - pk.p_time) * km_per_s};
+    s.requested = pk.event_id != 0;
     if (auto g = e.geometry.find(code); g != e.geometry.end()) {
       s.geo_km = std::exp(g->second.log_dist);
       s.geo_z = (std::log(std::max(s.km, 1.0)) - g->second.log_dist) /
@@ -72,8 +73,9 @@ Assessment Network::assess(const Event &e, double t0, double t1) const {
     std::string out;
     for (const auto &s : a.stations)
       if (s.used)
-        out += std::format("{}{} {:.1f} s ({:.0f} km)", out.empty() ? "" : ", ",
-                           s.station, s.sp, s.km);
+        out += std::format("{}{} {:.1f} s ({:.0f} km{})", out.empty() ? "" : ", ",
+                           s.station, s.sp, s.km,
+                           s.requested ? ", not triggered" : "");
     return out;
   };
 

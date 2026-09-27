@@ -72,6 +72,9 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
                         last trigger: a new onset in the coda of the last one
                         (default 2,5)
   --no-dt-reset         transformer: rising edges only
+  --pick-anywhere       transformer: let the picker search the whole 60 s window
+                        (default: P within 3 s of the transformer's P, S before
+                        the station's next trigger)
   --no-anchor           do not date model triggers by the STA/LTA onset
   --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
   --require-onset       a detector trigger also needs an STA/LTA onset
@@ -200,6 +203,8 @@ int main(int argc, char **argv) try {
       pcfg.dt_reset = true;
     } else if (a == "--no-dt-reset")
       pcfg.dt_reset = false;
+    else if (a == "--pick-anywhere")
+      pcfg.pick_on_onset = false;
     else if (a == "--trigger-windows")
       pcfg.trigger_windows = std::stoul(next());
     else if (a == "--instant-threshold")
@@ -556,6 +561,51 @@ int main(int argc, char **argv) try {
   }
   release();
   threads.clear();
+
+  // --assess: picks at the stations that did not trigger, from the replay
+  // files, in the window each alarm's source predicts. Made here, after the
+  // replay and on this thread, so they do not depend on thread timing; a live
+  // client would have to keep that data instead (docs/impl/16-alarm-assessment.md).
+  if (ncfg.assess) {
+    Picker extra_picker(picker);
+    dsp::Conditioner cond(bp, Picker::kWindow);
+    std::map<std::string, const ReplaySource *> source_of;
+    for (const auto &src : sources)
+      source_of[src->station()] = src.get();
+    std::vector<double> raw;
+    std::vector<float> planar(Picker::kWindow * 3);
+    std::size_t made = 0, missing = 0;
+    constexpr double kLead = 5.5; // window start before the predicted P, as for triggers
+    for (const auto &r : net.pick_requests(std::max(start, t_first), t_last)) {
+      auto it = source_of.find(r.station);
+      const double t0 = r.p_pred - kLead;
+      if (it == source_of.end() || !read_window(*it->second, t0, Picker::kWindow, raw)) {
+        ++missing;
+        continue;
+      }
+      const auto c0 = std::chrono::steady_clock::now();
+      cond.condition_planar(raw, 3, planar);
+      const auto pk = extra_picker.pick(
+          planar, {kLead - 4.0, kLead + 4.0,
+                   std::min(Picker::kWindow / kFs, r.s_cap - t0), 0.5});
+      const double ms = std::chrono::duration<double, std::milli>(
+                            std::chrono::steady_clock::now() - c0)
+                            .count();
+      Pick p{r.station, r.p_pred - 3.5,  t0 + pk.p_seconds, t0 + pk.s_seconds,
+             pk.p_prob, pk.s_prob,       t0 + Picker::kWindow / kFs,
+             ms,        nullptr,         r.event_id,
+             r.event_alarm};
+      net.on(p);
+      if (recorder)
+        recorder->write(p);
+      ++made;
+    }
+    Log::get().line("assess", "1",
+                    "{} picks at stations that did not trigger{}", made,
+                    missing ? std::format(", {} windows skipped for missing data",
+                                          missing)
+                            : std::string());
+  }
   const double wall = clock.wall_seconds();
 
   // --- report

@@ -155,27 +155,42 @@ std::span<const float> Picker::logits(std::span<const float> x) {
 }
 
 Picker::Picks Picker::pick(std::span<const float> x) {
-  auto lg = logits(x);
+  return select(logits(x), nullptr);
+}
+
+Picker::Picks Picker::pick(std::span<const float> x, const Search &search) {
+  return select(logits(x), &search);
+}
+
+Picker::Picks Picker::select(std::span<const float> lg, const Search *search) {
   const double chunk_seconds = static_cast<double>(kWindow) / kChunks / 100.0;
-  Picks out{};
-  double best_p = -1.0, best_s = -1.0;
+  std::array<double, kChunks> pp{}, ps{}, at{};
   for (std::size_t t = 0; t < kChunks; ++t) {
     const float *r = lg.data() + t * kClasses;
     const float mx = std::max({r[0], r[1], r[2]});
     const double z =
         std::exp(r[0] - mx) + std::exp(r[1] - mx) + std::exp(r[2] - mx);
-    const double pp = std::exp(r[1] - mx) / z, ps = std::exp(r[2] - mx) / z;
-    if (pp > best_p) {
-      best_p = pp;
-      out.p_seconds = (static_cast<double>(t) + 0.5) * chunk_seconds;
-    }
-    if (ps > best_s) {
-      best_s = ps;
-      out.s_seconds = (static_cast<double>(t) + 0.5) * chunk_seconds;
-    }
+    pp[t] = std::exp(r[1] - mx) / z;
+    ps[t] = std::exp(r[2] - mx) / z;
+    at[t] = (static_cast<double>(t) + 0.5) * chunk_seconds;
   }
-  out.p_prob = best_p;
-  out.s_prob = best_s;
+  Picks out{0, -1.0, 0, -1.0};
+  for (std::size_t t = 0; t < kChunks; ++t)
+    if ((!search || (at[t] >= search->p_lo && at[t] <= search->p_hi)) &&
+        pp[t] > out.p_prob) {
+      out.p_prob = pp[t];
+      out.p_seconds = at[t];
+    }
+  for (std::size_t t = 0; t < kChunks; ++t)
+    if ((!search || (at[t] >= out.p_seconds + search->min_sp &&
+                     at[t] <= search->s_hi)) &&
+        ps[t] > out.s_prob) {
+      out.s_prob = ps[t];
+      out.s_seconds = at[t];
+    }
+  // Nothing in range: a zero probability, which the pick QC rejects.
+  out.p_prob = std::max(out.p_prob, 0.0);
+  out.s_prob = std::max(out.s_prob, 0.0);
   return out;
 }
 

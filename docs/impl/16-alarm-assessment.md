@@ -6,7 +6,8 @@ every declared event from its own waveforms' picks, so the unmatched alarms
 can be split into probable uncatalogued earthquakes and real misfires. It is a
 diagnostic, for replays and benchmarks. It runs the P/S picker at every
 trigger, also with the geometry locator, where the picks are then used for the
-assessment only.
+assessment only, and after the replay it picks at the stations that did not
+trigger (below).
 
 ```bash
 build-release/app/ayzek --speed 0 --detector transformer --assess \
@@ -54,6 +55,30 @@ alarm whose source lies within 100 km and 60 s of a catalogued event is
 probably that event, missed by the matching; one within 50 km of an M ≥ 3
 catalogued in the 30 days before is in its aftershock zone.
 
+## Picks at stations that did not trigger
+
+Most alarms are declared by exactly two stations, so one failed pick leaves
+nothing to test. After the replay, for every alarm with a source estimate
+(the S-P source if its picks agree, else its location), the network lists the
+stations within 200 km that have no pick for it (`Network::pick_requests`),
+with their predicted P. The main thread cuts that 60 s window from the
+station's replay file (`read_window`), and the picker looks for P within 4 s
+of the prediction and for S only before the station's next detected onset.
+The picks pass the usual QC around the predicted P, join the assessment
+(marked "not triggered" in the reasons) and go into the recording with the
+event they were made for. They never change an event's location.
+
+This is done after the replay and on one thread, so it does not depend on
+thread timing. A live client would need to keep the data for it instead.
+
+## The picker window
+
+For the transformer the picker looks for P within 3 s of the transformer's
+own P and for S only before the station's next trigger (`Picker::Search`,
+`14-transformer.md`; `--pick-anywhere` turns this off). Unconstrained, in an
+aftershock sequence it often picked a later event's P or S: 39 of marmara's
+201 picks had P outside the trigger window, and 26 an S not after P.
+
 ## Output
 
 - **While running**, an `ASSESS` line whenever an event's verdict or its
@@ -82,37 +107,31 @@ analytic chance probability is.
 
 ## Results
 
-The v2-geo transformer (geo_v1) on the public KO sets, `--assess`, verdicts
-from `tools/network_subsets --assess` on the recordings:
+The v2-geo transformer (geo_v1) on the public KO sets, `--assess`:
 
-| set | catalogued alarms: real (earthquake or possible) / misfire | unmatched alarms: real / misfire / unclassified |
+| set | catalogued alarms: real (earthquake or possible) / misfire / unclassified | unmatched alarms: real / misfire / unclassified |
 |---|---|---|
-| demo_ko | 4 of 6 / 0 | 0 / 0 / 7 |
-| marmara_ko | 11 of 19 / 3 | 3 / 0 / 34 |
+| demo_ko | 4 of 6 / 0 / 2 | 0 / 0 / 7 |
+| marmara_ko | 14 of 19 / 1 / 4 | 3 / 4 / 30 |
 | quiet_ko | – | 0 / 0 / 1 |
 
-The first version (rms 1.5 s, 2 s per station, no S-P cap, two disagreeing
-stations called a misfire) called 6 of marmara's 19 catalogued alarms
-misfires. The misfires came from one implausible S-P (38 s, "321 km": the
-picker's 60 s window held a later event) or from fits just over 1.5 s in a
+How it got there, on marmara's 19 catalogued alarms:
+
+| version | real | misfire |
+|---|---:|---:|
+| first: rms 1.5 s, 2 s per station, no S-P cap, two disagreeing stations a misfire | 8 | 6 |
+| rms 2.5 s, 3.5 s per station, S-P beyond 200 km set aside, two stations a misfire only with an objection | 11 | 3 |
+| + the picker placed on the transformer's P, and picks at stations that did not trigger | 14 | 1 |
+
+The misfires of the first version came from one implausible S-P (38 s, "321
+km": the picker's window held a later event) or from fits just over 1.5 s in a
 uniform half-space at 50–100 km.
 
-**Most alarms are unclassified**, because the test needs confident P and S at
-two stations and most alarms are declared by exactly two. Of marmara's 201
-picks, 90 pass the pick QC. The others fail on:
-
-| QC failure | picks |
-|---|---:|
-| P confidence below 0.5 | 41 |
-| P outside the trigger window (a later event's P, in an aftershock sequence) | 39 |
-| S not after P, or more than 60 s after it | 26 |
-| S confidence below 0.5 | 8 |
-
-Two ways to classify more alarms, not implemented yet:
-
-- run the picker at the stations that did not trigger, in the window their
-  distance from the triggering ones predicts, so small events seen weakly at
-  a third station still get an S-P;
-- in an aftershock sequence, place the picker window on the transformer's own
-  P and search for S only up to the next onset, so a later event's phases are
-  not picked.
+**Most unmatched alarms are still unclassified.** The test needs confident P
+and S at two stations, and the picker is rarely confident on small events near
+their true P. Of marmara's 201 picks after triggers, 82 pass the pick QC; most
+of the rest have a P probability below 0.5 (113). Of the 243 picks made at
+stations that did not trigger, 42 pass. Placing the picker on the right P
+removed the confident picks on later events, which had passed QC for the wrong
+event. What would classify more: a picker trained on small events, or an S
+pick from the transformer itself.

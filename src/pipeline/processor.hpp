@@ -98,6 +98,12 @@ struct ProcessorConfig {
   // `dt_reset_tokens` tokens after reaching `dt_reset_from` s, i.e. a new
   // onset inside the coda of the last one (trigger.hpp). Other detectors
   // ignore these.
+  // Transformer: the picker looks for P within `pick_p_tol` s of the
+  // transformer's own P, and for S only before this station's next trigger,
+  // so a later event in the 60 s window is not picked (models.hpp,
+  // Picker::Search). Other detectors search the whole window.
+  bool pick_on_onset = true;
+  double pick_p_tol = 3.0;
   bool dt_reset = true;
   float dt_reset_below = 2.0f;
   float dt_reset_from = 5.0f;
@@ -165,7 +171,7 @@ private:
                std::uint64_t model_start, double declared_at, float p,
                double ms, bool restart = false);
   void run_jobs(std::uint64_t limit);
-  void run_pick(std::uint64_t start, double trigger);
+  void run_pick(std::uint64_t start, double trigger, std::uint64_t p_pos);
   void run_early_magnitude(std::uint64_t start, double trigger);
   void maybe_add_noise(std::uint64_t window_start);
 
@@ -208,7 +214,16 @@ private:
   double last_trigger_ = -1e18;
   // Scheduled picker and early magnitude windows: (start position, window start
   // of the detection that scheduled it), in start order.
-  std::deque<std::pair<std::uint64_t, double>> picks_, early_;
+  struct PickJob {
+    std::uint64_t start;  // window start position
+    double trigger;       // window_start of the detection it follows
+    std::uint64_t p_pos;  // the detector's P, kUnset: search the whole window
+  };
+  std::deque<PickJob> picks_;
+  std::deque<std::pair<std::uint64_t, double>> early_;
+  // Transformer: P positions of this station's accepted triggers, newest
+  // last, for ending the S search of an earlier pick at the next onset.
+  std::deque<std::uint64_t> onsets_p_;
   std::deque<std::pair<std::uint64_t, float>>
       recent_; // (window start, probability)
   std::uint64_t last_noise_end_ = 0;

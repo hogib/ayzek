@@ -69,6 +69,36 @@ ReplaySource::ReplaySource(const std::string &path) {
                     count, reason);
 }
 
+bool read_window(const ReplaySource &src, double t0, std::size_t n,
+                 std::vector<double> &out) {
+  const std::uint64_t first = epoch_to_pos(t0);
+  out.assign(n * 3, 0.0);
+  std::vector<std::uint8_t> have(n * 3, 0);
+  std::array<std::int32_t, mseed::kMaxDiffs> buf{};
+  const auto &recs = src.records();
+  // Records are sorted by end time and last seconds, not minutes.
+  auto it = std::ranges::lower_bound(recs, t0, {}, &ReplaySource::Record::end_time);
+  const double t1 = t0 + static_cast<double>(n) / kFs;
+  for (; it != recs.end() && it->end_time < t1 + 600.0; ++it) {
+    auto h = mseed::parse_header(it->bytes);
+    if (!h)
+      continue;
+    auto got = mseed::decode(it->bytes, *h, buf);
+    if (!got)
+      continue;
+    const auto pos = static_cast<std::uint64_t>(h->start_ns) / 10'000'000;
+    for (std::size_t i = 0; i < *got; ++i) {
+      const std::uint64_t q = pos + i;
+      if (q < first || q >= first + n)
+        continue;
+      const std::size_t k = static_cast<std::size_t>(q - first) * 3 + it->comp;
+      out[k] = buf[i];
+      have[k] = 1;
+    }
+  }
+  return std::ranges::all_of(have, [](std::uint8_t x) { return x != 0; });
+}
+
 void run_ingest(const ReplaySource &src, Station &st, const StreamClock &clock,
                 const std::atomic<bool> &stop) {
   // One reorderer per component with max_lateness 0: holes become gaps at once

@@ -15,7 +15,8 @@
 //   D  station  window_start  declared_at  probability  compute_ms  [restart]
 //      (restart 1 for a transformer dt restart; absent in older recordings)
 //   P  station  trigger_window  p_time  s_time  p_prob  s_prob  declared_at
-//      compute_ms
+//      compute_ms  [event_id  event_alarm]  (--assess picks at stations that
+//      did not trigger; absent otherwise)
 //   M  station  trigger_window  at_pick  window_start  magnitude
 //      noise_windows  declared_at  compute_ms
 //   G  station  trigger_window  p_time  since_p  log_dist  log_dist_sd  baz

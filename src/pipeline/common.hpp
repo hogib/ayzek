@@ -137,6 +137,11 @@ struct Pick {
   // Data for a magnitude estimate at the picked P, if P is confident and near
   // the trigger. Not recorded.
   std::shared_ptr<const MagnitudeWindow> magnitude_window;
+  // --assess: a pick at a station that did not trigger, made for the event
+  // with this id and alarm time (Network::pick_requests); 0 for the picks that
+  // follow a detection. `trigger_window` is then the predicted P - 3.5 s.
+  int event_id = 0;
+  double event_alarm = 0;
 };
 
 struct MagnitudeEstimate {

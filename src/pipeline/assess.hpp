@@ -55,6 +55,7 @@ struct StationSP {
   double geo_km = NAN; // the geometry head's distance, if any
   double geo_z = NAN;  // (log km - log geo_km) / the head's sd
   bool used = true;    // false: left out as inconsistent
+  bool requested = false; // picked for the assessment; the station did not trigger
 };
 
 struct Assessment {

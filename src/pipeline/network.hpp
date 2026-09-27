@@ -83,6 +83,16 @@ struct NetworkConfig {
   double assess_geo_z = 2.0;      // geometry agrees within this many sds
 };
 
+// --assess: a pick wanted at a station that did not trigger for event
+// `event_id`, P predicted at `p_pred` from the event's source, and S no later
+// than `s_cap` (the station's next detected onset).
+struct PickRequest {
+  int event_id;
+  double event_alarm;
+  std::string station;
+  double p_pred, s_cap;
+};
+
 struct Location {
   double lat, lon, origin, rms;
   std::size_t n_stations;
@@ -144,6 +154,12 @@ public:
   [[nodiscard]] std::size_t declared_count() const;
   [[nodiscard]] std::size_t
   unmatched_count() const; // declared events with no catalogue match
+  // --assess: after a replay, the picks worth making at stations that did not
+  // trigger, for every declared event with a source estimate within
+  // `assess_max_sp_km` of them. The caller makes them and passes them to
+  // on(Pick).
+  [[nodiscard]] std::vector<PickRequest> pick_requests(double t0,
+                                                       double t1) const;
   // --assess: event `e` over stream times [t0, t1] (for trigger rates).
   [[nodiscard]] Assessment assess(const Event &e, double t0, double t1) const;
   // One CSV row per declared event; `record` is the --record file's name, for

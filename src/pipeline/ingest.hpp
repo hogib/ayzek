@@ -44,6 +44,12 @@ private:
   std::vector<Record> records_;
 };
 
+// Positions [t0, t0 + n / 100 Hz) of the three components from the file,
+// (n, 3) interleaved counts, bypassing the pipeline (for --assess, after a
+// replay). False if any sample in the range is missing.
+bool read_window(const ReplaySource &src, double t0, std::size_t n,
+                 std::vector<double> &out);
+
 // Feeds all records of `src` into the station's rings, then sets
 // st.ingest_done. When a ring is full it waits for the processor (replay only;
 // see ingest.cpp).

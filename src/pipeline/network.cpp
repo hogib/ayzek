@@ -159,40 +159,102 @@ void Network::on(const Pick &p) {
     reject = "S not after P";
   else if (p.p_time < p.trigger_window - 3 || p.p_time > p.trigger_window + 9)
     reject = "P outside the trigger window";
+  // The event a pick belongs to: the one with the detection it follows, or,
+  // for an --assess pick at a station that did not trigger, the event it was
+  // made for (by id and alarm time; failing that, as when a recording is
+  // replayed for a subset of its stations, the declared event with a
+  // detection nearest its predicted window).
+  Event *target = nullptr;
+  if (p.event_id) {
+    double nearest = 40.0;
+    for (auto &e : events_) {
+      if (!e.declared || e.picks.contains(p.station))
+        continue;
+      if (e.id == p.event_id && e.declared_at == p.event_alarm) {
+        target = &e;
+        break;
+      }
+      for (const auto &[_, d] : e.detections)
+        if (std::abs(d.window_start - p.trigger_window) < nearest) {
+          nearest = std::abs(d.window_start - p.trigger_window);
+          target = &e;
+        }
+    }
+  } else {
+    for (auto &e : events_) {
+      auto it = e.detections.find(p.station);
+      if (it != e.detections.end() &&
+          it->second.window_start == p.trigger_window) {
+        target = &e;
+        break;
+      }
+    }
+  }
   if (!reject.empty()) {
     if (cfg_.verbose)
       Log::get().line(
           "pick", "2", "{:<5} P {} ({:.2f})  S {} ({:.2f})  -- not used: {}",
           p.station, hms(p.p_time), p.p_prob, hms(p.s_time), p.s_prob, reject);
-    for (auto &e : events_) {
-      auto it = e.detections.find(p.station);
-      if (it != e.detections.end() &&
-          it->second.window_start == p.trigger_window) {
-        ++e.picks_rejected;
-        if (e.declared && cfg_.assess)
-          print_assessment(e, p.declared_at);
-        break;
-      }
+    if (target) {
+      ++target->picks_rejected;
+      if (target->declared && cfg_.assess)
+        print_assessment(*target, p.declared_at);
     }
     return;
   }
   if (cfg_.verbose)
     Log::get().line("pick", "35",
                     "{:<5} P {} ({:.2f})  S {} ({:.2f})  S-P {:.2f} s ~ {:.0f} "
-                    "km  ({:.0f} ms)",
+                    "km  ({:.0f} ms){}",
                     p.station, hms(p.p_time), p.p_prob, hms(p.s_time), p.s_prob,
-                    sp, km, p.compute_ms);
-  for (auto &e : events_) {
-    auto it = e.detections.find(p.station);
-    if (it == e.detections.end() || it->second.window_start != p.trigger_window)
-      continue;
-    e.picks.emplace(p.station, p);
-    if (e.declared && cfg_.locator == Locator::Picks)
-      report_location(e, p.declared_at);
-    if (e.declared && cfg_.assess)
-      print_assessment(e, p.declared_at);
+                    sp, km, p.compute_ms,
+                    p.event_id ? std::format("  for #{}, not triggered", p.event_id)
+                               : std::string());
+  if (!target)
     return;
+  target->picks.emplace(p.station, p);
+  // A pick made for the assessment only informs the assessment: the event
+  // keeps the location the run gave it.
+  if (target->declared && cfg_.locator == Locator::Picks && !p.event_id)
+    report_location(*target, p.declared_at);
+  if (target->declared && cfg_.assess)
+    print_assessment(*target, p.declared_at);
+}
+
+std::vector<PickRequest> Network::pick_requests(double t0, double t1) const {
+  std::vector<PickRequest> out;
+  for (const auto &e : events_) {
+    if (!e.declared)
+      continue;
+    // The source: the S-P one if the picks agree on it, else the location.
+    const auto a = assess(e, t0, t1);
+    double lat = a.lat, lon = a.lon, origin = a.origin;
+    if (!a.consistent) {
+      if (!e.location)
+        continue;
+      lat = e.location->lat;
+      lon = e.location->lon;
+      origin = e.location->origin;
+    }
+    for (const auto &[code, st] : stations_) {
+      if (e.detections.contains(code) || e.picks.contains(code))
+        continue;
+      const double km = distance_km(lat, lon, st.lat, st.lon);
+      if (km > cfg_.assess_max_sp_km)
+        continue;
+      const double p = origin + std::hypot(km, cfg_.depth_km) / cfg_.vp;
+      // S no later than this station's next detected onset.
+      double s_cap = INFINITY;
+      for (const auto &o : events_)
+        if (auto it = o.detections.find(code); it != o.detections.end()) {
+          const double q = it->second.window_start + 3.5;
+          if (q > p + 1.0)
+            s_cap = std::min(s_cap, q - 0.5);
+        }
+      out.push_back({e.id, e.declared_at, code, p, s_cap});
+    }
   }
+  return out;
 }
 
 void Network::on(const StationGeometry &g) {

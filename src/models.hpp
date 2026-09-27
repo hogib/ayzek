@@ -80,6 +80,19 @@ public:
   };
   [[nodiscard]] Picks pick(std::span<const float> x);
 
+  // Where to look, in seconds from the window start: P in [p_lo, p_hi], S
+  // after the P pick by at least `min_sp` and no later than `s_hi`. Placed on
+  // a known P (the transformer's) and ending S before the next onset, it
+  // keeps a later event in the 60 s window from being picked.
+  struct Search {
+    double p_lo = 0, p_hi = 60, s_hi = 60, min_sp = 0.5;
+  };
+  [[nodiscard]] Picks pick(std::span<const float> x, const Search &search);
+  // The picks from (kChunks, 3) logits under `search`; with `search` null,
+  // P and S anywhere, independently (pick(x)).
+  [[nodiscard]] static Picks select(std::span<const float> logits,
+                                    const Search *search);
+
   std::vector<float> stem_out, pooled_out, lstm_out, wave_out;
 
 private:

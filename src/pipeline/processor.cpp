@@ -441,8 +441,14 @@ void Processor::trigger(std::uint64_t run_start, std::uint64_t p_pos,
   bus_.send(Detection{st_.code, run_t, declared_at, p, ms, restart});
   if (cfg_.pick) {
     const std::uint64_t from = cfg_.anchor_picker ? p_pos - lead : model_start;
-    picks_.emplace_back(
-        from - static_cast<std::uint64_t>(cfg_.picker_lead * kFs), run_t);
+    const bool on_onset = onset_ && cfg_.pick_on_onset;
+    picks_.push_back({from - static_cast<std::uint64_t>(cfg_.picker_lead * kFs),
+                      run_t, on_onset ? p_pos : kUnset});
+  }
+  if (onset_) {
+    onsets_p_.push_back(p_pos);
+    while (onsets_p_.size() > 64)
+      onsets_p_.pop_front();
   }
   if (cfg_.magnitude) {
     const std::uint64_t from =
@@ -457,10 +463,10 @@ void Processor::trigger(std::uint64_t run_start, std::uint64_t p_pos,
 // ingest can be far ahead, and the order of the messages would then depend on
 // thread timing. With live data the two are the same.
 void Processor::run_jobs(std::uint64_t limit) {
-  while (!picks_.empty() && picks_.front().first + Picker::kWindow <= limit) {
-    const auto [start, trigger] = picks_.front();
+  while (!picks_.empty() && picks_.front().start + Picker::kWindow <= limit) {
+    const auto job = picks_.front();
     picks_.pop_front();
-    run_pick(start, trigger);
+    run_pick(job.start, job.trigger, job.p_pos);
   }
   while (!early_.empty() && early_.front().first + kMagWindow <= limit) {
     const auto [start, trigger] = early_.front();
@@ -469,7 +475,8 @@ void Processor::run_jobs(std::uint64_t limit) {
   }
 }
 
-void Processor::run_pick(std::uint64_t start, double trigger) {
+void Processor::run_pick(std::uint64_t start, double trigger,
+                         std::uint64_t p_pos) {
   std::uint64_t resume = 0;
   if (!extract(start, Picker::kWindow, raw_, resume)) {
     ++stats_.abandoned_picks;
@@ -480,7 +487,23 @@ void Processor::run_pick(std::uint64_t start, double trigger) {
   }
   const auto t0 = Clock::now();
   cond60_.condition_planar(raw_, 3, planar60_);
-  const auto pk = picker_->pick(planar60_);
+  Picker::Picks pk{};
+  if (p_pos == kUnset) {
+    pk = picker_->pick(planar60_);
+  } else {
+    // P near the detector's own; S before the next onset at this station. The
+    // job runs once its window has been scored, so every trigger inside the
+    // window is known by then.
+    const double p = pos_to_epoch(p_pos) - pos_to_epoch(start);
+    double s_hi = Picker::kWindow / kFs;
+    for (const auto q : onsets_p_)
+      if (q > p_pos + static_cast<std::uint64_t>(kFs)) {
+        s_hi = std::min(s_hi, pos_to_epoch(q) - pos_to_epoch(start) - 0.5);
+        break;
+      }
+    pk = picker_->pick(planar60_, {p - cfg_.pick_p_tol, p + cfg_.pick_p_tol,
+                                   s_hi, 0.5});
+  }
   const double ms = ms_since(t0);
   ++stats_.picks;
   stats_.pick_ms.push_back(static_cast<float>(ms));
@@ -615,7 +638,7 @@ void Processor::run(const std::atomic<bool> &stop) {
     const std::uint64_t history = std::max<std::uint64_t>(lead, kMagWindow);
     std::uint64_t keep = next_ > history ? next_ - history : 0;
     if (!picks_.empty())
-      keep = std::min(keep, picks_.front().first);
+      keep = std::min(keep, picks_.front().start);
     if (!early_.empty())
       keep = std::min(keep, early_.front().first);
     for (auto &cs : st_.comp) {
@@ -636,7 +659,7 @@ void Processor::run(const std::atomic<bool> &stop) {
       until = pos_to_epoch(stalta_next_ != kUnset ? stalta_next_ : next_);
     if (!picks_.empty())
       until =
-          std::min(until, pos_to_epoch(picks_.front().first + Picker::kWindow));
+          std::min(until, pos_to_epoch(picks_.front().start + Picker::kWindow));
     if (!early_.empty())
       until = std::min(until, pos_to_epoch(early_.front().first + kMagWindow));
     if (until - last_progress_ >= 0.5) {

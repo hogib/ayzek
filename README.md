@@ -3,8 +3,10 @@
 An earthquake early-warning (EEW) pipeline in C++23. It reads continuous
 three-component waveforms from several stations and, for each earthquake:
 
-1. detects it at each station (a CNN–BiLSTM–attention detector, 3-seed
-   ensemble; a recursive STA/LTA is available for comparison)
+1. detects it at each station: a CNN–BiLSTM–attention detector (3-seed
+   ensemble) scoring 6 s windows, or the streaming onset transformer
+   (`--detector transformer`, one output per 0.1 s, `docs/impl/14-transformer.md`);
+   a recursive STA/LTA is available for comparison
 2. declares an event when stations agree within the P travel time between them
 3. estimates the magnitude from 10 s of waveform per station
 4. locates the event by grid search: from the streaming transformer's
@@ -165,7 +167,7 @@ tools/demo.sh all      # 7 stations, full speed
 | `--trigger-windows N` | 8 | see `--threshold`; 8 windows add 3.5 s to a trigger |
 | `--instant-threshold P` | 0.9 | also trigger on a single window at or above P; a value > 1 disables this |
 | `--release P` | 0.3 | a trigger re-arms after two windows below P |
-| `--detector KIND` | `6s` | `6s` (also `model`): the 3-seed 6 s window detector. `transformer`: the streaming onset transformer, one output per 0.1 s, P dated by its own `dt` (`docs/impl/14-transformer.md`). `stalta`: a recursive STA/LTA. Picking, association, location and magnitude are unchanged |
+| `--detector KIND` | `6s` | `6s` (also `model`): the 3-seed 6 s window detector. `transformer`: the streaming onset transformer, one output per 0.1 s, P dated by its own `dt` (`docs/impl/14-transformer.md`). `stalta`: a recursive STA/LTA. Association and magnitude are shared; the transformer also places the picker on its own P and, with the geometry head, locates events itself (`--locate`) |
 | `--transformer FILE` | `MODELS/transformer.ayzw` | transformer weights; its `--threshold` and `--release` default to the model's validation operating point |
 | `--dt-reset BELOW,FROM` | `2,5` | transformer: also trigger while p stays at or above the threshold when dt falls back to BELOW s or less (2 tokens in a row) after reaching FROM s: a new onset in the coda of the last event (`docs/impl/14-transformer.md`) |
 | `--no-dt-reset` | | transformer: rising edges only, the rule before `--dt-reset` |
@@ -324,15 +326,17 @@ Türkiye), https://deprem.afad.gov.tr/.
 
 - `docs/DESIGN.md`: the architecture and the reasoning behind it
 - `docs/IMPLEMENTATION.md`: an overview of what was built, with an index of
-  `docs/impl/01`–`11` (SIMD kernels, weights format, conditioning, models,
+  `docs/impl/01`–`16` (SIMD kernels, weights format, conditioning, models,
   pipeline, Raspberry Pi, magnitude, station selection, STA/LTA benchmark,
-  benchmarks and the scorecard, Windows build)
+  benchmarks and the scorecard, Windows build, environment, claims, the
+  streaming transformer, location from its geometry head, alarm assessment)
 
 ## Layout
 
 ```
 src/            ring buffer, miniSEED decoding, reordering, SIMD kernels, layers, models, DSP, magnitude
-src/pipeline/   ingest, per-station processor, network association and location, recording
+src/pipeline/   ingest, per-station processor and the transformer's trigger, network association,
+                location (picks or geometry), alarm assessment, recording
 app/            the ayzek binary
 tests/          unit tests, agreement with PyTorch/scipy/torchaudio, end-to-end check
 tools/          model export, data preparation, evaluation, the scorecard

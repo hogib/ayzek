@@ -23,9 +23,12 @@ void Recorder::write(const Message &m) {
                         d->window_start, d->declared_at, d->probability,
                         d->compute_ms, d->restart ? 1 : 0);
   } else if (auto *p = std::get_if<Pick>(&m)) {
-    out_ << std::format("P\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", p->station,
+    out_ << std::format("P\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}", p->station,
                         p->trigger_window, p->p_time, p->s_time, p->p_prob,
                         p->s_prob, p->declared_at, p->compute_ms);
+    if (p->event_id)
+      out_ << std::format("\t{}\t{}", p->event_id, p->event_alarm);
+    out_ << '\n';
   } else if (auto *g = std::get_if<MagnitudeEstimate>(&m)) {
     out_ << std::format("M\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", g->station,
                         g->trigger_window, g->at_pick ? 1 : 0, g->window_start,
@@ -79,6 +82,14 @@ Recording Recording::load(const std::string &path) {
       Pick p;
       f >> p.station >> p.trigger_window >> p.p_time >> p.s_time >> p.p_prob >>
           p.s_prob >> p.declared_at >> p.compute_ms;
+      if (!f.fail()) {
+        if (f >> p.event_id >> p.event_alarm) {
+        } else if (!f.eof()) {
+          throw std::runtime_error(
+              std::format("{}:{}: malformed record", path, lineno));
+        }
+        f.clear();
+      }
       r.messages.emplace_back(std::move(p));
     } else if (tag == "M") {
       MagnitudeEstimate g;

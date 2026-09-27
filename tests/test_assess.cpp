@@ -2,6 +2,7 @@
 // are an earthquake, picks no source explains are a misfire, too few picks
 // are unclassified, and one bad station among good ones is left out.
 
+#include "models.hpp"
 #include "pipeline/network.hpp"
 
 #include <cmath>
@@ -112,6 +113,51 @@ void too_few_picks_are_unclassified() {
   CHECK(a.verdict == Verdict::Unclassified && a.picks_rejected == 2);
 }
 
+// A station that did not trigger is asked for a pick at its predicted P, and
+// that pick joins the assessment.
+void pick_at_a_station_that_did_not_trigger() {
+  NetworkConfig cfg;
+  cfg.assess = true;
+  Network net(stations(), cfg);
+  for (int i = 0; i < 3; ++i) {
+    const auto &s = kStations[i];
+    const double p = kOrigin + travel(s, 6.0);
+    net.on(Detection{s.code, p - 3.5, p + 1.0, 0.99f, 0.0});
+    net.on(Pick{s.code, p - 3.5, p, kOrigin + travel(s, 3.5), 0.9, 0.9,
+                p + 56.5, 1.0, nullptr});
+  }
+  const auto req = net.pick_requests(kOrigin - 600, kOrigin + 600);
+  CHECK(req.size() == 1 && req[0].station == "D");
+  const auto &d = kStations[3];
+  CHECK(std::abs(req[0].p_pred - (kOrigin + travel(d, 6.0))) < 0.5);
+  net.on(Pick{"D", req[0].p_pred - 3.5, kOrigin + travel(d, 6.0),
+              kOrigin + travel(d, 3.5), 0.8, 0.8, req[0].p_pred + 54.5, 1.0,
+              nullptr, req[0].event_id, req[0].event_alarm});
+  const auto a = net.assess(net.events().front(), kOrigin - 600, kOrigin + 600);
+  CHECK(a.stations.size() == 4 && a.stations[3].requested);
+  CHECK(a.verdict == Verdict::Earthquake);
+}
+
+// The picker's search: P only near the expected P, S only after it and before
+// the next onset.
+void picker_search_window() {
+  using ayzek::Picker;
+  std::vector<float> lg(Picker::kChunks * Picker::kClasses, 0.0f);
+  auto set = [&](double seconds, int cls, float v) {
+    lg[static_cast<std::size_t>(seconds / 0.24) * Picker::kClasses + cls] = v;
+  };
+  set(5.5, 1, 4.0f);  // the event's P
+  set(40.0, 1, 6.0f); // a later event's, stronger
+  set(12.0, 2, 3.0f); // the event's S
+  set(47.0, 2, 5.0f); // the later event's
+  set(3.0, 2, 6.0f);  // "S" before P
+  const auto free = Picker::select(lg, nullptr);
+  CHECK(std::abs(free.p_seconds - 40.0) < 0.3 && std::abs(free.s_seconds - 3.0) < 0.3);
+  const Picker::Search search{3.0, 8.0, 36.0, 0.5};
+  const auto on = Picker::select(lg, &search);
+  CHECK(std::abs(on.p_seconds - 5.5) < 0.3 && std::abs(on.s_seconds - 12.0) < 0.3);
+}
+
 } // namespace
 
 int main() {
@@ -122,5 +168,7 @@ int main() {
   one_bad_station_among_good_ones_is_left_out();
   an_implausible_s_p_is_not_used();
   too_few_picks_are_unclassified();
+  pick_at_a_station_that_did_not_trigger();
+  picker_search_window();
   std::println("alarm assessment: verdicts as specified");
 }
