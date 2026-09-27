@@ -88,7 +88,8 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --stalta-band LO,HI   STA/LTA pass band in Hz (default 2,20)
   --stalta-3c           STA/LTA on the energy of all three components (default: vertical)
   --step N              samples between detector windows (default 50 = 0.5 s)
-  --min-stations N      detections needed to declare an event (default 2)
+  --min-stations N      detections needed to declare an event (default 2;
+                        transformer: 3)
   --slack S             tolerance on the inter-station P travel time, seconds (default 3)
   --locate KIND         geometry: from the transformer's per-station distance and
                         back-azimuth, from the trigger on; the picker is not run
@@ -167,7 +168,7 @@ Percentiles percentiles(std::vector<float> v) {
 int main(int argc, char **argv) try {
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
               record_path, transformer_path, assess_csv;
-  bool threshold_set = false, release_set = false;
+  bool threshold_set = false, release_set = false, min_stations_set = false;
   std::string locate_kind; // "", "geometry" or "picks"
   double speed = 1.0;
   ProcessorConfig pcfg;
@@ -258,7 +259,7 @@ int main(int argc, char **argv) try {
     else if (a == "--slack")
       ncfg.slack_seconds = std::stod(next());
     else if (a == "--min-stations")
-      ncfg.min_stations = std::stoul(next());
+      ncfg.min_stations = std::stoul(next()), min_stations_set = true;
     else if (a == "--locate") {
       locate_kind = next();
       if (locate_kind != "geometry" && locate_kind != "picks")
@@ -338,6 +339,13 @@ int main(int argc, char **argv) try {
       pcfg.release = static_cast<float>(f[4] * pcfg.threshold);
     pcfg.anchor = false;
     pcfg.require_onset = false;
+    // Two stations are too easy to satisfy for a detector that also fires in
+    // codas (dt restarts): on the Sindirgi and Marmara sequences two far
+    // stations ringing together made most of the false alarms, and a third
+    // station removes them at the cost of a few small events
+    // (docs/impl/14-transformer.md).
+    if (!min_stations_set)
+      ncfg.min_stations = 3;
   }
   // Location from the transformer's geometry head replaces the S-P picks: it
   // is available from the trigger on instead of after the 60 s picker window.
@@ -468,7 +476,8 @@ int main(int argc, char **argv) try {
   Network net(used, ncfg);
   std::unique_ptr<Recorder> recorder;
   if (!record_path.empty())
-    recorder = std::make_unique<Recorder>(record_path, used, t_first, t_last);
+    recorder = std::make_unique<Recorder>(record_path, used, t_first, t_last,
+                                          ncfg.min_stations);
   std::map<std::string, double> watermark;
   for (auto &st : stations)
     watermark[st->code] = 0;

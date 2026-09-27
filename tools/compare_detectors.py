@@ -5,7 +5,10 @@
 
 Runs ayzek twice per dataset, `--detector 6s` and `--detector transformer`, with
 everything else identical (picker, magnitude, association, the datasets and
-catalogue excerpts of tools/scorecard.py), and reports two levels:
+catalogue excerpts of tools/scorecard.py) except each detector's own defaults,
+among them the stations needed to declare an event (2 for 6 s, 3 for the
+transformer; pass `--min-stations` through `--args` to equalise), and reports
+two levels:
 
 **Station level: the detector itself.** For every visible catalogued arrival at
 every station (the visibility rule of onset's catalog.VISIBILITY), P is predicted

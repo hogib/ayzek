@@ -59,6 +59,9 @@ therefore measures the detection stage and those two choices together.
    - Missing samples are fed as missing, not skipped: the model has a gap
      channel and runs through gaps. The 6 s detector instead drops every
      window that touches a gap.
+5. **Declaring** (network stage). With the transformer an event needs three
+   stations, not two (`--min-stations`; the other detectors keep 2). See
+   [Stations needed to declare](#stations-needed-to-declare).
 
 **Threshold.** `--threshold` and `--release` default to the model's
 validation operating point, stored in `models/transformer.ayzw`: the lowest
@@ -125,6 +128,49 @@ uv run --project tools python tools/sweep_transformer_trigger.py --threshold 0.9
     cmp/scores_marmara_ko:tests/catalogs/marmara_ko.csv
 ```
 
+### Stations needed to declare
+
+In a dense aftershock sequence the transformer triggers in codas, both on
+rising edges and on dt restarts. Two stations ringing at the same time then
+satisfy a two-station rule. Measured by replaying `--record` recordings with
+`tools/network_subsets` against each run's AFAD catalogue:
+
+| stations | dt restart | marmara_ko found / false | Sındırgı M6.1, first 2 h: found / false |
+|---:|---|---:|---:|
+| 2 | on | 31 / 30 | 38 / 38 |
+| **3** | **on** | **29 / 9** | **28 / 7** |
+| 4 | on | 25 / 2 | 13 / 3 |
+| 2 | off | 19 / 17 | 31 / 23 |
+| 3 | off | 17 / 5 | 16 / 4 |
+
+Found is catalogue events detected (37 on marmara_ko, 66 on Sındırgı).
+False is alarms with no catalogue event of their own, including second
+alarms for an event already declared.
+
+Three stations is the default:
+
+- It removes most of the false alarms and costs few events: 2 of 37 on
+  marmara_ko, both small. The median alarm delay rises from 10.4 s to 11.3 s.
+- Four stations suits the dense Marmara network but not Sındırgı, where only
+  two stations are within 100 km.
+- The dt restart stays on. It adds 12 events on each set for a few false
+  alarms.
+
+What the Sındırgı false alarms were (six stations, four of them 230–300 km
+away; an M ≥ 2.5 every two minutes on average):
+
+- 10 were second alarms for a catalogued event: a stray trigger took the
+  station's slot in the event, and its real P then paired with a far
+  station.
+- About 20 were pairs of far stations triggering in the coda of an event
+  within the previous 200 s.
+- 4 triggered on the S of an event that was otherwise missed.
+- 4 had no catalogued event within 200 s.
+
+Per-station rules did not help. A longer retrigger gate, or a coda window
+scaled by the station's magnitude, removed about two false alarms for every
+event lost.
+
 ## Comparing the two detectors
 
 ```bash
@@ -132,8 +178,10 @@ uv run --project tools python tools/compare_detectors.py --json compare.json
 uv run --project tools python tools/compare_detectors.py --only demo_ko,marmara_ko,quiet_ko
 ```
 
-Each scorecard dataset is run with both detectors, all else equal. The script
-reports two levels:
+Each scorecard dataset is run with both detectors, all else equal except each
+detector's defaults: the transformer declares from 3 stations, the 6 s
+detector from 2 (`--args '--min-stations 2'` equalises). The script reports
+two levels:
 
 - **Station level** measures each detector on its own stream:
   - recall within 0.5–8 s of P, and median latency;

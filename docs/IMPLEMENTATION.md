@@ -111,7 +111,8 @@ ayzek [options] STATION.mseed...
   --require-onset       a detector trigger also needs an STA/LTA onset
   --mag-lead S          magnitude window start, seconds before P (default 2)
   --step N              samples between detector windows (default 50 = 0.5 s)
-  --min-stations N      detections needed to declare an event (default 2)
+  --min-stations N      detections needed to declare an event (default 2;
+                        transformer: 3)
   --slack S             tolerance on the inter-station P travel time, seconds (default 3)
   --no-pick             detector only
   --no-magnitude        skip the magnitude regressor

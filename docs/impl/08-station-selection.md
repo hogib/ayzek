@@ -32,6 +32,8 @@ writes every station's outputs in processing order
 (`src/pipeline/recording.hpp`). `tools/network_subsets` reads the recording
 once and runs the network stage for every subset of stations, which gives the
 same result as running ayzek on each subset, without reprocessing waveforms.
+The recording notes the run's `--min-stations`, and the replay uses it unless
+given its own.
 
 ```bash
 build-release/app/ayzek --speed 0 --catalog $CAT --record run.tsv data/marmara/*.mseed

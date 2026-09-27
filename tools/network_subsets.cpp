@@ -21,7 +21,8 @@
 //   --min-mag M         only catalogue events with magnitude >= M (default 0)
 //   --radius KM         evaluation radius around the full network's centroid
 //   (default 250)
-//   --min-stations N    detections required to declare an event (default 2)
+//   --min-stations N    detections required to declare an event (default: as
+//                       recorded, 2 in recordings without it)
 //   --geo-sd-scale X, --geo-max-z Z, --geo-max-err-km KM
 //                       geometry locator settings, as for ayzek
 //   --assess            add the alarm assessment's counts (assess.hpp): alarms
@@ -103,6 +104,8 @@ int main(int argc, char **argv) try {
         return std::holds_alternative<StationGeometry>(m);
       }))
     base.locator = Locator::Geometry;
+  if (rec.min_stations > 0)
+    base.min_stations = rec.min_stations;
   for (int i = 2; i < argc; ++i) {
     const std::string a = argv[i];
     auto next = [&] {

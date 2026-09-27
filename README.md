@@ -182,7 +182,7 @@ tools/demo.sh all      # 7 stations, full speed
 | `--require-onset` | | a detector trigger also needs an STA/LTA onset; measured, and worse than not requiring one (`docs/impl/09-sta-lta.md`) |
 | `--mag-lead S` | 2 | magnitude window start, seconds before P |
 | `--step N` | 50 | samples between detector windows (0.5 s at 100 Hz) |
-| `--min-stations N` | 2 | station detections needed to declare an event; 3 halves the unmatched alarms in a dense network but costs warning time (`docs/impl/05-pipeline.md`) |
+| `--min-stations N` | 2; transformer 3 | station detections needed to declare an event; 3 halves the unmatched alarms in a dense network but costs warning time (`docs/impl/05-pipeline.md`); the transformer, which also fires in codas, needs 3 (`docs/impl/14-transformer.md`) |
 | `--slack S` | 3 | tolerance on the inter-station P travel time, seconds |
 | `--locate KIND` | | `geometry`: locate from the transformer's geometry head, from the trigger on; the picker is not run. `picks`: from P and S picks. Default: `geometry` when `--detector transformer` and the model has the head, else `picks` |
 | `--assess` | | diagnostic: judge every alarm earthquake, possible, misfire or unclassified from its S-P picks (runs the picker even with the geometry locator); `ASSESS` lines while running, a report section (`docs/impl/16-alarm-assessment.md`) |
