@@ -1,7 +1,7 @@
 """Exports the onset transformer detector and reference outputs for its C++ test.
 
     uv run --project tools python tools/export_transformer.py \\
-        --run ../../onset/runs/fdsn_v1 [--checkpoint best.pt] [--onset-src ../../onset/src]
+        --run ../../onset/runs/fdsn_v1 [--checkpoint best.pt] [--dt-reset 1,5]
 
 Writes (AYZW, docs/impl/02-weights.md):
 
@@ -14,8 +14,10 @@ Writes (AYZW, docs/impl/02-weights.md):
   data/fixtures/transformer.ayzw   PyTorch/scipy outputs on DEMI around the
                                    2025-11-10 M4.9, for tests/test_transformer.cpp
 
-The model code is imported from the onset checkout (`--onset-src`), not copied:
-the export and the fixtures must come from the code the run was trained with.
+The model code is a copy of onset's in `tools/reference/onset/` (provenance in
+its `__init__.py`), so the export needs only the run directory, not an onset
+checkout. The copy must match the code the run was trained with: re-copy it
+when onset's model, conditioning or filter changes.
 Run from the ayzek root; needs data/demo/DEMI.mseed.
 """
 import argparse
@@ -36,11 +38,10 @@ FS = 100.0
 RELEASE_RATIO = 0.5          # onset.metrics: re-arm below half the threshold
 
 
-def load_onset(src):
-    sys.path.insert(0, str(Path(src).resolve()))
-    from onset import conditioning, dsp  # noqa: F401
-    from onset.config import load_run_config
-    from onset.model import OnsetDetector
+def load_onset():
+    from reference.onset import conditioning, dsp  # noqa: F401
+    from reference.onset.config import load_run_config
+    from reference.onset.model import OnsetDetector
     return conditioning, dsp, load_run_config, OnsetDetector
 
 
@@ -75,15 +76,13 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--run", type=Path, required=True, help="onset run directory")
     ap.add_argument("--checkpoint", default="best.pt")
-    ap.add_argument("--onset-src", type=Path,
-                    default=Path(__file__).resolve().parents[3] / "onset" / "src")
     ap.add_argument("--threshold", type=float, default=None,
                     help="Operating threshold; default: the run's val_best.json.")
     ap.add_argument("--dt-reset", default=None, metavar="BELOW,FROM",
                     help="ayzek's default dt restart for this model; default: the "
                          "run's training rule (dt_reset_below, dt_reset_from)")
     a = ap.parse_args()
-    conditioning, dsp, load_run_config, OnsetDetector = load_onset(a.onset_src)
+    conditioning, dsp, load_run_config, OnsetDetector = load_onset()
     torch.set_grad_enabled(False)
 
     mcfg, dcfg, tcfg, _ = load_run_config(a.run)

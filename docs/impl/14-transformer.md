@@ -77,11 +77,22 @@ it, so `maybe_add_noise` gates on the same probability rule.
 ## Export and agreement
 
 ```bash
-uv run --project tools python tools/export_transformer.py --run ../../onset/runs/fdsn_v1
-meson test -C build-release test_transformer
+uv run --project tools python tools/export_transformer.py --run ../../onset/runs/fdsn_wide --dt-reset 1,5
+ninja -C build-release && meson test -C build-release test_transformer
 ```
 
-The export imports the model from the onset checkout rather than a copy.
+The export needs only the onset run directory (`config.json`, the checkpoint,
+`val_best.json`). The model code is a copy of onset's in
+`tools/reference/onset/`, from onset commit c1f02fc with only the package
+import changed; re-exporting `runs/fdsn_wide` with it gives the deployed
+`models/transformer.ayzw` and the test fixtures bit for bit. Re-copy it when
+onset's model, conditioning or filter changes. `--dt-reset` sets the restart
+level stored in the model file; without it the export takes the rule the run
+was trained with.
+
+Rebuild after pulling. A binary built before a change to the model file's
+contents ignores what it does not know: one built before `config.trigger` ran
+the current model with the old 2 s restart.
 `tests/test_transformer.cpp` compares against PyTorch and scipy on DEMI around
 the 2025-11-10 M4.9:
 
