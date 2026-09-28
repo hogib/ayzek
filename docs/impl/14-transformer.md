@@ -237,4 +237,49 @@ located (15-geometry-location.md).
 
 ## Results
 
-See the end of this file (filled from `compare_detectors.py`).
+The deployed model: onset `runs/fdsn_wide`, epoch 15, threshold 0.9630,
+restart level 1 s.
+
+**Held-out stations** (`onset evaluate --split test`, 13,544 event traces,
+283 h of noise, at 1.0 false trigger per station-hour):
+
+| | within 0.5 s | within 1 s | within 2 s | ever |
+|---|---:|---:|---:|---:|
+| first onsets | 43.2 % | 55.5 % | 61.6 % | 89.2 % |
+| second onsets in a coda (3,387) | 37.6 % | 46.5 % | 51.3 % | 53.2 % |
+
+- Median latency 0.53 s; median error of the P dated from dt 0.40 s. At a
+  second onset dt falls to a median 0.79 s, below the 1 s restart level.
+- By label source: 78.8 % within 1 s on the 9,442 traces whose P is an AIC
+  pick, 1.8 % on the 4,102 whose P is only a TauP prediction. Most of the
+  gap is the label: a TauP P is often off by more than the 1 s window.
+- By magnitude, within 1 s: M < 2 32 %, M 2–3 53 %, M 3–4 77 %, M 4–5 90 %,
+  M ≥ 5 96 %.
+
+**Continuous replays** (whole ayzek pipeline, each detector's defaults; the
+transformer declares from 3 stations, the 6 s detector from 2). Found is
+catalogue events detected; false is alarms with no catalogue event of their
+own, second alarms for one event included:
+
+| set | 6 s: found / false, median alarm | transformer: found / false, median alarm |
+|---|---|---|
+| marmara_ko (37 events) | 28 / 23, 11.5 s | 32 / 12, 10.7 s |
+| demo_ko (9 events) | 8 / 2, 17.8 s | 8 / 5, 20.3 s |
+| quiet_ko (6 h, none) | 1 alarm | 1 alarm |
+| Sındırgı M6.1, first 2 h (66 events)¹ | 39 / 7, 17.5 s | 33 / 10, 42.6 s |
+
+¹ Replayed from recordings of the station outputs, without picks and
+magnitudes; the others are full runs.
+
+- Marmara M<sub>w</sub> 6.2: alarm 9.9 s after origin, epicentre 2.1 km off
+  (6 s: 10.5 s, 10.9 km).
+- The transformer is the better detector where many stations are near the
+  source (Marmara), the 6 s detector where only two are (Sındırgı: four of
+  six stations 230–300 km away). There the 6 s detector can declare from the
+  two near stations with 7 false alarms, the transformer with 42, because it
+  also triggers in their codas; needing a third, distant station makes its
+  alarms late.
+- Combining the two (the 6 s detector confirming the transformer's
+  triggers, or either counting as a station) did not beat the better single
+  detector on both sequences: confirmation cut false alarms by about as many
+  events as it lost.

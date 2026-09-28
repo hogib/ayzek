@@ -31,6 +31,7 @@ Both scripts share the writer in `tools/ayzw.py`.
 | `models/detector_s{42,43,44}.ayzw` | the 3-seed per-window 6 s CNN-BiLSTM-attention detector | `cnn_earthquake/trained_model_perwindow_6s` |
 | `models/spicker.ayzw` | the `wave` arm of the sphase P/S picker | `sphase/runs/wave_n250.pt` |
 | `models/bandpass.ayzw` | `butter(4, [1, 45] Hz)` as `b`, `a`, and `lfilter_zi` | scipy |
+| `models/transformer.ayzw` | the onset transformer: weights, filter, operating threshold, restart level (`tools/export_transformer.py`, `14-transformer.md`) | an onset run directory |
 | `models/stations.csv` | code, lat, lon, elevation for every AFAD station | `istasyon_katalog.csv` |
 | `data/fixtures/dsp.ayzw` | six real DEMI windows: raw, cleaned, standardised | scipy |
 | `data/fixtures/detector.ayzw` | the same windows' inputs, per-seed logits, ensemble probability, and the intermediates of seed 42 | PyTorch |
