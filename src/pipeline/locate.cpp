@@ -5,13 +5,10 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <numbers>
 
 namespace ayzek::pipeline {
 
 namespace {
-constexpr double kRad = std::numbers::pi / 180.0;
-constexpr double kEarthKm = 6371.0;
 constexpr double kOneSigmaDJ = 1.15; // chi-square(2 dof, 68%) / 2
 
 struct Eval {
@@ -31,9 +28,6 @@ Eval evaluate(const std::vector<GeometryObs> &obs,
     const double d = distance_km(o.lat, o.lon, lat, lon);
     const double e = std::log(std::max(d, 1.0)) - o.log_dist;
     parts[i] = e * e / (2.0 * o.log_dist_sd * o.log_dist_sd);
-    if (o.kappa > 0)
-      parts[i] +=
-          o.kappa * (1.0 - std::cos(azimuth_rad(o.lat, o.lon, lat, lon) - o.baz));
     resid[i] = o.p_time - std::hypot(d, cfg.depth_km) / cfg.vp;
     sum += resid[i];
   }
@@ -49,48 +43,20 @@ Eval evaluate(const std::vector<GeometryObs> &obs,
 }
 } // namespace
 
-double azimuth_rad(double lat1, double lon1, double lat2, double lon2) {
-  const double p1 = lat1 * kRad, p2 = lat2 * kRad, dl = (lon2 - lon1) * kRad;
-  return std::atan2(std::sin(dl) * std::cos(p2),
-                    std::cos(p1) * std::sin(p2) -
-                        std::sin(p1) * std::cos(p2) * std::cos(dl));
-}
-
-void destination(double lat, double lon, double az, double km, double &lat2,
-                 double &lon2) {
-  const double d = km / kEarthKm, p1 = lat * kRad, l1 = lon * kRad;
-  const double p2 = std::asin(std::sin(p1) * std::cos(d) +
-                              std::cos(p1) * std::sin(d) * std::cos(az));
-  const double l2 =
-      l1 + std::atan2(std::sin(az) * std::sin(d) * std::cos(p1),
-                      std::cos(d) - std::sin(p1) * std::sin(p2));
-  lat2 = p2 / kRad;
-  lon2 = l2 / kRad;
-}
-
 std::optional<GeometryFit> locate_geometry(const std::vector<GeometryObs> &obs,
                                            const GeometryLocatorConfig &cfg,
                                            std::string *worst) {
-  const bool any_baz =
-      std::ranges::any_of(obs, [](const GeometryObs &o) { return o.kappa > 0; });
-  if (obs.empty() || (obs.size() < 2 && !any_baz))
+  if (obs.size() < kMinGeometryStations)
     return std::nullopt;
 
-  // Start: the mean of the single-station epicentres, or the centroid.
+  // Start: the station centroid.
   double lat0 = 0, lon0 = 0;
-  std::size_t n0 = 0;
   for (const auto &o : obs) {
-    if (any_baz && !(o.kappa > 0))
-      continue;
-    double la = o.lat, lo = o.lon;
-    if (any_baz)
-      destination(o.lat, o.lon, o.baz, std::exp(o.log_dist), la, lo);
-    lat0 += la;
-    lon0 += lo;
-    ++n0;
+    lat0 += o.lat;
+    lon0 += o.lon;
   }
-  lat0 /= static_cast<double>(n0);
-  lon0 /= static_cast<double>(n0);
+  lat0 /= static_cast<double>(obs.size());
+  lon0 /= static_cast<double>(obs.size());
 
   std::vector<double> parts, resid;
   struct Point {

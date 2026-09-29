@@ -4,19 +4,17 @@
 // S-P picks. A transcription of onset's `onset/locate.py`; tests/test_locate.cpp
 // holds it to the same scenarios as onset's tests/test_locate.py.
 //
-// Each station contributes a likelihood over the epicentre: its distance
-// (Gaussian in log km) and back-azimuth (von Mises), exactly the terms the head
-// was trained on, and its P time (dated by the detector from dt). The location
-// minimises
+// Each station contributes a ring of likelihood around it: its distance
+// (Gaussian in log km), exactly the term the head was trained on, and its P
+// time (dated by the detector from dt). The location minimises
 //
 //   J(x) = sum_i (log max(D_i(x), 1) - log_dist_i)^2 / (2 sd_i^2)
-//        + sum_i kappa_i (1 - cos(AZ_i(x) - baz_i))
 //        + sum_i (r_i(x) - origin(x))^2 / (2 sigma_p^2)
 //
 // where r_i is the P time minus the travel time from x in a uniform
 // half-space and origin(x) their mean. Grid search at fixed depth: +-3 deg at
-// 0.05 deg around the mean of the single-station epicentres, then +-0.1 deg at
-// 0.005 deg. One station with a back-azimuth is enough; without one, two.
+// 0.05 deg around the station centroid, then +-0.1 deg at 0.005 deg. Two rings
+// cross in two mirror points, so it takes kMinGeometryStations.
 
 #include <cstddef>
 #include <optional>
@@ -31,9 +29,11 @@ struct GeometryObs {
   double p_time = 0;      // epoch
   double log_dist = 0;    // log km
   double log_dist_sd = 1; // standard deviation of log_dist
-  double baz = 0;         // station -> event, radians clockwise from north
-  double kappa = 0;       // 0: no back-azimuth
 };
+
+// Stations the geometry locator needs: two distance rings leave a mirror
+// ambiguity, which the third resolves.
+inline constexpr std::size_t kMinGeometryStations = 3;
 
 struct GeometryFit {
   double lat, lon, origin;
@@ -52,12 +52,7 @@ struct GeometryLocatorConfig {
   double sigma_p = 0.5;  // P-time uncertainty, seconds
 };
 
-double azimuth_rad(double lat1, double lon1, double lat2, double lon2);
-// The point `km` from (lat, lon) along bearing `az`, radians.
-void destination(double lat, double lon, double az, double km, double &lat2,
-                 double &lon2);
-
-// nullopt if the stations cannot fix an epicentre. With `worst`, the station
+// nullopt with fewer than kMinGeometryStations. With `worst`, the station
 // contributing most to J at the solution.
 std::optional<GeometryFit> locate_geometry(const std::vector<GeometryObs> &obs,
                                            const GeometryLocatorConfig &cfg,

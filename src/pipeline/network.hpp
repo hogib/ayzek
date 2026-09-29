@@ -118,6 +118,9 @@ struct Event {
   double first_located_at = 0; // stream time of the first accepted location
   // Geometry locator: the latest estimate per station (common.hpp).
   std::map<std::string, StationGeometry> geometry;
+  // Geometry locator, fewer than kMinGeometryStations: the log distance per
+  // station last reported as a range, so it prints on changes only.
+  std::map<std::string, double> ranged;
   std::size_t picks_rejected = 0; // picks for this event that failed QC
   // --assess: what the last ASSESS line said, so it prints on changes only.
   int assessed_verdict = -1;
@@ -182,6 +185,12 @@ private:
          std::string *worst) const;
   [[nodiscard]] const CatalogEvent *match(const Event &e) const;
   void report_location(Event &e, double now);
+  // Geometry locator with too few stations to locate: each station's
+  // distance and its one-sd range, "42 km from DEMI (31-57 km), ...".
+  [[nodiscard]] std::string ranges(const Event &e) const;
+  // The stations of `e.geometry` with coordinates, the ones the locator uses.
+  [[nodiscard]] std::size_t geometry_stations(const Event &e) const;
+  void report_ranges(Event &e, double now);
   void report_magnitude(Event &e, double now);
 
   struct Warning {

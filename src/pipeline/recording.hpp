@@ -21,8 +21,9 @@
 //      did not trigger; absent otherwise)
 //   M  station  trigger_window  at_pick  window_start  magnitude
 //      noise_windows  declared_at  compute_ms
-//   G  station  trigger_window  p_time  since_p  log_dist  log_dist_sd  baz
-//      kappa  declared_at
+//   G  station  trigger_window  p_time  since_p  log_dist  log_dist_sd
+//      declared_at  (older recordings have baz and kappa before declared_at;
+//      they are skipped)
 
 #include "common.hpp"
 #include "network.hpp"

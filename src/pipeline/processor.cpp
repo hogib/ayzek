@@ -248,8 +248,7 @@ void Processor::on_token(const OnsetStream::Token &tok, std::uint64_t fed,
     const auto &g = *tok.geo;
     bus_.send(StationGeometry{st_.code, geo_trigger_, pos_to_epoch(geo_p_),
                               pos_to_epoch(tok.end) - pos_to_epoch(geo_p_),
-                              g.log_dist, g.log_dist_sd, g.baz, g.kappa,
-                              pos_to_epoch(fed + 1)});
+                              g.log_dist, g.log_dist_sd, pos_to_epoch(fed + 1)});
     ++stats_.geometry;
     geo_next_ = tok.end + static_cast<std::uint64_t>(cfg_.geometry_every * kFs);
     if (geo_next_ > geo_until_)

@@ -17,16 +17,13 @@ using namespace ayzek;
 
 namespace {
 
-// Largest difference between a token's geometry and the reference row
-// (log_dist, log_dist_sd, baz, kappa); relative for the sd and kappa, and the
-// back-azimuth as an angle.
+// Largest difference between a token's geometry and the reference row, whose
+// first two columns are (log_dist, log_dist_sd); relative for the sd. Fixtures
+// exported when the head also gave a back-azimuth have two more columns,
+// which are not used.
 double geo_err(const Geometry &g, std::span<const float> ref) {
-  const double pi = 3.14159265358979323846;
-  double db = std::fmod(std::abs(static_cast<double>(g.baz) - ref[2]), 2 * pi);
-  db = std::min(db, 2 * pi - db);
-  return std::max({std::abs(static_cast<double>(g.log_dist) - ref[0]),
-                   std::abs(static_cast<double>(g.log_dist_sd) / ref[1] - 1),
-                   db, std::abs(static_cast<double>(g.kappa) / ref[3] - 1)});
+  return std::max(std::abs(static_cast<double>(g.log_dist) - ref[0]),
+                  std::abs(static_cast<double>(g.log_dist_sd) / ref[1] - 1));
 }
 
 void filter(const Weights &model, const Weights &fx) {
@@ -72,6 +69,7 @@ void network(const Weights &model, const Weights &fx) {
     CHECK(geo == fx.has(with_ctx ? "net.geo_ctx" : "net.geo_null"));
     const auto gref = geo ? fx.at(with_ctx ? "net.geo_ctx" : "net.geo_null").f32()
                           : std::span<const float>{};
+    const std::size_t gw = geo ? gref.size() / p.size() : 0;
     double ep = 0, ed = 0, eg = 0;
     for (std::size_t t = 0; t < p.size(); ++t) {
       const auto o = net.step(x.subspan(t * stride * 4, stride * 4));
@@ -79,7 +77,7 @@ void network(const Weights &model, const Weights &fx) {
       ed = std::max(ed, static_cast<double>(std::abs(o.dt - dt[t])));
       CHECK(o.geo.has_value() == geo);
       if (geo)
-        eg = std::max(eg, geo_err(*o.geo, gref.subspan(t * 4, 4)));
+        eg = std::max(eg, geo_err(*o.geo, gref.subspan(t * gw, gw)));
     }
     std::println("  network, {:<10} {} tokens: max |p| err {:.2e}, max |dt| err {:.2e} s{}",
                  with_ctx ? "context" : "no context", p.size(), ep, ed,
@@ -106,6 +104,7 @@ void stream(const Weights &model, const Weights &fx) {
   const bool geo = s.config().geometry;
   CHECK(geo == fx.has("stream.geo"));
   const auto gref = geo ? fx.at("stream.geo").f32() : std::span<const float>{};
+  const std::size_t gw = geo ? gref.size() / p.size() : 0;
   double ep = 0, ed = 0, eg = 0;
   for (std::size_t t = 0; t < out.size(); ++t) {
     CHECK(out[t].end == 1000 + t * 10 + 9);
@@ -113,7 +112,7 @@ void stream(const Weights &model, const Weights &fx) {
     ed = std::max(ed, static_cast<double>(std::abs(out[t].dt - dt[t])));
     CHECK(out[t].geo.has_value() == geo);
     if (geo)
-      eg = std::max(eg, geo_err(*out[t].geo, gref.subspan(t * 4, 4)));
+      eg = std::max(eg, geo_err(*out[t].geo, gref.subspan(t * gw, gw)));
   }
   std::println("  raw counts -> tokens, {} tokens: max |p| err {:.2e}, max |dt| err {:.2e} s{}",
                out.size(), ep, ed,

@@ -164,13 +164,18 @@ OnsetTransformer::OnsetTransformer(const Weights &w) {
   if (head_.out != 2 || stem_.front().conv.cin != 4)
     throw std::runtime_error(w.path() + ": unexpected input or head width");
   if (w.has("geo_head.weight")) {
+    // Two outputs (log distance, its log-variance), or five from a model
+    // trained when the head also gave a back-azimuth: the first two are the
+    // same distance, and the direction is not used.
     geo_head_ = nn::Linear(w, "geo_head");
-    if (geo_head_.out != 5 || geo_head_.in != cfg_.d)
+    if ((geo_head_.out != 2 && geo_head_.out != 5) || geo_head_.in != cfg_.d)
       throw std::runtime_error(w.path() + ": unexpected geometry head shape");
     cfg_.geometry = true;
     if (w.has("config.geo")) {
-      const auto c = w.at("config.geo", {4}).f64();
-      for (std::size_t i = 0; i < 4; ++i)
+      const auto c = w.at("config.geo").f64();   // [2] or [4]: the first two
+      if (c.size() < 2)
+        throw std::runtime_error(w.path() + ": unexpected config.geo");
+      for (std::size_t i = 0; i < 2; ++i)
         cfg_.geo_clamp[i] = static_cast<float>(c[i]);
     }
   }
@@ -344,14 +349,11 @@ OnsetTransformer::Out OnsetTransformer::step(std::span<const float> x) {
   head_.forward(h_.data(), 1, o);
   Out out{sigmoid(o[0]), static_cast<float>(cfg_.max_dt) * sigmoid(o[1]), {}};
   if (cfg_.geometry) {
-    // log distance, its log-variance, the back-azimuth as an unnormalised
-    // (sin, cos) and the log of its concentration; clamps as in onset.
+    // log distance and its log-variance, clamped as in onset.
     float g[5];
     geo_head_.forward(h_.data(), 1, g);
     const auto &c = cfg_.geo_clamp;
-    out.geo = Geometry{g[0], std::exp(0.5f * std::clamp(g[1], c[0], c[1])),
-                       std::atan2(g[2], g[3]),
-                       std::exp(std::clamp(g[4], c[2], c[3]))};
+    out.geo = Geometry{g[0], std::exp(0.5f * std::clamp(g[1], c[0], c[1]))};
   }
   return out;
 }

@@ -37,9 +37,9 @@ struct TransformerConfig {
   std::size_t d = 0, heads = 0, layers = 0, window = 0, ctx_tokens = 0,
               ctx_layers = 0;
   bool geometry = false; // the export has the geometry head
-  // Clamps on the head's log-variance of log distance and log concentration
-  // of back-azimuth; exports without `config.geo` used these.
-  std::array<float, 4> geo_clamp{-8.0f, 6.0f, -4.0f, 8.0f};
+  // Clamps on the head's log-variance of log distance; exports without
+  // `config.geo` used these.
+  std::array<float, 2> geo_clamp{-8.0f, 6.0f};
   std::vector<std::array<std::size_t, 3>> stem; // (kernel, stride, channels)
   std::size_t stride = 0;  // samples per token
   std::size_t history = 0; // samples the stem needs for the newest token
@@ -64,13 +64,11 @@ struct TransformerAttention {
               std::size_t n, const float *bias, float *y) const;
 };
 
-// `onset.model.OnsetDetector.geometry` at one token: the distance is Gaussian
-// in log km, the back-azimuth von Mises. Only meaningful after P.
+// `onset.model.OnsetDetector.geometry` at one token: the distance, Gaussian in
+// log km. Only meaningful after P.
 struct Geometry {
   float log_dist;    // log km
   float log_dist_sd; // standard deviation of log_dist
-  float baz;         // station -> event, radians clockwise from north
-  float kappa;       // von Mises concentration of baz
 };
 
 class OnsetTransformer {

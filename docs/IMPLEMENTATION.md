@@ -24,7 +24,7 @@ describe what was built.
 | [12 · Environment](impl/12-environment.md) | the toolchain and machines every number here was produced on |
 | [13 · Claims](impl/13-claims.md) | every published number, and the command that reproduces it |
 | [14 · Streaming transformer](impl/14-transformer.md) | the onset transformer as a detector: causal band-pass, station context, token trigger with dt restarts, the picker placed on its P |
-| [15 · Location from the geometry head](impl/15-geometry-location.md) | per-station distance and back-azimuth in place of S-P picks, the locator, its settings and geo_v1's numbers |
+| [15 · Location from the geometry head](impl/15-geometry-location.md) | per-station distance in place of S-P picks, the locator, its settings and geo_v1's numbers |
 | [16 · Alarm assessment](impl/16-alarm-assessment.md) | `--assess`: S-P consistency and independent evidence to tell uncatalogued earthquakes from misfires |
 
 ## In one screen

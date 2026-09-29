@@ -10,7 +10,7 @@ three-component waveforms from several stations and, for each earthquake:
 2. declares an event when stations agree within the P travel time between them
 3. estimates the magnitude from 10 s of waveform per station
 4. locates the event by grid search: from the streaming transformer's
-   per-station distance and back-azimuth when it has the geometry head
+   per-station distance (three stations or more) when it has the geometry head
    (`docs/impl/15-geometry-location.md`), otherwise from P and S picks
 
 All inference is hand-written (no ML runtime), with NEON kernels on aarch64.

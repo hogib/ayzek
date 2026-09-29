@@ -157,8 +157,8 @@ struct MagnitudeEstimate {
   double compute_ms;
 };
 
-// Transformer with the geometry head: where the event is as seen from one
-// station (transformer.hpp, Geometry), at one token after its trigger. Sent at
+// Transformer with the geometry head: how far the event is from one station
+// (transformer.hpp, Geometry), at one token after its trigger. Sent at
 // the trigger and then every `geometry_every` seconds while the estimate
 // sharpens; the network stage keeps the latest per station and locates from
 // them (locate.hpp) instead of from S-P picks.
@@ -169,8 +169,6 @@ struct StationGeometry {
   double since_p;        // seconds from P to the end of the token
   double log_dist;       // log km
   double log_dist_sd;
-  double baz;   // station -> event, radians clockwise from north
-  double kappa; // von Mises concentration of baz
   double declared_at;
 };
 

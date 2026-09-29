@@ -261,11 +261,9 @@ void Network::on(const StationGeometry &g) {
   if (cfg_.verbose)
     Log::get().line(
         "geo", "35",
-        "{:<5} P {} +{:.1f} s  {:.0f} km (x/{:.2f})  baz {:.0f} deg "
-        "(kappa {:.1f})",
-        g.station, hms(g.p_time), g.since_p, std::exp(g.log_dist),
-        std::exp(g.log_dist_sd), std::fmod(g.baz * 180.0 / std::numbers::pi + 360.0, 360.0),
-        g.kappa);
+        "{:<5} P {} +{:.1f} s  {:.0f} km (x/{:.2f})", g.station,
+        hms(g.p_time), g.since_p, std::exp(g.log_dist),
+        std::exp(g.log_dist_sd));
   for (auto &e : events_) {
     auto it = e.detections.find(g.station);
     if (it == e.detections.end() || it->second.window_start != g.trigger_window)
@@ -277,8 +275,8 @@ void Network::on(const StationGeometry &g) {
   }
 }
 
-// Locates the event; while rms exceeds max_rms and more than two stations
-// remain, removes the station with the largest residual and relocates. The
+// Locates the event; while rms exceeds max_rms and more stations remain than
+// the locator needs (two with picks, kMinGeometryStations with geometry), removes the station with the largest residual and relocates. The
 // uniform velocity model underestimates P speed beyond ~150 km, where the first
 // arrival travels through the upper mantle, so distant stations are the ones
 // typically removed.
@@ -351,12 +349,14 @@ void Network::report_magnitude(Event &e, double now) {
 }
 
 std::optional<Location> Network::locate(const Event &e) const {
+  const std::size_t min_stations =
+      cfg_.locator == Locator::Geometry ? kMinGeometryStations : 2;
   auto relocate = [&](auto obs) -> std::optional<Location> {
     std::vector<std::string> dropped;
     for (;;) {
       std::string worst;
       auto loc = locate(obs, &worst);
-      if (!loc || !failing(*loc) || obs.size() <= 2) {
+      if (!loc || !failing(*loc) || obs.size() <= min_stations) {
         if (loc)
           loc->dropped = dropped;
         return loc;
@@ -369,8 +369,7 @@ std::optional<Location> Network::locate(const Event &e) const {
                                            : relocate(e.picks);
 }
 
-// Geometry locator (locate.hpp): each station's latest distance, back-azimuth
-// and P time. `worst` is the station contributing most to the misfit.
+// Geometry locator (locate.hpp): each station's latest distance and P time. `worst` is the station contributing most to the misfit.
 std::optional<Location>
 Network::locate(const std::map<std::string, StationGeometry> &geo,
                 std::string *worst) const {
@@ -380,7 +379,7 @@ Network::locate(const std::map<std::string, StationGeometry> &geo,
     if (it == stations_.end())
       continue;
     obs.push_back({code, it->second.lat, it->second.lon, g.p_time, g.log_dist,
-                   g.log_dist_sd * cfg_.geo_sd_scale, g.baz, g.kappa});
+                   g.log_dist_sd * cfg_.geo_sd_scale});
   }
   const auto fit = locate_geometry(
       obs, {.vp = cfg_.vp, .depth_km = cfg_.depth_km, .sigma_p = cfg_.sigma_p},
@@ -459,10 +458,55 @@ Network::locate(const std::map<std::string, Pick> &picks,
   return best;
 }
 
+std::size_t Network::geometry_stations(const Event &e) const {
+  return static_cast<std::size_t>(std::ranges::count_if(
+      e.geometry, [&](const auto &kv) { return stations_.contains(kv.first); }));
+}
+
+std::string Network::ranges(const Event &e) const {
+  std::string out;
+  for (const auto &[code, g] : e.geometry) {
+    if (!stations_.contains(code))
+      continue;
+    const double sd = g.log_dist_sd * cfg_.geo_sd_scale;
+    out += std::format("{}{:.0f} km from {} ({:.0f}-{:.0f} km)",
+                       out.empty() ? "" : ", ", std::exp(g.log_dist), code,
+                       std::exp(g.log_dist - sd), std::exp(g.log_dist + sd));
+  }
+  return out;
+}
+
+// Too few stations to locate: report how far the event is from each one
+// that has an estimate. Prints when a station joins or a distance moves by
+// more than 10%, as estimates arrive every second per station.
+void Network::report_ranges(Event &e, double now) {
+  std::map<std::string, double> now_ranged;
+  for (const auto &[code, g] : e.geometry)
+    if (stations_.contains(code))
+      now_ranged[code] = g.log_dist;
+  if (now_ranged.empty())
+    return;
+  bool same = now_ranged.size() == e.ranged.size();
+  for (const auto &[code, ld] : now_ranged) {
+    auto it = e.ranged.find(code);
+    same = same && it != e.ranged.end() && std::abs(it->second - ld) <= 0.1;
+  }
+  if (same)
+    return;
+  e.ranged = std::move(now_ranged);
+  Log::get().line("RANGE", "1;36", "#{:<3} {}  {}; {} of {} stations to locate",
+                  e.id, hms(now), ranges(e), e.ranged.size(),
+                  kMinGeometryStations);
+}
+
 void Network::report_location(Event &e, double now) {
   auto loc = locate(e);
-  if (!loc)
+  if (!loc) {
+    // The geometry locator refuses only for too few stations.
+    if (cfg_.locator == Locator::Geometry && !e.location)
+      report_ranges(e, now);
     return;
+  }
   if (failing(*loc) || loc->err_km > cfg_.geo_max_err_km) {
     if (cfg_.verbose)
       Log::get().line("LOCATE", "33",
@@ -649,6 +693,9 @@ void Network::report(double t_first, double t_last) const {
       headline +=
           std::format(" at {:.3f}N {:.3f}E, origin {} UTC", e->location->lat,
                       e->location->lon, hms(e->location->origin));
+    else if (cfg_.locator == Locator::Geometry && geometry_stations(*e) > 0)
+      headline += std::format(", not located ({} of {} stations)",
+                              geometry_stations(*e), kMinGeometryStations);
     else
       headline += ", not located";
     log.plain(false, "");
@@ -683,6 +730,8 @@ void Network::report(double t_first, double t_last) const {
                 e->first_located_at - e->declared_at,
                 cfg_.locator == Locator::Geometry ? "transformer geometry"
                                                   : "P and S picks");
+    else if (cfg_.locator == Locator::Geometry && geometry_stations(*e) > 0)
+      log.plain(false, "  distance   {}", ranges(*e));
 
     const double origin =
         c ? c->time : (e->location ? e->location->origin : NAN);

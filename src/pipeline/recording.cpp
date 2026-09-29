@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 namespace ayzek::pipeline {
 
@@ -37,10 +38,9 @@ void Recorder::write(const Message &m) {
                         g->magnitude, g->noise_windows, g->declared_at,
                         g->compute_ms);
   } else if (auto *o = std::get_if<StationGeometry>(&m)) {
-    out_ << std::format("G\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
-                        o->station, o->trigger_window, o->p_time, o->since_p,
-                        o->log_dist, o->log_dist_sd, o->baz, o->kappa,
-                        o->declared_at);
+    out_ << std::format("G\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", o->station,
+                        o->trigger_window, o->p_time, o->since_p, o->log_dist,
+                        o->log_dist_sd, o->declared_at);
   }
 }
 
@@ -107,7 +107,16 @@ Recording Recording::load(const std::string &path) {
     } else if (tag == "G") {
       StationGeometry o;
       f >> o.station >> o.trigger_window >> o.p_time >> o.since_p >>
-          o.log_dist >> o.log_dist_sd >> o.baz >> o.kappa >> o.declared_at;
+          o.log_dist >> o.log_dist_sd;
+      // declared_at is last: the 7th field, or the 9th in recordings made
+      // when the head also gave a back-azimuth and its concentration.
+      std::vector<double> rest;
+      for (double v; f >> v;)
+        rest.push_back(v);
+      if (rest.size() != 1 && rest.size() != 3)
+        throw std::runtime_error(
+            std::format("{}:{}: malformed record", path, lineno));
+      o.declared_at = rest.back();
       r.messages.emplace_back(std::move(o));
     } else {
       throw std::runtime_error(

@@ -229,9 +229,8 @@ class OnsetDetector(nn.Module):
         self.ln_out = nn.LayerNorm(d)
         self.head = nn.Linear(d, 2)
         if cfg.geometry:
-            # log distance, its log-variance, a back-azimuth direction (sin,
-            # cos, unnormalised) and the log of its von Mises concentration.
-            self.geo_head = nn.Linear(d, 5)
+            # log distance and its log-variance.
+            self.geo_head = nn.Linear(d, 2)
         self.register_buffer("slopes", alibi_slopes(cfg.n_heads), persistent=False)
 
     def encode_context(self, ctx, has_ctx, batch_size: int):
@@ -254,7 +253,8 @@ class OnsetDetector(nn.Module):
         return out[..., 0], self.cfg.max_dt_s * torch.sigmoid(out[..., 1])
 
     def geometry(self, h):
-        """Final hidden state -> where the event is, as seen from this station.
+        """Final hidden state -> how far away the event is, as seen from this
+        station: a Gaussian in log km.
 
         Only meaningful after P. Before S the model can only infer distance from
         the P wave itself; once S is inside its lookback it can in effect read
@@ -263,8 +263,7 @@ class OnsetDetector(nn.Module):
         with torch.autocast(h.device.type, enabled=False):
             g = self.geo_head(self.ln_out(h.float()))
         min_lv = 2.0 * math.log(self.cfg.geo_min_sd)
-        return {"log_dist": g[..., 0], "log_dist_var": g[..., 1].clamp(min_lv, 6.0),
-                "baz_vec": g[..., 2:4], "baz_log_kappa": g[..., 4].clamp(-4.0, 8.0)}
+        return {"log_dist": g[..., 0], "log_dist_var": g[..., 1].clamp(min_lv, 6.0)}
 
     def forward(self, x, ctx=None, has_ctx=None):
         """

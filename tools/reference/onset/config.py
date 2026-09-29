@@ -35,8 +35,8 @@ class ModelConfig:
     dropout: float = 0.1
     max_dt_s: float = 10.0
     sample_rate: float = SAMPLE_RATE
-    # 1 adds the geometry head: epicentral distance and back-azimuth, each
-    # with its own uncertainty, for every token after P (model.py).
+    # 1 adds the geometry head: epicentral distance with its own
+    # uncertainty, for every token after P (model.py).
     geometry: int = 0
     # Smallest standard deviation of log distance the geometry head may state:
     # 0.1 is about 10% in distance. Without a floor the head keeps shrinking

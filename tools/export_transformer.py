@@ -46,13 +46,9 @@ def load_onset():
 
 
 def geometry(out):
-    """(T, 4) float32: log distance, its sd, back-azimuth (radians, clockwise
-    from north) and von Mises concentration, as ayzek's `Geometry`."""
-    v = out["baz_vec"][0].float()
+    """(T, 2) float32: log distance and its sd, as ayzek's `Geometry`."""
     return torch.stack([out["log_dist"][0].float(),
-                        torch.exp(0.5 * out["log_dist_var"][0].float()),
-                        torch.atan2(v[:, 0], v[:, 1]),
-                        torch.exp(out["baz_log_kappa"][0].float())], dim=1).numpy()
+                        torch.exp(0.5 * out["log_dist_var"][0].float())], dim=1).numpy()
 
 
 def demi(t0, seconds):
@@ -103,10 +99,10 @@ def main():
                                          dcfg.fallback_scale_s, thr, RELEASE_RATIO,
                                          mcfg.sample_rate], np.float64)
     if mcfg.geometry:
-        # The geometry head's output clamps (onset model.geometry): log-variance
-        # of log distance, then log concentration of back-azimuth.
+        # The geometry head's output clamp (onset model.geometry): the
+        # log-variance of log distance.
         tensors["config.geo"] = np.array([2 * np.log(getattr(mcfg, "geo_min_sd", np.exp(-4.0))),
-                                          6.0, -4.0, 8.0], np.float64)
+                                          6.0], np.float64)
     # ayzek's default dt restart: [below, from, tokens] (trigger.hpp).
     below, frm = (map(float, a.dt_reset.split(",")) if a.dt_reset else
                   (getattr(tcfg, "dt_reset_below", 2.0), getattr(tcfg, "dt_reset_from", 5.0)))
@@ -190,14 +186,10 @@ def main():
         true_km = 2 * 6371.0 * np.arcsin(np.sqrt(
             np.sin((elat - slat) / 2) ** 2
             + np.cos(slat) * np.cos(elat) * np.sin((elon - slon) / 2) ** 2))
-        true_baz = np.degrees(np.arctan2(
-            np.sin(elon - slon) * np.cos(elat),
-            np.cos(slat) * np.sin(elat) - np.sin(slat) * np.cos(elat) * np.cos(elon - slon))) % 360
-        print(f"  DEMI to the AFAD epicentre: {true_km:.0f} km, baz {true_baz:.0f} deg")
+        print(f"  DEMI to the AFAD epicentre: {true_km:.0f} km")
         for k in (j, min(j + 50, len(g) - 1), min(j + 100, len(g) - 1)):
             print(f"  geometry {(k - j) / 10:4.1f} s after the trigger: "
-                  f"{np.exp(g[k, 0]):.0f} km (x/{np.exp(g[k, 1]):.2f}), "
-                  f"baz {np.degrees(g[k, 2]) % 360:.0f} deg (kappa {g[k, 3]:.1f})")
+                  f"{np.exp(g[k, 0]):.0f} km (x/{np.exp(g[k, 1]):.2f})")
 
 
 if __name__ == "__main__":
