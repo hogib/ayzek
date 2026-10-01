@@ -113,6 +113,10 @@ Recording Recording::load(const std::string &path) {
       std::vector<double> rest;
       for (double v; f >> v;)
         rest.push_back(v);
+      if (!f.eof())
+        throw std::runtime_error(
+            std::format("{}:{}: malformed record", path, lineno));
+      f.clear(); // the loop ends by failing at the end of the line
       if (rest.size() != 1 && rest.size() != 3)
         throw std::runtime_error(
             std::format("{}:{}: malformed record", path, lineno));
