@@ -71,6 +71,197 @@ bool Network::compatible(const Detection &a, const Detection &b) const {
          km / cfg_.vp + cfg_.slack_seconds;
 }
 
+double Network::one_source_rms(
+    const std::vector<std::pair<std::string, double>> &obs) const {
+  // P dates (window start + 3.5 s) against one epicentre at fixed depth,
+  // within merge_radius_deg of the stations, and its least-squares origin;
+  // grid search as for the picks locator.
+  struct Xy {
+    double lat, lon, t;
+  };
+  std::vector<Xy> x;
+  double clat = 0, clon = 0;
+  for (const auto &[code, t] : obs) {
+    const auto &s = stations_.at(code);
+    x.push_back({s.lat, s.lon, t});
+    clat += s.lat;
+    clon += s.lon;
+  }
+  clat /= static_cast<double>(x.size());
+  clon /= static_cast<double>(x.size());
+  std::vector<double> r(x.size());
+  auto rms = [&](double lat, double lon) {
+    double sum = 0, sq = 0;
+    for (std::size_t i = 0; i < x.size(); ++i) {
+      r[i] = x[i].t - std::hypot(distance_km(lat, lon, x[i].lat, x[i].lon),
+                                 cfg_.depth_km) /
+                          cfg_.vp;
+      sum += r[i];
+    }
+    const double origin = sum / static_cast<double>(r.size());
+    for (double v : r)
+      sq += (v - origin) * (v - origin);
+    return std::sqrt(sq / static_cast<double>(r.size()));
+  };
+  double best = INFINITY, blat = clat, blon = clon;
+  auto search = [&](double lat0, double lon0, double half, double step) {
+    const auto n = static_cast<long>(std::floor(2 * half / step + 1e-9)) + 1;
+    for (long a = 0; a < n; ++a)
+      for (long b = 0; b < n; ++b) {
+        const double la = lat0 - half + static_cast<double>(a) * step;
+        const double lo = lon0 - half + static_cast<double>(b) * step;
+        if (const double m = rms(la, lo); m < best)
+          best = m, blat = la, blon = lo;
+      }
+  };
+  search(clat, clon, cfg_.merge_radius_deg, 0.05);
+  search(blat, blon, 0.075, 0.005);
+  return best;
+}
+
+// `e2` is about to be declared. If its P times and those of a recently
+// declared event fit one source, it is that event seen again: a station that
+// triggered twice within one earthquake (once early or on its coda, once on
+// its P) splits the stations between two events. Then e2's detections join
+// the declared event and e2 is not declared.
+//
+// One detection per station: where both events have one, each choice is
+// tried. At most one detection may be left out (the stray trigger), and the
+// fit needs merge_min_fit stations, at least two of them e2's own and one the
+// declared event's. A declared event whose own four or more P times fit one
+// source loses at most one detection to the merge; so two real earthquakes
+// seconds apart, each consistent on its own, are not merged.
+bool Network::merge_duplicate(Event &e2) {
+  auto p_date = [](const Detection &d) { return d.window_start + 3.5; };
+  for (const auto &[code, _] : e2.detections)
+    if (!stations_.contains(code))
+      return false;
+  const double t2 =
+      std::ranges::min(e2.detections | std::views::values, {}, p_date)
+          .window_start;
+  for (auto &e1 : events_ | std::views::reverse) {
+    if (!e1.declared || &e1 == &e2)
+      continue;
+    const double t1 =
+        std::ranges::min(e1.detections | std::views::values, {}, p_date)
+            .window_start;
+    if (std::abs(t2 - t1) > cfg_.merge_window)
+      continue;
+    if (std::ranges::any_of(e1.detections, [&](const auto &kv) {
+          return !stations_.contains(kv.first);
+        }))
+      continue;
+    std::vector<std::string> shared;
+    for (const auto &[code, _] : e2.detections)
+      if (e1.detections.contains(code))
+        shared.push_back(code);
+    // A declared event whose own four or more P times fit one source is an
+    // earthquake in its own right: the merge may drop at most one of its
+    // detections (the stray). Three always fit, so they say nothing.
+    std::size_t max_removed = e1.detections.size();
+    if (e1.detections.size() >= 4) {
+      std::vector<std::pair<std::string, double>> own1;
+      for (const auto &[code, d] : e1.detections)
+        own1.emplace_back(code, p_date(d));
+      if (one_source_rms(own1) <= cfg_.merge_rms)
+        max_removed = 1;
+    }
+    if (shared.size() > 4)
+      continue;
+    struct Obs {
+      std::string code;
+      double t;
+      bool own; // e2's
+    };
+    for (unsigned combo = 0; combo < (1u << shared.size()); ++combo) {
+      std::vector<Obs> obs;
+      for (const auto &[code, d] : e1.detections) {
+        const auto k = std::ranges::find(shared, code) - shared.begin();
+        if (k == static_cast<long>(shared.size()) || !(combo >> k & 1u))
+          obs.push_back({code, p_date(d), false});
+      }
+      for (const auto &[code, d] : e2.detections) {
+        const auto k = std::ranges::find(shared, code) - shared.begin();
+        if (k == static_cast<long>(shared.size()) || (combo >> k & 1u))
+          obs.push_back({code, p_date(d), true});
+      }
+      // -1: all of them; i: all but obs[i].
+      for (long out = -1; out < static_cast<long>(obs.size()); ++out) {
+        std::vector<std::pair<std::string, double>> fit;
+        std::size_t own = 0, theirs = 0;
+        const std::size_t removed =
+            static_cast<std::size_t>(std::ranges::count_if(
+                shared, [&](const std::string &c) {
+                  return combo >> (std::ranges::find(shared, c) -
+                                   shared.begin()) & 1u;
+                })) +
+            (out >= 0 && !obs[out].own ? 1 : 0);
+        if (removed > max_removed)
+          continue;
+        for (long i = 0; i < static_cast<long>(obs.size()); ++i) {
+          if (i == out)
+            continue;
+          fit.emplace_back(obs[i].code, obs[i].t);
+          (obs[i].own ? own : theirs) += 1;
+        }
+        if (fit.size() < cfg_.merge_min_fit || own < 2 || theirs < 1)
+          continue;
+        const double rms = one_source_rms(fit);
+        if (rms > cfg_.merge_rms)
+          continue;
+        // Merge: e1 keeps the fitted detections, with whatever it knew from
+        // their stations (geometry, magnitude, picks); the rest is dropped.
+        std::string moved;
+        for (long i = 0; i < static_cast<long>(obs.size()); ++i) {
+          const auto &o = obs[i];
+          if (i == out) {
+            if (!o.own) {
+              e1.detections.erase(o.code);
+              e1.geometry.erase(o.code);
+              e1.magnitudes.erase(o.code);
+              e1.picks.erase(o.code);
+            }
+            continue;
+          }
+          if (!o.own)
+            continue;
+          e1.detections.insert_or_assign(o.code, e2.detections.at(o.code));
+          if (auto it = e2.geometry.find(o.code); it != e2.geometry.end())
+            e1.geometry.insert_or_assign(o.code, it->second);
+          else
+            e1.geometry.erase(o.code);
+          if (auto it = e2.magnitudes.find(o.code); it != e2.magnitudes.end())
+            e1.magnitudes.insert_or_assign(o.code, it->second);
+          else
+            e1.magnitudes.erase(o.code);
+          if (auto it = e2.picks.find(o.code); it != e2.picks.end())
+            e1.picks.insert_or_assign(o.code, it->second);
+          else
+            e1.picks.erase(o.code);
+          moved += (moved.empty() ? "" : ", ") + o.code;
+        }
+        const double now =
+            std::ranges::max(e2.detections | std::views::values, {},
+                             &Detection::declared_at)
+                .declared_at;
+        Log::get().line("MERGE", "33",
+                        "#{:<3} {}  {} joined: one source with its P times, "
+                        "rms {:.2f} s{}",
+                        e1.id, hms(now), moved, rms,
+                        out >= 0 ? std::format(", {} left out", obs[out].code)
+                                 : std::string());
+        Event &kept = e1;
+        std::erase_if(events_, [&](const Event &e) { return &e == &e2; });
+        report_magnitude(kept, now);
+        if (cfg_.locator == Locator::Geometry)
+          report_location(kept, now);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void Network::on(const Detection &d) {
   ++triggers_[d.station];
   if (std::isnan(first_seen_))
@@ -101,6 +292,9 @@ void Network::on(const Detection &d) {
                     d.station, d.probability, hms(d.window_start),
                     d.compute_ms, d.restart ? "  new onset in a coda" : "");
 
+  // The first compatible event, or with merge_duplicates the one with the
+  // most stations (declared first): a stray early trigger at one station must
+  // not keep the rest of an earthquake's stations in an event of its own.
   Event *ev = nullptr;
   for (auto &e : events_) {
     if (e.detections.contains(d.station))
@@ -108,8 +302,13 @@ void Network::on(const Detection &d) {
     if (std::ranges::all_of(
             e.detections | std::views::values,
             [&](const Detection &o) { return compatible(o, d); })) {
-      ev = &e;
-      break;
+      if (!cfg_.merge_duplicates) {
+        ev = &e;
+        break;
+      }
+      if (!ev || std::pair(e.declared, e.detections.size()) >
+                     std::pair(ev->declared, ev->detections.size()))
+        ev = &e;
     }
   }
   if (!ev) {
@@ -118,6 +317,9 @@ void Network::on(const Detection &d) {
   }
   ev->detections.emplace(d.station, d);
 
+  if (cfg_.merge_duplicates && !ev->declared &&
+      ev->detections.size() >= cfg_.min_stations && merge_duplicate(*ev))
+    return;
   if (!ev->declared && ev->detections.size() >= cfg_.min_stations) {
     ev->declared = true;
     ev->id = next_id_++;

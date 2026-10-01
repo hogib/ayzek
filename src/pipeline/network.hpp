@@ -60,6 +60,19 @@ struct NetworkConfig {
       3.0; // tolerance added to the inter-station P travel time
   double coda_seconds = 40.0; // later detections at a station within this time
                               // belong to the same event
+  // One earthquake, one alarm (network.cpp, Network::on(Detection)): a
+  // detection compatible with several events joins the one with the most
+  // stations, and an event about to be declared is merged into a declared one
+  // when their P times fit one source. Needed when stations may trigger twice
+  // within an event (the transformer's 5 s retrigger gap).
+  bool merge_duplicates = false;
+  double merge_rms = 1.0;     // P-time rms of one source for both, seconds
+  std::size_t merge_min_fit = 4; // stations in that fit
+  // The fit's source within this many degrees of the stations: from far
+  // outside the network P crosses it as a plane wave, and almost any mix of
+  // two events' times fits one.
+  double merge_radius_deg = 1.0;
+  double merge_window = 30.0; // how far back a declared event is a candidate
   double vp = 6.0, vs = 3.5;  // km/s, uniform half-space
   double depth_km = 10.0;     // fixed during location
   double max_rms = 2.0;       // maximum accepted location rms, seconds
@@ -172,6 +185,12 @@ public:
 
 private:
   [[nodiscard]] bool compatible(const Detection &a, const Detection &b) const;
+  // merge_duplicates: the P-time rms of the best single source for (station,
+  // P date) pairs, and the merge of an event about to be declared into a
+  // declared one it duplicates (true if merged; e2 is then gone).
+  [[nodiscard]] double
+  one_source_rms(const std::vector<std::pair<std::string, double>> &obs) const;
+  bool merge_duplicate(Event &e2);
   [[nodiscard]] std::optional<Location> locate(const Event &e) const;
   // P rms over max_rms, or (geometry) a station's distance over geo_max_dist_z.
   [[nodiscard]] bool failing(const Location &l) const {

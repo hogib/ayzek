@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <limits>
 #include <print>
 #include <vector>
 
@@ -165,6 +166,54 @@ void ranges_until_three() {
   CHECK(distance_km(e.location->lat, e.location->lon, kEpiLat, kEpiLon) < 1.0);
 }
 
+// merge_duplicates: a stray trigger at D 11.6 s before the earthquake joins
+// A and B in an event of its own; D's real trigger then pairs with C in a
+// second one. Both are one earthquake, so the second is merged into the first
+// and D's stray trigger is dropped. Two real earthquakes 12 s apart at the
+// same stations are not merged.
+void merge_duplicates() {
+  std::map<std::string, StationInfo> st;
+  for (const auto &s : kStations)
+    st[s.code] = {s.lat, s.lon};
+  auto p_at = [](const char *code, double origin) {
+    for (const auto &s : kStations)
+      if (std::string(s.code) == code)
+        return origin + std::hypot(distance_km(s.lat, s.lon, kEpiLat, kEpiLon),
+                                   10.0) / 6.0;
+    return std::numeric_limits<double>::quiet_NaN();
+  };
+  auto det = [](const char *code, double p, bool restart) {
+    return Detection{code, p - 3.5, p + 0.5, 0.99f, 0.0, restart};
+  };
+  for (const bool merge : {false, true}) {
+    NetworkConfig cfg;
+    cfg.min_stations = 2;
+    cfg.merge_duplicates = merge;
+    Network net(st, cfg);
+    net.on(det("D", p_at("D", kOrigin) - 11.6, false));
+    net.on(det("A", p_at("A", kOrigin), false));
+    net.on(det("C", p_at("C", kOrigin), false));
+    net.on(det("B", p_at("B", kOrigin), false));
+    net.on(det("D", p_at("D", kOrigin), true));
+    CHECK(net.declared_count() == (merge ? 1u : 2u));
+    if (merge) {
+      const auto &e = net.events().front();
+      CHECK(e.detections.size() == 4);
+      CHECK(std::abs(e.detections.at("D").window_start + 3.5 -
+                     p_at("D", kOrigin)) < 1e-9);
+    }
+  }
+  NetworkConfig cfg;
+  cfg.min_stations = 3;
+  cfg.merge_duplicates = true;
+  Network net(st, cfg);
+  for (const char *c : {"A", "D", "C", "B"})
+    net.on(det(c, p_at(c, kOrigin), false));
+  for (const char *c : {"A", "C", "B"})
+    net.on(det(c, p_at(c, kOrigin + 12.0), true));
+  CHECK(net.declared_count() == 2);
+}
+
 // A re-trigger within the coda window is absorbed as coda, unless it is a
 // transformer dt restart: two of those declare a second event.
 void restart_is_not_coda() {
@@ -194,6 +243,7 @@ int main() {
   error_radius();
   network();
   ranges_until_three();
+  merge_duplicates();
   restart_is_not_coda();
   std::println("geometry locator agrees with onset.locate");
 }

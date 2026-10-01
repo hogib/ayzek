@@ -43,8 +43,46 @@ therefore measures the detection stage and those two choices together.
      no rising edge; a restarted dt says it is a new event, not the coda of
      the old one.
 
-   The 15 s minimum between triggers applies to both. The other detectors'
-   trigger rules are unchanged. A detection from a dt restart is flagged
+   A minimum of 5 s between triggers (by their P dates) applies to both;
+   `--retrigger S` changes it. It was 15 s, as for the other detectors, but a
+   restart already waits for dt to reach 5 s, so the longer gap only dropped
+   aftershocks 5–15 s behind the last event: on marmara_ko, 5 s took the
+   arrivals caught within 1 s from 43% to 49% and the median epicentre error
+   from 10.1 to 7.8 km. The other detectors keep 15 s and their trigger
+   rules are unchanged.
+
+   **One earthquake, one alarm.** With 5 s a station can trigger twice in
+   one earthquake (early, on a stray or a coda, and again on its P), and the
+   network split such an earthquake into two alarms: 21 unmatched alarms on
+   marmara_ko instead of 14, of which 6 were a second alarm for a catalogued
+   event. So with the transformer the network stage
+   (`NetworkConfig::merge_duplicates`, off with `--no-merge`):
+   - lets a detection that fits several events join the declared one with
+     the most stations, not the oldest, so a stray trigger cannot hold the
+     rest of an earthquake's stations in an event of its own;
+   - before declaring an event, tries it against the events declared in the
+     last 30 s: if its P dates and the declared event's fit one source within
+     1° of the stations (one detection per station, each choice tried, at
+     most one left out, four stations or more, rms ≤ 1 s), it joins that
+     event instead of raising a second alarm (a `MERGE` line). A declared
+     event whose own four or more P dates fit one source loses at most one
+     detection to this, so two real earthquakes seconds apart stay two.
+
+   | marmara_ko | gap 15 s | gap 5 s | gap 5 s, merge |
+   |---|---|---|---|
+   | catalogued events alarmed | 34/37 | 34/37 | 35/37 |
+   | unmatched alarms | 14 | 21 | 17 |
+   | station arrivals alarmed before S | 240/272 | 245/272 | 256/280 |
+
+   Against 15 s, the gap with the merge adds 4 unmatched alarms and removes
+   1. The 4, by their waveforms
+   (`data/runs/marmara_gap5_alarms`): two are earthquakes the catalogue
+   does not list (10:11:17, 10:16:12), one a second real event 12 s after an
+   uncatalogued one that took the catalogue match (10:26:17), and one a
+   duplicate of the ML 2.2 at 10:24:10 that no fit can merge (its first
+   alarm is mostly stray triggers). 10:16:37 is no longer raised.
+   `tools/network_subsets --merge --log` re-runs the network stage from a
+   recording with the merge and prints its log. A detection from a dt restart is flagged
    (`Detection::restart`), and the network stage does not absorb it as coda
    of the event the station last detected: it can join or declare a new
    event, as an aftershock inside the 40 s coda window should.

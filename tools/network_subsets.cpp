@@ -25,6 +25,10 @@
 //                       recorded, 2 in recordings without it)
 //   --geo-sd-scale X, --geo-max-z Z, --geo-max-err-km KM
 //                       geometry locator settings, as for ayzek
+//   --merge             merge duplicate events (NetworkConfig::merge_duplicates);
+//                       --merge-min N, --merge-rms S, --merge-radius DEG set
+//                       its fit
+//   --log               print the network stage's log (ALARM, MERGE, ...)
 //   --assess            add the alarm assessment's counts (assess.hpp): alarms
 //                       judged earthquake or possible, catalogued and not
 //                       (the recording must hold picks: ayzek --assess --record)
@@ -95,6 +99,7 @@ int main(int argc, char **argv) try {
   }
   const auto rec = Recording::load(argv[1]);
   std::string catalog_path;
+  bool log = false;
   std::size_t min_k = 2, max_k = rec.stations.size();
   double min_mag = 0;
   NetworkConfig base;
@@ -125,6 +130,16 @@ int main(int argc, char **argv) try {
       base.catalog_radius_km = std::stod(next());
     else if (a == "--min-stations")
       base.min_stations = std::stoul(next());
+    else if (a == "--merge")
+      base.merge_duplicates = true;
+    else if (a == "--merge-min")
+      base.merge_min_fit = std::stoul(next());
+    else if (a == "--merge-rms")
+      base.merge_rms = std::stod(next());
+    else if (a == "--merge-radius")
+      base.merge_radius_deg = std::stod(next());
+    else if (a == "--log")
+      log = true;
     else if (a == "--assess")
       base.assess = true;
     else if (a == "--geo-sd-scale")
@@ -172,7 +187,7 @@ int main(int argc, char **argv) try {
                n, base.catalog.size(), main_event->type, main_event->magnitude,
                hms(main_event->time), min_k, max_k);
 
-  Log::get().quiet = true;
+  Log::get().quiet = !log;
   std::vector<Row> rows;
   for (std::uint32_t mask = 1; mask < (std::uint32_t{1} << n); ++mask) {
     const auto k = static_cast<std::size_t>(std::popcount(mask));

@@ -73,6 +73,11 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
                         last trigger: a new onset in the coda of the last one
                         (default: the model's, config.trigger; 2,5 without)
   --no-dt-reset         transformer: rising edges only
+  --retrigger S         minimum time between a station's triggers (default 15;
+                        transformer: 5, so an aftershock 5-15 s into the coda
+                        of the last event can still trigger)
+  --no-merge            transformer: do not merge an event into a declared one
+                        whose P times it fits (one earthquake, one alarm)
   --pick-anywhere       transformer: let the picker search the whole 60 s window
                         (default: P within 3 s of the transformer's P, S before
                         the station's next trigger)
@@ -170,7 +175,7 @@ int main(int argc, char **argv) try {
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
               record_path, transformer_path, assess_csv;
   bool threshold_set = false, release_set = false, min_stations_set = false,
-       dt_reset_set = false;
+       dt_reset_set = false, retrigger_set = false, no_merge = false;
   std::string locate_kind; // "", "geometry" or "picks"
   double speed = 1.0;
   ProcessorConfig pcfg;
@@ -207,6 +212,10 @@ int main(int argc, char **argv) try {
       pcfg.dt_reset = true, dt_reset_set = true;
     } else if (a == "--no-dt-reset")
       pcfg.dt_reset = false, dt_reset_set = true;
+    else if (a == "--retrigger")
+      pcfg.retrigger_seconds = std::stod(next()), retrigger_set = true;
+    else if (a == "--no-merge")
+      no_merge = true;
     else if (a == "--pick-anywhere")
       pcfg.pick_on_onset = false;
     else if (a == "--trigger-windows")
@@ -349,6 +358,15 @@ int main(int argc, char **argv) try {
     }
     pcfg.anchor = false;
     pcfg.require_onset = false;
+    // A dt restart dates its own P, so a short gap between triggers is safe
+    // and keeps aftershocks close behind the last event: on onset's wide
+    // validation set, second onsets within 1 s go from 38% to 59% at 15 -> 5
+    // s, for a few more triggers in codas.
+    if (!retrigger_set)
+      pcfg.retrigger_seconds = 5.0;
+    // With triggers 5 s apart a station can trigger twice in one earthquake,
+    // which split events into duplicate alarms (14-transformer.md).
+    ncfg.merge_duplicates = !no_merge;
     // Two stations are too easy to satisfy for a detector that also fires in
     // codas (dt restarts): on the Sindirgi and Marmara sequences two far
     // stations ringing together made most of the false alarms, and a third

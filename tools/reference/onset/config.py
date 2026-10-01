@@ -130,7 +130,12 @@ class TrainConfig:
     dt_reset_below: float = 1.0
     dt_reset_from: float = 5.0
     dt_reset_tokens: int = 2
-    min_trigger_gap_s: float = 15.0
+    # 5 s, as ayzek runs the transformer. A restart already waits for dt to
+    # reach dt_reset_from, so a longer gap only drops aftershocks the restart
+    # caught: at 15 s, second onsets 6-15 s after the first were caught 4-9%
+    # of the time against 59% overall at 5 s (fdsn_sp_1, fdsn_wide_x val).
+    # Runs record their own value in config.json; older runs used 15.
+    min_trigger_gap_s: float = 5.0
     num_workers: int = 6
     seed: int = 42
 
