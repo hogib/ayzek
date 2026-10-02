@@ -90,7 +90,10 @@ def main():
 
     # --- weights ------------------------------------------------------------
     tensors = {k: v.numpy().astype(np.float32) for k, v in model.state_dict().items()
-               if not k.startswith("context.stem.")}          # the shared stem, once
+               if not k.startswith(("context.stem.", "dt_head."))}
+    # The shared stem is written once; the dt-bin head (ModelConfig.dt_bins) is
+    # a training aid only: its cross-entropy shapes the shared representation
+    # and so the dt regression, and ayzek's trigger reads dt, not the bins.
     tensors["config.ints"] = np.array([mcfg.d_model, mcfg.n_heads, mcfg.n_layers,
                                        mcfg.window_tokens, mcfg.context_tokens,
                                        mcfg.context_layers], np.int64)

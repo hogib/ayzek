@@ -321,3 +321,36 @@ magnitudes; the others are full runs.
   triggers, or either counting as a station) did not beat the better single
   detector on both sequences: confirmation cut false alarms by about as many
   events as it lost.
+
+### The binned dt head (`runs/fdsn_sp_dtbins_1`)
+
+The deployed model is now onset `runs/fdsn_sp_dtbins_1`: the distance-only
+model trained with an auxiliary classifier over dt (bins at 0.5, 1, 2 and
+5 s). That head is used only in training and is not exported
+(`export_transformer.py` drops the `dt_head.` tensors); the C++ model is
+unchanged. Exported with the level restart rule and the threshold of the
+same rule on validation noise:
+
+```bash
+uv run --project tools python tools/export_transformer.py --run ../../onset/runs/fdsn_sp_dtbins_1 --threshold 0.968322
+```
+
+On held-out stations, within 0.5 s / 1 s of the AIC-labelled first onset, it
+gives 74.0 % / 80.8 % against 68.8 % / 75.0 % for `runs/fdsn_sp_1`, with
+27.8 coda triggers per 100 events against 29.3. Replays against the
+previous model (`tools/compare_detectors.py`, outputs in
+`data/runs/compare_dtbins/`):
+
+| set | previous | binned dt head |
+|---|---|---|
+| marmara_ko: events found / false | 35 / 17 | 35 / 17 |
+| marmara_ko: station P within 1 s / 8 s | 49 % / 64 % | 50 % / 64 % |
+| marmara_ko: median epicentre error; within 10 / 30 km | 7.6 km; 57 % / 74 % | 6.2 km; 69 % / 80 % |
+| marmara_ko: regressor magnitude error | 0.39 | 0.37 |
+| demo_ko: events found / false | 7 / 4 | 8 / 4 |
+| demo_ko: median epicentre error | 2.1 km | 2.3 km |
+| quiet_ko (6 h): false alarms | 1 | 1 |
+
+Detection is unchanged at the network level; the gain is in the dating of
+the P, which the locator uses, and so in the epicentres.
+

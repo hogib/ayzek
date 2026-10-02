@@ -12,6 +12,9 @@ from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
 SAMPLE_RATE = 100.0
+# Edges of the dt bins (ModelConfig.dt_bins): < 0.5, 0.5-1, 1-2, 2-5, >= 5 s.
+DT_BIN_EDGES_S = (0.5, 1.0, 2.0, 5.0)
+FRESH_S = 1.0          # "a fresh onset": dt below this, the bins under it
 
 
 @dataclass
@@ -43,6 +46,11 @@ class ModelConfig:
     # its uncertainty on the training set (the loss goes negative) while its
     # validation error stays put. ayzek reads it from the export.
     geo_min_sd: float = 0.1
+    # 1 adds the dt-bin head (model.py, dt_bins): a distribution over the time
+    # since the latest onset, on the bins DT_BIN_EDGES_S, alongside the dt
+    # regression. The restart can then fire on the probability of a fresh
+    # onset (TrainConfig.dt_reset_prob) rather than on dt crossing a level.
+    dt_bins: int = 0
 
     @property
     def stride(self) -> int:
@@ -104,6 +112,11 @@ class DataConfig:
     second_dt_s: float = 3.0             # dt loss up-weighted over this long after its P ...
     second_dt_weight: float = 5.0        # ... by this factor
     eval_second_every: int = 4           # evaluation: every Nth event trace gets one; 0 none
+    # Catalogued onsets in a trace's own coda (later.py, the store's later_p):
+    # picked ones are labelled like a second event; around unpicked ones dt is
+    # not trained from this long before the TauP prediction to max_dt_s after
+    # (plus its tolerance), where dt depends on where the onset really was.
+    later_mask_before_s: float = 1.0
 
 
 @dataclass
@@ -115,6 +128,7 @@ class TrainConfig:
     weight_decay: float = 0.05
     warmup_steps: int = 1000
     dt_weight: float = 0.1
+    dt_bins_weight: float = 0.2          # the dt-bin head's cross-entropy share
     geo_weight: float = 0.1              # geometry head's share of the loss
     noise_fraction: float = 0.5          # of each batch, drawn from noise traces
     fallback_weight: float = 0.0         # share of event draws from --fallback sources
@@ -128,6 +142,9 @@ class TrainConfig:
     # fires in codas. export_transformer.py writes this rule into the model
     # file, so selection and deployment use the same one.
     dt_reset_below: float = 1.0
+    # With the dt-bin head: a restart when P(dt < FRESH_S) reaches this, in
+    # place of dt <= dt_reset_below; 0 keeps the level rule.
+    dt_reset_prob: float = 0.0
     dt_reset_from: float = 5.0
     dt_reset_tokens: int = 2
     # 5 s, as ayzek runs the transformer. A restart already waits for dt to

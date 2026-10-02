@@ -24,7 +24,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .config import ModelConfig
+from .config import DT_BIN_EDGES_S, FRESH_S, ModelConfig
 
 
 # ---------------------------------------------------------------------------
@@ -231,6 +231,8 @@ class OnsetDetector(nn.Module):
         if cfg.geometry:
             # log distance and its log-variance.
             self.geo_head = nn.Linear(d, 2)
+        if cfg.dt_bins:
+            self.dt_head = nn.Linear(d, len(DT_BIN_EDGES_S) + 1)
         self.register_buffer("slopes", alibi_slopes(cfg.n_heads), persistent=False)
 
     def encode_context(self, ctx, has_ctx, batch_size: int):
@@ -251,6 +253,15 @@ class OnsetDetector(nn.Module):
         with torch.autocast(h.device.type, enabled=False):
             out = self.head(self.ln_out(h.float()))
         return out[..., 0], self.cfg.max_dt_s * torch.sigmoid(out[..., 1])
+
+    def dt_bins(self, h):
+        """Final hidden state -> logits over the dt bins (DT_BIN_EDGES_S), in
+        fp32 like `readout`. The dt regression answers "how long ago"; these
+        say how sure the model is that the onset is fresh, which a single
+        number cannot: an uncertain regression settles between the values,
+        where a level trigger reads it as no."""
+        with torch.autocast(h.device.type, enabled=False):
+            return self.dt_head(self.ln_out(h.float()))
 
     def geometry(self, h):
         """Final hidden state -> how far away the event is, as seen from this
@@ -287,7 +298,20 @@ class OnsetDetector(nn.Module):
         out = {"logit": logit, "dt": dt}
         if self.cfg.geometry:
             out.update(self.geometry(h))
+        if self.cfg.dt_bins:
+            out["dt_logits"] = self.dt_bins(h)
         return out
+
+
+def dt_bin_targets(dt: torch.Tensor) -> torch.Tensor:
+    """dt targets in seconds -> bin indices on DT_BIN_EDGES_S."""
+    return torch.bucketize(dt, torch.tensor(DT_BIN_EDGES_S, device=dt.device), right=True)
+
+
+def fresh_probability(dt_logits: torch.Tensor) -> torch.Tensor:
+    """P(dt < FRESH_S): the probability mass of the bins below FRESH_S."""
+    k = sum(e <= FRESH_S for e in DT_BIN_EDGES_S)
+    return torch.softmax(dt_logits.float(), dim=-1)[..., :k].sum(-1)
 
 
 def count_parameters(model: nn.Module) -> int:
