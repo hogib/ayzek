@@ -5,8 +5,9 @@ Copied from the onset repository (github.com/hogib/onset, `src/onset/`):
 - for `tools/export_transformer.py`: `config.py`, `model.py`,
   `conditioning.py` and `dsp.py`, from branch `onset-sp`, commit d06de22 (the
   distance-only geometry head);
-- for `tools/export_pd.py`: `pd.py` and `pd_fit.py`, from commit 5a3251f (the
-  Pd magnitude relation, with the rule for channels that do not record).
+- for `tools/export_pd.py`: `pd.py` and `pd_fit.py`, from commit badbfd7 (the
+  Pd magnitude relation, with the rules for channels that do not record and
+  for values inside a coda).
 
 They are unchanged except that `from onset.config import` became
 `from .config import` and `from onset.pd import` became `from .pd import`.

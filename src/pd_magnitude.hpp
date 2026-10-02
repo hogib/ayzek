@@ -34,6 +34,7 @@ struct PdRelation {
   double gamma_r = 0, gamma_k1 = 0, gamma_k2 = 0, k1_km = 0, k2_km = 0;
   double sigma = 1, b_value = 0, min_snr = 3, depth_km = 10, flag_log10 = 1;
   double dead_noise_factor = 10;
+  double coda_noise_factor = 10;
   // log10 Pd predicted at magnitude m and epicentral distance d_km, without
   // the station term.
   [[nodiscard]] double mean(double m, double d_km) const;
@@ -60,11 +61,13 @@ struct PdModel {
   // A station whose term exceeds flag_log10 in magnitude: a probable
   // response error, left out of the estimates (as in onset).
   [[nodiscard]] bool flagged(const std::string &station, double tau) const;
-  // A value whose pre-P noise lies more than dead_noise_factor below the
-  // station's median: the channel is not recording ground motion, and its
-  // spurious upper bound would pull the estimate down (as in onset).
-  [[nodiscard]] bool not_recording(const std::string &station,
-                                   double pd_noise) const;
+  // A value whose pre-P noise lies outside the station's usual band, as in
+  // onset: more than dead_noise_factor below its median (the channel is not
+  // recording, and its spurious upper bound would pull the estimate down) or
+  // more than coda_noise_factor above it (measured inside another event's
+  // coda, whose energy inflates the peak after P).
+  [[nodiscard]] bool outside_noise_band(const std::string &station,
+                                        double pd_noise) const;
   [[nodiscard]] const PdRelation *window(double tau) const;
 };
 

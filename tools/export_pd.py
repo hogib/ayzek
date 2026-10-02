@@ -14,9 +14,10 @@ Writes (docs/impl/17-pd-magnitude.md):
                             sensitivity (counts per m/s) for every epoch of
                             its StationXML response
   models/pd_terms.csv       the station terms per window
-  models/pd_noise.csv       each station's median pre-P noise level, below
-                            which (by dead_noise_factor) a channel is taken
-                            not to record
+  models/pd_noise.csv       each station's median pre-P noise level: a value
+                            whose noise lies more than dead_noise_factor below
+                            it is taken not to record, more than
+                            coda_noise_factor above it to lie in a coda
   data/fixtures/pd_chain.csv, pd_estimate.csv
                             reference outputs of onset's pd.py and pd_fit.py
                             for tests/test_pd.cpp
@@ -93,12 +94,13 @@ def main():
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["tau_s", "alpha", "beta_m", "beta_above", "m_knot", "gamma_r", "gamma_k1",
                     "gamma_k2", "k1_km", "k2_km", "sigma", "b_value", "min_snr", "depth_km",
-                    "flag_log10", "dead_noise_factor", "hp_b0", "hp_b1", "hp_b2", "hp_a1",
-                    "hp_a2"])
+                    "flag_log10", "dead_noise_factor", "coda_noise_factor", "hp_b0", "hp_b1",
+                    "hp_b2", "hp_a1", "hp_a2"])
         for x in windows:
             w.writerow([x["tau_s"], x["alpha"], *x["beta"], x["m_knots"][0], *x["gamma"],
                         *x["knots_km"], x["sigma"], x["b_value"], fit["min_snr"],
                         fit["depth_km"], fit["bad_station_log10"], pd_fit.DEAD_NOISE_FACTOR,
+                        pd_fit.CODA_NOISE_FACTOR,
                         b0 / a0, b1 / a0, b2 / a0, a1 / a0, a2 / a0])
     with open(out / "pd_terms.csv", "w", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
@@ -159,6 +161,9 @@ def main():
         # the last station's noise is far below its median: left out
         [(stations[0], 30.0, 2e-5, 1e-7), (stations[1], 80.0, 3e-6, 1e-7),
          (stations[2], 60.0, 2e-10, 1e-10)],
+        # the last station's noise is far above its median (a coda): left out
+        [(stations[0], 30.0, 2e-5, 1e-7), (stations[1], 80.0, 3e-6, 1e-7),
+         (stations[2], 60.0, 5e-3, 1e-4)],
     ]
     import pandas as pd
     with open(fx / "pd_estimate.csv", "w", newline="") as f:

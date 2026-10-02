@@ -70,7 +70,10 @@ level enters as an upper bound. Values are excluded:
 - whose noise level lies more than a factor of 10 below the station's median
   (`models/pd_noise.csv`). Such a channel does not record ground motion, and
   its values would all enter as censored upper bounds that the event did not
-  satisfy (section 4).
+  satisfy (section 4);
+- whose noise level lies more than a factor of 10 above the station's median.
+  Such a value was measured inside the coda of another event, and the peak
+  after P includes that coda (section 4).
 
 An event with no value above its threshold receives no estimate.
 
@@ -89,7 +92,7 @@ absolute error and the bias over the catalogued events that have an estimate.
 
 ## 3. Agreement with onset
 
-`tools/export_pd.py` writes, from onset's `runs/pd_v5/fit.json` and the
+`tools/export_pd.py` writes, from onset's `runs/pd_v6/fit.json` and the
 StationXML responses:
 
 | file | content |
@@ -106,9 +109,9 @@ implementation to them:
 - the displacement of a 90 s synthetic record, sample by sample: the largest
   difference is 2 × 10⁻¹⁸ m, on a signal of 2 × 10⁻⁶ m;
 - Pd for every window and the noise level, to a relative 10⁻⁹;
-- the event estimator on four cases (three stations above the noise; one of
-  three; two; and two with a third that does not record), to 10⁻⁶ in mean
-  and standard deviation;
+- the event estimator on five cases (three stations above the noise; one of
+  three; two; two with a third that does not record; and two with a third
+  inside a coda), to 10⁻⁶ in mean and standard deviation;
 - the network stage, whose estimate for a declared event equals the
   estimator's at the stations' distances and ignores a value for another
   trigger.
@@ -173,13 +176,44 @@ remain identical. The values that ayzek measured on this replay were
 recomputed with onset's code at the same P times and agree exactly. The
 discrepancy was therefore a property of the data, not of the implementation.
 
+**Values inside a coda.** The overestimated events of the table above were
+aftershocks within the coda of the mainshock. Relative to each station's
+median noise level, the values from which they were estimated had been
+measured at 13–340 times that level (the Mw 4.9 at 10:02 at 162–344 times,
+the ML 3.4 at 10:07 at 37–108 times, the ML 3.4 at 10:16 at 13–32 times),
+whereas the events within 0.2 units of the catalogue were measured at about
+the median. The peak after P of such a value includes the coda of the
+preceding event. Requiring two stations above the threshold would not
+address this, since offline, where most events have one test-split station
+above the noise, single-station estimates are not biased (bias −0.12 to
++0.08 at τ = 5 s). Values more than a factor of 10 above their station's
+median are therefore excluded (section 2.2; onset `runs/pd_v6`, in which the
+same rule changes no offline test result by more than 0.01). The replay
+outputs with the rule are in `data/runs/pd_v3/`:
+
+| replay | event (AFAD) | Pd, final, without the rule | Pd, final, with the rule |
+|---|---|---:|---:|
+| marmara_ko | ML 3.9, 09:13:05 | M3.8 (−0.1) | M3.8 (−0.1) |
+| marmara_ko | Mw 6.2, 09:49:10 | M6.0 (−0.2) | M6.0 (−0.2) |
+| marmara_ko | Mw 4.9, 10:02:32 | M5.1 (+0.2) | no estimate |
+| marmara_ko | ML 3.4, 10:07:01 | M4.5 (+1.1) | no estimate |
+| marmara_ko | ML 3.4, 10:16:23 | M3.8 (+0.4) | no estimate |
+| marmara_ko | ML 2.2, 10:43:53 | M2.9 (+0.7) | M2.9 (+0.7) |
+| demo_ko | Mw 4.9, 18:20:51 | M4.8 (−0.1) | M4.8 (−0.1) |
+
+Over the catalogued Marmara events, the mean absolute error falls from 0.44
+(six events, bias +0.34) to 0.32 (three events, bias +0.12). The three
+aftershocks within the coda now receive no estimate instead of an incorrect
+one, at the cost of the Mw 4.9, whose estimate had happened to be close.
+The remaining error of +0.7 is that of a small event (ML 2.2) recorded above
+the noise at one station at an ordinary noise level.
+
 **Conclusion.** For events recorded above the noise at most of their
 stations, the Pd estimate is substantially better than the regressor's,
-most clearly for the largest event. For events recorded above the noise at
-one or two stations, which in these replays are aftershocks within a larger
-event's coda, it is not reliable. Requiring at least two stations above the
-threshold, and contributing censored bounds from stations within range that
-did not trigger, are the evident next steps.
+most clearly for the largest event. Within the coda of a larger event the
+estimator now declines rather than overestimates. Contributing censored
+bounds from stations within range that did not trigger is the evident next
+step for small events.
 
 ## 5. Limitations
 
@@ -188,9 +222,10 @@ did not trigger, are the evident next steps.
   remained below the noise. The censored bounds of the stations that did not
   trigger are absent here, which biases the estimates of small events
   upward.
-- Inside the coda of a larger event the noise level is the coda itself, and
-  the values of later events are censored. Most aftershocks of a large event
-  therefore receive no Pd estimate (section 4).
+- Inside the coda of a larger event the noise level is the coda itself: the
+  values of later events are censored or, beyond ten times the station's
+  median noise, excluded. Most aftershocks of a large event therefore receive
+  no Pd estimate (section 4).
 - For events whose rupture outlasts the 10 s window the estimate is a lower
   bound (onset `docs/MAGNITUDE.md`, section 6.1).
 - The relation and the station terms come from KOERI's network. A station

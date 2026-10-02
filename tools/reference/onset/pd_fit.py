@@ -40,6 +40,14 @@ latter minimises the error in M and so shrinks the slope by the ratio of the
 magnitude variance to the total variance (regression dilution), which pulls
 the largest events towards the mean magnitude.
 
+**Values inside a coda.** A value whose pre-P noise lies more than
+CODA_NOISE_FACTOR above its station's median was measured inside the coda of
+another event: the peak after P includes that coda. On the Marmara replay,
+the aftershocks estimated 0.4 to 1.1 units too high were measured at 13 to
+340 times their stations' median noise, the well-estimated events at about
+once. Such values are left out like those below; on the stored traces, where
+1.4% of the values lie above the factor, the test results do not change.
+
 **Channels that do not record.** A vertical channel that has failed, or
 records far less than it should, reports every value as censored, and the
 spurious upper bounds pull the estimates down: on the 2025-04-23 Marmara
@@ -76,6 +84,7 @@ MIN_FIT_M = 2.0
 MIN_STATION_ROWS = 20
 BAD_STATION_LOG10 = 1.0
 DEAD_NOISE_FACTOR = 10.0   # pre-P noise this far below the station's median: not recording
+CODA_NOISE_FACTOR = 10.0   # ... this far above it: inside another event's coda
 SUM_ZERO_PENALTY = 1e3
 M_GRID = np.arange(1.0, 8.5001, 0.01)
 B_VALUE_MC = 2.5          # completeness magnitude for the b-value estimate
@@ -114,12 +123,14 @@ def station_noise(df: pd.DataFrame) -> dict:
 
 
 def recording(df: pd.DataFrame, noise: dict) -> pd.Series:
-    """False for a value whose pre-P noise lies more than DEAD_NOISE_FACTOR
-    below its station's median: a channel that is not recording ground motion
-    reports every value as censored, and those spurious upper bounds would
-    pull an estimate down. Stations without a median are kept."""
+    """False for a value whose pre-P noise lies outside its station's usual
+    band: more than DEAD_NOISE_FACTOR below the median, a channel that is not
+    recording ground motion and reports every value as censored; or more than
+    CODA_NOISE_FACTOR above it, a value measured inside the coda of another
+    event, whose peak includes that coda. Stations without a median are kept."""
     typical = df.station.map(noise)
-    return (df.pd_noise > 0) & ~(df.pd_noise * DEAD_NOISE_FACTOR < typical)
+    return ((df.pd_noise > 0) & ~(df.pd_noise * DEAD_NOISE_FACTOR < typical)
+            & ~(df.pd_noise > CODA_NOISE_FACTOR * typical))
 
 
 def usable(df: pd.DataFrame, tau: float) -> pd.Series:

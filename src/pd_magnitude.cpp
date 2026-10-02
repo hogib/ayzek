@@ -88,7 +88,7 @@ std::optional<PdModel> PdModel::load(const std::string &dir) {
                          num(r, "gamma_k2"), num(r, "k1_km"), num(r, "k2_km"),
                          num(r, "sigma"), num(r, "b_value"), num(r, "min_snr"),
                          num(r, "depth_km"), num(r, "flag_log10"),
-                         num(r, "dead_noise_factor")});
+                         num(r, "dead_noise_factor"), num(r, "coda_noise_factor")});
     m.highpass = {num(r, "hp_b0"), num(r, "hp_b1"), num(r, "hp_b2"),
                   num(r, "hp_a1"), num(r, "hp_a2")};
   }
@@ -133,10 +133,14 @@ bool PdModel::flagged(const std::string &station, double tau) const {
   return w && std::abs(term(station, tau)) > w->flag_log10;
 }
 
-bool PdModel::not_recording(const std::string &station, double pd_noise) const {
+bool PdModel::outside_noise_band(const std::string &station,
+                                 double pd_noise) const {
   auto it = noise.find(station);
-  return it != noise.end() && !windows.empty() &&
-         pd_noise * windows.front().dead_noise_factor < it->second;
+  if (it == noise.end() || windows.empty())
+    return false;
+  const auto &w = windows.front();
+  return pd_noise * w.dead_noise_factor < it->second ||
+         pd_noise > w.coda_noise_factor * it->second;
 }
 
 const PdRelation *PdModel::window(double tau) const {
@@ -183,7 +187,7 @@ std::optional<PdMagnitude> pd_magnitude(const PdModel &model,
   for (const auto &o : obs) {
     const auto *rel = model.window(o.tau_s);
     if (!rel || !(o.pd_noise > 0) || model.flagged(o.station, o.tau_s) ||
-        model.not_recording(o.station, o.pd_noise))
+        model.outside_noise_band(o.station, o.pd_noise))
       continue;
     const bool up = o.pd > 0 && o.pd >= rel->min_snr * o.pd_noise;
     above += up;
