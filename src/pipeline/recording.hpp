@@ -24,6 +24,7 @@
 //   G  station  trigger_window  p_time  since_p  log_dist  log_dist_sd
 //      declared_at  (older recordings have baz and kappa before declared_at;
 //      they are skipped)
+//   Q  station  trigger_window  p_time  tau  pd  pd_noise  declared_at
 
 #include "common.hpp"
 #include "network.hpp"

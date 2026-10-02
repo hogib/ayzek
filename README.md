@@ -8,7 +8,9 @@ three-component waveforms from several stations and, for each earthquake:
    (`--detector transformer`, one output per 0.1 s, `docs/impl/14-transformer.md`);
    a recursive STA/LTA is available for comparison
 2. declares an event when stations agree within the P travel time between them
-3. estimates the magnitude from 10 s of waveform per station
+3. estimates the magnitude from 10 s of waveform per station, and, with the
+   transformer, from the peak displacement of the P wave and the stations'
+   distances (`docs/impl/17-pd-magnitude.md`)
 4. locates the event by grid search: from the streaming transformer's
    per-station distance (three stations or more) when it has the geometry head
    (`docs/impl/15-geometry-location.md`), otherwise from P and S picks
@@ -189,6 +191,7 @@ tools/demo.sh all      # 7 stations, full speed
 | `--assess-csv FILE` | | with `--assess`: one row per alarm, readable by `tools/plot_candidates.py` |
 | `--no-pick` | | no P/S picker, and so no location unless `--locate geometry` |
 | `--no-magnitude` | | no magnitude regressor. Otherwise each trigger gets an early estimate, and triggers of declared events a second one at the picked P |
+| `--no-pd-magnitude` | | transformer: no magnitude from peak P displacement. On by default when `models/pd_relation.csv` exists (`tools/export_pd.py`, `docs/impl/17-pd-magnitude.md`) |
 | `--catalog CSV` | | AFAD catalogue export; each alarm is compared with it |
 | `--site NAME,LAT,LON` | | also report the S-wave warning time at this place (repeatable) |
 | `--scores DIR` | | write every window's detector probability to `DIR/STATION.csv` |
@@ -205,6 +208,12 @@ While running, one line per alarm and per magnitude or location update:
 ALARM    #3   18:21:09.00  earthquake detected by DEMI, MANT  (AFAD MW 4.9 at 18:20:51.00, 18.0 s ago)
 MAG      #3   18:21:09.00  magnitude M4.3 from 1 station (DEMI 4.3)
 LOCATE   #3   18:22:05.00  located at 39.221N 28.088E, origin 18:20:52.02, rms 0.16 s from 3 stations
+```
+
+With the transformer, the Pd magnitude is printed the same way (demo_ko):
+
+```
+PDMAG    #3   18:21:09.10  Pd magnitude M4.5 ± 0.2 from 2 stations (2 above noise), windows up to 4 s, distances from the stations' geometry
 ```
 
 At the end:

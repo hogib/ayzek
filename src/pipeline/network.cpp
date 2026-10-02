@@ -220,6 +220,7 @@ bool Network::merge_duplicate(Event &e2) {
               e1.geometry.erase(o.code);
               e1.magnitudes.erase(o.code);
               e1.picks.erase(o.code);
+              e1.pd.erase(o.code);
             }
             continue;
           }
@@ -238,6 +239,10 @@ bool Network::merge_duplicate(Event &e2) {
             e1.picks.insert_or_assign(o.code, it->second);
           else
             e1.picks.erase(o.code);
+          if (auto it = e2.pd.find(o.code); it != e2.pd.end())
+            e1.pd.insert_or_assign(o.code, it->second);
+          else
+            e1.pd.erase(o.code);
           moved += (moved.empty() ? "" : ", ") + o.code;
         }
         const double now =
@@ -255,6 +260,7 @@ bool Network::merge_duplicate(Event &e2) {
         report_magnitude(kept, now);
         if (cfg_.locator == Locator::Geometry)
           report_location(kept, now);
+        report_pd(kept, now);
         return true;
       }
     }
@@ -341,6 +347,7 @@ void Network::on(const Detection &d) {
         ev->declared_at); // estimates received before the event was declared
     if (cfg_.locator == Locator::Geometry)
       report_location(*ev, ev->declared_at); // likewise
+    report_pd(*ev, ev->declared_at);         // likewise
   } else if (ev->declared && cfg_.verbose) {
     Log::get().line("EVENT", "31", "#{} joined by {}", ev->id, d.station);
   }
@@ -508,6 +515,66 @@ void Network::on(const MagnitudeEstimate &m) {
       report_magnitude(e, m.declared_at);
     return;
   }
+}
+
+void Network::on(const PdEstimate &q) {
+  if (cfg_.verbose)
+    Log::get().line("pd", "34", "{:<5} P {} +{:g} s  Pd {:.2e} m  noise {:.2e} m",
+                    q.station, hms(q.p_time), q.tau, q.pd, q.pd_noise);
+  for (auto &e : events_) {
+    auto it = e.detections.find(q.station);
+    if (it == e.detections.end() || it->second.window_start != q.trigger_window)
+      continue;
+    auto have = e.pd.find(q.station);
+    if (have == e.pd.end() || q.tau >= have->second.tau)
+      e.pd.insert_or_assign(q.station, q);
+    if (e.declared)
+      report_pd(e, q.declared_at);
+    return;
+  }
+}
+
+void Network::report_pd(Event &e, double now) {
+  if (!cfg_.pd || e.pd.empty())
+    return;
+  std::vector<PdObservation> obs;
+  double tau = 0;
+  const bool located = e.location && !(e.location->err_km > cfg_.pd_max_err_km);
+  for (const auto &[code, q] : e.pd) {
+    auto st = stations_.find(code);
+    if (st == stations_.end())
+      continue;
+    double d = NAN;
+    if (located)
+      d = distance_km(e.location->lat, e.location->lon, st->second.lat,
+                      st->second.lon);
+    else if (auto g = e.geometry.find(code); g != e.geometry.end())
+      d = std::exp(g->second.log_dist);
+    if (std::isnan(d))
+      continue;
+    obs.push_back({code, q.tau, q.pd, q.pd_noise, d});
+    tau = std::max(tau, q.tau);
+  }
+  const auto m = pd_magnitude(*cfg_.pd, obs);
+  if (!m)
+    return;
+  const bool changed = !e.pd_magnitude || std::isnan(e.pd_reported) ||
+                       std::abs(m->mean - e.pd_reported) >= 0.1 ||
+                       m->stations != e.pd_magnitude->stations;
+  e.pd_magnitude = m;
+  if (!e.pd_first) {
+    e.pd_first = m->mean;
+    e.pd_first_at = now;
+  }
+  if (!changed)
+    return;
+  e.pd_reported = m->mean;
+  Log::get().line("PDMAG", "1;34",
+                  "#{:<3} {}  Pd magnitude M{:.1f} ± {:.1f} from {} station{} "
+                  "({} above noise), windows up to {:g} s, distances from {}",
+                  e.id, hms(now), m->mean, m->sd, m->stations,
+                  m->stations == 1 ? "" : "s", m->above, tau,
+                  located ? "the location" : "the stations' geometry");
 }
 
 bool Network::declared(const std::string &station,
@@ -736,6 +803,7 @@ void Network::report_location(Event &e, double now) {
   if (!e.location)
     e.first_located_at = now;
   e.location = loc;
+  report_pd(e, now); // the distances changed
   if (same)
     return;
   std::string left_out;
@@ -879,7 +947,8 @@ void Network::report(double t_first, double t_last) const {
       declared.push_back(&e);
   std::ranges::sort(declared, {}, &Event::declared_at);
 
-  std::vector<double> alarm_delays, magnitude_errors, positive_warnings;
+  std::vector<double> alarm_delays, magnitude_errors, positive_warnings,
+      pd_errors; // signed
   std::size_t arrivals = 0, warned = 0;
   for (const Event *e : declared) {
     const CatalogEvent *c = nullptr;
@@ -921,6 +990,19 @@ void Network::report(double t_first, double t_last) const {
                 *e->magnitude, e->magnitude_stations,
                 e->magnitude_stations == 1 ? "" : "s");
     }
+    if (e->pd_magnitude) {
+      const double lag = e->pd_first_at - e->declared_at;
+      log.plain(false,
+                "  Pd magn.   M{:.1f} {}, M{:.1f} ± {:.1f} final from {} "
+                "station{} ({} above noise)",
+                *e->pd_first,
+                lag < 0.05 ? std::string("at the alarm")
+                           : std::format("{:.1f} s after the alarm", lag),
+                e->pd_magnitude->mean, e->pd_magnitude->sd,
+                e->pd_magnitude->stations,
+                e->pd_magnitude->stations == 1 ? "" : "s",
+                e->pd_magnitude->above);
+    }
     if (e->location)
       log.plain(false, "  location   rms {:.2f} s from {} station{}{}, first {:.1f} s "
                 "after the alarm ({})",
@@ -947,6 +1029,10 @@ void Network::report(double t_first, double t_last) const {
         cmp += std::format(
             ", magnitude {:+.1f}",
             std::round((*e->magnitude - c->magnitude) * 10) / 10 + 0.0);
+      if (e->pd_magnitude)
+        cmp += std::format(
+            ", Pd magnitude {:+.1f}",
+            std::round((e->pd_magnitude->mean - c->magnitude) * 10) / 10 + 0.0);
       if (e->location)
         cmp += std::format(
             ", epicentre {:.1f} km off, origin {:+.1f} s",
@@ -956,6 +1042,8 @@ void Network::report(double t_first, double t_last) const {
       alarm_delays.push_back(e->declared_at - c->time);
       if (e->magnitude)
         magnitude_errors.push_back(std::abs(*e->magnitude - c->magnitude));
+      if (e->pd_magnitude)
+        pd_errors.push_back(e->pd_magnitude->mean - c->magnitude);
     } else {
       log.plain(false, "  AFAD       no matching catalogue event");
     }
@@ -1123,6 +1211,18 @@ void Network::report(double t_first, double t_last) const {
                 std::accumulate(magnitude_errors.begin(),
                                 magnitude_errors.end(), 0.0) /
                     static_cast<double>(magnitude_errors.size()));
+    if (!pd_errors.empty()) {
+      double abs_sum = 0, sum = 0;
+      for (double x : pd_errors) {
+        abs_sum += std::abs(x);
+        sum += x;
+      }
+      const auto n = static_cast<double>(pd_errors.size());
+      log.plain(false,
+                "    Pd magnitude error                  mean {:.2f} units, bias "
+                "{:+.2f}, {} events",
+                abs_sum / n, sum / n, pd_errors.size());
+    }
     log.plain(false, "    located                             {} of {}",
               located -
                   static_cast<std::size_t>(std::ranges::count_if(

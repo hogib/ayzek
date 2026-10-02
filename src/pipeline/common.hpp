@@ -172,6 +172,18 @@ struct StationGeometry {
   double declared_at;
 };
 
+// Peak P-wave displacement at one station after its trigger, for the Pd
+// magnitude (pd_magnitude.hpp). Sent as each window after P ends.
+struct PdEstimate {
+  std::string station;
+  double trigger_window; // window_start of the Detection this follows
+  double p_time;         // epoch, the detector's P
+  double tau;            // window after P, seconds
+  double pd;             // metres
+  double pd_noise;       // metres, over the 10 s ending 1 s before P
+  double declared_at;
+};
+
 struct StationDone {
   std::string station;
 };
@@ -186,7 +198,7 @@ struct Progress {
 };
 
 using Message = std::variant<Detection, Pick, MagnitudeEstimate,
-                             StationGeometry, StationDone, Progress>;
+                             StationGeometry, PdEstimate, StationDone, Progress>;
 
 inline double declared_at(const Message &m) {
   if (auto *d = std::get_if<Detection>(&m))
@@ -197,6 +209,8 @@ inline double declared_at(const Message &m) {
     return g->declared_at;
   if (auto *g = std::get_if<StationGeometry>(&m))
     return g->declared_at;
+  if (auto *q = std::get_if<PdEstimate>(&m))
+    return q->declared_at;
   return 0;
 }
 

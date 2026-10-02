@@ -1,5 +1,9 @@
 # 07 · Magnitude
 
+With the transformer, a second estimate from the peak displacement of the P
+wave runs alongside this regressor (`17-pd-magnitude.md`). It was introduced
+because the regressor, trained on few large events, underestimates them.
+
 Each triggered station sizes the event from a 10 s window, and the network
 reports the median. The regressor is cnn_earthquake's waveform-only magnitude
 model, three partitions averaged. It is transcribed like the detector and held

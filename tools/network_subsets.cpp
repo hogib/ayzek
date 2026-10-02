@@ -29,6 +29,8 @@
 //                       --merge-min N, --merge-rms S, --merge-radius DEG set
 //                       its fit
 //   --log               print the network stage's log (ALARM, MERGE, ...)
+//   --pd DIR            estimate the Pd magnitude from the recording's Q
+//                       records with the model in DIR (pd_relation.csv ...)
 //   --assess            add the alarm assessment's counts (assess.hpp): alarms
 //                       judged earthquake or possible, catalogued and not
 //                       (the recording must hold picks: ayzek --assess --record)
@@ -100,6 +102,7 @@ int main(int argc, char **argv) try {
   const auto rec = Recording::load(argv[1]);
   std::string catalog_path;
   bool log = false;
+  std::optional<ayzek::PdModel> pd_model;
   std::size_t min_k = 2, max_k = rec.stations.size();
   double min_mag = 0;
   NetworkConfig base;
@@ -140,6 +143,12 @@ int main(int argc, char **argv) try {
       base.merge_radius_deg = std::stod(next());
     else if (a == "--log")
       log = true;
+    else if (a == "--pd") {
+      const std::string dir = next();
+      if (!(pd_model = ayzek::PdModel::load(dir)))
+        throw std::runtime_error("--pd: no pd_relation.csv in " + dir);
+      base.pd = &*pd_model;
+    }
     else if (a == "--assess")
       base.assess = true;
     else if (a == "--geo-sd-scale")
@@ -213,6 +222,8 @@ int main(int argc, char **argv) try {
         net.on(*g);
       else if (auto *o = std::get_if<StationGeometry>(&m))
         net.on(*o);
+      else if (auto *q = std::get_if<PdEstimate>(&m))
+        net.on(*q);
     }
 
     std::vector<double> alerts, loc_errors, mag_errors;

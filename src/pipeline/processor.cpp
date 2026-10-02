@@ -4,6 +4,7 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <limits>
 #include <optional>
 #include <stdexcept>
 #include <thread>
@@ -49,6 +50,10 @@ Processor::Processor(Station &st, const std::vector<Weights> &detector,
     magnitude_ = std::make_unique<MagnitudeEstimator>(magnitude, bp);
   else
     cfg_.magnitude = false;
+  if (onset_ && cfg_.pd && cfg_.pd->gains.contains(st_.code)) {
+    pd_chain_.emplace(cfg_.pd->highpass, kFs);
+    pd_ring_.assign(kPdRing, std::numeric_limits<double>::quiet_NaN());
+  }
   raw_.resize(Picker::kWindow * 3);
   noise_raw_.resize(kMagWindow * 3);
   standardized_.resize(Detector::kWindow * 3);
@@ -179,12 +184,16 @@ bool Processor::feed_stream(std::uint64_t limit, std::size_t max) {
       for (std::size_t c = 0; c < 3; ++c)
         if (buf[c][i] != kGap)
           x[c] = static_cast<double>(buf[c][i]);
+      if (pd_chain_)
+        pd_push(next_ + i, x[0]);
       tokens_.clear();
       const auto t0 = Clock::now();
       onset_->push(next_ + i, x, tokens_);
       const double ms = ms_since(t0);
       for (const auto &tok : tokens_)
         on_token(tok, next_ + i, ms / static_cast<double>(tokens_.size()));
+      if (!pd_pending_.empty())
+        pd_measure(next_ + i);
     }
     next_ += n;
     max -= n;
@@ -234,6 +243,8 @@ void Processor::on_token(const OnsetStream::Token &tok, std::uint64_t fed,
       stats_.dt_resets += fire == TokenTrigger::Fire::DtReset ? 1 : 0;
       trigger(ws, p_pos, ws, pos_to_epoch(fed + 1), tok.p,
               static_cast<double>(ms), fire == TokenTrigger::Fire::DtReset);
+      if (pd_chain_)
+        pd_pending_.push_back({p_pos, last_trigger_, 0});
       if (cfg_.geometry && tok.geo) {
         geo_trigger_ = last_trigger_;
         geo_p_ = p_pos;
@@ -530,6 +541,54 @@ void Processor::run_pick(std::uint64_t start, double trigger,
     }
   }
   bus_.send(std::move(pick));
+}
+
+void Processor::pd_push(std::uint64_t pos, std::optional<double> z) {
+  const auto d = pd_chain_->push(z);
+  if (d && pd_chain_->run_length() == 1)
+    pd_run_start_ = pos;
+  pd_ring_[pos % kPdRing] = d ? std::abs(*d) : std::numeric_limits<double>::quiet_NaN();
+}
+
+// Pd(tau) = max |d| over [P, P + tau) and the noise level over [P - 11 s,
+// P - 1 s), as onset's pd.peak_displacement, in metres by the gain in effect
+// at P. A measurement whose chain did not run without a gap from
+// kPdLeadSeconds before P, or whose noise window has left the ring (a trigger
+// dated too far back), is dropped.
+void Processor::pd_measure(std::uint64_t pos) {
+  const auto &windows = cfg_.pd->windows;
+  const auto lead = static_cast<std::uint64_t>(kPdLeadSeconds * kFs);
+  const auto noise_from = static_cast<std::uint64_t>(11.0 * kFs);
+  const auto noise_to = static_cast<std::uint64_t>(1.0 * kFs);
+  for (auto it = pd_pending_.begin(); it != pd_pending_.end();) {
+    auto &q = *it;
+    bool drop = q.p < lead || pd_run_start_ + lead > q.p ||
+                q.p - noise_from + kPdRing <= pos;
+    std::optional<double> sens;
+    if (!drop) {
+      sens = cfg_.pd->sensitivity(st_.code, pos_to_epoch(q.p));
+      drop = !sens;
+    }
+    while (!drop && q.next < windows.size()) {
+      const double tau = windows[q.next].tau_s;
+      const std::uint64_t end = q.p + static_cast<std::uint64_t>(std::lround(tau * kFs));
+      if (pos + 1 < end)
+        break;
+      double pd = 0, noise = 0;
+      for (std::uint64_t i = q.p; i < end; ++i)
+        pd = std::max(pd, pd_ring_[i % kPdRing]);
+      for (std::uint64_t i = q.p - noise_from; i < q.p - noise_to; ++i)
+        noise = std::max(noise, pd_ring_[i % kPdRing]);
+      bus_.send(PdEstimate{st_.code, q.trigger_window, pos_to_epoch(q.p), tau,
+                           pd / *sens, noise / *sens, pos_to_epoch(pos + 1)});
+      ++stats_.pd_values;
+      ++q.next;
+    }
+    if (drop || q.next == windows.size())
+      it = pd_pending_.erase(it);
+    else
+      ++it;
+  }
 }
 
 // Early magnitude estimate for every trigger, so that an alarm can carry a

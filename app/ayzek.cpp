@@ -76,6 +76,8 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --retrigger S         minimum time between a station's triggers (default 15;
                         transformer: 5, so an aftershock 5-15 s into the coda
                         of the last event can still trigger)
+  --no-pd-magnitude     transformer: no magnitude from peak P displacement
+                        (default: on when MODELS/pd_relation.csv exists)
   --no-merge            transformer: do not merge an event into a declared one
                         whose P times it fits (one earthquake, one alarm)
   --pick-anywhere       transformer: let the picker search the whole 60 s window
@@ -175,11 +177,13 @@ int main(int argc, char **argv) try {
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
               record_path, transformer_path, assess_csv;
   bool threshold_set = false, release_set = false, min_stations_set = false,
-       dt_reset_set = false, retrigger_set = false, no_merge = false;
+       dt_reset_set = false, retrigger_set = false, no_merge = false,
+       no_pd = false;
   std::string locate_kind; // "", "geometry" or "picks"
   double speed = 1.0;
   ProcessorConfig pcfg;
   NetworkConfig ncfg;
+  std::optional<PdModel> pd_model; // outlives the processors and the network
   std::vector<std::string> files;
 
   for (int i = 1; i < argc; ++i) {
@@ -216,6 +220,8 @@ int main(int argc, char **argv) try {
       pcfg.retrigger_seconds = std::stod(next()), retrigger_set = true;
     else if (a == "--no-merge")
       no_merge = true;
+    else if (a == "--no-pd-magnitude")
+      no_pd = true;
     else if (a == "--pick-anywhere")
       pcfg.pick_on_onset = false;
     else if (a == "--trigger-windows")
@@ -367,6 +373,12 @@ int main(int argc, char **argv) try {
     // With triggers 5 s apart a station can trigger twice in one earthquake,
     // which split events into duplicate alarms (14-transformer.md).
     ncfg.merge_duplicates = !no_merge;
+    // Magnitude from peak P displacement, alongside the regressor
+    // (docs/impl/17-pd-magnitude.md).
+    if (!no_pd && (pd_model = PdModel::load(models))) {
+      pcfg.pd = &*pd_model;
+      ncfg.pd = &*pd_model;
+    }
     // Two stations are too easy to satisfy for a detector that also fires in
     // codas (dt restarts): on the Sindirgi and Marmara sequences two far
     // stations ringing together made most of the false alarms, and a third
@@ -552,6 +564,8 @@ int main(int argc, char **argv) try {
         net.on(*g);
       else if (auto *o = std::get_if<StationGeometry>(&m))
         net.on(*o);
+      else if (auto *q = std::get_if<PdEstimate>(&m))
+        net.on(*q);
       if (recorder)
         recorder->write(m);
 
@@ -706,19 +720,22 @@ int main(int argc, char **argv) try {
               w.p99, pk.mean, mg.mean);
   }
   if (pcfg.detector == DetectorKind::Transformer) {
-    std::uint64_t refreshes = 0, geometry = 0, dt_resets = 0;
+    std::uint64_t refreshes = 0, geometry = 0, dt_resets = 0, pd_values = 0;
     for (const auto &pr : procs) {
       refreshes += pr->stats().context_refreshes;
       geometry += pr->stats().geometry;
+      pd_values += pr->stats().pd_values;
       dt_resets += pr->stats().dt_resets;
     }
     log.plain(false,
               "  transformer: \"windows\" are 0.1 s tokens; {} station context "
               "refreshes; {} of {} triggers from a dt restart{}",
               refreshes, dt_resets, triggers,
-              pcfg.geometry
-                  ? std::format("; {} geometry estimates sent", geometry)
-                  : std::string());
+              (pcfg.geometry
+                   ? std::format("; {} geometry estimates sent", geometry)
+                   : std::string()) +
+                  (pcfg.pd ? std::format("; {} Pd values sent", pd_values)
+                           : std::string()));
   }
   if (pcfg.detector == DetectorKind::Model && pcfg.anchor)
     log.plain(false,

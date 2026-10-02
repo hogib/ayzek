@@ -8,6 +8,7 @@
 #include "assess.hpp"
 #include "common.hpp"
 #include "locate.hpp"
+#include "pd_magnitude.hpp"
 
 #include <cmath>
 #include <map>
@@ -66,6 +67,15 @@ struct NetworkConfig {
   // when their P times fit one source. Needed when stations may trigger twice
   // within an event (the transformer's 5 s retrigger gap).
   bool merge_duplicates = false;
+  // The Pd magnitude (pd_magnitude.hpp): with a model, each declared event's
+  // magnitude is also estimated from its stations' PdEstimates, at the
+  // distances of its location or, before it is located, of the stations'
+  // geometry estimates.
+  const PdModel *pd = nullptr;
+  // The location's distances are used once its 68% radius is within this;
+  // before, each station's own geometry distance (a poorly constrained early
+  // location can be hundreds of km off, and Pd scales with distance).
+  double pd_max_err_km = 20.0;
   double merge_rms = 1.0;     // P-time rms of one source for both, seconds
   std::size_t merge_min_fit = 4; // stations in that fit
   // The fit's source within this many degrees of the stations: from far
@@ -131,6 +141,13 @@ struct Event {
   double first_located_at = 0; // stream time of the first accepted location
   // Geometry locator: the latest estimate per station (common.hpp).
   std::map<std::string, StationGeometry> geometry;
+  // Pd magnitude: the latest (longest window) value per station, the current
+  // estimate, the first one and the stream time it was reported.
+  std::map<std::string, PdEstimate> pd;
+  std::optional<PdMagnitude> pd_magnitude;
+  std::optional<double> pd_first;
+  double pd_first_at = 0;
+  double pd_reported = NAN; // the last estimate printed
   // Geometry locator, fewer than kMinGeometryStations: the log distance per
   // station last reported as a range, so it prints on changes only.
   std::map<std::string, double> ranged;
@@ -155,6 +172,7 @@ public:
   void on(const Pick &p);
   void on(const MagnitudeEstimate &m);
   void on(const StationGeometry &g);
+  void on(const PdEstimate &q);
   // True if the detection at `station` dated `trigger_window` belongs to a
   // declared event. Magnitude estimates at the picked P are computed only then.
   [[nodiscard]] bool declared(const std::string &station,
@@ -211,6 +229,9 @@ private:
   [[nodiscard]] std::size_t geometry_stations(const Event &e) const;
   void report_ranges(Event &e, double now);
   void report_magnitude(Event &e, double now);
+  // Pd magnitude: re-estimates, and prints the estimate when it moves by 0.1
+  // or more or a station is added.
+  void report_pd(Event &e, double now);
 
   struct Warning {
     std::string name;

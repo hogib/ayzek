@@ -26,6 +26,7 @@ describe what was built.
 | [14 · Streaming transformer](impl/14-transformer.md) | the onset transformer as a detector: causal band-pass, station context, token trigger with dt restarts, the picker placed on its P |
 | [15 · Location from the geometry head](impl/15-geometry-location.md) | per-station distance in place of S-P picks, the locator, its settings and geo_v1's numbers |
 | [16 · Alarm assessment](impl/16-alarm-assessment.md) | `--assess`: S-P consistency and independent evidence to tell uncatalogued earthquakes from misfires |
+| [17 · Magnitude from peak P displacement](impl/17-pd-magnitude.md) | the Pd chain on raw counts, the censored Pd–M–R estimator calibrated in onset, its agreement with onset and its results on the replays |
 
 ## In one screen
 

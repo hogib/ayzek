@@ -11,6 +11,7 @@
 #include "dsp.hpp"
 #include "magnitude.hpp"
 #include "models.hpp"
+#include "pd_magnitude.hpp"
 #include "stalta.hpp"
 #include "station.hpp"
 #include "transformer.hpp"
@@ -117,7 +118,17 @@ struct ProcessorConfig {
   bool geometry = false;
   double geometry_every = 1.0;
   double geometry_seconds = 20.0;
+  // Transformer: with a Pd model (pd_magnitude.hpp) and a gain for the
+  // station, the raw vertical component runs through the displacement chain,
+  // and each trigger is followed by a PdEstimate as each of the model's
+  // windows after the dated P ends. A value needs the chain to have run
+  // without a gap from kPdLeadSeconds before P to the end of its window.
+  const PdModel *pd = nullptr;
 };
+
+// Displacement run needed before P: the filters' run-in and the 10 s noise
+// window ending 1 s before P, as in onset's pd.py.
+inline constexpr double kPdLeadSeconds = 41.0;
 
 // The 10 s window starting 2 s before a picked P and the station's noise
 // baseline at that time, sent with the Pick (common.hpp).
@@ -136,6 +147,7 @@ struct ProcessorStats {
       0; // runs of windows dropped for want of an onset (require_onset)
   std::uint64_t context_refreshes = 0; // transformer: station context updates
   std::uint64_t geometry = 0; // transformer: StationGeometry messages sent
+  std::uint64_t pd_values = 0; // transformer: PdEstimate messages sent
   std::uint64_t dt_resets = 0; // transformer: detections from a dt restart
   std::size_t noise_windows = 0;
   std::vector<float>
@@ -174,6 +186,10 @@ private:
   void run_pick(std::uint64_t start, double trigger, std::uint64_t p_pos);
   void run_early_magnitude(std::uint64_t start, double trigger);
   void maybe_add_noise(std::uint64_t window_start);
+  // Pd: one vertical sample into the displacement chain, and the
+  // measurements whose windows have ended by `pos`.
+  void pd_push(std::uint64_t pos, std::optional<double> z);
+  void pd_measure(std::uint64_t pos);
 
   Station &st_;
   ProcessorConfig cfg_;
@@ -192,6 +208,19 @@ private:
   // position to report at (0: not tracking), P and the detection's window.
   std::uint64_t geo_next_ = 0, geo_until_ = 0, geo_p_ = 0;
   double geo_trigger_ = 0;
+  // Pd: the chain, |displacement| (counts) of the last kPdRing positions,
+  // where its current run began, and the measurements still to send: P, the
+  // detection's window, and the index of the next window.
+  static constexpr std::size_t kPdRing = 6400;
+  std::optional<Displacement> pd_chain_;
+  std::vector<double> pd_ring_;
+  std::uint64_t pd_run_start_ = 0;
+  struct PdPending {
+    std::uint64_t p;
+    double trigger_window;
+    std::size_t next;
+  };
+  std::deque<PdPending> pd_pending_;
   std::uint64_t stalta_next_ =
       kUnset; // next sample to feed to the STA/LTA; kUnset after a gap
   bool stalta_armed_ =

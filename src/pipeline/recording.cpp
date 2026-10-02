@@ -41,6 +41,10 @@ void Recorder::write(const Message &m) {
     out_ << std::format("G\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", o->station,
                         o->trigger_window, o->p_time, o->since_p, o->log_dist,
                         o->log_dist_sd, o->declared_at);
+  } else if (auto *q = std::get_if<PdEstimate>(&m)) {
+    out_ << std::format("Q\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", q->station,
+                        q->trigger_window, q->p_time, q->tau, q->pd, q->pd_noise,
+                        q->declared_at);
   }
 }
 
@@ -122,6 +126,11 @@ Recording Recording::load(const std::string &path) {
             std::format("{}:{}: malformed record", path, lineno));
       o.declared_at = rest.back();
       r.messages.emplace_back(std::move(o));
+    } else if (tag == "Q") {
+      PdEstimate q;
+      f >> q.station >> q.trigger_window >> q.p_time >> q.tau >> q.pd >>
+          q.pd_noise >> q.declared_at;
+      r.messages.emplace_back(std::move(q));
     } else {
       throw std::runtime_error(
           std::format("{}:{}: unknown record type '{}'", path, lineno, tag));
@@ -142,6 +151,8 @@ const std::string &station_of(const Message &m) {
     return g->station;
   if (auto *o = std::get_if<StationGeometry>(&m))
     return o->station;
+  if (auto *q = std::get_if<PdEstimate>(&m))
+    return q->station;
   throw std::invalid_argument("message has no station");
 }
 
