@@ -28,6 +28,8 @@
 //   --merge             merge duplicate events (NetworkConfig::merge_duplicates);
 //                       --merge-min N, --merge-rms S, --merge-radius DEG set
 //                       its fit
+//   --min-pick-prob P   minimum P and S probability of a pick used to locate
+//                       (default 0.5, the sphase picker's)
 //   --log               print the network stage's log (ALARM, MERGE, ...)
 //   --pd DIR            estimate the Pd magnitude from the recording's Q
 //                       records with the model in DIR (pd_relation.csv ...)
@@ -141,6 +143,8 @@ int main(int argc, char **argv) try {
       base.merge_rms = std::stod(next());
     else if (a == "--merge-radius")
       base.merge_radius_deg = std::stod(next());
+    else if (a == "--min-pick-prob")
+      base.min_pick_prob = std::stod(next());
     else if (a == "--log")
       log = true;
     else if (a == "--pd") {
