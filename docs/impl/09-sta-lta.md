@@ -111,8 +111,9 @@ Held out (Sındırgı 2025-08-10, 6 stations, 66 catalogue events):
   and 1.3 s for the Mw 6.1. It triggers on the onset sample, while the model
   needs P inside a 6 s window. For the median event the difference is small on
   the held-out data (17.0–17.8 s against 17.5 s) and 1.4–1.9 s on Marmara.
-- **Cost.** The STA/LTA update takes about 0.001 ms per station per 0.5 s
-  step, against 5.2 ms for the three detector models on x86. A 3 h, 8-station
+- **Cost.** The STA/LTA update takes about 0.0005 ms per station per 0.5 s
+  step (`ayzek_bench`, "STA/LTA, 50 samples"), against 5.2 ms for the three
+  detector models on x86, a factor of about 10,000. A 3 h, 8-station
   Marmara replay without magnitude takes 2.3 s of wall time with STA/LTA
   (the rest of the pipeline: decoding, picking, association) and 3 min with
   the model.

@@ -55,14 +55,15 @@ def main():
         print(f"  {k[1][:40]:40s} {ra['p50_ms']:>11.4f} {rb['p50_ms']:>11.4f} {ratio:>6.2f}x"
               f"{'  SLOWER' if slow else ''}")
 
-    ca = {c["threads"]: c for c in A.get("capacity", [])}
-    cb = {c["threads"]: c for c in B.get("capacity", [])}
-    if ca or cb:
-        print(f"\ncapacity (stations at one window per 0.5 s)\n  {'threads':>7} {'A':>8} {'B':>8}")
-        for t in sorted(set(ca) | set(cb)):
-            fa = f"{ca[t]['stations']:.0f}" if t in ca else "-"
-            fb = f"{cb[t]['stations']:.0f}" if t in cb else "-"
-            print(f"  {t:>7} {fa:>8} {fb:>8}")
+    for key, title in (("capacity", "6 s detector"), ("capacity_transformer", "transformer")):
+        ca = {c["threads"]: c for c in A.get(key, [])}
+        cb = {c["threads"]: c for c in B.get(key, [])}
+        if ca or cb:
+            print(f"\ncapacity, {title} (stations at one window per 0.5 s)\n  {'threads':>7} {'A':>8} {'B':>8}")
+            for t in sorted(set(ca) | set(cb)):
+                fa = f"{ca[t]['stations']:.0f}" if t in ca else "-"
+                fb = f"{cb[t]['stations']:.0f}" if t in cb else "-"
+                print(f"  {t:>7} {fa:>8} {fb:>8}")
     for tag, r in (("A", A), ("B", B)):
         m = r.get("magnitude_latency_ms") or {}
         if m.get("loaded_p50"):

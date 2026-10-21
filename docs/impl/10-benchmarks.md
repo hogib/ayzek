@@ -48,18 +48,33 @@ backend (the NEON kernels are aarch64 only):
 | condition a 6 s window | 0.04 ms |
 | detector, one model | 1.7 ms |
 | detector ensemble (3 models) | 5.2 ms |
+| STA/LTA, 50 samples (one 0.5 s step) | 0.0005 ms |
 | per-window total (conditioning, ensemble, STA/LTA) | 5.2 ms |
 | picker, 60 s window | 12.0 ms |
-| magnitude estimate (3 models) | 288 ms |
-| magnitude, one model | 94 ms |
+| magnitude estimate (3 models) | 294 ms |
+| magnitude, one model | 96 ms |
+| transformer, one 0.1 s token | 0.094 ms |
+| transformer stream, 0.5 s of one station (5 tokens, filtering) | 0.49 ms |
+| transformer context refresh (once a quiet minute) | 8.6 ms |
+| Pd displacement chain, 50 samples | 0.0007 ms |
+| Pd magnitude estimate, 10 stations, every window | 0.26 ms |
+
+Measured 21 October 2026 at 7748168 on an idle machine (load average below
+1.6 at the start of each group).
 
 - **The detector costs about 1% of a core per station** (5.2 ms every 0.5 s).
-  One thread sustains 189 windows a second, 95 stations; four threads 372
-  stations; all twelve 591, where SMT and the shared caches take their share.
+  One thread sustains 191 windows a second, 95 stations; four threads 379
+  stations; all twelve 653, where SMT and the shared caches take their share.
+- **The transformer is about ten times cheaper**: 0.49 ms per 0.5 s of a
+  station, because it steps one 0.1 s token against cached keys and values
+  instead of rescoring a 6 s window. One thread sustains 882 stations, all
+  twelve 5,956. Pd magnitude costs nothing measurable beside it.
+- **STA/LTA costs about 10,000 times less than the ensemble** (0.0005 ms per
+  0.5 s step).
 - **The magnitude estimate is the expensive stage**, and 91% of one model is a
   single layer: self-attention over the 1000 raw samples of the 1D branch
   (85.6 of 94 ms). With the other cores busy running detectors it takes
-  509 ms (p99 745 ms), and it runs on the station's own thread.
+  480 ms (p99 602 ms), and it runs on the station's own thread.
 - **A lighter 1D branch, priced with `--layer`:** the detector's design
   (three strided convolutions to 125 steps, BiLSTM, attention over 125 steps)
   costs 4.0 ms against 92 ms, which would make a magnitude model about 7 ms.

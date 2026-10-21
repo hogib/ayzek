@@ -8,13 +8,15 @@
 //
 // Groups:
 //   stages    the pipeline's per-window, per-pick and per-estimate work, with
-//             the shipped models
+//             the shipped models: both detectors, STA/LTA, the picker, and
+//             both magnitudes (the CNN ensemble and Pd)
 //   layers    each network layer at the shape a shipped model runs it at
 //   shapes    layers at the shapes given with --layer, to price a candidate
 //             architecture before it exists in C++, e.g.
 //               --layer lstm:T=125,in=96,h=64 --layer attn:T=125,d=128,heads=4
 //   capacity  detector throughput on 1..N threads, the number of stations that
-//             fits, and the magnitude estimate's latency while they run
+//             fits (6 s detector, then the transformer), and the magnitude
+//             estimate's latency while they run
 //
 // Inputs are synthetic and seeded: inference time here does not depend on the
 // sample values, so no waveform data is needed.
@@ -24,8 +26,10 @@
 #include "magnitude.hpp"
 #include "models.hpp"
 #include "nn.hpp"
+#include "pd_magnitude.hpp"
 #include "simd.hpp"
 #include "stalta.hpp"
+#include "transformer.hpp"
 #include "weights.hpp"
 
 #include <algorithm>
@@ -34,10 +38,12 @@
 #include <chrono>
 #include <cmath>
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <print>
 #include <random>
 #include <set>
@@ -438,6 +444,8 @@ void bench_spec(const Options &o, const std::string &spec) {
 struct Models {
   std::vector<Weights> detectors, magnitude;
   std::unique_ptr<Weights> picker, bandpass;
+  std::unique_ptr<Weights> transformer; // null without transformer.ayzw
+  std::optional<PdModel> pd;            // nullopt without pd_relation.csv
 };
 
 Models load_models(const std::string &dir) {
@@ -450,6 +458,10 @@ Models load_models(const std::string &dir) {
         Weights::load(std::format("{}/magnitude_p{}.ayzw", dir, p)));
   m.picker = std::make_unique<Weights>(Weights::load(dir + "/spicker.ayzw"));
   m.bandpass = std::make_unique<Weights>(Weights::load(dir + "/bandpass.ayzw"));
+  if (std::filesystem::exists(dir + "/transformer.ayzw"))
+    m.transformer =
+        std::make_unique<Weights>(Weights::load(dir + "/transformer.ayzw"));
+  m.pd = PdModel::load(dir);
   return m;
 }
 
@@ -486,6 +498,35 @@ struct WindowWork {
     }
     step += 50;
     return p;
+  }
+};
+
+// The same 0.5 s of one station with the transformer detector: 50 new samples
+// through the stream, five tokens, and the context refresh once a quiet
+// minute has passed.
+struct TransformerWork {
+  OnsetStream stream;
+  std::vector<double> raw;
+  std::vector<OnsetStream::Token> out;
+  std::uint64_t pos = 0;
+
+  explicit TransformerWork(const Weights &w)
+      : stream(w), raw(raw_counts(Detector::kWindow, 3)) {}
+
+  float operator()() {
+    out.clear();
+    for (std::size_t i = 0; i < 50; ++i, ++pos) {
+      const std::size_t t = pos % Detector::kWindow;
+      stream.push(pos, {raw[t * 3], raw[t * 3 + 1], raw[t * 3 + 2]}, out);
+    }
+    return out.empty() ? 0.0f : out.back().p;
+  }
+  // Past the startup scale, a full key/value cache and the first context.
+  void warm_up() {
+    const double s = std::max(stream.config().ctx_seconds,
+                              stream.config().fallback_scale_seconds);
+    for (std::size_t i = 0; i < static_cast<std::size_t>(2 * s) + 40; ++i)
+      g_sink = (*this)();
   }
 };
 
@@ -564,6 +605,71 @@ void bench_stages(const Options &o, const Models &m) {
       g_sink = static_cast<float>(nb.noise().windows);
     });
   }
+
+  // Transformer detector: one step per 0.1 s token against a full key/value
+  // cache, the context it re-encodes after a quiet minute, and the stream
+  // that does both on raw counts.
+  if (m.transformer) {
+    OnsetTransformer net(*m.transformer);
+    const auto &c = net.config();
+    auto token = randn(c.stride * 4);
+    for (std::size_t i = 3; i < token.size(); i += 4)
+      token[i] = 0.0f; // the missing flag
+    for (std::size_t i = 0; i < c.window; ++i)
+      g_sink = net.step(token).p;
+    time_it(o, "stages", "transformer, one token", std::format("{}x4", c.stride),
+            [&] { g_sink = net.step(token).p; });
+    const std::size_t n =
+        static_cast<std::size_t>(std::lround(
+            c.ctx_seconds * 100.0 / static_cast<double>(c.stride))) *
+        c.stride;
+    auto ctx = randn(n * 4);
+    for (std::size_t i = 3; i < ctx.size(); i += 4)
+      ctx[i] = 0.0f;
+    time_it(o, "stages", "transformer context refresh", std::format("{}x4", n),
+            [&] { net.set_context(ctx); });
+    TransformerWork w(*m.transformer);
+    w.warm_up();
+    time_it(o, "stages", "transformer per 0.5 s (stream)", "every 0.5 s",
+            [&] { g_sink = w(); });
+  }
+
+  // Pd magnitude: the displacement chain on each new vertical sample, and an
+  // event's estimate from the stations' values in every window, as many
+  // stations as the network stage would combine for a well-recorded event.
+  if (m.pd) {
+    Displacement disp(m.pd->highpass);
+    const auto raw = raw_counts(Detector::kWindow, 1);
+    std::size_t t = 0;
+    time_it(
+        o, "stages", "Pd displacement, 50 samples", "50x1",
+        [&] {
+          for (int i = 0; i < 50; ++i, t = (t + 1) % raw.size()) {
+            const auto d = disp.push(raw[t]);
+            g_sink = d ? static_cast<float>(*d) : 0.0f;
+          }
+        },
+        0, 100);
+    constexpr std::size_t kStations = 10;
+    std::vector<PdObservation> obs;
+    std::size_t stations = 0;
+    for (const auto &[code, noise] : m.pd->noise) {
+      if (stations == kStations)
+        break;
+      if (m.pd->windows.empty() || m.pd->flagged(code, m.pd->windows[0].tau_s))
+        continue;
+      ++stations;
+      for (const auto &w : m.pd->windows)
+        obs.push_back({code, w.tau_s, 30 * noise, noise,
+                       20.0 + 10.0 * static_cast<double>(stations)});
+    }
+    if (!pd_magnitude(*m.pd, obs))
+      throw std::runtime_error("Pd benchmark: no estimate from its stations");
+    time_it(o, "stages", "Pd magnitude estimate",
+            std::format("{} stations x {} windows", stations,
+                        m.pd->windows.size()),
+            [&] { g_sink = static_cast<float>(pd_magnitude(*m.pd, obs)->mean); });
+  }
 }
 
 void bench_layers(const Options &o) {
@@ -608,38 +714,32 @@ void bench_shapes(const Options &o) {
 
 // Detector throughput on 1..N threads, each a station with its own models.
 // The stations that fit are the windows per second the machine sustains,
-// divided by the two windows each station needs per second.
+// divided by the two windows each station needs per second. A transformer
+// "window" is the same 0.5 s of one station (TransformerWork).
 struct Capacity {
   std::size_t threads = 0;
   double windows_per_s = 0, stations = 0;
 };
-std::vector<Capacity> g_capacity;
+std::vector<Capacity> g_capacity, g_capacity_transformer;
 double g_mag_idle_p50 = 0, g_mag_loaded_p50 = 0, g_mag_loaded_p99 = 0;
 
-void bench_capacity(const Options &o, const Models &m) {
-  const auto bp = dsp::Bandpass::load(*m.bandpass);
-  const std::size_t hw = std::max(1u, std::thread::hardware_concurrency());
-  const std::size_t n = o.threads ? o.threads : hw;
-  const double secs = std::max(o.min_time, o.quick ? 0.1 : 2.0);
-  std::println(
-      "\ncapacity (detector windows per second, all threads together)");
+// `make()` builds one station's work, with any warm-up done.
+template <class Make>
+void throughput(const char *title, const std::vector<std::size_t> &counts,
+                double secs, Make make, std::vector<Capacity> &into) {
+  std::println("\ncapacity, {} (windows per second, all threads together)",
+               title);
   std::println("  {:>7} {:>12} {:>14} {:>16}", "threads", "windows/s",
                "per thread", "stations (0.5 s)");
-  std::vector<std::size_t> counts;
-  for (std::size_t t = 1; t <= n; t = (t < 4 ? t + 1 : t * 2)) {
-    counts.push_back(t);
-    if (t != n && t * 2 > n && t >= 4)
-      counts.push_back(n);
-  }
-  counts.erase(std::unique(counts.begin(), counts.end()), counts.end());
   for (std::size_t t : counts) {
     std::atomic<bool> go{false}, stop{false};
+    std::atomic<std::size_t> ready{0};
     std::vector<std::size_t> done(t, 0);
     std::vector<std::thread> pool;
     for (std::size_t i = 0; i < t; ++i)
       pool.emplace_back([&, i] {
-        WindowWork w(bp, m.detectors);
-        w(); // warm up before the clock starts
+        auto w = make();
+        ++ready;
         while (!go.load())
           std::this_thread::yield();
         while (!stop.load(std::memory_order_relaxed)) {
@@ -647,7 +747,8 @@ void bench_capacity(const Options &o, const Models &m) {
           ++done[i];
         }
       });
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    while (ready.load() < t)
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
     const auto t0 = Clock::now();
     go = true;
     std::this_thread::sleep_for(std::chrono::duration<double>(secs));
@@ -658,10 +759,41 @@ void bench_capacity(const Options &o, const Models &m) {
     const double wps =
         static_cast<double>(std::accumulate(done.begin(), done.end(), 0ul)) /
         el;
-    g_capacity.push_back({t, wps, wps / 2.0});
+    into.push_back({t, wps, wps / 2.0});
     std::println("  {:>7} {:>12.0f} {:>14.0f} {:>16.0f}", t, wps,
                  wps / static_cast<double>(t), wps / 2.0);
   }
+}
+
+void bench_capacity(const Options &o, const Models &m) {
+  const auto bp = dsp::Bandpass::load(*m.bandpass);
+  const std::size_t hw = std::max(1u, std::thread::hardware_concurrency());
+  const std::size_t n = o.threads ? o.threads : hw;
+  const double secs = std::max(o.min_time, o.quick ? 0.1 : 2.0);
+  std::vector<std::size_t> counts;
+  for (std::size_t t = 1; t <= n; t = (t < 4 ? t + 1 : t * 2)) {
+    counts.push_back(t);
+    if (t != n && t * 2 > n && t >= 4)
+      counts.push_back(n);
+  }
+  counts.erase(std::unique(counts.begin(), counts.end()), counts.end());
+  throughput(
+      "6 s detector", counts, secs,
+      [&] {
+        WindowWork w(bp, m.detectors);
+        w(); // warm up before the clock starts
+        return w;
+      },
+      g_capacity);
+  if (m.transformer)
+    throughput(
+        "transformer", counts, secs,
+        [&] {
+          TransformerWork w(*m.transformer);
+          w.warm_up();
+          return w;
+        },
+        g_capacity_transformer);
 
   // The magnitude estimate runs on a station's own thread and holds up that
   // station while it runs, so its latency with the other cores busy is the
@@ -745,13 +877,17 @@ void write_json(const Options &o) {
         r.p90_ms, r.p99_ms, r.mean_ms, r.macs,
         i + 1 < g_results.size() ? "," : "");
   }
-  f << "  ],\n  \"capacity\": [\n";
-  for (std::size_t i = 0; i < g_capacity.size(); ++i) {
-    const auto &c = g_capacity[i];
-    f << std::format("    {{\"threads\": {}, \"windows_per_s\": {:.6g}, "
-                     "\"stations\": {:.6g}}}{}\n",
-                     c.threads, c.windows_per_s, c.stations,
-                     i + 1 < g_capacity.size() ? "," : "");
+  for (const auto &[key, cap] :
+       {std::pair{"capacity", &g_capacity},
+        std::pair{"capacity_transformer", &g_capacity_transformer}}) {
+    f << std::format("  ],\n  \"{}\": [\n", key);
+    for (std::size_t i = 0; i < cap->size(); ++i) {
+      const auto &c = (*cap)[i];
+      f << std::format("    {{\"threads\": {}, \"windows_per_s\": {:.6g}, "
+                       "\"stations\": {:.6g}}}{}\n",
+                       c.threads, c.windows_per_s, c.stations,
+                       i + 1 < cap->size() ? "," : "");
+    }
   }
   f << std::format("  ],\n  \"magnitude_latency_ms\": {{\"idle_p50\": {:.6g}, "
                    "\"loaded_p50\": {:.6g}, \"loaded_p99\": {:.6g}}}\n}}\n",
