@@ -79,8 +79,33 @@ Measured 21 October 2026 at 7748168 on an idle machine (load average below
   (three strided convolutions to 125 steps, BiLSTM, attention over 125 steps)
   costs 4.0 ms against 92 ms, which would make a magnitude model about 7 ms.
 
-No Raspberry Pi has been measured yet. The Pi build produces the same
-`ayzek_bench`, and its JSON can be compared with the x86 one:
+### Raspberry Pi 4
+
+Raspberry Pi 4 Model B (Cortex-A72, 4 cores at 1.8 GHz), NEON backend, the
+static `build-pi` binary, 21 October 2026. Each group started below 55 °C with
+the clock and throttle flags logged every second; the clock held 1.8 GHz
+throughout. A Pi 4 without a heatsink reaches 80–85 °C under the capacity
+group and its accuracy runs, and throttles there; timings taken hot read slow.
+
+| stage | p50 | x86 |
+|---|---:|---:|
+| condition a 6 s window | 0.14 ms | 0.04 ms |
+| detector, one model | 11.8 ms | 1.7 ms |
+| detector ensemble (3 models) | 36.3 ms | 5.2 ms |
+| STA/LTA, 50 samples | 0.0019 ms | 0.0005 ms |
+| picker, 60 s window | 75.7 ms | 12.0 ms |
+| magnitude estimate (3 models) | 3.2 s | 294 ms |
+| transformer stream, 0.5 s of one station | 3.9 ms | 0.49 ms |
+| Pd magnitude estimate, 10 stations | 2.0 ms | 0.26 ms |
+
+- **One core runs 14 stations** with the 6 s detector, four cores 52.
+  The transformer runs 114 on one core but only 197 on four.
+- **The results are the x86 results**: on demo_ko and quiet_ko the scorecards
+  of the 6 s detector and of the transformer (with either magnitude) agree with
+  x86 field for field.
+
+`tools/bench_pi.sh HOST` runs the benchmark and the scorecard there. The JSON
+of either machine can be compared with the other:
 
 ```bash
 python3 tools/bench_compare.py bench/results/x86.json bench/results/pi.json --threshold 0

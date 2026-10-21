@@ -60,5 +60,7 @@ ssh pi@raspberrypi 'cd ayzek && ./ayzek --speed 10 --from 2025-11-10T18:20:00 da
 ```
 
 Budget: three models per window every 0.5 s is 6 inferences a second per
-station. At x86's 5.2 ms per window, a station costs about 1% of one core. A Pi
-core is several times slower, which still leaves room for tens of stations.
+station. At x86's 5.2 ms per window, a station costs about 1% of one core. On a
+Pi 4 a window costs 36.3 ms, about 7% of a core: one core runs 14 stations and
+the four cores 52 (`10-benchmarks.md`). Keep the board cool; it throttles at
+80–85 °C.
