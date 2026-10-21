@@ -73,9 +73,12 @@ EVENT = re.compile(
     r"^Event #\d+: detected M([\d.]+) .*\n"
     r"  alarm\s+(\S+) UTC by (.*)\n"
     r"  magnitude\s+M([\d.]+) (?:at the alarm|[\d.]+ s after the alarm), M([\d.]+) final.*\n"
+    # With the transformer and models/pd_*.csv: the Pd estimate, at the alarm
+    # and final (groups 12 and 13).
+    r"(?:  Pd magn\.\s+M([\d.]+) (?:at the alarm|[\d.]+ s after the alarm), M([\d.]+) .*\n)?"
     r"(?:  location .*\n)?"
     r"  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm ([\d.]+) s after origin, "
-    r"magnitude ([+-][\d.]+)(?:, epicentre ([\d.]+) km off)?", re.M)
+    r"magnitude ([+-][\d.]+)(?:, Pd magnitude ([+-][\d.]+))?(?:, epicentre ([\d.]+) km off)?", re.M)
 
 
 # ayzek --assess: "    unmatched alarms   3 earthquake, 1 possible, 4 misfire, 2 unclassified".
@@ -124,17 +127,25 @@ def score_dataset(name, out):
          "bands": {b: row[b] for b in BANDS if row.get(b)}}
     m = re.search(r"magnitude error\s+mean ([\d.]+) units", out)
     s["magnitude_mae"] = float(m.group(1)) if m else None
+    m = re.search(r"Pd magnitude error\s+mean ([\d.]+) units, bias ([+-]?[\d.]+), (\d+) events", out)
+    if m:
+        s["pd_magnitude_mae"], s["pd_magnitude_bias"] = float(m.group(1)), float(m.group(2))
+        s["pd_magnitude_events"] = int(m.group(3))
     m = re.search(r"alarm before the S wave\s+at (\d+) of (\d+) station arrivals, median warning ([-\d.]+) s", out)
     s["before_s"] = f"{m.group(1)}/{m.group(2)}" if m else None
     s["warning_median_s"] = float(m.group(3)) if m else None
     events = []
     for e in EVENT.finditer(out):
-        events.append({"afad_type": e.group(6), "afad_M": float(e.group(7)),
-                       "origin": e.group(8), "alarm_delay_s": float(e.group(9)),
-                       "M_alarm": float(e.group(4)), "M_final": float(e.group(5)),
-                       "M_error": float(e.group(10)),
-                       "epicentre_km": float(e.group(11)) if e.group(11) else None,
-                       "stations": e.group(3).replace("; later", " +")})
+        ev = {"afad_type": e.group(8), "afad_M": float(e.group(9)),
+              "origin": e.group(10), "alarm_delay_s": float(e.group(11)),
+              "M_alarm": float(e.group(4)), "M_final": float(e.group(5)),
+              "M_error": float(e.group(12)),
+              "epicentre_km": float(e.group(14)) if e.group(14) else None,
+              "stations": e.group(3).replace("; later", " +")}
+        if e.group(13):
+            ev.update({"Pd_alarm": float(e.group(6)), "Pd_final": float(e.group(7)),
+                       "Pd_error": float(e.group(13))})
+        events.append(ev)
     s["events"] = events
     s["assessed"] = assessed(out)
     if "noise" in role:
@@ -197,6 +208,13 @@ def summarise(sets):
         if big:
             h["magnitude MAE, AFAD M>=4"] = round(statistics.mean(abs(e["M_error"]) for e in big), 3)
             h["magnitude bias, AFAD M>=4"] = round(statistics.mean(e["M_error"] for e in big), 3)
+        pd = [e for e in evs if "Pd_error" in e]
+        if pd:
+            h["Pd magnitude MAE, all matched"] = round(statistics.mean(abs(e["Pd_error"]) for e in pd), 3)
+            pdbig = [e for e in pd if e["afad_M"] >= 4.0]
+            if pdbig:
+                h["Pd magnitude MAE, AFAD M>=4"] = round(statistics.mean(abs(e["Pd_error"]) for e in pdbig), 3)
+                h["Pd magnitude bias, AFAD M>=4"] = round(statistics.mean(e["Pd_error"] for e in pdbig), 3)
         loc = [e["epicentre_km"] for e in evs if e["epicentre_km"] is not None]
         if loc:
             h["epicentre error median km"] = round(statistics.median(loc), 1)
@@ -224,7 +242,9 @@ def print_card(card):
         for n, e in big:
             print(f"    {n:11s} {e['afad_type']} {e['afad_M']:.1f} at {e['origin']}: alarm +{e['alarm_delay_s']} s, "
                   f"M{e['M_alarm']} at the alarm, M{e['M_final']} final ({e['M_error']:+.1f}), "
-                  f"epicentre {e['epicentre_km'] if e['epicentre_km'] is not None else '-'} km")
+                  + (f"Pd M{e['Pd_alarm']} at the alarm, M{e['Pd_final']} final ({e['Pd_error']:+.1f}), "
+                     if "Pd_error" in e else "")
+                  + f"epicentre {e['epicentre_km'] if e['epicentre_km'] is not None else '-'} km")
     if card.get("bench"):
         b = card["bench"]
         print(f"\n  speed ({b.get('cpu', '?')}): " + ", ".join(
