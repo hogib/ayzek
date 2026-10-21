@@ -218,6 +218,12 @@ def summarise(sets):
         loc = [e["epicentre_km"] for e in evs if e["epicentre_km"] is not None]
         if loc:
             h["epicentre error median km"] = round(statistics.median(loc), 1)
+        # The AFAD replays alone, so that the figure does not depend on whether
+        # the KO sets happen to be on this machine.
+        afad = [e["epicentre_km"] for v in sets.values() if v["role"] in ("tuning", "held out")
+                for e in v["events"] if e["epicentre_km"] is not None]
+        if afad:
+            h["epicentre error median km, AFAD replays"] = round(statistics.median(afad), 1)
     return h
 
 

@@ -62,10 +62,10 @@
   {
    "id": "detect_ko",
    "where": "README On the published datasets",
-   "claim": "8 of 9 detected on demo_ko, 27 of 36 on marmara_ko",
+   "claim": "8 of 9 detected on demo_ko, 28 of 37 on marmara_ko",
    "source": "scorecard",
    "key": "summary.detected (public)",
-   "expect": "35/45"
+   "expect": "36/46"
   },
   {
    "id": "demo_alarm",
@@ -115,9 +115,9 @@
   {
    "id": "epicentre",
    "where": "README Results",
-   "claim": "median epicentre error 10 km over the matched events",
+   "claim": "median epicentre error 10 km over the matched events of the AFAD replays",
    "source": "scorecard",
-   "key": "summary.epicentre error median km",
+   "key": "summary.epicentre error median km, AFAD replays",
    "expect": 10.0,
    "tolerance": 1.0
   },
@@ -440,7 +440,7 @@
   },
   {
    "claim": "Raspberry Pi timing",
-   "how": "tools/bench_pi.sh on real hardware; never measured"
+   "how": "tools/bench_pi.sh on real hardware; measured 2026-10-21 on a Pi 4: 36.3 ms per window, 14 stations a core (docs/impl/10)"
   },
   {
    "claim": "the Windows binaries run",

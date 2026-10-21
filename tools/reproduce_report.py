@@ -85,9 +85,12 @@ def main():
             ("scorecard", "scorecard_stalta_eqfa", "scorecard_stalta_eqdet",
              "bench_stages", "bench_layers", "bench_capacity")}
 
+    # Claims with a "probe" instead of a "source" read files earlier runs
+    # wrote; tools/verify_claims.py checks those (stage 0), not this report.
+    claims = [c for c in spec["claims"] if "source" in c]
     ok = bad = skipped = 0
     print(f"{'claim':52s} {'published':>12} {'measured':>12}  where")
-    for c in spec["claims"]:
+    for c in claims:
         got = lookup(docs.get(c["source"]), c["key"])
         verdict = agrees(c["expect"], got, c.get("tolerance", 0))
         shown = ("-" if got is None else
@@ -102,7 +105,7 @@ def main():
     print(f"\n{ok} claims reproduced, {bad} differ, {skipped} not checked here")
     if skipped:
         print("\nnot checked, most likely because the dataset is not on this machine:")
-        for c in spec["claims"]:
+        for c in claims:
             if lookup(docs.get(c["source"]), c["key"]) is None:
                 print(f"  {c['id']:24s} needs {c['source']}")
     print("\nclaims no run on this machine can check:")
