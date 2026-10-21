@@ -1,0 +1,109 @@
+"""Per-event outcomes of a detector on a replay, for paired statistics.
+
+    python3 tools/event_outcomes.py --catalog tests/catalogs/sindirgi61.csv \\
+        --dataset 'sindirgi61:data/runs/cache_sindirgi61:data/sindirgi61/*.mseed' \\
+        --detector learned --shifts 127,263,391 --out outcomes.csv
+
+Runs ayzek once against the catalogue and once against each copy shifted by
++S and -S seconds, exactly as tools/sweep_trigger.py does for its chance level,
+and writes one row per catalogue event and run: detected or missed. The event
+is identified by its unshifted origin time, so the rows of one event line up
+across shifts and across detectors, which is what a paired test needs.
+
+--detector is `learned` (the cached window probabilities, default trigger
+rule), `stalta_eqfa` (--detector stalta) or `stalta_eqdet` (the equal
+detections setting of docs/impl/09); anything after `--` is passed to ayzek.
+Standard library only.
+"""
+import argparse
+import concurrent.futures
+import csv
+import datetime as dt
+import glob
+import re
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from sweep_trigger import data_span, write_catalogue  # noqa: E402
+
+DETECTORS = {
+    "learned": [],
+    "stalta_eqfa": ["--detector", "stalta"],
+    "stalta_eqdet": ["--detector", "stalta", "--stalta-band", "2,10", "--sta", "0.5",
+                     "--lta", "10", "--stalta-on", "6"],
+}
+# Detected: the AFAD line of an event block. Missed: the list after the counts.
+DETECTED = re.compile(r"^  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm", re.M)
+MISSED = re.compile(r"^    (\d\d:\d\d:\d\d\.\d\d) UTC  (\w+) ([\d.]+) ", re.M)
+CATALOGUE = re.compile(r"AFAD events within \d+ km\s+(\d+)")
+
+
+def unshift(hms, shift):
+    t = dt.datetime.strptime(hms, "%H:%M:%S.%f") - dt.timedelta(seconds=shift)
+    return t.strftime("%H:%M:%S.%f")[:-4]
+
+
+def outcomes(out, shift):
+    """{(origin, type, M): detected} for one report, at unshifted times."""
+    ev = {}
+    for kind, mag, hms in DETECTED.findall(out):
+        ev[(unshift(hms, shift), kind, mag)] = 1
+    tail = out[out.find("Missed AFAD events"):] if "Missed AFAD events" in out else ""
+    tail = tail[:tail.find("\n\n", 20)] if tail else ""
+    for hms, kind, mag in MISSED.findall(tail):
+        ev[(unshift(hms, shift), kind, mag)] = 0
+    m = CATALOGUE.search(out)
+    if m and int(m.group(1)) != len(ev):
+        sys.exit(f"parsed {len(ev)} events, the report counts {m.group(1)}")
+    return ev
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--binary", default="build-release/app/ayzek")
+    ap.add_argument("--catalog", required=True)
+    ap.add_argument("--dataset", required=True, help="NAME:CACHE:FILE[,FILE...]")
+    ap.add_argument("--detector", choices=DETECTORS, required=True)
+    ap.add_argument("--shifts", default="127,263,391")
+    ap.add_argument("--jobs", type=int, default=7)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("extra", nargs="*", help="after --: more ayzek options")
+    a = ap.parse_args()
+
+    name, cache, files = a.dataset.split(":", 2)
+    paths = sorted(p for f in files.split(",") for p in glob.glob(f))
+    if not paths:
+        sys.exit(f"{name}: no files")
+    span = data_span(paths)
+    shifts = [0, *(s * sign for s in (int(x) for x in a.shifts.split(",") if x) for sign in (1, -1))]
+
+    with tempfile.TemporaryDirectory(prefix="outcomes_") as tmp:
+        def run(shift):
+            cat = Path(tmp) / f"{name}_{shift}.csv"
+            write_catalogue(a.catalog, cat, span, shift)
+            cmd = [a.binary, "--speed", "0", "--no-color", "--no-magnitude", "--catalog", str(cat),
+                   *DETECTORS[a.detector], *a.extra]
+            if a.detector == "learned":
+                cmd += ["--scores-in", cache]
+            out = subprocess.run([*cmd, *paths], capture_output=True, text=True).stdout
+            return shift, outcomes(out, shift)
+
+        with concurrent.futures.ThreadPoolExecutor(a.jobs) as pool:
+            results = dict(pool.map(run, shifts))
+
+    with open(a.out, "w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["dataset", "detector", "shift", "origin", "type", "magnitude", "detected"])
+        for shift in shifts:
+            for (origin, kind, mag), d in sorted(results[shift].items()):
+                w.writerow([name, a.detector, shift, origin, kind, mag, d])
+    obs = results[0]
+    print(f"{name} {a.detector}: {sum(obs.values())} of {len(obs)} detected; "
+          + ", ".join(f"{s:+d}: {sum(results[s].values())}/{len(results[s])}" for s in shifts[1:]))
+
+
+if __name__ == "__main__":
+    main()
