@@ -1,0 +1,35 @@
+{
+  "host": "mousb",
+  "cpu": "AMD Ryzen 5 5600 6-Core Processor",
+  "cores": 12,
+  "backend": "scalar",
+  "optimized": true,
+  "compiler": "16.2.1 20260810",
+  "version": "v0.1.0-beta.2-34-g7748168-dirty",
+  "models": "models",
+  "date": "2026-10-21T18:50:49Z",
+  "min_time_s": 2,
+  "quick": false,
+  "results": [
+    {"group": "layers", "name": "detector conv 1", "shape": "conv1d:L=600,cin=3,cout=24,k=7,s=2", "iters": 79816, "min_ms": 0.024015, "p50_ms": 0.024767, "p90_ms": 0.025308, "p99_ms": 0.030738, "mean_ms": 0.024994, "macs": 151200},
+    {"group": "layers", "name": "detector conv 2", "shape": "conv1d:L=300,cin=24,cout=48,k=5,s=2", "iters": 18326, "min_ms": 0.108124, "p50_ms": 0.108605, "p90_ms": 0.11121, "p99_ms": 0.116289, "mean_ms": 0.109077, "macs": 864000},
+    {"group": "layers", "name": "detector conv 3", "shape": "conv1d:L=150,cin=48,cout=96,k=5,s=2", "iters": 9187, "min_ms": 0.216528, "p50_ms": 0.216749, "p90_ms": 0.219814, "p99_ms": 0.226778, "mean_ms": 0.217651, "macs": 1.728e+06},
+    {"group": "layers", "name": "detector BiLSTM", "shape": "lstm:T=75,h=48,in=96", "iters": 3474, "min_ms": 0.569083, "p50_ms": 0.57271, "p90_ms": 0.57773, "p99_ms": 0.700652, "mean_ms": 0.57579, "macs": 4.1472e+06},
+    {"group": "layers", "name": "detector attention", "shape": "attn:T=75,d=96,heads=4", "iters": 3107, "min_ms": 0.63091, "p50_ms": 0.635048, "p90_ms": 0.643093, "p99_ms": 0.914184, "mean_ms": 0.643768, "macs": 3.8448e+06},
+    {"group": "layers", "name": "picker conv 1", "shape": "conv1d:L=6000,cin=3,cout=32,k=9,s=2", "iters": 4883, "min_ms": 0.401617, "p50_ms": 0.409041, "p90_ms": 0.41349, "p99_ms": 0.420683, "mean_ms": 0.409531, "macs": 2.592e+06},
+    {"group": "layers", "name": "picker conv 2", "shape": "conv1d:L=3000,cin=32,cout=64,k=9,s=2", "iters": 586, "min_ms": 3.40536, "p50_ms": 3.41216, "p90_ms": 3.42993, "p99_ms": 3.43849, "mean_ms": 3.41578, "macs": 2.7648e+07},
+    {"group": "layers", "name": "picker conv 3", "shape": "conv1d:L=1500,cin=64,cout=64,k=7,s=2", "iters": 654, "min_ms": 3.05114, "p50_ms": 3.05454, "p90_ms": 3.06477, "p99_ms": 3.09828, "mean_ms": 3.05853, "macs": 2.1504e+07},
+    {"group": "layers", "name": "picker BiLSTM", "shape": "lstm:T=250,h=32,in=64", "iters": 2072, "min_ms": 0.958779, "p50_ms": 0.963106, "p90_ms": 0.966643, "p99_ms": 0.985329, "mean_ms": 0.965258, "macs": 6.144e+06},
+    {"group": "layers", "name": "picker attention", "shape": "attn:T=250,d=64,heads=4", "iters": 516, "min_ms": 3.85492, "p50_ms": 3.86066, "p90_ms": 3.89725, "p99_ms": 4.36203, "mean_ms": 3.8807, "macs": 1.2096e+07},
+    {"group": "layers", "name": "magnitude BiLSTM (1D)", "shape": "lstm:T=1000,h=64,in=3", "iters": 309, "min_ms": 6.42619, "p50_ms": 6.4499, "p90_ms": 6.50995, "p99_ms": 6.81754, "mean_ms": 6.47636, "macs": 3.4304e+07},
+    {"group": "layers", "name": "magnitude attention (1D)", "shape": "attn:T=1000,d=128,heads=4", "iters": 24, "min_ms": 84.8737, "p50_ms": 85.2994, "p90_ms": 86.1489, "p99_ms": 93.1287, "mean_ms": 85.7086, "macs": 3.21536e+08},
+    {"group": "layers", "name": "magnitude conv 1 (2D)", "shape": "conv2d:H=65,W=32,cin=3,cout=32,k=3,s=1", "iters": 6469, "min_ms": 0.303763, "p50_ms": 0.30759, "p90_ms": 0.312039, "p99_ms": 0.32303, "mean_ms": 0.309144, "macs": 1.79712e+06},
+    {"group": "layers", "name": "magnitude conv 2 (2D)", "shape": "conv2d:H=65,W=32,cin=32,cout=64,k=3,s=2", "iters": 1578, "min_ms": 1.2624, "p50_ms": 1.26433, "p90_ms": 1.27332, "p99_ms": 1.32276, "mean_ms": 1.26772, "macs": 9.7321e+06},
+    {"group": "layers", "name": "magnitude conv 3 (2D)", "shape": "conv2d:H=33,W=16,cin=64,cout=128,k=3,s=2", "iters": 1309, "min_ms": 1.52105, "p50_ms": 1.52596, "p90_ms": 1.53397, "p99_ms": 1.58678, "mean_ms": 1.52863, "macs": 1.0027e+07}
+  ],
+  "capacity": [
+  ],
+  "capacity_transformer": [
+  ],
+  "magnitude_latency_ms": {"idle_p50": 0, "loaded_p50": 0, "loaded_p99": 0}
+}

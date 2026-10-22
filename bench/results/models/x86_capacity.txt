@@ -1,0 +1,23 @@
+ayzek_bench v0.1.0-beta.2-34-g7748168-dirty  |  AMD Ryzen 5 5600 6-Core Processor  |  12 cores  |  scalar backend  |  optimised build
+
+capacity, 6 s detector (windows per second, all threads together)
+  threads    windows/s     per thread stations (0.5 s)
+        1          191            191               95
+        2          381            191              191
+        3          569            190              285
+        4          757            189              379
+        8         1111            139              555
+       12         1306            109              653
+
+capacity, transformer (windows per second, all threads together)
+  threads    windows/s     per thread stations (0.5 s)
+        1         1764           1764              882
+        2         3480           1740             1740
+        3         5155           1718             2578
+        4         6814           1704             3407
+        8        10727           1341             5363
+       12        11913            993             5956
+
+magnitude estimate (3 models): 289.7 ms alone, 480.4 ms (p99 601.7) with 11 detector threads running
+
+results -> bench/results/models/x86_capacity.json

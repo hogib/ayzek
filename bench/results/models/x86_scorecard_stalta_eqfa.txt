@@ -1,0 +1,22 @@
+  demo_ko: done
+  quiet_ko: done
+
+scorecard  models=/home/oguzb/Projects/Codings/ayzek/ayzek_code/models  args=--detector stalta  (2026-10-21T18:27:55Z, v0.1.0-beta.2-34-g7748168-dirty)
+
+  detected (public)                  6/9
+  unmatched alarms (public)          1
+  false alarms per day (public noise) 102.86
+  hours (public noise)               5.8
+  magnitude MAE, all matched         0.383
+  magnitude MAE, AFAD M>=4           0.3
+  magnitude bias, AFAD M>=4          -0.3
+  epicentre error median km          2.8
+
+  dataset     role           st  detected  alarms unmatched  delay  mag MAE false/day
+  demo_ko     public          6       6/9       7         1   17.3      0.4         -
+  quiet_ko    public noise    6       0/0      25        25      -        -     102.9
+
+  large events (AFAD M>=4)
+    demo_ko     MW 4.9 at 18:20:51.00: alarm +16.9 s, M4.2 at the alarm, M4.6 final (-0.3), epicentre 2.6 km
+
+scorecard -> bench/results/models/x86_scorecard_stalta_eqfa.json

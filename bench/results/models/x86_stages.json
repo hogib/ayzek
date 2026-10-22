@@ -1,0 +1,35 @@
+{
+  "host": "mousb",
+  "cpu": "AMD Ryzen 5 5600 6-Core Processor",
+  "cores": 12,
+  "backend": "scalar",
+  "optimized": true,
+  "compiler": "16.2.1 20260810",
+  "version": "v0.1.0-beta.2-34-g7748168-dirty",
+  "models": "models",
+  "date": "2026-10-21T18:50:19Z",
+  "min_time_s": 2,
+  "quick": false,
+  "results": [
+    {"group": "stages", "name": "condition 6 s window", "shape": "600x3", "iters": 52654, "min_ms": 0.0369, "p50_ms": 0.03758, "p90_ms": 0.038823, "p99_ms": 0.041909, "mean_ms": 0.0379254, "macs": 0},
+    {"group": "stages", "name": "detector, one model", "shape": "600x3", "iters": 1170, "min_ms": 1.70146, "p50_ms": 1.70744, "p90_ms": 1.71905, "p99_ms": 1.7428, "mean_ms": 1.71045, "macs": 0},
+    {"group": "stages", "name": "detector ensemble (3 models)", "shape": "600x3", "iters": 386, "min_ms": 5.16257, "p50_ms": 5.1787, "p90_ms": 5.212, "p99_ms": 5.3641, "mean_ms": 5.18953, "macs": 0},
+    {"group": "stages", "name": "STA/LTA, 50 samples", "shape": "50x3", "iters": 3935100, "min_ms": 0.00045326, "p50_ms": 0.00050536, "p90_ms": 0.00050876, "p99_ms": 0.00054092, "mean_ms": 0.000507694, "macs": 0},
+    {"group": "stages", "name": "per-window total", "shape": "every 0.5 s", "iters": 383, "min_ms": 5.20193, "p50_ms": 5.21618, "p90_ms": 5.25852, "p99_ms": 5.31449, "mean_ms": 5.22515, "macs": 0},
+    {"group": "stages", "name": "condition 60 s window", "shape": "6000x3", "iters": 5580, "min_ms": 0.349079, "p50_ms": 0.357725, "p90_ms": 0.364117, "p99_ms": 0.37075, "mean_ms": 0.358371, "macs": 0},
+    {"group": "stages", "name": "picker", "shape": "3x6000", "iters": 167, "min_ms": 11.905, "p50_ms": 11.9954, "p90_ms": 12.0416, "p99_ms": 12.1508, "mean_ms": 11.9929, "macs": 0},
+    {"group": "stages", "name": "magnitude estimate (3 models)", "shape": "1000x3", "iters": 10, "min_ms": 291.558, "p50_ms": 293.653, "p90_ms": 296.297, "p99_ms": 297.758, "mean_ms": 293.719, "macs": 0},
+    {"group": "stages", "name": "magnitude, one model", "shape": "1000x3 + 3x65x32", "iters": 21, "min_ms": 95.2933, "p50_ms": 95.8437, "p90_ms": 97.6156, "p99_ms": 97.9923, "mean_ms": 96.3441, "macs": 0},
+    {"group": "stages", "name": "noise baseline update", "shape": "1000x3", "iters": 1197, "min_ms": 0.469285, "p50_ms": 1.6805, "p90_ms": 1.69077, "p99_ms": 1.79481, "mean_ms": 1.67124, "macs": 0},
+    {"group": "stages", "name": "transformer, one token", "shape": "10x4", "iters": 21095, "min_ms": 0.091062, "p50_ms": 0.094418, "p90_ms": 0.096312, "p99_ms": 0.100891, "mean_ms": 0.0947481, "macs": 0},
+    {"group": "stages", "name": "transformer context refresh", "shape": "6000x4", "iters": 234, "min_ms": 8.52193, "p50_ms": 8.55776, "p90_ms": 8.57969, "p99_ms": 8.65727, "mean_ms": 8.55974, "macs": 0},
+    {"group": "stages", "name": "transformer per 0.5 s (stream)", "shape": "every 0.5 s", "iters": 3525, "min_ms": 0.488632, "p50_ms": 0.494512, "p90_ms": 0.500033, "p99_ms": 0.727572, "mean_ms": 0.567454, "macs": 0},
+    {"group": "stages", "name": "Pd displacement, 50 samples", "shape": "50x1", "iters": 2941900, "min_ms": 0.00067597, "p50_ms": 0.00067637, "p90_ms": 0.00067658, "p99_ms": 0.00071876, "mean_ms": 0.000679293, "macs": 0},
+    {"group": "stages", "name": "Pd magnitude estimate", "shape": "10 stations x 7 windows", "iters": 7689, "min_ms": 0.257205, "p50_ms": 0.258848, "p90_ms": 0.262025, "p99_ms": 0.27593, "mean_ms": 0.260087, "macs": 0}
+  ],
+  "capacity": [
+  ],
+  "capacity_transformer": [
+  ],
+  "magnitude_latency_ms": {"idle_p50": 0, "loaded_p50": 0, "loaded_p99": 0}
+}

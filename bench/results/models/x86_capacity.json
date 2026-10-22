@@ -1,0 +1,32 @@
+{
+  "host": "mousb",
+  "cpu": "AMD Ryzen 5 5600 6-Core Processor",
+  "cores": 12,
+  "backend": "scalar",
+  "optimized": true,
+  "compiler": "16.2.1 20260810",
+  "version": "v0.1.0-beta.2-34-g7748168-dirty",
+  "models": "models",
+  "date": "2026-10-21T18:51:30Z",
+  "min_time_s": 2,
+  "quick": false,
+  "results": [
+  ],
+  "capacity": [
+    {"threads": 1, "windows_per_s": 190.842, "stations": 95.4211},
+    {"threads": 2, "windows_per_s": 381.286, "stations": 190.643},
+    {"threads": 3, "windows_per_s": 569.199, "stations": 284.6},
+    {"threads": 4, "windows_per_s": 757.396, "stations": 378.698},
+    {"threads": 8, "windows_per_s": 1110.91, "stations": 555.456},
+    {"threads": 12, "windows_per_s": 1305.8, "stations": 652.9}
+  ],
+  "capacity_transformer": [
+    {"threads": 1, "windows_per_s": 1764.18, "stations": 882.091},
+    {"threads": 2, "windows_per_s": 3479.73, "stations": 1739.87},
+    {"threads": 3, "windows_per_s": 5155.5, "stations": 2577.75},
+    {"threads": 4, "windows_per_s": 6814.38, "stations": 3407.19},
+    {"threads": 8, "windows_per_s": 10726.8, "stations": 5363.39},
+    {"threads": 12, "windows_per_s": 11912.6, "stations": 5956.3}
+  ],
+  "magnitude_latency_ms": {"idle_p50": 289.722, "loaded_p50": 480.353, "loaded_p99": 601.66}
+}

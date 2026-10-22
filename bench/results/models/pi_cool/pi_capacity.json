@@ -1,0 +1,28 @@
+{
+  "host": "vegspi4",
+  "cpu": "Raspberry Pi 4 Model B Rev 1.5",
+  "cores": 4,
+  "backend": "neon",
+  "optimized": true,
+  "compiler": "Clang 22.1.8",
+  "version": "v0.1.0-beta.2-34-g7748168-dirty",
+  "models": "models",
+  "date": "2026-10-21T19:16:22Z",
+  "min_time_s": 2,
+  "quick": false,
+  "results": [
+  ],
+  "capacity": [
+    {"threads": 1, "windows_per_s": 27.3331, "stations": 13.6666},
+    {"threads": 2, "windows_per_s": 54.5195, "stations": 27.2597},
+    {"threads": 3, "windows_per_s": 80.3869, "stations": 40.1935},
+    {"threads": 4, "windows_per_s": 104.857, "stations": 52.4284}
+  ],
+  "capacity_transformer": [
+    {"threads": 1, "windows_per_s": 227.849, "stations": 113.924},
+    {"threads": 2, "windows_per_s": 326.092, "stations": 163.046},
+    {"threads": 3, "windows_per_s": 385.311, "stations": 192.655},
+    {"threads": 4, "windows_per_s": 394.661, "stations": 197.33}
+  ],
+  "magnitude_latency_ms": {"idle_p50": 3263.44, "loaded_p50": 3602.85, "loaded_p99": 3707.18}
+}

@@ -1,0 +1,68 @@
+ayzek    6 stations, neon backend, onset transformer (p >= 0.968322, release 0.484161, dt restart 1/5 s, P from dt) + geometry locator + 3-model magnitude, replay 2024-01-03 11:25:02.07 to 17:25:00.01 UTC at full speed
+ayzek    catalogue: 11 events in the replay span
+ALARM    #1   16:38:46.30  earthquake detected by KULA, SIMA, TVSB
+MAG      #1   16:38:46.30  magnitude M2.5 from 2 stations (SIMA 2.7, TVSB 2.3)
+RANGE    #1   16:38:46.30  128 km from SIMA (116-141 km), 114 km from TVSB (99-133 km); 2 of 3 stations to locate
+LOCATE   #1   16:38:46.30  located at 40.141N 28.530E +-14 km, origin 16:38:13.30, rms 0.19 s from 3 stations
+LOCATE   #1   16:38:47.30  located at 40.111N 28.545E +-13 km, origin 16:38:13.87, rms 0.18 s from 3 stations
+LOCATE   #1   16:38:48.90  located at 40.146N 28.520E +-11 km, origin 16:38:13.17, rms 0.20 s from 3 stations
+LOCATE   #1   16:38:49.20  located at 40.166N 28.510E +-13 km, origin 16:38:12.79, rms 0.21 s from 3 stations
+LOCATE   #1   16:38:49.90  located at 40.201N 28.475E +-13 km, origin 16:38:12.04, rms 0.24 s from 3 stations
+LOCATE   #1   16:38:50.30  located at 40.186N 28.475E +-12 km, origin 16:38:12.28, rms 0.25 s from 3 stations
+LOCATE   #1   16:38:50.90  located at 40.161N 28.500E +-13 km, origin 16:38:12.82, rms 0.22 s from 3 stations
+LOCATE   #1   16:38:51.20  located at 40.186N 28.485E +-12 km, origin 16:38:12.34, rms 0.23 s from 3 stations
+MAG      #1   16:38:51.75  magnitude M2.6 from 3 stations (KULA 2.6, SIMA 2.7, TVSB 2.3)
+LOCATE   #1   16:38:51.90  located at 40.166N 28.505E +-13 km, origin 16:38:12.77, rms 0.21 s from 3 stations
+LOCATE   #1   16:38:52.20  located at 40.141N 28.515E +-11 km, origin 16:38:13.23, rms 0.21 s from 3 stations
+LOCATE   #1   16:39:01.30  located at 40.156N 28.510E +-12 km, origin 16:38:12.96, rms 0.21 s from 3 stations
+LOCATE   #1   16:39:02.30  located at 40.176N 28.505E +-12 km, origin 16:38:12.61, rms 0.21 s from 3 stations
+
+------------------------------------------------------------------------------
+REPORT  6 stations, 2024-01-03 11:33:50.00 to 17:25:00.01 UTC
+------------------------------------------------------------------------------
+
+Event #1: detected M2.6 earthquake at 40.181N 28.505E, origin 16:38:12.52 UTC
+  alarm      16:38:46.30 UTC by KULA, SIMA, TVSB
+  magnitude  M2.5 at the alarm, M2.6 final from 3 stations
+  location   rms 0.22 s from 3 stations, +-11 km, first 0.0 s after the alarm (transformer geometry)
+  AFAD       no matching catalogue event
+  S wave     had travelled 118 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             TVSB         115 km   16:38:45.58 UTC (predicted)    -0.7 s  after S
+             SIMA         129 km   16:38:49.41 UTC (predicted)    +3.1 s  before S
+             YAYO         138 km   16:38:51.95 UTC (predicted)    +5.7 s  before S
+             GEDZ         148 km   16:38:54.98 UTC (predicted)    +8.7 s  before S
+             DKL          184 km   16:39:05.27 UTC (predicted)   +19.0 s  before S
+             KULA         186 km   16:39:05.68 UTC (predicted)   +19.4 s  before S
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                           1
+  single-station detections, no alarm    14
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)        0    0%
+    false    (no AFAD event)              1  100%
+
+  AFAD events within 250 km                0
+    detected                              0     -
+    missed                                0     -
+
+  By magnitude      AFAD events   detected   missed
+
+  False alarms (no AFAD event; small uncatalogued earthquakes are possible)
+    16:38:46.30 UTC  #1  M2.6, located 40.18N 28.50E
+------------------------------------------------------------------------------
+
+Station processing (neon backend)
+         windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
+  DKL     216000         0        5      0               5/0      3.904 (13.855)         0          17184
+  GEDZ    216000         0        5      0               5/0      3.921 (13.858)         0          16566
+  KULA    216000         0        1      0               1/0      4.130 (13.879)         0          12664
+  SIMA    216000         0        1      0               1/0      4.160 (13.905)         0          13298
+  TVSB    216000         0        4      0               4/0      3.968 (13.862)         0          18420
+  YAYO    216000         0        1      0               1/0      4.122 (13.896)         0          13787
+  transformer: "windows" are 0.1 s tokens; 1497 station context refreshes; 0 of 17 triggers from a dt restart; 165 geometry estimates sent; 119 Pd values sent
+  magnitude at the picked P: 0 estimated, 0 not (trigger not part of a declared event)
+  1296000 windows in 964.0 s: 22x real time per station

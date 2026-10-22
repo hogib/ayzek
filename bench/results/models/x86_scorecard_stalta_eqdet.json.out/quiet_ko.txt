@@ -1,0 +1,155 @@
+ayzek    6 stations, scalar backend, STA/LTA 0.5/10 s on 6 off 1.5, 2-10 Hz, Z + picker + 3-model magnitude, replay 2024-01-03 11:25:02.07 to 17:25:00.01 UTC at full speed
+ayzek    catalogue: 11 events in the replay span
+ALARM    #1   11:37:08.30  earthquake detected by DKL, TVSB
+MAG      #1   11:37:08.30  magnitude M2.7 from 1 station (DKL 2.7)
+MAG      #1   11:37:16.29  magnitude M2.7 from 2 stations (DKL 2.7, TVSB 2.7)
+pick     YAYO  picker window at 12:27:44.57 crosses a gap, skipped
+ALARM    #2   11:47:00.32  earthquake detected by DKL, SIMA
+MAG      #2   11:47:00.32  magnitude M2.5 from 1 station (DKL 2.5)
+MAG      #2   11:47:08.31  magnitude M3.2 from 2 stations (DKL 2.5, SIMA 3.8)
+MAG      #2   11:47:54.81  magnitude M2.7 from 2 stations (DKL 2.5, SIMA 2.9)
+ALARM    #3   12:36:31.23  earthquake detected by DKL, SIMA
+MAG      #3   12:36:31.23  magnitude M2.6 from 1 station (DKL 2.6)
+MAG      #3   12:36:39.22  magnitude M2.8 from 2 stations (DKL 2.6, SIMA 3.0)
+MAG      #3   12:36:57.84  magnitude M2.7 from 2 stations (DKL 2.4, SIMA 3.0)
+ALARM    #4   14:49:52.20  earthquake detected by DKL, GEDZ
+MAG      #4   14:49:59.77  magnitude M2.6 from 1 station (DKL 2.6)
+MAG      #4   14:50:00.19  magnitude M2.6 from 2 stations (DKL 2.6, GEDZ 2.6)
+MAG      #4   14:50:46.27  magnitude M2.5 from 2 stations (DKL 2.5, GEDZ 2.6)
+ALARM    #5   15:35:22.08  earthquake detected by DKL, SIMA
+MAG      #5   15:35:27.24  magnitude M3.0 from 1 station (DKL 3.0)
+MAG      #5   15:35:30.07  magnitude M2.7 from 2 stations (DKL 3.0, SIMA 2.4)
+ALARM    #6   15:52:19.69  earthquake detected by DKL, YAYO
+MAG      #6   15:52:21.78  magnitude M3.5 from 1 station (DKL 3.5)
+MAG      #6   15:52:27.68  magnitude M3.5 from 2 stations (DKL 3.5, YAYO 3.4)
+ALARM    #7   16:02:00.85  earthquake detected by DKL, YAYO
+MAG      #7   16:02:06.55  magnitude M2.8 from 1 station (YAYO 2.8)
+MAG      #7   16:02:08.84  magnitude M3.3 from 2 stations (DKL 3.8, YAYO 2.8)
+LOCATE   #7   16:02:55.34  located at 39.351N 26.984E, origin 16:01:51.53, rms 1.09 s from 2 stations
+MAG      #7   16:02:55.34  magnitude M3.0 from 2 stations (DKL 3.3, YAYO 2.7)
+ALARM    #8   16:08:22.36  earthquake detected by TVSB, YAYO
+MAG      #8   16:08:26.26  magnitude M3.5 from 1 station (YAYO 3.5)
+MAG      #8   16:08:30.35  magnitude M2.9 from 2 stations (TVSB 2.4, YAYO 3.5)
+ALARM    #9   16:29:42.26  earthquake detected by DKL, GEDZ
+MAG      #9   16:29:49.08  magnitude M4.1 from 1 station (DKL 4.1)
+MAG      #9   16:29:50.25  magnitude M3.1 from 2 stations (DKL 4.1, GEDZ 2.2)
+MAG      #9   16:30:35.58  magnitude M3.0 from 2 stations (DKL 3.7, GEDZ 2.2)
+ALARM    #10  16:38:32.71  earthquake detected by DKL, TVSB
+MAG      #10  16:38:37.73  magnitude M3.1 from 1 station (DKL 3.1)
+MAG      #10  16:38:40.70  magnitude M2.7 from 2 stations (DKL 3.1, TVSB 2.2)
+MAG      #10  16:38:42.75  magnitude M2.6 from 3 stations (DKL 3.1, SIMA 2.6, TVSB 2.2)
+MAG      #10  16:38:47.13  magnitude M2.6 from 4 stations (DKL 3.1, SIMA 2.6, TVSB 2.2, YAYO 2.6)
+MAG      #10  16:38:52.32  magnitude M2.6 from 5 stations (DKL 3.1, KULA 2.6, SIMA 2.6, TVSB 2.2, YAYO 2.6)
+LOCATE   #10  16:39:33.63  located at 40.750N 28.887E, origin 16:38:04.38, rms 0.51 s from 2 stations
+
+------------------------------------------------------------------------------
+REPORT  6 stations, 2024-01-03 11:33:50.00 to 17:25:00.01 UTC
+------------------------------------------------------------------------------
+
+Event #1: detected M2.7 earthquake, not located
+  alarm      11:37:08.30 UTC by DKL, TVSB
+  magnitude  M2.7 at the alarm, M2.7 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #2: detected M2.7 earthquake, not located
+  alarm      11:47:00.32 UTC by DKL, SIMA
+  magnitude  M2.5 at the alarm, M2.7 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #3: detected M2.7 earthquake, not located
+  alarm      12:36:31.23 UTC by DKL, SIMA
+  magnitude  M2.6 at the alarm, M2.7 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #4: detected M2.5 earthquake, not located
+  alarm      14:49:52.20 UTC by DKL, GEDZ
+  magnitude  M2.6 7.6 s after the alarm, M2.5 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #5: detected M2.8 earthquake, not located
+  alarm      15:35:22.08 UTC by DKL, SIMA
+  magnitude  M3.0 5.2 s after the alarm, M2.8 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #6: detected M3.5 earthquake, not located
+  alarm      15:52:19.69 UTC by DKL, YAYO
+  magnitude  M3.5 2.1 s after the alarm, M3.5 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #7: detected M3.0 earthquake at 39.351N 26.984E, origin 16:01:51.53 UTC
+  alarm      16:02:00.85 UTC by DKL, YAYO
+  magnitude  M2.8 5.7 s after the alarm, M3.0 final from 2 stations
+  location   rms 1.09 s from 2 stations, first 54.5 s after the alarm (P and S picks)
+  AFAD       no matching catalogue event
+  S wave     had travelled 31 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             YAYO          30 km   16:01:59.41 UTC (picked)      -1.4 s  after S
+             DKL           32 km   16:02:00.02 UTC (picked)      -0.8 s  after S
+             KULA         172 km   16:02:40.84 UTC (predicted)   +40.0 s  before S
+             SIMA         175 km   16:02:41.53 UTC (predicted)   +40.7 s  before S
+             GEDZ         212 km   16:02:52.13 UTC (predicted)   +51.3 s  before S
+             TVSB         213 km   16:02:52.50 UTC (predicted)   +51.7 s  before S
+
+Event #8: detected M2.9 earthquake, not located
+  alarm      16:08:22.36 UTC by TVSB, YAYO
+  magnitude  M3.5 3.9 s after the alarm, M2.9 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #9: detected M2.9 earthquake, not located
+  alarm      16:29:42.26 UTC by DKL, GEDZ
+  magnitude  M4.1 6.8 s after the alarm, M2.9 final from 2 stations
+  AFAD       no matching catalogue event
+
+Event #10: detected M2.6 earthquake at 40.750N 28.887E, origin 16:38:04.38 UTC
+  alarm      16:38:32.71 UTC by DKL, TVSB; later KULA, SIMA, YAYO
+  magnitude  M3.1 5.0 s after the alarm, M2.6 final from 5 stations
+  location   rms 0.51 s from 2 stations, first 60.9 s after the alarm (P and S picks)
+  AFAD       no matching catalogue event
+  S wave     had travelled 99 km from the epicentre when the alarm sounded (ayzek location)
+  warning               distance   S wave arrives            warning
+             TVSB         153 km   16:38:48.44 UTC (picked)     +15.7 s  before S
+             SIMA         186 km   16:38:57.47 UTC (predicted)   +24.8 s  before S
+             GEDZ         195 km   16:39:00.13 UTC (predicted)   +27.4 s  before S
+             YAYO         200 km   16:39:01.11 UTC (picked)     +28.4 s  before S
+             KULA         249 km   16:39:15.69 UTC (predicted)   +43.0 s  before S
+             DKL          252 km   16:39:16.39 UTC (predicted)   +43.7 s  before S
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                          10
+  single-station detections, no alarm   128
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)        0    0%
+    false    (no AFAD event)             10  100%
+
+  AFAD events within 250 km                0
+    detected                              0     -
+    missed                                0     -
+
+  By magnitude      AFAD events   detected   missed
+
+  False alarms (no AFAD event; small uncatalogued earthquakes are possible)
+    11:37:08.30 UTC  #1  M2.7, not located
+    11:47:00.32 UTC  #2  M2.7, not located
+    12:36:31.23 UTC  #3  M2.7, not located
+    14:49:52.20 UTC  #4  M2.5, not located
+    15:35:22.08 UTC  #5  M2.8, not located
+    15:52:19.69 UTC  #6  M3.5, not located
+    16:02:00.85 UTC  #7  M3.0, located 39.35N 26.98E
+    16:08:22.36 UTC  #8  M2.9, not located
+    16:29:42.26 UTC  #9  M2.9, not located
+    16:38:32.71 UTC  #10  M2.6, located 40.75N 28.89E
+------------------------------------------------------------------------------
+
+Station processing (scalar backend)
+         windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
+  DKL      43034        13      113    113             113/6      0.001 (0.002)        20            521
+  GEDZ     43061        12        2      2               2/2      0.002 (0.001)        28            631
+  KULA     43147         4        5      5               5/0      0.001 (0.001)        40            918
+  SIMA     43105         8        9      9               9/2      0.001 (0.001)        32            740
+  TVSB     42943        22        6      6               6/1      0.002 (0.001)        41            935
+  YAYO     42144       103       20     19              20/2      0.001 (0.001)        27            639
+  magnitude at the picked P: 13 estimated, 58 not (trigger not part of a declared event)
+  257434 windows in 62.7 s: 336x real time per station

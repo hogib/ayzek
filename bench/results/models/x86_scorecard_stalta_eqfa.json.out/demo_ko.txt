@@ -1,0 +1,199 @@
+ayzek    6 stations, scalar backend, STA/LTA 1/30 s on 8 off 1.5, 2-20 Hz, Z + picker + 3-model magnitude, replay 2025-11-10 18:04:02.73 to 18:35:00.01 UTC at full speed
+ayzek    catalogue: 9 events in the replay span
+ALARM    #1   18:07:33.12  earthquake detected by DKL, KULA  (AFAD ML 1.4 at 18:07:17.00, 16.1 s ago)
+MAG      #1   18:07:33.12  magnitude M2.7 from 1 station (DKL 2.7)
+MAG      #1   18:07:41.11  magnitude M2.4 from 2 stations (DKL 2.7, KULA 2.2)
+MAG      #1   18:07:49.00  magnitude M2.5 from 3 stations (DKL 2.7, KCTX 2.5, KULA 2.2)
+MAG      #1   18:08:02.65  magnitude M2.4 from 4 stations (DKL 2.7, KCTX 2.5, KULA 2.2, TVSB 2.3)
+pick     KCTX  picker window at 18:21:05.79 crosses a gap, skipped
+pick     KCTX  picker window at 18:21:22.84 crosses a gap, skipped
+LOCATE   #1   18:08:35.50  located at 39.199N 28.308E, origin 18:07:19.10, rms 0.13 s from 2 stations
+ALARM    #2   18:16:35.96  earthquake detected by KULA, SIMA  (AFAD ML 1.9 at 18:16:19.00, 17.0 s ago)
+MAG      #2   18:16:41.66  magnitude M2.3 from 1 station (SIMA 2.3)
+MAG      #2   18:16:43.95  magnitude M2.3 from 2 stations (KULA 2.2, SIMA 2.3)
+MAG      #2   18:16:46.65  magnitude M2.3 from 3 stations (KULA 2.2, SIMA 2.3, YAYO 2.4)
+MAG      #2   18:16:47.48  magnitude M2.3 from 4 stations (KCTX 2.5, KULA 2.2, SIMA 2.3, YAYO 2.4)
+MAG      #2   18:16:48.31  magnitude M2.3 from 5 stations (KCTX 2.5, KULA 2.2, SIMA 2.3, TVSB 2.2, YAYO 2.4)
+LOCATE   #2   18:17:30.45  located at 39.199N 28.127E, origin 18:16:20.70, rms 0.18 s from 2 stations
+LOCATE   #2   18:17:33.15  located at 39.200N 28.124E, origin 18:16:20.66, rms 0.18 s from 3 stations
+LOCATE   #2   18:17:33.98  located at 39.233N 28.143E, origin 18:16:20.44, rms 0.42 s from 4 stations
+LOCATE   #2   18:17:34.81  located at 39.234N 28.143E, origin 18:16:20.45, rms 0.38 s from 5 stations
+ALARM    #3   18:21:07.90  earthquake detected by KULA, SIMA  (AFAD MW 4.9 at 18:20:51.00, 16.9 s ago)
+MAG      #3   18:21:13.15  magnitude M4.2 from 1 station (SIMA 4.2)
+MAG      #3   18:21:15.89  magnitude M4.3 from 2 stations (KULA 4.4, SIMA 4.2)
+MAG      #3   18:21:16.92  magnitude M4.4 from 3 stations (KULA 4.4, SIMA 4.2, YAYO 5.2)
+MAG      #3   18:21:18.77  magnitude M4.4 from 4 stations (DKL 4.5, KULA 4.4, SIMA 4.2, YAYO 5.2)
+MAG      #3   18:21:19.29  magnitude M4.5 from 5 stations (DKL 4.5, KCTX 5.0, KULA 4.4, SIMA 4.2, YAYO 5.2)
+MAG      #3   18:21:19.95  magnitude M4.6 from 6 stations (DKL 4.5, KCTX 5.0, KULA 4.4, SIMA 4.2, TVSB 4.7, YAYO 5.2)
+LOCATE   #3   18:22:02.39  located at 39.199N 28.142E, origin 18:20:53.05, rms 0.14 s from 2 stations
+LOCATE   #3   18:22:03.42  located at 39.200N 28.129E, origin 18:20:52.83, rms 0.13 s from 3 stations
+LOCATE   #3   18:22:05.27  located at 39.205N 28.130E, origin 18:20:52.81, rms 0.16 s from 4 stations
+LOCATE   #3   18:22:06.45  located at 39.216N 28.142E, origin 18:20:52.69, rms 0.22 s from 5 stations
+MAG      #3   18:22:06.45  magnitude M4.6 from 6 stations (DKL 4.6, KCTX 5.0, KULA 4.1, SIMA 4.1, TVSB 4.6, YAYO 4.9)
+ALARM    #4   18:26:08.62  earthquake detected by KULA, SIMA  (AFAD ML 3.6 at 18:25:51.00, 17.6 s ago)
+MAG      #4   18:26:15.90  magnitude M3.5 from 1 station (SIMA 3.5)
+MAG      #4   18:26:16.61  magnitude M3.4 from 2 stations (KULA 3.3, SIMA 3.5)
+MAG      #4   18:26:18.89  magnitude M3.5 from 3 stations (KULA 3.3, SIMA 3.5, YAYO 4.0)
+MAG      #4   18:26:19.77  magnitude M3.6 from 4 stations (DKL 3.7, KULA 3.3, SIMA 3.5, YAYO 4.0)
+MAG      #4   18:26:20.06  magnitude M3.6 from 5 stations (DKL 3.7, KCTX 3.6, KULA 3.3, SIMA 3.5, YAYO 4.0)
+MAG      #4   18:26:22.02  magnitude M3.7 from 6 stations (DKL 3.7, KCTX 3.6, KULA 3.3, SIMA 3.5, TVSB 4.0, YAYO 4.0)
+LOCATE   #4   18:27:03.11  located at 39.204N 28.132E, origin 18:25:53.20, rms 0.08 s from 2 stations
+LOCATE   #4   18:27:05.39  located at 39.195N 28.154E, origin 18:25:53.57, rms 0.59 s from 3 stations
+LOCATE   #4   18:27:06.27  located at 39.185N 28.140E, origin 18:25:53.46, rms 0.56 s from 4 stations
+LOCATE   #4   18:27:06.56  located at 39.229N 28.161E, origin 18:25:53.10, rms 0.68 s from 5 stations
+MAG      #4   18:27:06.56  magnitude M3.7 from 6 stations (DKL 3.7, KCTX 3.7, KULA 3.3, SIMA 3.3, TVSB 4.0, YAYO 4.1)
+LOCATE   #4   18:27:08.52  located at 39.227N 28.156E, origin 18:25:53.12, rms 0.63 s from 6 stations
+ALARM    #5   18:30:19.67  earthquake detected by DKL, KULA  (AFAD ML 2.7 at 18:30:02.00, 17.7 s ago)
+MAG      #5   18:30:23.68  magnitude M2.4 from 1 station (DKL 2.4)
+MAG      #5   18:30:27.66  magnitude M2.5 from 2 stations (DKL 2.4, KULA 2.6)
+MAG      #5   18:30:32.13  magnitude M2.6 from 3 stations (DKL 2.4, KCTX 2.7, KULA 2.6)
+MAG      #5   18:30:38.94  magnitude M2.7 from 4 stations (DKL 2.4, KCTX 2.7, KULA 2.6, SIMA 2.9)
+MAG      #5   18:30:49.08  magnitude M2.7 from 5 stations (DKL 2.4, KCTX 2.7, KULA 2.6, SIMA 2.9, TVSB 3.4)
+LOCATE   #5   18:31:18.63  located at 39.224N 28.148E, origin 18:30:03.95, rms 0.27 s from 2 stations, left out DKL
+ALARM    #6   18:33:00.54  earthquake detected by KULA, YAYO  (AFAD ML 2.4 at 18:32:40.00, 20.5 s ago)
+MAG      #6   18:33:05.72  magnitude M2.4 from 1 station (KULA 2.4)
+MAG      #6   18:33:08.53  magnitude M2.7 from 2 stations (KULA 2.4, YAYO 2.9)
+MAG      #6   18:33:27.23  magnitude M2.9 from 3 stations (KULA 2.4, TVSB 3.0, YAYO 2.9)
+LOCATE   #6   18:33:55.03  located at 39.013N 27.932E, origin 18:32:43.30, rms 0.14 s from 2 stations
+ALARM    #7   18:34:49.65  earthquake detected by DKL, SIMA
+MAG      #7   18:34:49.65  magnitude M2.3 from 1 station (DKL 2.3)
+MAG      #7   18:34:57.64  magnitude M2.3 from 2 stations (DKL 2.3, SIMA 2.3)
+
+------------------------------------------------------------------------------
+REPORT  6 stations, 2025-11-10 18:04:02.73 to 18:35:00.01 UTC
+------------------------------------------------------------------------------
+
+Event #1: detected M2.4 earthquake at 39.199N 28.308E, origin 18:07:19.10 UTC
+  alarm      18:07:33.12 UTC by DKL, KULA; later KCTX, TVSB
+  magnitude  M2.7 at the alarm, M2.4 final from 4 stations
+  location   rms 0.13 s from 2 stations, first 62.4 s after the alarm (P and S picks)
+  AFAD       ML 1.4 at 18:07:17.00 UTC: alarm 16.1 s after origin, magnitude +1.0, epicentre 7.1 km off, origin +2.1 s
+  S wave     had travelled 56 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             SIMA          67 km   18:07:36.08 UTC (predicted)    +3.0 s  before S
+             KULA          85 km   18:07:42.61 UTC (picked)      +9.5 s  before S
+             YAYO         109 km   18:07:48.14 UTC (predicted)   +15.0 s  before S
+             TVSB         110 km   18:07:48.37 UTC (predicted)   +15.3 s  before S
+             DKL          115 km   18:07:49.83 UTC (predicted)   +16.7 s  before S
+             KCTX         118 km   18:07:53.14 UTC (picked)     +20.0 s  before S
+
+Event #2: detected M2.3 earthquake at 39.234N 28.143E, origin 18:16:20.45 UTC
+  alarm      18:16:35.96 UTC by KULA, SIMA; later KCTX, TVSB, YAYO
+  magnitude  M2.3 5.7 s after the alarm, M2.3 final from 5 stations
+  location   rms 0.38 s from 5 stations, first 54.5 s after the alarm (P and S picks)
+  AFAD       ML 1.9 at 18:16:19.00 UTC: alarm 17.0 s after origin, magnitude +0.4, epicentre 2.3 km off, origin +1.5 s
+  S wave     had travelled 59 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             SIMA          75 km   18:16:42.44 UTC (picked)      +6.5 s  before S
+             KULA          94 km   18:16:46.17 UTC (picked)     +10.2 s  before S
+             YAYO         100 km   18:16:49.59 UTC (picked)     +13.6 s  before S
+             DKL          108 km   18:16:49.98 UTC (predicted)   +14.0 s  before S
+             KCTX         113 km   18:16:53.54 UTC (picked)     +17.6 s  before S
+             TVSB         116 km   18:16:53.65 UTC (picked)     +17.7 s  before S
+
+Event #3: detected M4.6 earthquake at 39.216N 28.142E, origin 18:20:52.69 UTC
+  alarm      18:21:07.90 UTC by KULA, SIMA; later DKL, KCTX, TVSB, YAYO
+  magnitude  M4.2 5.2 s after the alarm, M4.6 final from 6 stations
+  location   rms 0.22 s from 5 stations, first 54.5 s after the alarm (P and S picks)
+  AFAD       MW 4.9 at 18:20:51.00 UTC: alarm 16.9 s after origin, magnitude -0.3, epicentre 2.6 km off, origin +1.7 s
+  S wave     had travelled 58 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             SIMA          74 km   18:21:14.41 UTC (picked)      +6.5 s  before S
+             KULA          92 km   18:21:18.35 UTC (picked)     +10.5 s  before S
+             YAYO         101 km   18:21:22.02 UTC (picked)     +14.1 s  before S
+             DKL          109 km   18:21:23.63 UTC (picked)     +15.7 s  before S
+             KCTX         115 km   18:21:23.97 UTC (predicted)   +16.1 s  before S
+             TVSB         116 km   18:21:26.01 UTC (picked)     +18.1 s  before S
+
+Event #4: detected M3.7 earthquake at 39.227N 28.156E, origin 18:25:53.12 UTC
+  alarm      18:26:08.62 UTC by KULA, SIMA; later DKL, KCTX, TVSB, YAYO
+  magnitude  M3.5 7.3 s after the alarm, M3.7 final from 6 stations
+  location   rms 0.63 s from 6 stations, first 54.5 s after the alarm (P and S picks)
+  AFAD       ML 3.6 at 18:25:51.00 UTC: alarm 17.6 s after origin, magnitude +0.1, epicentre 3.0 km off, origin +2.1 s
+  S wave     had travelled 61 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             SIMA          75 km   18:26:14.76 UTC (picked)      +6.1 s  before S
+             KULA          93 km   18:26:18.83 UTC (picked)     +10.2 s  before S
+             YAYO         100 km   18:26:24.23 UTC (picked)     +15.6 s  before S
+             DKL          108 km   18:26:24.15 UTC (picked)     +15.5 s  before S
+             KCTX         114 km   18:26:26.12 UTC (picked)     +17.5 s  before S
+             TVSB         116 km   18:26:26.16 UTC (picked)     +17.5 s  before S
+
+Event #5: detected M2.7 earthquake at 39.224N 28.148E, origin 18:30:03.95 UTC
+  alarm      18:30:19.67 UTC by DKL, KULA; later KCTX, SIMA, TVSB
+  magnitude  M2.4 4.0 s after the alarm, M2.7 final from 5 stations
+  location   rms 0.27 s from 2 stations, first 59.0 s after the alarm (P and S picks)
+  AFAD       ML 2.7 at 18:30:02.00 UTC: alarm 17.7 s after origin, magnitude +0.0, epicentre 2.4 km off, origin +2.0 s
+  S wave     had travelled 61 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             SIMA          76 km   18:30:30.60 UTC (picked)     +10.9 s  before S
+             KULA          93 km   18:30:29.88 UTC (picked)     +10.2 s  before S
+             YAYO         100 km   18:30:30.51 UTC (predicted)   +10.8 s  before S
+             DKL          107 km   18:30:15.58 UTC (picked)      -4.1 s  after S
+             KCTX         116 km   18:30:37.71 UTC (picked)     +18.0 s  before S
+             TVSB         117 km   18:30:35.57 UTC (predicted)   +15.9 s  before S
+
+Event #6: detected M2.9 earthquake at 39.013N 27.932E, origin 18:32:43.30 UTC
+  alarm      18:33:00.54 UTC by KULA, YAYO; later TVSB
+  magnitude  M2.4 5.2 s after the alarm, M2.9 final from 3 stations
+  location   rms 0.14 s from 2 stations, first 54.5 s after the alarm (P and S picks)
+  AFAD       ML 2.4 at 18:32:40.00 UTC: alarm 20.5 s after origin, magnitude +0.5, epicentre 32.0 km off, origin +3.3 s
+  S wave     had travelled 71 km from the epicentre when the alarm sounded (AFAD hypocentre)
+  warning               distance   S wave arrives            warning
+             SIMA          72 km   18:33:00.67 UTC (predicted)    +0.1 s  before S
+             KULA          90 km   18:33:07.46 UTC (picked)      +6.9 s  before S
+             YAYO         103 km   18:33:11.71 UTC (picked)     +11.2 s  before S
+             DKL          111 km   18:33:11.72 UTC (predicted)   +11.2 s  before S
+             TVSB         114 km   18:33:12.53 UTC (predicted)   +12.0 s  before S
+             KCTX         115 km   18:33:13.09 UTC (predicted)   +12.6 s  before S
+
+Event #7: detected M2.3 earthquake, not located
+  alarm      18:34:49.65 UTC by DKL, SIMA
+  magnitude  M2.3 at the alarm, M2.3 final from 2 stations
+  AFAD       no matching catalogue event
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                           7
+  single-station detections, no alarm    12
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)        6   86%
+    false    (no AFAD event)              1   14%
+
+  AFAD events within 250 km                9
+    detected                              6   67%
+    missed                                3   33%
+
+  By magnitude      AFAD events   detected   missed
+    M < 2                   3          2        1
+    M 2-3                   3          2        1
+    M 3-4                   2          1        1
+    M 4-5                   1          1        0
+
+  Correct alarms
+    alarm after origin time             median 17.3 s
+    magnitude error                     mean 0.40 units
+    located                             6 of 6
+    alarm before the S wave             at 35 of 36 station arrivals, median warning 13.6 s, max 20.0 s
+
+  Missed AFAD events
+    18:10:29.00 UTC  ML 1.0    20 km from the network centre
+    18:23:21.00 UTC  ML 3.1    11 km from the network centre
+    18:29:11.00 UTC  ML 2.4    15 km from the network centre
+
+  False alarms (no AFAD event; small uncatalogued earthquakes are possible)
+    18:34:49.65 UTC  #7  M2.3, not located
+------------------------------------------------------------------------------
+
+Station processing (scalar backend)
+         windows  with gap triggers  picks magnitudes early/P    ms/window (p99)   ms/pick   ms/magnitude
+  DKL       3709         0       13     12              13/3      0.001 (0.002)        29            706
+  KCTX      3646         6        7      5               7/4      0.002 (0.001)        35            810
+  KULA      3709         0        7      7               7/6      0.001 (0.001)        28            674
+  SIMA      3640         6        6      5               6/4      0.002 (0.001)        27            674
+  TVSB      3709         0        9      9               9/3      0.002 (0.002)        21            582
+  YAYO      3688         2        7      7               7/4      0.001 (0.002)        27            606
+  magnitude at the picked P: 24 estimated, 8 not (trigger not part of a declared event)
+  22101 windows in 19.2 s: 97x real time per station

@@ -1,0 +1,21 @@
+ayzek_bench v0.1.0-beta.2-34-g7748168-dirty  |  AMD Ryzen 5 5600 6-Core Processor  |  12 cores  |  scalar backend  |  optimised build
+
+layers (shapes of the shipped models)
+                                         p50 ms     p90 ms     p99 ms     calls
+  detector conv 1                        0.0248     0.0253     0.0307     79816     6.10 GMAC/s
+  detector conv 2                        0.1086     0.1112     0.1163     18326     7.96 GMAC/s
+  detector conv 3                        0.2167     0.2198     0.2268      9187     7.97 GMAC/s
+  detector BiLSTM                        0.5727     0.5777     0.7007      3474     7.24 GMAC/s
+  detector attention                     0.6350     0.6431     0.9142      3107     6.05 GMAC/s
+  picker conv 1                          0.4090     0.4135     0.4207      4883     6.34 GMAC/s
+  picker conv 2                          3.4122     3.4299     3.4385       586     8.10 GMAC/s
+  picker conv 3                          3.0545     3.0648     3.0983       654     7.04 GMAC/s
+  picker BiLSTM                          0.9631     0.9666     0.9853      2072     6.38 GMAC/s
+  picker attention                       3.8607     3.8973     4.3620       516     3.13 GMAC/s
+  magnitude BiLSTM (1D)                  6.4499     6.5100     6.8175       309     5.32 GMAC/s
+  magnitude attention (1D)              85.2994    86.1489    93.1287        24     3.77 GMAC/s
+  magnitude conv 1 (2D)                  0.3076     0.3120     0.3230      6469     5.84 GMAC/s
+  magnitude conv 2 (2D)                  1.2643     1.2733     1.3228      1578     7.70 GMAC/s
+  magnitude conv 3 (2D)                  1.5260     1.5340     1.5868      1309     6.57 GMAC/s
+
+results -> bench/results/models/x86_layers.json

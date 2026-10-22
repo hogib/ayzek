@@ -1,0 +1,21 @@
+ayzek_bench v0.1.0-beta.2-34-g7748168-dirty  |  Raspberry Pi 4 Model B Rev 1.5  |  4 cores  |  neon backend  |  optimised build
+
+stages (shipped models)
+                                         p50 ms     p90 ms     p99 ms     calls
+  condition 6 s window                   0.1402     0.1410     0.3154     13869
+  detector, one model                   11.8226    11.9015    12.1656       169
+  detector ensemble (3 models)          36.3227    36.4253    36.6251        56
+  STA/LTA, 50 samples                    0.0019     0.0019     0.0020   1019600
+  per-window total                      36.1403    36.2267    36.5070        56
+  condition 60 s window                  1.3365     1.3453     1.5469      1487
+  picker                                75.6655    75.8677    76.1806        27
+  magnitude estimate (3 models)       3230.7197  3234.4080  3254.7394        10
+  magnitude, one model                1072.2974  1074.4139  1076.0030        10
+  noise baseline update                  7.5639     7.6411     8.4814       274
+  transformer, one token                 0.7260     0.7596     0.9574      2712
+  transformer context refresh           46.0999    46.2004    46.9224        44
+  transformer per 0.5 s (stream)         3.8644     3.9221     5.4028       462
+  Pd displacement, 50 samples            0.0013     0.0013     0.0013   1576200
+  Pd magnitude estimate                  1.9869     1.9895     2.0098      1007
+
+results -> bench/models/pi_stages.json

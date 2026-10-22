@@ -1,0 +1,22 @@
+  demo_ko: done
+  quiet_ko: done
+
+scorecard  models=/home/hogib/ayzek-bench/models  args=--detector transformer --no-pd-magnitude  (2026-10-21T19:48:35Z, )
+
+  detected (public)                  8/9
+  unmatched alarms (public)          4
+  false alarms per day (public noise) 4.11
+  hours (public noise)               5.8
+  magnitude MAE, all matched         0.487
+  magnitude MAE, AFAD M>=4           0.3
+  magnitude bias, AFAD M>=4          -0.3
+  epicentre error median km          2.3
+
+  dataset     role           st  detected  alarms unmatched  delay  mag MAE false/day
+  demo_ko     public          6       8/9      12         4   20.0     0.49         -
+  quiet_ko    public noise    6       0/0       1         1      -        -       4.1
+
+  large events (AFAD M>=4)
+    demo_ko     MW 4.9 at 18:20:51.00: alarm +18.2 s, M4.2 at the alarm, M4.6 final (-0.3), epicentre 2.3 km
+
+scorecard -> bench/models/pi_scorecard_transformer_cnnmag.json

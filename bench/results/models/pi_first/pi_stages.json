@@ -1,0 +1,28 @@
+{
+  "host": "vegspi4",
+  "cpu": "Raspberry Pi 4 Model B Rev 1.5",
+  "cores": 4,
+  "backend": "neon",
+  "optimized": true,
+  "compiler": "Clang 22.1.8",
+  "version": "v0.1.0-beta.2-34-g7748168",
+  "models": "models",
+  "date": "2026-10-21T18:16:03Z",
+  "min_time_s": 2,
+  "quick": false,
+  "results": [
+    {"group": "stages", "name": "condition 6 s window", "shape": "600x3", "iters": 13946, "min_ms": 0.140777, "p50_ms": 0.141371, "p90_ms": 0.141815, "p99_ms": 0.165944, "mean_ms": 0.142173, "macs": 0},
+    {"group": "stages", "name": "detector, one model", "shape": "600x3", "iters": 163, "min_ms": 12.0925, "p50_ms": 12.1655, "p90_ms": 12.6996, "p99_ms": 12.7882, "mean_ms": 12.285, "macs": 0},
+    {"group": "stages", "name": "detector ensemble (3 models)", "shape": "600x3", "iters": 55, "min_ms": 36.3891, "p50_ms": 36.8213, "p90_ms": 37.5329, "p99_ms": 38.198, "mean_ms": 36.9418, "macs": 0},
+    {"group": "stages", "name": "STA/LTA, 50 samples", "shape": "50x3", "iters": 948200, "min_ms": 0.001945, "p50_ms": 0.0020887, "p90_ms": 0.00209463, "p99_ms": 0.00228185, "mean_ms": 0.00209729, "macs": 0},
+    {"group": "stages", "name": "per-window total", "shape": "every 0.5 s", "iters": 56, "min_ms": 36.0797, "p50_ms": 36.2754, "p90_ms": 36.5389, "p99_ms": 36.604, "mean_ms": 36.2978, "macs": 0},
+    {"group": "stages", "name": "condition 60 s window", "shape": "6000x3", "iters": 1475, "min_ms": 1.32961, "p50_ms": 1.33789, "p90_ms": 1.38326, "p99_ms": 1.66417, "mean_ms": 1.35468, "macs": 0},
+    {"group": "stages", "name": "picker", "shape": "3x6000", "iters": 27, "min_ms": 75.6457, "p50_ms": 75.9048, "p90_ms": 76.5391, "p99_ms": 76.8063, "mean_ms": 76.0054, "macs": 0},
+    {"group": "stages", "name": "magnitude estimate (3 models)", "shape": "1000x3", "iters": 10, "min_ms": 3177.4, "p50_ms": 3185.63, "p90_ms": 3208.64, "p99_ms": 3211.11, "mean_ms": 3190.95, "macs": 0},
+    {"group": "stages", "name": "magnitude, one model", "shape": "1000x3 + 3x65x32", "iters": 10, "min_ms": 1058.64, "p50_ms": 1062.99, "p90_ms": 1064.07, "p99_ms": 1065.55, "mean_ms": 1062.33, "macs": 0},
+    {"group": "stages", "name": "noise baseline update", "shape": "1000x3", "iters": 281, "min_ms": 1.89091, "p50_ms": 7.40385, "p90_ms": 7.44491, "p99_ms": 7.52759, "mean_ms": 7.12535, "macs": 0}
+  ],
+  "capacity": [
+  ],
+  "magnitude_latency_ms": {"idle_p50": 0, "loaded_p50": 0, "loaded_p99": 0}
+}

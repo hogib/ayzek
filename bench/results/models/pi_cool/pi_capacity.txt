@@ -1,0 +1,19 @@
+ayzek_bench v0.1.0-beta.2-34-g7748168-dirty  |  Raspberry Pi 4 Model B Rev 1.5  |  4 cores  |  neon backend  |  optimised build
+
+capacity, 6 s detector (windows per second, all threads together)
+  threads    windows/s     per thread stations (0.5 s)
+        1           27             27               14
+        2           55             27               27
+        3           80             27               40
+        4          105             26               52
+
+capacity, transformer (windows per second, all threads together)
+  threads    windows/s     per thread stations (0.5 s)
+        1          228            228              114
+        2          326            163              163
+        3          385            128              193
+        4          395             99              197
+
+magnitude estimate (3 models): 3263.4 ms alone, 3602.9 ms (p99 3707.2) with 3 detector threads running
+
+results -> bench/models/pi_capacity.json

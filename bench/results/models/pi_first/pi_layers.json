@@ -1,0 +1,33 @@
+{
+  "host": "vegspi4",
+  "cpu": "Raspberry Pi 4 Model B Rev 1.5",
+  "cores": 4,
+  "backend": "neon",
+  "optimized": true,
+  "compiler": "Clang 22.1.8",
+  "version": "v0.1.0-beta.2-34-g7748168",
+  "models": "models",
+  "date": "2026-10-21T18:16:45Z",
+  "min_time_s": 2,
+  "quick": false,
+  "results": [
+    {"group": "layers", "name": "detector conv 1", "shape": "conv1d:L=600,cin=3,cout=24,k=7,s=2", "iters": 11128, "min_ms": 0.178112, "p50_ms": 0.178333, "p90_ms": 0.178389, "p99_ms": 0.183129, "mean_ms": 0.178585, "macs": 151200},
+    {"group": "layers", "name": "detector conv 2", "shape": "conv1d:L=300,cin=24,cout=48,k=5,s=2", "iters": 3260, "min_ms": 0.61087, "p50_ms": 0.611333, "p90_ms": 0.61613, "p99_ms": 0.618592, "mean_ms": 0.612312, "macs": 864000},
+    {"group": "layers", "name": "detector conv 3", "shape": "conv1d:L=150,cin=48,cout=96,k=5,s=2", "iters": 2451, "min_ms": 0.812241, "p50_ms": 0.814038, "p90_ms": 0.818278, "p99_ms": 0.821296, "mean_ms": 0.814964, "macs": 1.728e+06},
+    {"group": "layers", "name": "detector BiLSTM", "shape": "lstm:T=75,h=48,in=96", "iters": 466, "min_ms": 4.27413, "p50_ms": 4.27852, "p90_ms": 4.32106, "p99_ms": 4.4515, "mean_ms": 4.29115, "macs": 4.1472e+06},
+    {"group": "layers", "name": "detector attention", "shape": "attn:T=75,d=96,heads=4", "iters": 353, "min_ms": 5.66274, "p50_ms": 5.66706, "p90_ms": 5.672, "p99_ms": 5.70756, "mean_ms": 5.66825, "macs": 3.8448e+06},
+    {"group": "layers", "name": "picker conv 1", "shape": "conv1d:L=6000,cin=3,cout=32,k=9,s=2", "iters": 497, "min_ms": 3.89845, "p50_ms": 4.03628, "p90_ms": 4.04328, "p99_ms": 4.20656, "mean_ms": 4.0233, "macs": 2.592e+06},
+    {"group": "layers", "name": "picker conv 2", "shape": "conv1d:L=3000,cin=32,cout=64,k=9,s=2", "iters": 149, "min_ms": 13.4199, "p50_ms": 13.4442, "p90_ms": 13.4599, "p99_ms": 13.5149, "mean_ms": 13.4472, "macs": 2.7648e+07},
+    {"group": "layers", "name": "picker conv 3", "shape": "conv1d:L=1500,cin=64,cout=64,k=7,s=2", "iters": 199, "min_ms": 10.049, "p50_ms": 10.0608, "p90_ms": 10.0691, "p99_ms": 10.1185, "mean_ms": 10.0628, "macs": 2.1504e+07},
+    {"group": "layers", "name": "picker BiLSTM", "shape": "lstm:T=250,h=32,in=64", "iters": 247, "min_ms": 8.10284, "p50_ms": 8.11021, "p90_ms": 8.11578, "p99_ms": 8.15452, "mean_ms": 8.11185, "macs": 6.144e+06},
+    {"group": "layers", "name": "picker attention", "shape": "attn:T=250,d=64,heads=4", "iters": 44, "min_ms": 46.037, "p50_ms": 46.0557, "p90_ms": 46.1192, "p99_ms": 46.1636, "mean_ms": 46.0702, "macs": 1.2096e+07},
+    {"group": "layers", "name": "magnitude BiLSTM (1D)", "shape": "lstm:T=1000,h=64,in=3", "iters": 45, "min_ms": 45.2663, "p50_ms": 45.2892, "p90_ms": 45.3595, "p99_ms": 45.3906, "mean_ms": 45.3013, "macs": 3.4304e+07},
+    {"group": "layers", "name": "magnitude attention (1D)", "shape": "attn:T=1000,d=128,heads=4", "iters": 10, "min_ms": 1026.1, "p50_ms": 1027.56, "p90_ms": 1029.2, "p99_ms": 1029.21, "mean_ms": 1027.65, "macs": 3.21536e+08},
+    {"group": "layers", "name": "magnitude conv 1 (2D)", "shape": "conv2d:H=65,W=32,cin=3,cout=32,k=3,s=1", "iters": 646, "min_ms": 3.0432, "p50_ms": 3.09615, "p90_ms": 3.10272, "p99_ms": 3.14158, "mean_ms": 3.09754, "macs": 1.79712e+06},
+    {"group": "layers", "name": "magnitude conv 2 (2D)", "shape": "conv2d:H=65,W=32,cin=32,cout=64,k=3,s=2", "iters": 411, "min_ms": 4.86, "p50_ms": 4.87198, "p90_ms": 4.88008, "p99_ms": 4.91835, "mean_ms": 4.87372, "macs": 9.7321e+06},
+    {"group": "layers", "name": "magnitude conv 3 (2D)", "shape": "conv2d:H=33,W=16,cin=64,cout=128,k=3,s=2", "iters": 443, "min_ms": 4.51304, "p50_ms": 4.51987, "p90_ms": 4.52506, "p99_ms": 4.55617, "mean_ms": 4.52107, "macs": 1.0027e+07}
+  ],
+  "capacity": [
+  ],
+  "magnitude_latency_ms": {"idle_p50": 0, "loaded_p50": 0, "loaded_p99": 0}
+}

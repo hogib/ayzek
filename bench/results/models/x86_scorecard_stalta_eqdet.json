@@ -1,0 +1,160 @@
+{
+ "version": "v0.1.0-beta.2-34-g7748168-dirty",
+ "date": "2026-10-21T18:28:58Z",
+ "models": "/home/oguzb/Projects/Codings/ayzek/ayzek_code/models",
+ "args": "--detector stalta --stalta-band 2,10 --sta 0.5 --lta 10 --stalta-on 6",
+ "datasets": {
+  "demo_ko": {
+   "role": "public",
+   "stations": 6,
+   "alarms": 14,
+   "matched": 9,
+   "unmatched": 5,
+   "catalogue": 9,
+   "detected": 9,
+   "alarm_delay_median_s": 16.9,
+   "bands": {
+    "M < 2": "3/3",
+    "M 2-3": "3/3",
+    "M 3-4": "2/2",
+    "M 4-5": "1/1"
+   },
+   "magnitude_mae": 0.52,
+   "before_s": "51/54",
+   "warning_median_s": 13.0,
+   "events": [
+    {
+     "afad_type": "ML",
+     "afad_M": 1.4,
+     "origin": "18:07:17.00",
+     "alarm_delay_s": 13.6,
+     "M_alarm": 2.8,
+     "M_final": 2.5,
+     "M_error": 1.1,
+     "epicentre_km": 2.6,
+     "stations": "DKL, SIMA + KCTX, KULA, TVSB"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 1.0,
+     "origin": "18:10:29.00",
+     "alarm_delay_s": 20.9,
+     "M_alarm": 2.5,
+     "M_final": 2.6,
+     "M_error": 1.6,
+     "epicentre_km": null,
+     "stations": "TVSB, YAYO + KULA"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 1.9,
+     "origin": "18:16:19.00",
+     "alarm_delay_s": 16.9,
+     "M_alarm": 2.2,
+     "M_final": 2.2,
+     "M_error": 0.3,
+     "epicentre_km": 2.3,
+     "stations": "KULA, SIMA + KCTX, TVSB, YAYO"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 4.9,
+     "origin": "18:20:51.00",
+     "alarm_delay_s": 16.9,
+     "M_alarm": 4.2,
+     "M_final": 4.6,
+     "M_error": -0.3,
+     "epicentre_km": 2.6,
+     "stations": "KULA, SIMA + DKL, KCTX, TVSB, YAYO"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.1,
+     "origin": "18:23:21.00",
+     "alarm_delay_s": 19.8,
+     "M_alarm": 3.5,
+     "M_final": 3.7,
+     "M_error": 0.6,
+     "epicentre_km": 235.0,
+     "stations": "KULA, YAYO + DKL, KCTX, TVSB"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.6,
+     "origin": "18:25:51.00",
+     "alarm_delay_s": 14.7,
+     "M_alarm": 2.6,
+     "M_final": 3.2,
+     "M_error": -0.4,
+     "epicentre_km": 3.1,
+     "stations": "DKL, SIMA + KCTX, KULA, TVSB"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.4,
+     "origin": "18:29:11.00",
+     "alarm_delay_s": 21.1,
+     "M_alarm": 2.7,
+     "M_final": 2.6,
+     "M_error": 0.2,
+     "epicentre_km": null,
+     "stations": "KCTX, YAYO + DKL, TVSB"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "18:30:02.00",
+     "alarm_delay_s": 16.5,
+     "M_alarm": 2.4,
+     "M_final": 2.6,
+     "M_error": -0.1,
+     "epicentre_km": 3.4,
+     "stations": "DKL, SIMA + KCTX, KULA, TVSB, YAYO"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.4,
+     "origin": "18:32:40.00",
+     "alarm_delay_s": 21.6,
+     "M_alarm": 2.4,
+     "M_final": 2.4,
+     "M_error": 0.0,
+     "epicentre_km": 8.4,
+     "stations": "DKL, KULA + TVSB"
+    }
+   ],
+   "assessed": {},
+   "dropped_warnings": 0
+  },
+  "quiet_ko": {
+   "role": "public noise",
+   "stations": 6,
+   "alarms": 10,
+   "matched": 0,
+   "unmatched": 10,
+   "catalogue": 0,
+   "detected": 0,
+   "alarm_delay_median_s": null,
+   "bands": {},
+   "magnitude_mae": null,
+   "before_s": null,
+   "warning_median_s": null,
+   "events": [],
+   "assessed": {},
+   "hours": 5.833333333333333,
+   "false_per_day": 41.142857142857146,
+   "dropped_warnings": 0
+  }
+ },
+ "skipped": {},
+ "summary": {
+  "detected (public)": "9/9",
+  "unmatched alarms (public)": 5,
+  "false alarms per day (public noise)": 41.14,
+  "hours (public noise)": 5.8,
+  "magnitude MAE, all matched": 0.511,
+  "magnitude MAE, AFAD M>=4": 0.3,
+  "magnitude bias, AFAD M>=4": -0.3,
+  "epicentre error median km": 3.1
+ }
+}

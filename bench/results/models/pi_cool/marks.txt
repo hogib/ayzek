@@ -1,0 +1,11 @@
+start stages 1792609878 54043
+end stages 1792609961 0
+start layers 1792609971 54043
+end layers 1792610013 0
+start capacity 1792610023 54043
+end capacity 1792610182 0
+start score_transformer 1792610182
+end score_transformer 1792611148 0
+start score_transformer_cnnmag 1792611148
+end score_transformer_cnnmag 1792612115 0
+start score_stalta_eqfa 1792612115
