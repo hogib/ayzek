@@ -152,7 +152,7 @@ def plot(a):
     ax.tick_params(colors=MUTED, length=3, width=0.6)
     blank = plt.Line2D([], [], lw=0)
     hs, ls = [], []
-    for group, title in (("deployed", "Deployed in the pipeline"), ("offline", "Offline")):
+    for group, title in (("deployed", "Run by the pipeline"), ("offline", "Offline")):
         hs.append(blank)
         ls.append(r"$\bf{" + title.replace(" ", r"\ ") + "}$")
         for h, lab, g in handles.values():

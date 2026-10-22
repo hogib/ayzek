@@ -145,6 +145,8 @@ def main():
                    help="which rows to plot: earthquake (default), misfire, unclassified")
     ap.add_argument("--limit", type=int, default=0, help="plot at most N of them")
     ap.add_argument("--label", default="Candidate", help="word used in titles")
+    ap.add_argument("--titles", help="CSV of record,time_utc,station_a,station_b,title,stem (time_utc as in --csv): plot these "
+                    "pairs whatever their verdict, each with its own title and file name")
     a = ap.parse_args()
 
     st = {}
@@ -153,9 +155,16 @@ def main():
             st[r.get("code") or r.get("station")] = (
                 float(r.get("lat") or r["latitude"]), float(r.get("lon") or r["longitude"]))
 
-    cands = [r for r in csv.DictReader(open(a.csv)) if r["verdict"] == a.verdict]
+    titles = {}
+    if a.titles:
+        for r in csv.DictReader(open(a.titles)):
+            titles[(r["record"], r["time_utc"], r["station_a"], r["station_b"])] = (r["title"], r["stem"])
+        cands = [r for r in csv.DictReader(open(a.csv))
+                 if (r["record"], r["time_utc"], r["station_a"], r["station_b"]) in titles]
+    else:
+        cands = [r for r in csv.DictReader(open(a.csv)) if r["verdict"] == a.verdict]
     if not cands:
-        raise SystemExit(f"no rows with verdict {a.verdict!r} in {a.csv}")
+        raise SystemExit(f"no rows to plot in {a.csv}")
     if a.limit:
         # Spread the sample over the run rather than taking the first N.
         step = max(1, len(cands) // a.limit)
@@ -192,7 +201,8 @@ def main():
         err = min(abs(pred - obs), abs(-pred - obs))
         when = UTCDateTime(pk[A][0]).strftime("%Y-%m-%d %H:%M:%S")
         fig.suptitle(
-            f"{a.label} {n}  ·  {when} UTC  ·  {A}–{B}, {sep:.0f} km apart  ·  "
+            f"{titles[(r['record'], r['time_utc'], A, B)][0] if titles else f'{a.label} {n}'}  ·  {when} UTC  ·  "
+            f"{A}–{B}, {sep:.0f} km apart  ·  "
             f"band-pass {a.freqmin:g}–{a.freqmax:g} Hz\n"
             f"distances from S−P: {da:.0f} and {db:.0f} km  →  predicted Δt "
             f"{abs(pred):.1f} s, observed {abs(obs):.1f} s, error {err:.1f} s",
@@ -201,7 +211,8 @@ def main():
                             Line2D([], [], color=S_COLOR, ls="--", lw=1.1, label="S pick")],
                    loc="lower right", frameon=False, fontsize=8, ncols=2,
                    bbox_to_anchor=(1.0, -0.06))
-        stem = out / f"{a.label.lower().replace(' ', '_')}_{n}_{window[6:]}_{A}_{B}"
+        stem = out / (titles[(r["record"], r["time_utc"], A, B)][1] if titles
+                      else f"{a.label.lower().replace(' ', '_')}_{n}_{window[6:]}_{A}_{B}")
         for ext in ("png", "pdf"):
             fig.savefig(f"{stem}.{ext}", dpi=a.dpi, bbox_inches="tight",
                         facecolor="white")

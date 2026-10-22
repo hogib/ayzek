@@ -5,7 +5,7 @@
         --out ../ayzek_paper/figures/fig6_quiet_alarms
 
 (a) an uncatalogued earthquake behind an alarm of the learned detector, (b) a
-misfire: KIRK's instrumental pulse coinciding with background at KAND, (c) where
+KIRK-pulse alarm: KIRK's instrumental pulse coinciding with background at KAND, (c) where
 KIRK's detections fall in a 10-minute cycle, (d) how long the signal behind each
 alarm lasts, for both detectors (tools/transient_duration.py).
 
@@ -101,7 +101,7 @@ def main():
                [(0.0, "-", "P"), (st_ - pt, "--", "S")], f"{s}: S$-$P {st_ - pt:.1f} s, {d:.0f} km")
         ax.set_xlabel("seconds from the station's P pick", color=MUTED, fontsize=7.5)
         if j == 0:
-            heading(ax, "(a)  Uncataloged earthquake (EMSC M2.4), 2024-05-23 04:42:52 UTC")
+            heading(ax, "(a)  Alarm 2: uncataloged earthquake, EMSC M2.4, origin 2024-05-23 04:42:52 UTC")
 
     # (b) The misfire: KAND-KIRK, 2024-06-09 13:50 UTC, KIRK's pulse.
     rec = R / "quiet100/quiet_20240609_1210.rec"
@@ -114,8 +114,7 @@ def main():
         traces(ax, D / "quiet_20240609_1210" / f"{s}.mseed", ref, 4, 26, [], s)
         ax.set_xlabel("seconds from KIRK's reported P", color=MUTED, fontsize=7.5)
         if j == 0:
-            heading(ax, "(b)  Misfire, 2024-06-09 13:50 UTC: KIRK's instrumental pulse, "
-                    "background noise at KAND")
+            heading(ax, "(b)  Alarm 12, KIRK pulse, 2024-06-09 13:51 UTC: pulse at KIRK, noise at KAND")
 
     # (c) KIRK's detections in the 10-minute cycle.
     phases = []
