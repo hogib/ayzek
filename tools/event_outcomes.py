@@ -13,6 +13,8 @@ across shifts and across detectors, which is what a paired test needs.
 --detector is `learned` (the cached window probabilities, default trigger
 rule), `stalta_eqfa` (--detector stalta) or `stalta_eqdet` (the equal
 detections setting of docs/impl/09); anything after `--` is passed to ayzek.
+Another model's scores (tools/seisbench_scores.py) run as `learned` with their
+own cache, trigger settings after `--`, and a --label.
 Standard library only.
 """
 import argparse
@@ -69,6 +71,8 @@ def main():
     ap.add_argument("--detector", choices=DETECTORS, required=True)
     ap.add_argument("--shifts", default="127,263,391")
     ap.add_argument("--jobs", type=int, default=7)
+    ap.add_argument("--label", help="name written in the detector column (default: --detector); "
+                    "for another model's scores, give `--detector learned` with its cache and a label")
     ap.add_argument("--out", required=True)
     ap.add_argument("extra", nargs="*", help="after --: more ayzek options")
     a = ap.parse_args()
@@ -99,9 +103,9 @@ def main():
         w.writerow(["dataset", "detector", "shift", "origin", "type", "magnitude", "detected"])
         for shift in shifts:
             for (origin, kind, mag), d in sorted(results[shift].items()):
-                w.writerow([name, a.detector, shift, origin, kind, mag, d])
+                w.writerow([name, a.label or a.detector, shift, origin, kind, mag, d])
     obs = results[0]
-    print(f"{name} {a.detector}: {sum(obs.values())} of {len(obs)} detected; "
+    print(f"{name} {a.label or a.detector}: {sum(obs.values())} of {len(obs)} detected; "
           + ", ".join(f"{s:+d}: {sum(results[s].values())}/{len(results[s])}" for s in shifts[1:]))
 
 

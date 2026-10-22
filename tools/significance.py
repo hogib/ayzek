@@ -192,16 +192,22 @@ def main():
     ap.add_argument("--outcomes", required=True)
     ap.add_argument("--quiet")
     ap.add_argument("--quiet-runs", nargs=2, metavar="LABEL=DIR")
+    ap.add_argument("--against", default="stalta_eqfa,stalta_eqdet",
+                    help="detectors compared with `learned`, comma-separated labels")
+    ap.add_argument("--groups", default="held out=sindirgi61;tuning=demo,marmara;all three=sindirgi61,demo,marmara",
+                    help="NAME=DATASET,...;... replays pooled per comparison")
     ap.add_argument("--seed", type=int, default=20261022)
     a = ap.parse_args()
     rng = random.Random(a.seed)
 
     det = load_outcomes(a.outcomes)
-    groups = {"held out": {"sindirgi61"}, "tuning": {"demo", "marmara"},
-              "all three": {"sindirgi61", "demo", "marmara"}}
+    groups = {g.split("=")[0]: set(g.split("=")[1].split(",")) for g in a.groups.split(";")}
     for label, ds in groups.items():
         print(f"\n== {label}")
-        for other in ("stalta_eqfa", "stalta_eqdet"):
+        for other in a.against.split(","):
+            if not any(e[0] in ds for e in det[other][0]):
+                print(f"learned vs {other}: no outcomes for {sorted(ds)}")
+                continue
             r = compare(det, "learned", other, ds, rng)
             print(f"learned vs {other}: {r['events']} events")
             print(f"  detected            {r['a_detected']} vs {r['b_detected']}  "
