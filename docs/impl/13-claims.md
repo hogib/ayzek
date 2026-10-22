@@ -26,9 +26,13 @@ A claim whose artefact is absent is reported "not checked", never "passed".
 ## Expensive: measure it again from the waveforms
 
 ```
-tools/reproduce_all.sh             stages 0-5: verify, build, scorecard,
-                                   STA/LTA, benchmarks, aarch64
-tools/reproduce_all.sh --quick     skip the STA/LTA comparison
+tools/reproduce_all.sh             stages 0-8: verify, build, scorecard,
+                                   STA/LTA, benchmarks, aarch64, quiet
+                                   windows, paired statistics, published models
+tools/reproduce_all.sh --quick     skip the STA/LTA comparison and stages 6-8
+SEISBENCH=1 tools/reproduce_all.sh also recompute the published models' window
+                                   scores (GPU, uv) instead of replaying
+                                   data/runs/sb
 ```
 
 `tools/reproduce_report.py` then compares the fresh run with `claims.json`
@@ -45,6 +49,8 @@ and exits non-zero on a disagreement.
 | 100 h quiet set, misfires (R4) | 6 | ~3 h | the TDVMS archive (not redistributable) |
 | magnitude corpus (R3) | 4 | ~10 min to rebuild the manifest | `cascade_impl`, the FDSN pull |
 | amplitude audit (R6.M1) | 2 | ~15 min | `cascade_impl`, KOERI station metadata |
+| quiet windows, signal durations, paired statistics (R8) | 13 | ~3 h, mostly the full model over 102.8 h | `data/quiet100` and the AFAD replays (not redistributable), `tests/catalogs/quiet100.csv`; uv for the durations (ObsPy, SciPy) |
+| published models, EQTransformer and PhaseNet (R9) | 15 | ~20 min from the window scores; a few GPU hours with `SEISBENCH=1` | the window scores in `data/runs/sb`, or uv and a GPU |
 | Table 6, MANT scan (R2) | 5 | **~5 h GPU** | the MANT archive, an 8 GB card, **three** scan processes (four exhaust it) |
 
 The archives that cannot be redistributed are named in the report rather than

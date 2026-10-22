@@ -2,7 +2,8 @@
 
     python3 tools/significance.py --outcomes data/runs/stats \\
         --quiet data/quiet100/quiet_index.csv \\
-        --quiet-runs learned=data/runs/quiet100 stalta=data/runs/quiet100_stalta
+        --quiet-runs learned=data/runs/quiet100 stalta=data/runs/quiet100_stalta \\
+        --json significance.json
 
 Events (tools/event_outcomes.py writes the inputs): for each pair of detectors
 on the same replays,
@@ -18,12 +19,18 @@ Quiet windows: the exact conditional test of two Poisson counts over the same
 hours, with the exact interval of their ratio, and a bootstrap over windows,
 which keeps the clustering of alarms within a window (one station raises most).
 
+--quiet-runs compares every run after the first with the first. --json writes
+the figures under "summary" for tools/reproduce_report.py: "GROUP: OTHER
+corrected" and so on for the events, "quiet: LABEL per day" and "quiet: OTHER
+ratio" for the quiet windows.
+
 Standard library only; the seed is fixed so every number reproduces.
 """
 import argparse
 import collections
 import csv
 import glob
+import json
 import math
 import random
 import re
@@ -155,7 +162,7 @@ def compare(det, a, b, datasets, rng):
     }
 
 
-def quiet(index, runs, rng):
+def quiet_counts(index, runs):
     hours = {r["name"]: float(r["scored_hours"]) for r in csv.DictReader(open(index))}
     counts = {}
     for label, d in runs.items():
@@ -163,6 +170,10 @@ def quiet(index, runs, rng):
         for name in hours:
             m = re.search(r"Alarms raised\s+(\d+)", Path(f"{d}/{name}.txt").read_text())
             counts[label][name] = int(m.group(1)) if m else 0
+    return hours, counts
+
+
+def quiet(hours, counts, rng):
     (la, a), (lb, b) = counts.items()
     T = sum(hours.values())
     xa, xb = sum(a.values()), sum(b.values())
@@ -191,16 +202,19 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--outcomes", required=True)
     ap.add_argument("--quiet")
-    ap.add_argument("--quiet-runs", nargs=2, metavar="LABEL=DIR")
+    ap.add_argument("--quiet-runs", nargs="+", metavar="LABEL=DIR",
+                    help="the reference first, then each run compared with it")
     ap.add_argument("--against", default="stalta_eqfa,stalta_eqdet",
                     help="detectors compared with `learned`, comma-separated labels")
     ap.add_argument("--groups", default="held out=sindirgi61;tuning=demo,marmara;all three=sindirgi61,demo,marmara",
                     help="NAME=DATASET,...;... replays pooled per comparison")
     ap.add_argument("--seed", type=int, default=20261022)
+    ap.add_argument("--json", help="also write the figures here")
     a = ap.parse_args()
     rng = random.Random(a.seed)
 
     det = load_outcomes(a.outcomes)
+    summary = {}
     groups = {g.split("=")[0]: set(g.split("=")[1].split(",")) for g in a.groups.split(";")}
     for label, ds in groups.items():
         print(f"\n== {label}")
@@ -209,6 +223,14 @@ def main():
                 print(f"learned vs {other}: no outcomes for {sorted(ds)}")
                 continue
             r = compare(det, "learned", other, ds, rng)
+            k = f"{label}: {other}"
+            summary.update({f"{label}: learned corrected": round(r["a_corrected"], 1),
+                            f"{k} detected": r["b_detected"],
+                            f"{k} corrected": round(r["b_corrected"], 1),
+                            f"{k} difference": round(r["difference"], 1),
+                            f"{k} difference low": round(r["diff_ci"][0], 1),
+                            f"{k} difference high": round(r["diff_ci"][1], 1),
+                            f"{k} mcnemar p": float(f"{r['mcnemar_p']:.2g}")})
             print(f"learned vs {other}: {r['events']} events")
             print(f"  detected            {r['a_detected']} vs {r['b_detected']}  "
                   f"(95% CP {r['a_cp'][0]:.2f}-{r['a_cp'][1]:.2f} vs {r['b_cp'][0]:.2f}-{r['b_cp'][1]:.2f})")
@@ -220,10 +242,22 @@ def main():
 
     if a.quiet and a.quiet_runs:
         runs = dict(x.split("=", 1) for x in a.quiet_runs)
-        q = quiet(a.quiet, runs, rng)
-        print("\n== quiet windows")
-        for k, v in q.items():
-            print(f"  {k:28s} " + (f"{v[0]:.3g} to {v[1]:.3g}" if isinstance(v, tuple) else f"{v:.4g}"))
+        hours, counts = quiet_counts(a.quiet, runs)
+        ref, *others = counts
+        for other in others:
+            q = quiet(hours, {ref: counts[ref], other: counts[other]}, rng)
+            print("\n== quiet windows")
+            for k, v in q.items():
+                print(f"  {k:28s} " + (f"{v[0]:.3g} to {v[1]:.3g}" if isinstance(v, tuple) else f"{v:.4g}"))
+            for lab in (ref, other):
+                summary[f"quiet: {lab} alarms"] = q[lab]
+                summary[f"quiet: {lab} per day"] = round(q[f"{lab}_per_day"], 2)
+            summary["quiet: hours"] = round(q["hours"], 1)
+            summary[f"quiet: {other} ratio"] = round(q["ratio"], 3)
+            summary[f"quiet: {other} p"] = float(f"{q['p_equal_rates']:.2g}")
+
+    if a.json:
+        Path(a.json).write_text(json.dumps({"summary": summary}, indent=1, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":

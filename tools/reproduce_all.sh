@@ -4,7 +4,10 @@
 # tools/reproduce_report.py compares them with what this run measured.
 #
 #   tools/reproduce_all.sh                 everything available here
-#   tools/reproduce_all.sh --quick         skip the STA/LTA comparison runs
+#   tools/reproduce_all.sh --quick         skip the STA/LTA comparison runs and
+#                                          stages 6-8
+#   SEISBENCH=1 tools/reproduce_all.sh     also recompute the published models'
+#                                          scores (GPU, uv), not only replay them
 #   OUT=runs/xyz tools/reproduce_all.sh    results somewhere other than the default
 #
 # Stages, in order of what they depend on:
@@ -16,6 +19,16 @@
 #                                 two tuned settings of docs/impl/09
 #   4 benchmarks                  per stage, per layer, and real-time capacity
 #   5 the aarch64 build           its numerical agreement under qemu, if built
+#   6 quiet windows               102.8 h of AFAD data without catalogued
+#                                 seismicity, both detectors: alarm rates,
+#                                 coincident pairs, signal duration behind each
+#                                 alarm (the full model: a few hours)
+#   7 paired statistics           per-event outcomes on the three AFAD replays
+#                                 and the shifted catalogues; McNemar, paired
+#                                 bootstrap, the quiet-window rate test
+#   8 published models            EQTransformer and PhaseNet at the settings
+#                                 selected on the tuning replays (paper §4.3),
+#                                 replayed from their window scores
 #
 # A dataset that is not on this machine is skipped and named in the report: the
 # AFAD replays cannot be redistributed, the KO ones come with the release
@@ -76,6 +89,156 @@ if [ -d build-pi ]; then
         || echo "aarch64 under qemu: FAILURES, see $OUT/tests_pi.log"
 else
     echo "no build-pi; cross-compile it to check the aarch64 agreement (README)"
+fi
+
+# Every quiet window replayed on its own from the end of its lead-in, as
+# data/runs/quiet100/run.sh: replay_quiet DIR [ayzek options]. With
+# QUIET_SCORES set, each window's probabilities come from QUIET_SCORES/NAME.
+QUIET=data/quiet100
+QUIET_SCORES=""
+replay_quiet() {
+    d=$1; shift
+    mkdir -p "$d"
+    tail -n +2 "$QUIET/quiet_index.csv" | {
+        n=0
+        while IFS=, read -r name start from end hours stations; do
+            "$BUILD/app/ayzek" --speed 0 --no-magnitude --no-color \
+                --catalog tests/catalogs/quiet100.csv --from "${from%%+*}" \
+                ${QUIET_SCORES:+--scores-in $QUIET_SCORES/$name} \
+                --record "$d/$name.rec" "$@" "$QUIET/$name"/*.mseed > "$d/$name.txt" 2>&1 &
+            n=$((n + 1))
+            [ $((n % 4)) -eq 0 ] && wait
+        done
+        wait
+    }
+}
+
+say "6. quiet windows"
+if [ "$QUICK" = 1 ]; then
+    echo "(skipped: --quick)"
+elif [ ! -f "$QUIET/quiet_index.csv" ]; then
+    echo "no $QUIET (AFAD, not redistributable; tools/extract_quiet.py)"
+else
+    replay_quiet "$OUT/quiet100"
+    replay_quiet "$OUT/quiet100_stalta" --detector stalta
+    python3 tools/misfire_review.py --records "$OUT/quiet100/*.rec" \
+        --csv "$OUT/quiet100/misfires.csv" > "$OUT/quiet100/misfires.txt" 2>&1 || true
+    if command -v uv > /dev/null; then
+        for r in quiet100 quiet100_stalta; do
+            uv run --quiet --with obspy --with scipy python tools/transient_duration.py \
+                --runs "$OUT/$r" --data "$QUIET" --out "$OUT/$r/durations.csv" \
+                --json "$OUT/durations_$r.json" > "$OUT/$r/durations.txt" 2>&1 || true
+        done
+    else
+        echo "no uv: signal durations not measured (needs obspy and scipy)"
+    fi
+    for r in quiet100 quiet100_stalta; do
+        cat "$OUT/$r"/*.txt | awk -v r=$r '/Alarms raised/ {n += $3} END {print r ":", n, "alarms"}'
+    done
+fi
+
+# The three AFAD replays: name and files, as in tools/scorecard.py.
+REPLAYS="demo:data/demo/DEMI.mseed,data/demo/MANT.mseed,data/demo/BAND.mseed
+marmara:data/marmara/*.mseed
+sindirgi61:data/sindirgi61/*.mseed"
+QUIET_ARGS=""
+[ -d "$OUT/quiet100_stalta" ] && QUIET_ARGS="--quiet $QUIET/quiet_index.csv --quiet-runs learned=$OUT/quiet100"
+
+say "7. paired statistics"
+if [ "$QUICK" = 1 ]; then
+    echo "(skipped: --quick)"
+elif [ ! -d data/sindirgi61 ]; then
+    echo "no data/sindirgi61 (AFAD, not redistributable)"
+else
+    mkdir -p "$OUT/outcomes"
+    for spec in $REPLAYS; do
+        n=${spec%%:*}; files=${spec#*:}
+        # The detector's window probabilities, once; the outcome runs replay them.
+        "$BUILD/app/ayzek" --speed 0 --no-magnitude --no-color --scores "$OUT/cache_$n" \
+            $(echo "$files" | tr , ' ') > /dev/null 2>&1 || echo "scores failed: $n"
+        for d in learned stalta_eqfa stalta_eqdet; do
+            python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog "tests/catalogs/$n.csv" \
+                --dataset "$n:$OUT/cache_$n:$files" --detector "$d" \
+                --out "$OUT/outcomes/${n}_$d.csv" >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: $n $d"
+        done
+    done
+    python3 tools/significance.py --outcomes "$OUT/outcomes" \
+        ${QUIET_ARGS:+$QUIET_ARGS stalta=$OUT/quiet100_stalta} \
+        --json "$OUT/significance.json" > "$OUT/significance.txt"
+    sed -n '/== held out/,/== tuning/p' "$OUT/significance.txt" | grep -E "vs|corrected" || true
+fi
+
+# The settings selected on the tuning replays before any evaluation run
+# (ayzek_paper revisions2.md R9.1): label:score set:threshold:windows.
+SB_SETTINGS="eqt_causal_fa:eqtransformer_instance_causal:0.8:2
+eqt_causal_det:eqtransformer_instance_causal:0.3:8
+eqt_look:eqtransformer_instance_lookahead:0.5:8
+pn_causal:phasenet_instance_causal:0.7:2
+pn_look_fa:phasenet_instance_lookahead:0.4:8
+pn_look_det:phasenet_instance_lookahead:0.6:8"
+SB=${SB:-data/runs/sb}
+
+say "8. published models (EQTransformer, PhaseNet)"
+if [ "$QUICK" = 1 ]; then
+    echo "(skipped: --quick)"
+elif [ ! -d data/sindirgi61 ]; then
+    echo "no data/sindirgi61 (AFAD, not redistributable)"
+elif [ "${SEISBENCH:-0}" != 1 ] && [ ! -d "$SB" ]; then
+    echo "no window scores in $SB; SEISBENCH=1 computes them (GPU, uv)"
+else
+    if [ "${SEISBENCH:-0}" = 1 ]; then
+        SB=$OUT/sb
+        for set in eqtransformer:causal eqtransformer:lookahead phasenet:causal phasenet:lookahead; do
+            m=${set%%:*}; mode=${set#*:}; tag=${m}_instance_$mode
+            score() {   # NAME FILES...
+                n=$1; shift
+                uv run --quiet --with seisbench --with scipy python -W ignore tools/seisbench_scores.py \
+                    --model "$m" --weights instance --mode "$mode" --out "$SB/$tag/$n" "$@" \
+                    > "$SB/$tag.$(echo "$n" | tr / _).log" 2>&1 || echo "scores failed: $tag $n"
+            }
+            mkdir -p "$SB/$tag"
+            for spec in $REPLAYS; do score "${spec%%:*}" $(echo "${spec#*:}" | tr , ' '); done
+            for n in demo_ko marmara_ko quiet_ko; do score "$n" data/$n/*.mseed; done
+            if [ -f "$QUIET/quiet_index.csv" ]; then
+                for w in $(tail -n +2 "$QUIET/quiet_index.csv" | cut -d, -f1); do
+                    score "quiet/$w" "$QUIET/$w"/*.mseed
+                done
+            fi
+        done
+    fi
+    labels=""
+    sb_quiet=""
+    for s in $SB_SETTINGS; do
+        label=${s%%:*}; r=${s#*:}; tag=${r%%:*}; r=${r#*:}
+        args="--threshold ${r%%:*} --trigger-windows ${r#*:} --instant-threshold 2"
+        labels="$labels${labels:+,}$label"
+        for spec in $REPLAYS; do
+            n=${spec%%:*}; files=${spec#*:}
+            python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog "tests/catalogs/$n.csv" \
+                --dataset "$n:$SB/$tag/$n:$files" --detector learned --label "$label" \
+                --out "$OUT/outcomes/${n}_$label.csv" -- $args >> "$OUT/outcomes.log" 2>&1 \
+                || echo "outcomes failed: $n $label"
+        done
+        python3 tools/scorecard.py --build "$BUILD" --only sindirgi61 --jobs 1 \
+            --args="--scores-in $SB/$tag/sindirgi61 $args" \
+            --json "$OUT/sb_${label}_sindirgi61.json" > "$OUT/sb_${label}_sindirgi61.txt" 2>&1 || true
+        for n in demo_ko marmara_ko quiet_ko; do
+            [ -d "$SB/$tag/$n" ] || continue
+            python3 tools/scorecard.py --build "$BUILD" --only "$n" --jobs 1 \
+                --args="--scores-in $SB/$tag/$n $args" \
+                --json "$OUT/sb_${label}_$n.json" > "$OUT/sb_${label}_$n.txt" 2>&1 || true
+        done
+        if [ -n "$QUIET_ARGS" ] && [ -d "$SB/$tag/quiet" ]; then
+            QUIET_SCORES=$SB/$tag/quiet
+            replay_quiet "$OUT/sb_$label/quiet" $args
+            QUIET_SCORES=""
+            sb_quiet="$sb_quiet $label=$OUT/sb_$label/quiet"
+        fi
+    done
+    python3 tools/significance.py --outcomes "$OUT/outcomes" --against "$labels" \
+        ${QUIET_ARGS:+$QUIET_ARGS$sb_quiet} \
+        --json "$OUT/significance_sb.json" > "$OUT/significance_sb.txt"
+    sed -n '/== held out/,/== tuning/p' "$OUT/significance_sb.txt" | grep -E "vs|corrected" || true
 fi
 
 say "report"

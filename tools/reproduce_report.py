@@ -81,20 +81,19 @@ def main():
         sys.exit("usage: reproduce_report.py RUN_DIR")
     out = Path(sys.argv[1])
     spec = json.loads((ROOT / "bench" / "claims.json").read_text())
-    docs = {name: load(out, name) for name in
-            ("scorecard", "scorecard_stalta_eqfa", "scorecard_stalta_eqdet",
-             "bench_stages", "bench_layers", "bench_capacity")}
-
     # Claims with a "probe" instead of a "source" read files earlier runs
     # wrote; tools/verify_claims.py checks those (stage 0), not this report.
     claims = [c for c in spec["claims"] if "source" in c]
+    # A source is the JSON file of that name in the run directory.
+    docs = {name: load(out, name) for name in {c["source"] for c in claims}}
     ok = bad = skipped = 0
     print(f"{'claim':52s} {'published':>12} {'measured':>12}  where")
     for c in claims:
         got = lookup(docs.get(c["source"]), c["key"])
         verdict = agrees(c["expect"], got, c.get("tolerance", 0))
         shown = ("-" if got is None else
-                 f"{got:.2f}" if isinstance(got, float) else str(got))
+                 (f"{got:.2f}" if abs(got) >= 0.01 or got == 0 else f"{got:.2g}")
+                 if isinstance(got, float) else str(got))
         mark = {True: "ok", False: "DIFFERS", None: "not checked"}[verdict]
         ok += verdict is True
         bad += verdict is False

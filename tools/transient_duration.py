@@ -17,6 +17,7 @@ verdict: spike (< 0.5 s), transient (0.5-3 s), extended (>= 3 s).
 import argparse
 import csv
 import glob
+import json
 import re
 from pathlib import Path
 
@@ -64,6 +65,7 @@ def main():
     ap.add_argument("--runs", required=True, help="directory of NAME.txt and NAME.rec")
     ap.add_argument("--data", required=True, help="directory of NAME/STATION.mseed")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--json", help="also write the counts here, for tools/reproduce_report.py")
     a = ap.parse_args()
 
     rows = []
@@ -99,6 +101,14 @@ def main():
     for s, c in sorted(Counter((r["station"], r["class"]) for r in rows).items()):
         print(f"  {s[0]:5s} {s[1]:9s} {c}")
     print("  all  ", dict(Counter(r["class"] for r in rows)))
+    alarms = {}
+    for r in rows:
+        alarms.setdefault((r["record"], r["alarm_utc"]), set()).add(r["class"])
+    if a.json:
+        summary = {"station detections": len(rows), "alarms": len(alarms),
+                   "alarms with an extended signal": sum("extended" in c for c in alarms.values()),
+                   **{k: v for k, v in Counter(r["class"] for r in rows).items()}}
+        Path(a.json).write_text(json.dumps({"summary": summary}, indent=1) + "\n")
 
 
 if __name__ == "__main__":

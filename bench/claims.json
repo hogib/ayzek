@@ -431,6 +431,257 @@
    "expect": 47522,
    "tolerance": 0,
    "repro": "cnn_earthquake: sk station-range --zips '<archive>/MANT/*.zip' --station MANT --out runs_mant/mant_range_full.csv"
+  },
+  {
+   "id": "heldout_gain",
+   "where": "paper §4.2, abstract",
+   "claim": "held out: 14.7 more chance-corrected events than STA/LTA at equal unmatched alarms",
+   "source": "significance",
+   "key": "summary.held out: stalta_eqfa difference",
+   "expect": 14.7,
+   "tolerance": 0.05
+  },
+  {
+   "id": "heldout_gain_low",
+   "where": "paper §4.2, abstract",
+   "claim": "its 95% paired bootstrap interval starts at 5.9",
+   "source": "significance",
+   "key": "summary.held out: stalta_eqfa difference low",
+   "expect": 5.9,
+   "tolerance": 0.05
+  },
+  {
+   "id": "heldout_gain_high",
+   "where": "paper §4.2, abstract",
+   "claim": "and ends at 23.7",
+   "source": "significance",
+   "key": "summary.held out: stalta_eqfa difference high",
+   "expect": 23.7,
+   "tolerance": 0.05
+  },
+  {
+   "id": "heldout_mcnemar",
+   "where": "paper §4.2",
+   "claim": "exact McNemar p = 0.003 against STA/LTA at equal unmatched alarms",
+   "source": "significance",
+   "key": "summary.held out: stalta_eqfa mcnemar p",
+   "expect": 0.0026,
+   "tolerance": 5e-05
+  },
+  {
+   "id": "heldout_eqdet_mcnemar",
+   "where": "paper §4.2",
+   "claim": "no detectable difference from STA/LTA at equal detections (McNemar p = 0.58)",
+   "source": "significance",
+   "key": "summary.held out: stalta_eqdet mcnemar p",
+   "expect": 0.58,
+   "tolerance": 0.005
+  },
+  {
+   "id": "quiet_learned",
+   "where": "paper §4.4, abstract",
+   "claim": "16 alarms on the 102.8 h of quiet windows",
+   "source": "significance",
+   "key": "summary.quiet: learned alarms",
+   "expect": 16,
+   "tolerance": 0
+  },
+  {
+   "id": "quiet_learned_rate",
+   "where": "paper §4.4, abstract",
+   "claim": "3.7 alarms a day on the quiet windows",
+   "source": "significance",
+   "key": "summary.quiet: learned per day",
+   "expect": 3.74,
+   "tolerance": 0.005
+  },
+  {
+   "id": "quiet_stalta",
+   "where": "paper §4.4",
+   "claim": "323 STA/LTA alarms on the quiet windows",
+   "source": "significance",
+   "key": "summary.quiet: stalta alarms",
+   "expect": 323,
+   "tolerance": 0
+  },
+  {
+   "id": "quiet_stalta_rate",
+   "where": "paper §4.4, abstract",
+   "claim": "75.4 STA/LTA alarms a day on the quiet windows",
+   "source": "significance",
+   "key": "summary.quiet: stalta per day",
+   "expect": 75.4,
+   "tolerance": 0.05
+  },
+  {
+   "id": "quiet_ratio",
+   "where": "paper §4.4",
+   "claim": "rate ratio 0.050",
+   "source": "significance",
+   "key": "summary.quiet: stalta ratio",
+   "expect": 0.05,
+   "tolerance": 0.0005
+  },
+  {
+   "id": "durations_learned",
+   "where": "paper §4.4, revisions2 R8.8",
+   "claim": "10 of the learned detector's 16 quiet alarms have an extended signal at a declaring station",
+   "source": "durations_quiet100",
+   "key": "summary.alarms with an extended signal",
+   "expect": 10,
+   "tolerance": 0
+  },
+  {
+   "id": "durations_stalta",
+   "where": "paper §4.4, revisions2 R8.8",
+   "claim": "60 of STA/LTA's 323 quiet alarms have an extended signal",
+   "source": "durations_quiet100_stalta",
+   "key": "summary.alarms with an extended signal",
+   "expect": 60,
+   "tolerance": 0
+  },
+  {
+   "id": "durations_stalta_spikes",
+   "where": "revisions2 R8.8",
+   "claim": "421 spikes among the 645 station detections behind STA/LTA's quiet alarms",
+   "source": "durations_quiet100_stalta",
+   "key": "summary.spike",
+   "expect": 421,
+   "tolerance": 0
+  },
+  {
+   "id": "sb_pn_causal",
+   "where": "paper §4.3, Table 6",
+   "claim": "causal PhaseNet: 33.3 chance-corrected held-out events",
+   "source": "significance_sb",
+   "key": "summary.held out: pn_causal corrected",
+   "expect": 33.3,
+   "tolerance": 0.05
+  },
+  {
+   "id": "sb_pn_causal_diff",
+   "where": "paper §4.3, Table 6",
+   "claim": "learned minus causal PhaseNet: +3.1",
+   "source": "significance_sb",
+   "key": "summary.held out: pn_causal difference",
+   "expect": 3.1,
+   "tolerance": 0.05
+  },
+  {
+   "id": "sb_pn_causal_low",
+   "where": "paper §4.3, Table 6",
+   "claim": "interval from -4.0",
+   "source": "significance_sb",
+   "key": "summary.held out: pn_causal difference low",
+   "expect": -4.0,
+   "tolerance": 0.05
+  },
+  {
+   "id": "sb_pn_causal_high",
+   "where": "paper §4.3, Table 6",
+   "claim": "to 10.5",
+   "source": "significance_sb",
+   "key": "summary.held out: pn_causal difference high",
+   "expect": 10.5,
+   "tolerance": 0.05
+  },
+  {
+   "id": "sb_pn_causal_mcnemar",
+   "where": "paper §4.3",
+   "claim": "McNemar p = 0.55 against causal PhaseNet",
+   "source": "significance_sb",
+   "key": "summary.held out: pn_causal mcnemar p",
+   "expect": 0.55,
+   "tolerance": 0.005
+  },
+  {
+   "id": "sb_pn_causal_unmatched",
+   "where": "paper §4.3, Table 6",
+   "claim": "causal PhaseNet: 12 unmatched held-out alarms",
+   "source": "sb_pn_causal_sindirgi61",
+   "key": "summary.unmatched alarms (held out)",
+   "expect": 12,
+   "tolerance": 0
+  },
+  {
+   "id": "sb_eqt_causal_fa",
+   "where": "paper §4.3, Table 6",
+   "claim": "causal EQTransformer at equal unmatched alarms: 11.0",
+   "source": "significance_sb",
+   "key": "summary.held out: eqt_causal_fa corrected",
+   "expect": 11.0,
+   "tolerance": 0.05
+  },
+  {
+   "id": "sb_eqt_causal_det_unmatched",
+   "where": "paper §4.3, Table 6",
+   "claim": "causal EQTransformer at equal detections: 50 unmatched held-out alarms",
+   "source": "sb_eqt_causal_det_sindirgi61",
+   "key": "summary.unmatched alarms (held out)",
+   "expect": 50,
+   "tolerance": 0
+  },
+  {
+   "id": "sb_eqt_look",
+   "where": "paper §4.3, Table 6",
+   "claim": "look-ahead EQTransformer: 32.2",
+   "source": "significance_sb",
+   "key": "summary.held out: eqt_look corrected",
+   "expect": 32.2,
+   "tolerance": 0.05
+  },
+  {
+   "id": "sb_pn_look_fa",
+   "where": "paper §4.3, Table 6",
+   "claim": "look-ahead PhaseNet, equal unmatched: 42.8",
+   "source": "significance_sb",
+   "key": "summary.held out: pn_look_fa corrected",
+   "expect": 42.8,
+   "tolerance": 0.05
+  },
+  {
+   "id": "sb_pn_look_fa_unmatched",
+   "where": "paper §4.3, Table 6",
+   "claim": "look-ahead PhaseNet, equal unmatched: 23 unmatched held-out alarms",
+   "source": "sb_pn_look_fa_sindirgi61",
+   "key": "summary.unmatched alarms (held out)",
+   "expect": 23,
+   "tolerance": 0
+  },
+  {
+   "id": "sb_pn_look_det",
+   "where": "paper §4.3, Table 6",
+   "claim": "look-ahead PhaseNet, equal detections: 38.8",
+   "source": "significance_sb",
+   "key": "summary.held out: pn_look_det corrected",
+   "expect": 38.8,
+   "tolerance": 0.05
+  },
+  {
+   "id": "sb_pn_causal_quiet",
+   "where": "paper §4.3, Table 6",
+   "claim": "causal PhaseNet: 15 alarms on the quiet windows",
+   "source": "significance_sb",
+   "key": "summary.quiet: pn_causal alarms",
+   "expect": 15,
+   "tolerance": 0
+  },
+  {
+   "id": "sb_pn_look_fa_quiet",
+   "where": "paper §4.3, Table 6",
+   "claim": "look-ahead PhaseNet, equal unmatched: 31 quiet alarms (p = 0.04)",
+   "source": "significance_sb",
+   "key": "summary.quiet: pn_look_fa alarms",
+   "expect": 31,
+   "tolerance": 0
+  },
+  {
+   "id": "sb_pn_causal_ko",
+   "where": "paper §4.3, Table 6",
+   "claim": "causal PhaseNet: 25 of 37 on marmara_ko",
+   "source": "sb_pn_causal_marmara_ko",
+   "key": "summary.detected (public)",
+   "expect": "25/37"
   }
  ],
  "not_reproducible_here": [
