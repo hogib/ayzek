@@ -682,6 +682,66 @@
    "source": "sb_pn_causal_marmara_ko",
    "key": "summary.detected (public)",
    "expect": "25/37"
+  },
+  {
+   "id": "table10_deployed_1day",
+   "where": "paper §4.5, Table 10, revisions2 R10",
+   "claim": "the deployed 6 s detector recalls 0.348 at one false alarm a day",
+   "artifact": "cnn_earthquake:runs_mant/final_pw_thresholds.csv",
+   "probe": "csv:recall_snr3@target_per_day=1.0",
+   "expect": 0.348,
+   "tolerance": 0.002,
+   "repro": "cd cnn_earthquake && uv run sk falsealarm report --scores 'runs_mant/scores_mant/pw/*.npz' --station MANT --window-seconds 6.0 --stations-csv catalogs/istasyon_katalog.csv --catalog catalogs/catalog_current.csv --snr-csv runs_mant/mant_range_full.csv --out-prefix runs_mant/final_pw > runs_mant/report_pw.log"
+  },
+  {
+   "id": "table10_pstalta_1day",
+   "where": "paper §4.5, Table 10, revisions2 R10",
+   "claim": "the pipeline STA/LTA recalls 0.222 at one false alarm a day",
+   "artifact": "cnn_earthquake:runs_mant/final_ps_thresholds.csv",
+   "probe": "csv:recall_snr3@target_per_day=1.0",
+   "expect": 0.222,
+   "tolerance": 0.002,
+   "repro": "cd cnn_earthquake && uv run sk falsealarm report --scores 'runs_mant/scores_mant/ps/*.npz' --station MANT --window-seconds 6.0 --stations-csv catalogs/istasyon_katalog.csv --catalog catalogs/catalog_current.csv --snr-csv runs_mant/mant_range_full.csv --out-prefix runs_mant/final_ps > runs_mant/report_ps.log"
+  },
+  {
+   "id": "table10_deployed_100day",
+   "where": "paper §4.5, Table 10, revisions2 R10",
+   "claim": "the deployed 6 s detector recalls 0.979 at 100 a day",
+   "artifact": "cnn_earthquake:runs_mant/final_pw_thresholds.csv",
+   "probe": "csv:recall_snr3@target_per_day=100.0",
+   "expect": 0.979,
+   "tolerance": 0.002,
+   "repro": "cd cnn_earthquake && uv run sk falsealarm report --scores 'runs_mant/scores_mant/pw/*.npz' --station MANT --window-seconds 6.0 --stations-csv catalogs/istasyon_katalog.csv --catalog catalogs/catalog_current.csv --snr-csv runs_mant/mant_range_full.csv --out-prefix runs_mant/final_pw > runs_mant/report_pw.log"
+  },
+  {
+   "id": "table10_pstalta_100day",
+   "where": "paper §4.5, Table 10, revisions2 R10",
+   "claim": "the pipeline STA/LTA recalls 0.991 at 100 a day",
+   "artifact": "cnn_earthquake:runs_mant/final_ps_thresholds.csv",
+   "probe": "csv:recall_snr3@target_per_day=100.0",
+   "expect": 0.991,
+   "tolerance": 0.002,
+   "repro": "cd cnn_earthquake && uv run sk falsealarm report --scores 'runs_mant/scores_mant/ps/*.npz' --station MANT --window-seconds 6.0 --stations-csv catalogs/istasyon_katalog.csv --catalog catalogs/catalog_current.csv --snr-csv runs_mant/mant_range_full.csv --out-prefix runs_mant/final_ps > runs_mant/report_ps.log"
+  },
+  {
+   "id": "table10_deployed_auc",
+   "where": "paper §4.5, Table 10, abstract",
+   "claim": "the deployed 6 s detector's event AUC is 0.9892",
+   "artifact": "cnn_earthquake:runs_mant/report_pw.log",
+   "probe": "regex:\\n\\s+3\\s+13,056\\s+([\\d.]+)",
+   "expect": 0.9892,
+   "tolerance": 5e-05,
+   "repro": "cd cnn_earthquake && uv run sk falsealarm report --scores 'runs_mant/scores_mant/pw/*.npz' --station MANT --window-seconds 6.0 --stations-csv catalogs/istasyon_katalog.csv --catalog catalogs/catalog_current.csv --snr-csv runs_mant/mant_range_full.csv --out-prefix runs_mant/final_pw > runs_mant/report_pw.log"
+  },
+  {
+   "id": "table10_pstalta_auc",
+   "where": "paper §4.5, Table 10, abstract",
+   "claim": "the pipeline STA/LTA's event AUC is 0.9910",
+   "artifact": "cnn_earthquake:runs_mant/report_ps.log",
+   "probe": "regex:\\n\\s+3\\s+13,056\\s+([\\d.]+)",
+   "expect": 0.991,
+   "tolerance": 5e-05,
+   "repro": "cd cnn_earthquake && uv run sk falsealarm report --scores 'runs_mant/scores_mant/ps/*.npz' --station MANT --window-seconds 6.0 --stations-csv catalogs/istasyon_katalog.csv --catalog catalogs/catalog_current.csv --snr-csv runs_mant/mant_range_full.csv --out-prefix runs_mant/final_ps > runs_mant/report_ps.log"
   }
  ],
  "not_reproducible_here": [
