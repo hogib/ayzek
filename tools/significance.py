@@ -19,7 +19,10 @@ Quiet windows: the exact conditional test of two Poisson counts over the same
 hours, with the exact interval of their ratio, and a bootstrap over windows,
 which keeps the clustering of alarms within a window (one station raises most).
 
---quiet-runs compares every run after the first with the first. --json writes
+--block-minutes resamples blocks of origin time rather than single events,
+which keeps together events whose detectability is shared (noise state, the
+stations up, overlapping codas). --quiet-runs compares every run after the first
+with the first. --json writes
 the figures under "summary" for tools/reproduce_report.py: "GROUP: OTHER
 corrected" and so on for the events, "quiet: LABEL per day" and "quiet: OTHER
 ratio" for the quiet windows.
@@ -132,7 +135,30 @@ def by_ds(events):
     return g
 
 
-def compare(det, a, b, datasets, rng):
+def seconds(origin):
+    h, m, sec = origin.split(":")
+    return int(h) * 3600 + int(m) * 60 + float(sec)
+
+
+def resample(events, rng, block):
+    """One bootstrap draw within each replay: events one by one, or with
+    block > 0, whole blocks of `block` seconds of origin time, as many blocks as
+    the replay has, so that events close in time are drawn together."""
+    out = []
+    for g in by_ds(events).values():
+        if not block:
+            out += [rng.choice(g) for _ in g]
+            continue
+        blocks = collections.defaultdict(list)
+        for e in g:
+            blocks[int(seconds(e[1]) // block)].append(e)
+        bs = list(blocks.values())
+        for _ in bs:
+            out += rng.choice(bs)
+    return out
+
+
+def compare(det, a, b, datasets, rng, block=0):
     def subset(d):
         return {s: {e: v for e, v in ev.items() if e[0] in datasets} for s, ev in det[d].items()}
     A, Bd = subset(a), subset(b)
@@ -148,8 +174,8 @@ def compare(det, a, b, datasets, rng):
     diffs = []
     for _ in range(B):
         # Resample within each replay, so every replay keeps its size.
-        to = [rng.choice(g) for g in by_ds(obs_ev).values() for _ in g]
-        ts = {s: [rng.choice(g) for g in by_ds(shift_ev[s]).values() for _ in g] for s in shifts}
+        to = resample(obs_ev, rng, block)
+        ts = {s: resample(shift_ev[s], rng, block) for s in shifts}
         diffs.append(corrected(A[0], shA, to, ts)[0] - corrected(Bd[0], shB, to, ts)[0])
     ka, kb, n = sum(A[0].values()), sum(Bd[0].values()), len(obs_ev)
     return {
@@ -210,6 +236,9 @@ def main():
                     help="NAME=DATASET,...;... replays pooled per comparison")
     ap.add_argument("--seed", type=int, default=20261022)
     ap.add_argument("--json", help="also write the figures here")
+    ap.add_argument("--block-minutes", type=float, default=0,
+                    help="bootstrap whole blocks of this many minutes of origin time "
+                         "instead of single events (0: events)")
     a = ap.parse_args()
     rng = random.Random(a.seed)
 
@@ -222,7 +251,7 @@ def main():
             if not any(e[0] in ds for e in det[other][0]):
                 print(f"learned vs {other}: no outcomes for {sorted(ds)}")
                 continue
-            r = compare(det, "learned", other, ds, rng)
+            r = compare(det, "learned", other, ds, rng, 60 * a.block_minutes)
             k = f"{label}: {other}"
             summary.update({f"{label}: learned corrected": round(r["a_corrected"], 1),
                             f"{k} detected": r["b_detected"],
