@@ -1,5 +1,7 @@
 # ayzek
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23672495.svg)](https://doi.org/10.5281/zenodo.23672495)
+
 An earthquake early-warning (EEW) pipeline in C++23. It reads continuous
 three-component waveforms from several stations and, for each earthquake:
 
@@ -353,6 +355,30 @@ bench/          ayzek_bench, and reference results in bench/results/
 cross/          zig toolchain wrappers and the Raspberry Pi and Windows cross files
 docs/           design and implementation notes
 ```
+
+## Citing ayzek
+
+If you use ayzek, its models or its results in your work, please cite it.
+Every release is archived on Zenodo; the DOI below always resolves to the
+latest one, and each release's page gives its own DOI, which is the one to cite
+for a specific version:
+
+> Bolat, H. O., Çimen, S., Bolat, B., & Yıldırım, T. ayzek: a self-contained
+> real-time earthquake detection and early-warning pipeline. Zenodo.
+> https://doi.org/10.5281/zenodo.23672495
+
+```bibtex
+@software{ayzek,
+  author    = {Bolat, H. O{\u{g}}uz and {\c{C}}imen, Sibel and Bolat, B{\"u}lent and Y{\i}ld{\i}r{\i}m, T{\"u}lay},
+  title     = {ayzek: a self-contained real-time earthquake detection and early-warning pipeline},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23672495},
+  url       = {https://github.com/hogib/ayzek}
+}
+```
+
+`CITATION.cff` holds the same metadata (GitHub's "Cite this repository"). The
+paper describing ayzek will be added here once it is published.
 
 ## License
 
