@@ -171,7 +171,7 @@ tools/demo.sh all      # 7 stations, full speed
 | `--trigger-windows N` | 8 | see `--threshold`; 8 windows add 3.5 s to a trigger |
 | `--instant-threshold P` | 0.9 | also trigger on a single window at or above P; a value > 1 disables this |
 | `--release P` | 0.3 | a trigger re-arms after two windows below P |
-| `--detector KIND` | `6s` | `6s` (also `model`): the 3-seed 6 s window detector. `transformer`: the streaming onset transformer, one output per 0.1 s, P dated by its own `dt` (`docs/impl/14-transformer.md`). `stalta`: a recursive STA/LTA. Association and magnitude are shared; the transformer also places the picker on its own P and, with the geometry head, locates events itself (`--locate`) |
+| `--detector KIND` | `6s` | `6s` (also `model`): the 3-seed 6 s window detector. `transformer`: the streaming onset transformer, one output per 0.1 s, P dated by its own `dt` (`docs/impl/14-transformer.md`). `stalta`: a recursive STA/LTA. `filterpicker`: Lomax's FilterPicker5 on the vertical (`docs/impl/18-filterpicker.md`). Association and magnitude are shared; the transformer also places the picker on its own P and, with the geometry head, locates events itself (`--locate`) |
 | `--transformer FILE` | `MODELS/transformer.ayzw` | transformer weights; its `--threshold` and `--release` default to the model's validation operating point |
 | `--dt-reset BELOW,FROM` | the model's (`1,5` for the current one; `2,5` for models exported without one) | transformer: also trigger while p stays at or above the threshold when dt falls back to BELOW s or less (2 tokens in a row) after reaching FROM s: a new onset in the coda of the last event (`docs/impl/14-transformer.md`) |
 | `--no-dt-reset` | | transformer: rising edges only, the rule before `--dt-reset` |
@@ -180,6 +180,8 @@ tools/demo.sh all      # 7 stations, full speed
 | `--stalta-on R`, `--stalta-off R` | 8, 1.5 | STA/LTA ratio that triggers, and below which a trigger re-arms |
 | `--stalta-band LO,HI` | 2,20 | STA/LTA pass band in Hz (4th-order Butterworth high- and low-pass) |
 | `--stalta-3c` | | STA/LTA on the energy of all three components instead of the vertical |
+| `--fp-windows F,L,U` | 3,5,0.2 | FilterPicker filter window, long-term window and tUpEvent in seconds (Lomax et al. 2012 at 100 Hz; Earthworm's `pick_FP` uses 6,10,0.4) |
+| `--fp-thresholds T1,T2` | 10,10 | FilterPicker trigger threshold and the mean characteristic function over tUpEvent needed to accept a pick |
 | `--no-anchor` | | do not take the P time of a model trigger from the STA/LTA onset |
 | `--anchor-on R` | 3 | STA/LTA ratio taken as the onset when anchoring |
 | `--anchor-picker`, `--anchor-magnitude` | | also place the picker and early magnitude windows from the anchored P; both make their models worse (`docs/impl/09-sta-lta.md`) |

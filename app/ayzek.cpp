@@ -67,6 +67,7 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --detector KIND       6s (default; also "model"): the 3-seed 6 s window detector
                         transformer: the streaming onset transformer, every 0.1 s
                         stalta: the reference STA/LTA trigger
+                        filterpicker: Lomax's FilterPicker5 on the vertical
   --transformer FILE    transformer weights (default: MODELS/transformer.ayzw)
   --dt-reset BELOW,FROM transformer: also trigger while p stays high when dt falls
                         back to BELOW s or less after reaching FROM s since the
@@ -94,6 +95,9 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --stalta-off R        STA/LTA ratio below which a trigger resets (default 1.5)
   --stalta-band LO,HI   STA/LTA pass band in Hz (default 2,20)
   --stalta-3c           STA/LTA on the energy of all three components (default: vertical)
+  --fp-windows F,L,U    FilterPicker filter window, long-term window and tUpEvent
+                        in seconds (default 3,5,0.2: Lomax et al. 2012 at 100 Hz)
+  --fp-thresholds T1,T2 FilterPicker trigger and acceptance thresholds (default 10,10)
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2;
                         transformer: 3)
@@ -240,8 +244,11 @@ int main(int argc, char **argv) try {
         pcfg.detector = DetectorKind::Transformer;
       else if (kind == "stalta")
         pcfg.detector = DetectorKind::StaLta;
+      else if (kind == "filterpicker")
+        pcfg.detector = DetectorKind::FilterPicker;
       else
-        throw std::runtime_error("--detector: 6s, transformer or stalta");
+        throw std::runtime_error(
+            "--detector: 6s, transformer, stalta or filterpicker");
     } else if (a == "--sta")
       pcfg.stalta.sta_seconds = std::stod(next());
     else if (a == "--lta")
@@ -259,6 +266,22 @@ int main(int argc, char **argv) try {
       pcfg.stalta.f_hi = std::stod(band.substr(comma + 1));
     } else if (a == "--stalta-3c")
       pcfg.stalta.three_component = true;
+    else if (a == "--fp-windows") {
+      const auto v = next();
+      const auto c1 = v.find(','), c2 = v.find(',', c1 + 1);
+      if (c1 == std::string::npos || c2 == std::string::npos)
+        throw std::runtime_error("--fp-windows: FILTER,LONG,TUP");
+      pcfg.fp.filter_window = std::stod(v.substr(0, c1));
+      pcfg.fp.long_term_window = std::stod(v.substr(c1 + 1, c2 - c1 - 1));
+      pcfg.fp.t_up = std::stod(v.substr(c2 + 1));
+    } else if (a == "--fp-thresholds") {
+      const auto v = next();
+      const auto comma = v.find(',');
+      if (comma == std::string::npos)
+        throw std::runtime_error("--fp-thresholds: T1,T2");
+      pcfg.fp.threshold1 = std::stod(v.substr(0, comma));
+      pcfg.fp.threshold2 = std::stod(v.substr(comma + 1));
+    }
     else if (a == "--no-anchor")
       pcfg.anchor = false;
     else if (a == "--anchor-on")
@@ -332,6 +355,11 @@ int main(int argc, char **argv) try {
   }
   if (pcfg.detector != DetectorKind::Model && !scores_in_dir.empty())
     throw std::runtime_error("--scores-in applies to the 6 s detector only");
+  // FilterPicker dates P itself, from its uncertainty point.
+  if (pcfg.detector == DetectorKind::FilterPicker) {
+    pcfg.anchor = false;
+    pcfg.require_onset = false;
+  }
   if (!stdout_is_tty())
     Log::get().color = false;
   std::signal(SIGINT, [](int) { g_stop = true; });
@@ -458,6 +486,11 @@ int main(int argc, char **argv) try {
       : pcfg.detector == DetectorKind::Model
           ? std::string(pcfg.anchor ? "3-seed 6 s detector + STA/LTA anchor"
                                     : "3-seed 6 s detector")
+      : pcfg.detector == DetectorKind::FilterPicker
+          ? std::format(
+                "FilterPicker5 {:g}/{:g}/{:g} s, thresholds {:g}/{:g}, Z",
+                pcfg.fp.filter_window, pcfg.fp.long_term_window, pcfg.fp.t_up,
+                pcfg.fp.threshold1, pcfg.fp.threshold2)
           : std::format(
                 "STA/LTA {:g}/{:g} s on {:g} off {:g}, {:g}-{:g} Hz, {}",
                 pcfg.stalta.sta_seconds, pcfg.stalta.lta_seconds,

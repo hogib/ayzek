@@ -3,6 +3,8 @@
     python3 tools/select_setting.py --sweeps 'data/runs/sb/eqtransformer_*_causal' \\
         --datasets demo,marmara --unmatched 26 --corrected 48.7
 
+Settings are the trigger options (--threshold, --trigger-windows,
+--instant-threshold) or FilterPicker's (--fp-windows, --fp-thresholds).
 Each directory holds one tools/sweep_trigger.py table per tuning replay
 (sweep_DATASET.csv), for one detector or one set of weights. Settings are summed
 over the replays, as §4.2 of the paper does, and the rules applied over every
@@ -21,7 +23,16 @@ import csv
 import glob
 from pathlib import Path
 
-KEYS = ("threshold", "trigger-windows", "instant-threshold")
+KEYS = ("threshold", "trigger-windows", "instant-threshold", "fp-windows", "fp-thresholds")
+
+
+def threshold(setting):
+    """The tie-break of the first rule: the trigger threshold, or FilterPicker's
+    (threshold1, threshold2)."""
+    s = dict(setting)
+    if "fp-thresholds" in s:
+        return tuple(float(x) for x in s["fp-thresholds"].split(","))
+    return (float(s["threshold"]),)
 
 
 def main():
@@ -39,7 +50,7 @@ def main():
             f = Path(d) / f"sweep_{ds}.csv"
             if not f.exists():
                 raise SystemExit(f"missing {f}")
-            tables[ds] = {tuple(r[k] for k in KEYS if k in r): r for r in csv.DictReader(open(f))}
+            tables[ds] = {tuple((k, r[k]) for k in KEYS if k in r): r for r in csv.DictReader(open(f))}
         for setting in set.intersection(*(set(t) for t in tables.values())):
             rs = [tables[ds][setting] for ds in tables]
             rows.append({
@@ -56,12 +67,12 @@ def main():
         if r is None:
             print(f"{label}: none satisfies the rule")
             return
-        s = " ".join(f"{k}={v}" for k, v in zip(KEYS, r["setting"]))
+        s = " ".join(f"{k}={v}" for k, v in r["setting"])
         print(f"{label}: {r['source']}  {s}  detected {r['detected']}/{r['catalogue']}, "
               f"corrected {r['corrected']:.1f}, unmatched {r['unmatched']}")
 
     fa = [r for r in rows if r["unmatched"] <= a.unmatched]
-    best_fa = max(fa, key=lambda r: (r["corrected"], -r["unmatched"], float(r["setting"][0]))) if fa else None
+    best_fa = max(fa, key=lambda r: (r["corrected"], -r["unmatched"], threshold(r["setting"]))) if fa else None
     dt = [r for r in rows if r["corrected"] >= a.corrected]
     best_dt = min(dt, key=lambda r: (r["unmatched"], -r["corrected"])) if dt else None
     show("equal unmatched", best_fa)

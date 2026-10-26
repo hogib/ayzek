@@ -11,8 +11,9 @@ is identified by its unshifted origin time, so the rows of one event line up
 across shifts and across detectors, which is what a paired test needs.
 
 --detector is `learned` (the cached window probabilities, default trigger
-rule), `stalta_eqfa` (--detector stalta) or `stalta_eqdet` (the equal
-detections setting of docs/impl/09); anything after `--` is passed to ayzek.
+rule), `stalta_eqfa` (--detector stalta), `stalta_eqdet` (the equal
+detections setting of docs/impl/09) or `filterpicker` (its settings after
+`--`, and a --label); anything after `--` is passed to ayzek.
 Another model's scores (tools/seisbench_scores.py) run as `learned` with their
 own cache, trigger settings after `--`, and a --label.
 Standard library only.
@@ -36,6 +37,7 @@ DETECTORS = {
     "stalta_eqfa": ["--detector", "stalta"],
     "stalta_eqdet": ["--detector", "stalta", "--stalta-band", "2,10", "--sta", "0.5",
                      "--lta", "10", "--stalta-on", "6"],
+    "filterpicker": ["--detector", "filterpicker"],
 }
 # Detected: the AFAD line of an event block. Missed: the list after the counts.
 DETECTED = re.compile(r"^  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm", re.M)
