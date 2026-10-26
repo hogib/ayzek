@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use ayzek, please cite it as below."
+title: "ayzek: a self-contained real-time earthquake detection and early-warning pipeline"
+version: 0.1.0-beta.4
+date-released: 2026-10-26
+license: GPL-3.0-or-later
+repository-code: "https://github.com/hogib/ayzek"
+type: software
+authors:
+  - family-names: Bolat
+    given-names: "H. Oğuz"
+    affiliation: "Department of Geomatics Engineering, Yıldız Technical University, İstanbul, Türkiye"
+abstract: >-
+  A C++23 earthquake detection and early-warning pipeline with hand-written
+  inference and no machine-learning runtime: miniSEED ingestion, a learned
+  6 s window detector (with a STA/LTA reference trigger and a streaming
+  transformer), P/S picking, network association, location and magnitude,
+  replayed against AFAD and KOERI data. Includes the model weights, the tools
+  that reproduce every number in the accompanying paper, and the benchmarks.
+keywords:
+  - seismology
+  - earthquake early warning
+  - earthquake detection
+  - deep learning
+  - real-time
