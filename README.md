@@ -353,3 +353,10 @@ bench/          ayzek_bench, and reference results in bench/results/
 cross/          zig toolchain wrappers and the Raspberry Pi and Windows cross files
 docs/           design and implementation notes
 ```
+
+## License
+
+GNU General Public License, version 3 or (at your option) any later version
+(GPL-3.0-or-later); the full text is in `LICENSE`. Releases up to and including
+v0.1.0-beta.3 were published under the Apache License 2.0 and remain available
+under it.
