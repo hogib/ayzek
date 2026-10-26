@@ -1,7 +1,7 @@
 #pragma once
 
 // Processing stage, one thread per station: sliding windows -> preprocessing ->
-// detector ensemble (or STA/LTA, or the streaming transformer) -> trigger. A trigger schedules an early
+// detector ensemble (or STA/LTA, FilterPicker, or the streaming transformer) -> trigger. A trigger schedules an early
 // magnitude estimate and a 60 s picker window. A confident P pick carries the
 // 10 s window for a magnitude estimate at the picked P, which the network stage
 // runs only for declared events. Windows scored as noise update the station's
@@ -9,6 +9,7 @@
 
 #include "common.hpp"
 #include "dsp.hpp"
+#include "filterpicker.hpp"
 #include "magnitude.hpp"
 #include "models.hpp"
 #include "pd_magnitude.hpp"
@@ -31,8 +32,8 @@ namespace ayzek::pipeline {
 
 // Model: the 3-seed 6 s window detector. Transformer: the streaming onset
 // transformer (transformer.hpp), one output per 0.1 s. StaLta: the reference
-// STA/LTA trigger.
-enum class DetectorKind { Model, StaLta, Transformer };
+// STA/LTA trigger. FilterPicker: Lomax's FilterPicker5 (filterpicker.hpp).
+enum class DetectorKind { Model, StaLta, Transformer, FilterPicker };
 
 struct ProcessorConfig {
   DetectorKind detector = DetectorKind::Model;
@@ -73,6 +74,12 @@ struct ProcessorConfig {
   double stalta_on = 8.0;
   double stalta_off = 1.5;
   double stalta_noise_below = 2.0; // max ratio over a window accepted as noise
+
+  // FilterPicker (detector = FilterPicker) on the vertical component: every
+  // pick triggers, dated at the pick, and is declared at the sample that
+  // accepted it. Defaults: Lomax et al. (2012) at 100 Hz (18-filterpicker.md).
+  dsp::FilterPickerConfig fp{};
+  double fp_noise_below = 5.0; // max clipped CF over a window accepted as noise
 
   // Anchoring (detector = Model): an STA/LTA runs alongside the detector and
   // its onsets give the P time of a trigger, in place of the assumption that P
@@ -177,6 +184,7 @@ private:
   float score_model(std::uint64_t start, double &ms);
   float score_stalta(std::uint64_t start, double &ms);
   float update_stalta(std::uint64_t start, double on, double off, double &ms);
+  float score_filterpicker(std::uint64_t start, double &ms);
   // The onset position for a trigger, or kUnset if there is none in range.
   [[nodiscard]] std::uint64_t onset_for(std::uint64_t run_start) const;
   void trigger(std::uint64_t run_start, std::uint64_t p_pos,
@@ -201,6 +209,9 @@ private:
   std::unique_ptr<Picker> picker_;
   std::unique_ptr<MagnitudeEstimator> magnitude_;
   std::unique_ptr<dsp::StaLta> stalta_;
+  std::unique_ptr<dsp::FilterPicker> fp_;
+  std::uint64_t fp_next_ = kUnset; // next sample to feed; kUnset after a gap
+  std::uint64_t fp_origin_ = 0;    // position of the FilterPicker's sample 0
   std::unique_ptr<OnsetStream> onset_;
   std::vector<OnsetStream::Token> tokens_;
   std::optional<TokenTrigger> token_trigger_; // transformer

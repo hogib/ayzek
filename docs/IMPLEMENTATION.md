@@ -27,6 +27,7 @@ describe what was built.
 | [15 · Location from the geometry head](impl/15-geometry-location.md) | per-station distance in place of S-P picks, the locator, its settings and geo_v1's numbers |
 | [16 · Alarm assessment](impl/16-alarm-assessment.md) | `--assess`: S-P consistency and independent evidence to tell uncatalogued earthquakes from misfires |
 | [17 · Magnitude from peak P displacement](impl/17-pd-magnitude.md) | the Pd chain on raw counts, the censored Pd–M–R estimator calibrated in onset, its agreement with onset and its results on the replays |
+| [18 · FilterPicker](impl/18-filterpicker.md) | Lomax's FilterPicker5 ported from his C code, checked against it, in place of the detector |
 
 ## In one screen
 

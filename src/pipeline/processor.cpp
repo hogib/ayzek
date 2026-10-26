@@ -46,6 +46,8 @@ Processor::Processor(Station &st, const std::vector<Weights> &detector,
     picker_ = std::make_unique<Picker>(picker);
   if (cfg_.detector == DetectorKind::StaLta || cfg_.anchor)
     stalta_ = std::make_unique<dsp::StaLta>(cfg_.stalta);
+  if (cfg_.detector == DetectorKind::FilterPicker)
+    fp_ = std::make_unique<dsp::FilterPicker>(cfg_.fp);
   if (cfg_.magnitude && !magnitude.empty())
     magnitude_ = std::make_unique<MagnitudeEstimator>(magnitude, bp);
   else
@@ -124,6 +126,7 @@ void Processor::score_window(std::uint64_t start) {
     ++stats_.gap_windows;
     above_ = 0;            // a gap interrupts a run of windows
     stalta_next_ = kUnset; // and restarts the STA/LTA
+    fp_next_ = kUnset;     // and the FilterPicker
     next_ = align_up(std::max(resume, start + 1), cfg_.step);
     return;
   }
@@ -131,6 +134,8 @@ void Processor::score_window(std::uint64_t start) {
   float p = 0;
   if (cfg_.detector == DetectorKind::StaLta) {
     p = score_stalta(start, ms);
+  } else if (cfg_.detector == DetectorKind::FilterPicker) {
+    p = score_filterpicker(start, ms);
   } else {
     // The anchoring STA/LTA is fed before the window is scored, so that an
     // onset in this window can date a trigger from it.
@@ -405,6 +410,47 @@ float Processor::score_stalta(std::uint64_t start, double &ms) {
   return peak;
 }
 
+// FilterPicker as the detector: feeds the vertical samples of the window not
+// yet seen to it, one at a time, and triggers on every pick, subject to the
+// minimum time between triggers. The pick is the P time; the detection is
+// declared at the sample that accepted the pick, t_up or more after it.
+// Returns the largest clipped CF among those samples.
+float Processor::score_filterpicker(std::uint64_t start, double &ms) {
+  const std::uint64_t end = start + Detector::kWindow;
+  std::uint64_t from = fp_next_;
+  if (from == kUnset || from < start) {
+    fp_->reset();
+    fp_origin_ = start;
+    from = start;
+  }
+  const auto t0 = Clock::now();
+  double peak = 0;
+  std::vector<std::pair<std::uint64_t, dsp::FilterPick>> picks;
+  for (std::uint64_t pos = from; pos < end; ++pos) {
+    const auto pick = fp_->step(raw_[(pos - start) * 3]);
+    peak = std::max(peak, fp_->cf());
+    if (pick)
+      picks.emplace_back(pos, *pick);
+  }
+  ms = ms_since(t0);
+  fp_next_ = end;
+  const auto lead = static_cast<std::uint64_t>(3.5 * kFs);
+  for (const auto &[pos, pick] : picks) {
+    const std::uint64_t p = fp_origin_ + static_cast<std::uint64_t>(pick.time);
+    const double run_t = pos_to_epoch(p - lead);
+    if (cfg_.from > 0 && pos_to_epoch(p) < cfg_.from)
+      continue;
+    if (run_t - last_trigger_ < cfg_.retrigger_seconds)
+      continue;
+    last_trigger_ = run_t;
+    // A window start 3.5 s before P, as for STA/LTA (score_stalta).
+    trigger(p - lead, p, p - lead, pos_to_epoch(pos + 1),
+            static_cast<float>(pick.amplitude), ms);
+  }
+  active_ = !fp_->armed(); // for the noise baseline
+  return static_cast<float>(peak);
+}
+
 // P time of a trigger whose run of windows starts at `run_start`: the first
 // sample from 2 s before that window at which the STA/LTA ratio reaches
 // `anchor_on`, searched up to the end of the window. Without one, the model's
@@ -611,7 +657,8 @@ void Processor::run_early_magnitude(std::uint64_t start, double trigger) {
 
 // At most every `noise_every` seconds, adds the 10 s ending at the newest
 // scored window to the noise baseline, provided every detector window
-// overlapping it scored below `noise_below` (`stalta_noise_below` for STA/LTA).
+// overlapping it scored below `noise_below` (`stalta_noise_below` for STA/LTA,
+// `fp_noise_below` for FilterPicker).
 // Signal included in the baseline would inflate the noise sigma and lower later
 // magnitude estimates.
 void Processor::maybe_add_noise(std::uint64_t window_start) {
@@ -626,9 +673,10 @@ void Processor::maybe_add_noise(std::uint64_t window_start) {
     return; // not enough scored history
   // By detector kind, not by whether an STA/LTA exists: one also runs alongside
   // the model when triggers are anchored, and its scale is not a probability.
-  const double below = cfg_.detector == DetectorKind::StaLta
-                           ? cfg_.stalta_noise_below
-                           : cfg_.noise_below;
+  const double below =
+      cfg_.detector == DetectorKind::StaLta         ? cfg_.stalta_noise_below
+      : cfg_.detector == DetectorKind::FilterPicker ? cfg_.fp_noise_below
+                                                    : cfg_.noise_below;
   for (const auto &[ws, p] : recent_)
     if (ws + Detector::kWindow > begin && p >= below)
       return;
@@ -666,8 +714,9 @@ void Processor::run(const std::atomic<bool> &stop) {
       // Start at the beginning of the data even with `from`, so that the
       // earlier windows build the noise baseline.
       std::uint64_t first = latest_base;
-      // STA/LTA also needs its long-term average before `from`.
-      if (cfg_.from > 0 && !cfg_.magnitude && !stalta_)
+      // STA/LTA and FilterPicker also need their long-term averages before
+      // `from`.
+      if (cfg_.from > 0 && !cfg_.magnitude && !stalta_ && !fp_)
         first = std::max(first, epoch_to_pos(cfg_.from));
       next_ = align_up(first, onset_ ? onset_->config().stride : cfg_.step);
     }
@@ -717,6 +766,8 @@ void Processor::run(const std::atomic<bool> &stop) {
     double until = pos_to_epoch(onset_ ? next_ : next_ + Detector::kWindow);
     if (stalta_)
       until = pos_to_epoch(stalta_next_ != kUnset ? stalta_next_ : next_);
+    if (fp_)
+      until = pos_to_epoch(fp_next_ != kUnset ? fp_next_ : next_);
     if (!picks_.empty())
       until =
           std::min(until, pos_to_epoch(picks_.front().start + Picker::kWindow));
