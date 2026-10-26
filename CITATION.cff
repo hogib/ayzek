@@ -13,15 +13,15 @@ authors:
     orcid: "https://orcid.org/0009-0000-8522-7746"
   - family-names: Çimen
     given-names: Sibel
-    affiliation: "Department of Electronics and Communications Engineering, Yıldız Technical University, İstanbul, Türkiye"
+    affiliation: "Department of Electronics and Communication Engineering, Yıldız Technical University, İstanbul, Türkiye"
     orcid: "https://orcid.org/0000-0003-3790-7362"
   - family-names: Bolat
     given-names: Bülent
-    affiliation: "Department of Electronics and Communications Engineering, Yıldız Technical University, İstanbul, Türkiye"
+    affiliation: "Department of Electronics and Communication Engineering, Yıldız Technical University, İstanbul, Türkiye"
     orcid: "https://orcid.org/0000-0002-2468-8618"
   - family-names: Yıldırım
     given-names: Tülay
-    affiliation: "Department of Electronics and Communications Engineering, Yıldız Technical University, İstanbul, Türkiye"
+    affiliation: "Department of Electronics and Communication Engineering, Yıldız Technical University, İstanbul, Türkiye"
     orcid: "https://orcid.org/0000-0001-9993-5583"
 abstract: >-
   A C++23 earthquake detection and early-warning pipeline with hand-written
