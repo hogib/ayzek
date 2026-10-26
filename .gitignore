@@ -4,6 +4,8 @@ subprojects/*/
 compile_commands.json
 .cache/
 data/
+# data is usually a symlink to the data drive; data/ only matches a directory
+/data
 __pycache__/
 docs/paper/*
 
