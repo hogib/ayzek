@@ -29,6 +29,11 @@
 #   8 published models            EQTransformer and PhaseNet at the settings
 #                                 selected on the tuning replays (paper §4.3),
 #                                 replayed from their window scores
+#   9 second held-out sequence    Simav Mw 4.8 (paper §4.5): every detector at
+#                                 its frozen setting, and both held-out
+#                                 sequences pooled
+#  10 FilterPicker                its two selected settings (paper §4.4) on the
+#                                 four AFAD replays and the quiet windows
 #
 # A dataset that is not on this machine is skipped and named in the report: the
 # AFAD replays cannot be redistributed, the KO ones come with the release
@@ -239,6 +244,76 @@ else
         ${QUIET_ARGS:+$QUIET_ARGS$sb_quiet} \
         --json "$OUT/significance_sb.json" > "$OUT/significance_sb.txt"
     sed -n '/== held out/,/== tuning/p' "$OUT/significance_sb.txt" | grep -E "vs|corrected" || true
+fi
+
+say "9. second held-out sequence (Simav)"
+if [ "$QUICK" = 1 ]; then
+    echo "(skipped: --quick)"
+elif [ ! -d data/simav26 ] || [ ! -d data/sindirgi61 ]; then
+    echo "no data/simav26 or data/sindirgi61 (AFAD, not redistributable)"
+else
+    files="data/simav26/*.mseed"
+    "$BUILD/app/ayzek" --speed 0 --no-magnitude --no-color --scores "$OUT/cache_simav26" \
+        $files > /dev/null 2>&1 || echo "scores failed: simav26"
+    mkdir -p "$OUT/outcomes"
+    for d in learned stalta_eqfa stalta_eqdet; do
+        python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog tests/catalogs/simav26.csv \
+            --dataset "simav26:$OUT/cache_simav26:$files" --detector "$d" \
+            --out "$OUT/outcomes/simav26_$d.csv" >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: simav26 $d"
+    done
+    against=stalta_eqfa,stalta_eqdet
+    for s in $SB_SETTINGS; do
+        label=${s%%:*}; r=${s#*:}; tag=${r%%:*}; r=${r#*:}
+        [ -d "$SB/$tag/simav26" ] || continue
+        python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog tests/catalogs/simav26.csv \
+            --dataset "simav26:$SB/$tag/simav26:$files" --detector learned --label "$label" \
+            --out "$OUT/outcomes/simav26_$label.csv" \
+            -- --threshold "${r%%:*}" --trigger-windows "${r#*:}" --instant-threshold 2 \
+            >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: simav26 $label"
+        against="$against,$label"
+    done
+    python3 tools/significance.py --outcomes "$OUT/outcomes" --against "$against" \
+        --groups "simav26=simav26;both held out=sindirgi61,simav26" \
+        --json "$OUT/significance_simav.json" > "$OUT/significance_simav.txt"
+    python3 tools/significance.py --outcomes "$OUT/outcomes" --against "$against" \
+        --groups "simav26=simav26;both held out=sindirgi61,simav26" --block-minutes 10 \
+        --json "$OUT/significance_simav_block10.json" > "$OUT/significance_simav_block10.txt"
+    grep -E "^==|vs|corrected" "$OUT/significance_simav.txt" | head -12 || true
+fi
+
+# FilterPicker's settings selected on the tuning replays (ayzek_paper
+# revisions2.md R15.1): label:windows:thresholds.
+FP_SETTINGS="fp_fa:6,10,0.4:15,10
+fp_det:3,5,0.2:4,10"
+
+say "10. FilterPicker"
+if [ "$QUICK" = 1 ]; then
+    echo "(skipped: --quick)"
+elif [ ! -d data/sindirgi61 ]; then
+    echo "no data/sindirgi61 (AFAD, not redistributable)"
+else
+    fp_quiet=""
+    for s in $FP_SETTINGS; do
+        label=${s%%:*}; r=${s#*:}
+        args="--fp-windows ${r%%:*} --fp-thresholds ${r#*:}"
+        for spec in $REPLAYS simav26:data/simav26/*.mseed; do
+            n=${spec%%:*}; files=${spec#*:}
+            [ -d "data/$n" ] || [ "$n" = demo ] || continue
+            python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog "tests/catalogs/$n.csv" \
+                --dataset "$n::$files" --detector filterpicker --label "$label" \
+                --out "$OUT/outcomes/${n}_$label.csv" -- $args >> "$OUT/outcomes.log" 2>&1 \
+                || echo "outcomes failed: $n $label"
+        done
+        if [ -n "$QUIET_ARGS" ]; then
+            replay_quiet "$OUT/$label/quiet" --detector filterpicker $args
+            fp_quiet="$fp_quiet $label=$OUT/$label/quiet"
+        fi
+    done
+    python3 tools/significance.py --outcomes "$OUT/outcomes" --against fp_fa,fp_det \
+        --groups "held out=sindirgi61;simav26=simav26;tuning=demo,marmara;both held out=sindirgi61,simav26" \
+        ${QUIET_ARGS:+$QUIET_ARGS$fp_quiet} \
+        --json "$OUT/significance_fp.json" > "$OUT/significance_fp.txt"
+    grep -E "^==|vs|corrected|per day" "$OUT/significance_fp.txt" | head -16 || true
 fi
 
 say "report"

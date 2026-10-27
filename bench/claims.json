@@ -742,6 +742,222 @@
    "expect": 0.991,
    "tolerance": 5e-05,
    "repro": "cd cnn_earthquake && uv run sk falsealarm report --scores 'runs_mant/scores_mant/ps/*.npz' --station MANT --window-seconds 6.0 --stations-csv catalogs/istasyon_katalog.csv --catalog catalogs/catalog_current.csv --snr-csv runs_mant/mant_range_full.csv --out-prefix runs_mant/final_ps > runs_mant/report_ps.log"
+  },
+  {
+   "id": "simav_learned",
+   "where": "paper §4.5, Table 8, abstract",
+   "claim": "Simav: learned detector 35.1 chance-corrected of 56",
+   "source": "significance_simav",
+   "key": "summary.simav26: learned corrected",
+   "expect": 35.1,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_stalta",
+   "where": "paper §4.5, Table 8, abstract",
+   "claim": "Simav: STA/LTA at equal unmatched alarms 29.1",
+   "source": "significance_simav",
+   "key": "summary.simav26: stalta_eqfa corrected",
+   "expect": 29.1,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_gain",
+   "where": "paper §4.5, abstract",
+   "claim": "Simav: difference 6.0",
+   "source": "significance_simav",
+   "key": "summary.simav26: stalta_eqfa difference",
+   "expect": 6.0,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_gain_low",
+   "where": "paper §4.5, abstract",
+   "claim": "its interval starts at -2.4",
+   "source": "significance_simav",
+   "key": "summary.simav26: stalta_eqfa difference low",
+   "expect": -2.4,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_gain_high",
+   "where": "paper §4.5, abstract",
+   "claim": "and ends at 14.3",
+   "source": "significance_simav",
+   "key": "summary.simav26: stalta_eqfa difference high",
+   "expect": 14.3,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_gain_block_low",
+   "where": "paper Table 8",
+   "claim": "10-minute blocks: from -4.5",
+   "source": "significance_simav_block10",
+   "key": "summary.simav26: stalta_eqfa difference low",
+   "expect": -4.5,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_gain_block_high",
+   "where": "paper Table 8",
+   "claim": "to 18.1",
+   "source": "significance_simav_block10",
+   "key": "summary.simav26: stalta_eqfa difference high",
+   "expect": 18.1,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_eqdet",
+   "where": "paper §4.5, Table 8",
+   "claim": "Simav: STA/LTA at equal detections 40.9",
+   "source": "significance_simav",
+   "key": "summary.simav26: stalta_eqdet corrected",
+   "expect": 40.9,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_pn_causal_diff",
+   "where": "paper §4.5, Table 8",
+   "claim": "Simav: learned minus causal PhaseNet -1.8",
+   "source": "significance_simav",
+   "key": "summary.simav26: pn_causal difference",
+   "expect": -1.8,
+   "tolerance": 0.05
+  },
+  {
+   "id": "simav_eqt_causal_fa_diff",
+   "where": "paper Table 8",
+   "claim": "Simav: learned minus causal EQTransformer (equal unmatched) +12.4",
+   "source": "significance_simav",
+   "key": "summary.simav26: eqt_causal_fa difference",
+   "expect": 12.4,
+   "tolerance": 0.05
+  },
+  {
+   "id": "pooled_gain",
+   "where": "paper §4.5",
+   "claim": "both held-out sequences: +20.7 against STA/LTA",
+   "source": "significance_simav",
+   "key": "summary.both held out: stalta_eqfa difference",
+   "expect": 20.7,
+   "tolerance": 0.05
+  },
+  {
+   "id": "pooled_gain_low",
+   "where": "paper §4.5",
+   "claim": "its interval starts at 8.8",
+   "source": "significance_simav",
+   "key": "summary.both held out: stalta_eqfa difference low",
+   "expect": 8.8,
+   "tolerance": 0.05
+  },
+  {
+   "id": "pooled_gain_high",
+   "where": "paper §4.5",
+   "claim": "and ends at 32.8",
+   "source": "significance_simav",
+   "key": "summary.both held out: stalta_eqfa difference high",
+   "expect": 32.8,
+   "tolerance": 0.05
+  },
+  {
+   "id": "pooled_mcnemar",
+   "where": "paper §4.5",
+   "claim": "exact McNemar p = 0.001",
+   "source": "significance_simav",
+   "key": "summary.both held out: stalta_eqfa mcnemar p",
+   "expect": 0.0012,
+   "tolerance": 5e-05
+  },
+  {
+   "id": "pooled_pn_causal",
+   "where": "paper §4.5",
+   "claim": "both held-out sequences: +1.4 against causal PhaseNet",
+   "source": "significance_simav",
+   "key": "summary.both held out: pn_causal difference",
+   "expect": 1.4,
+   "tolerance": 0.05
+  },
+  {
+   "id": "fp_fa_heldout",
+   "where": "paper §4.4, Table 7",
+   "claim": "FilterPicker equal unmatched: 28.8 chance-corrected held-out events",
+   "source": "significance_fp",
+   "key": "summary.held out: fp_fa corrected",
+   "expect": 28.8,
+   "tolerance": 0.05
+  },
+  {
+   "id": "fp_fa_diff",
+   "where": "paper §4.4, Table 7",
+   "claim": "learned minus FilterPicker equal unmatched: +7.6",
+   "source": "significance_fp",
+   "key": "summary.held out: fp_fa difference",
+   "expect": 7.6,
+   "tolerance": 0.05
+  },
+  {
+   "id": "fp_fa_diff_low",
+   "where": "paper §4.4, Table 7",
+   "claim": "its interval starts at 1.4",
+   "source": "significance_fp",
+   "key": "summary.held out: fp_fa difference low",
+   "expect": 1.4,
+   "tolerance": 0.05
+  },
+  {
+   "id": "fp_fa_mcnemar",
+   "where": "paper §4.4",
+   "claim": "exact McNemar p = 0.021",
+   "source": "significance_fp",
+   "key": "summary.held out: fp_fa mcnemar p",
+   "expect": 0.021,
+   "tolerance": 0.0005
+  },
+  {
+   "id": "fp_det_heldout",
+   "where": "paper §4.4, Table 7",
+   "claim": "FilterPicker equal detections: 34.9",
+   "source": "significance_fp",
+   "key": "summary.held out: fp_det corrected",
+   "expect": 34.9,
+   "tolerance": 0.05
+  },
+  {
+   "id": "fp_fa_simav",
+   "where": "paper §4.4, Table 8",
+   "claim": "FilterPicker equal unmatched on Simav: 33.8",
+   "source": "significance_fp",
+   "key": "summary.simav26: fp_fa corrected",
+   "expect": 33.8,
+   "tolerance": 0.05
+  },
+  {
+   "id": "fp_fa_quiet",
+   "where": "paper §4.4, Tables 7 and 9, abstract",
+   "claim": "FilterPicker equal unmatched: 353 quiet-window alarms",
+   "source": "significance_fp",
+   "key": "summary.quiet: fp_fa alarms",
+   "expect": 353,
+   "tolerance": 0
+  },
+  {
+   "id": "fp_det_quiet",
+   "where": "paper §4.4, Tables 7 and 9, abstract",
+   "claim": "FilterPicker equal detections: 887 quiet-window alarms",
+   "source": "significance_fp",
+   "key": "summary.quiet: fp_det alarms",
+   "expect": 887,
+   "tolerance": 0
+  },
+  {
+   "id": "fp_pooled",
+   "where": "paper §4.5",
+   "claim": "both held-out sequences: +8.9 against FilterPicker at equal unmatched alarms",
+   "source": "significance_fp",
+   "key": "summary.both held out: fp_fa difference",
+   "expect": 8.9,
+   "tolerance": 0.05
   }
  ],
  "not_reproducible_here": [
