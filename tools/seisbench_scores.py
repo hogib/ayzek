@@ -22,6 +22,13 @@ The model sees one input per window:
   normally applied offline, and the score is an upper bound that a real-time
   system cannot reach.
 
+With --ahead S (causal mode only), the input ends S seconds after the window
+instead, so that the window sits S seconds from the input's edge: the test of
+how much of the causal mode's weakness is the input edge (referee round 5, M6a;
+ayzek_paper revisions2.md R18). A live pipeline would score such a window S
+seconds late, which the replay does not show: S has to be added to its alarm
+times. --ahead 0 is the causal mode.
+
 A score is written for every grid point the record covers, because ayzek falls
 back to its own detector for any window missing from the cache. Each model's
 own normalisation is applied per input (`annotate_batch_pre`); a model whose
@@ -87,7 +94,7 @@ def bandpass(x, fs, args, zerophase):
     return y
 
 
-def scores(model, x, t0, fs, mode, label, device, batch):
+def scores(model, x, t0, fs, mode, label, device, batch, ahead=0.0):
     n_in = model.in_samples
     w = int(round(WINDOW * fs))
     first = math.ceil(t0 / STEP) * STEP
@@ -95,7 +102,7 @@ def scores(model, x, t0, fs, mode, label, device, batch):
     # Sample offset of each window start, and of its model input.
     s_idx = np.round((starts - t0) * fs).astype(np.int64)
     if mode == "causal":
-        in_start = s_idx + w - n_in
+        in_start = s_idx + w + int(round(ahead * fs)) - n_in
     else:
         in_start = s_idx + w // 2 - n_in // 2
     pad = max(0, -in_start.min()), max(0, (in_start + n_in).max() - x.shape[1])
@@ -127,9 +134,13 @@ def main():
     ap.add_argument("--weights", required=True)
     ap.add_argument("--mode", choices=("causal", "lookahead"), required=True)
     ap.add_argument("--out", required=True, help="cache directory, one STATION.csv per file")
+    ap.add_argument("--ahead", type=float, default=0.0,
+                    help="causal mode: seconds of input after the window's end")
     ap.add_argument("--batch", type=int, default=256)
     ap.add_argument("files", nargs="+")
     a = ap.parse_args()
+    if a.ahead and a.mode != "causal":
+        ap.error("--ahead needs --mode causal")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = MODELS[a.model].from_pretrained(a.weights).to(device).eval()
@@ -145,7 +156,7 @@ def main():
         x, t0 = station_array(f, fs)
         if getattr(model, "filter_args", None):
             x = bandpass(x, fs, model.filter_kwargs, zerophase=a.mode == "lookahead")
-        starts, p = scores(model, x, t0, fs, a.mode, label, device, a.batch)
+        starts, p = scores(model, x, t0, fs, a.mode, label, device, a.batch, a.ahead)
         with open(out / f"{station}.csv", "w", newline="") as fh:
             w = csv.writer(fh)
             w.writerow(["station", "window_start", "probability"])
