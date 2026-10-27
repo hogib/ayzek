@@ -82,7 +82,9 @@ def main():
                 t += 86400
             prev = t
             for s in [x.strip() for x in stations.split(",")][:2]:
-                ps = [p for p in det.get(s, []) if t - 60 <= p <= t]
+                # 120 s: the association window of the farthest pairs (KIRK-MANT,
+                # ~400 km) is ~70 s plus the slack, and a 60 s look-back missed one.
+                ps = [p for p in det.get(s, []) if t - 120 <= p <= t]
                 if not ps:
                     continue
                 d, snr = duration(Path(a.data) / name / f"{s}.mseed", max(ps))

@@ -136,9 +136,11 @@ def main():
 
     # (d) Duration of the signal behind each alarm, both detectors.
     ax = fig.add_subplot(gs[2, 1])
+    n = {}
     for run, color, label in (("quiet100", LEARNED, "learned"), ("quiet100_stalta", STALTA, "STA/LTA")):
         v = np.sort([max(float(r["seconds_above"]), 0.02)
                      for r in csv.DictReader(open(R / run / "durations.csv"))])
+        n[run] = len(v)
         y = np.arange(1, len(v) + 1) / len(v)
         ax.step(v, y, where="post", color=color, lw=2)
     for x0 in (0.5, 3.0):
@@ -155,7 +157,8 @@ def main():
     ax.set_ylabel("fraction of station detections", color=MUTED, fontsize=7.5)
     ax.set_title("(d)  Signal behind each alarm", loc="left", fontweight="bold", pad=14)
     ax.legend([plt.Line2D([], [], color=LEARNED, lw=2), plt.Line2D([], [], color=STALTA, lw=2)],
-              ["learned detector (32)", "STA/LTA (645)"], frameon=False, fontsize=7,
+              [f"learned detector ({n['quiet100']})", f"STA/LTA ({n['quiet100_stalta']})"],
+              frameon=False, fontsize=7,
               loc="upper left")
     for axx in (fig.axes[-2], fig.axes[-1]):
         axx.grid(axis="y", color=GRID, lw=0.6)
