@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use ayzek, please cite it as below."
 title: "ayzek: a self-contained real-time earthquake detection and early-warning pipeline"
-version: 0.1.0-beta.5
-date-released: 2026-10-26
+version: 0.1.0-beta.6
+date-released: 2026-10-29
 license: GPL-3.0-or-later
 repository-code: "https://github.com/hogib/ayzek"
 type: software
