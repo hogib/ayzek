@@ -65,6 +65,12 @@ inline std::optional<double> parse_utc(std::string_view s,
   }
   if (n < 6)
     return std::nullopt;
+  // Fractional seconds, if the seconds field has them ("12:34:56.78").
+  double frac = 0;
+  if (i + 1 < s.size() && s[i] == '.' && s[i + 1] >= '0' && s[i + 1] <= '9')
+    for (double scale = 0.1; ++i < s.size() && s[i] >= '0' && s[i] <= '9';
+         scale /= 10)
+      frac += (s[i] - '0') * scale;
   int y = 0, mo = 0, d = 0;
   for (std::size_t k = 0; k < 3; ++k) {
     if (order[k] == 'y')
@@ -81,7 +87,7 @@ inline std::optional<double> parse_utc(std::string_view s,
     return std::nullopt;
   const auto days = std::chrono::sys_days{ymd}.time_since_epoch().count();
   return static_cast<double>(days) * 86400.0 + v[3] * 3600.0 + v[4] * 60.0 +
-         v[5];
+         v[5] + frac;
 }
 
 // Stream time for replay: `start` plus `speed` times the elapsed wall time.

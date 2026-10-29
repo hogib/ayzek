@@ -152,7 +152,18 @@ void picker_search_window() {
 
 } // namespace
 
+// Catalogue times: whole seconds as AFAD writes them, and fractional seconds
+// as GeoNet and NOA give them.
+void catalogue_times() {
+  const auto whole = parse_utc("10/11/2025 18:20:51", "dmyhms");
+  const auto frac = parse_utc("10/11/2025 18:20:51.25", "dmyhms");
+  CHECK(whole && std::abs(*whole - 1762798851.0) < 1e-6);
+  CHECK(frac && std::abs(*frac - (*whole + 0.25)) < 1e-6);
+  CHECK(std::abs(*parse_utc("2025-11-10T18:20:51.5", "ymdhms") - (*whole + 0.5)) < 1e-6);
+}
+
 int main() {
+  catalogue_times();
   Log::get().quiet = true;
   four_consistent_stations_are_an_earthquake();
   two_stations_need_support();
