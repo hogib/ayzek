@@ -168,6 +168,8 @@ tools/demo.sh all      # 7 stations, full speed
 | option | default | meaning |
 |---|---|---|
 | `--models DIR` | `models` | weights directory |
+| `--stations FILE` | `MODELS/stations.csv` | station coordinates (`code,lat,lon[,...]`), for a replay of another network: the default table is keyed by station code alone and holds the TU and KO stations |
+| `--pd-gains FILE` | `MODELS/pd_gain.csv` | the replay's own Pd gains (`station,channel,start,end,sensitivity`); KO's station terms and median noise levels are then not used, so terms are zero and the noise-band exclusions do not apply (`docs/impl/17-pd-magnitude.md`) |
 | `--speed X` | 1 | replay speed; 1 = real time, 0 = as fast as possible |
 | `--from TIME` | start of data | no triggers before this UTC time; earlier data still runs through the detectors' and the Pd chain's filters |
 | `--threshold P` | 0.8 | trigger when `--trigger-windows` consecutive windows reach P |

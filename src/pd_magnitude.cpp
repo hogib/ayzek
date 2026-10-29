@@ -76,6 +76,19 @@ double PdRelation::mean(double m, double d_km) const {
          gamma_k2 * std::max(0.0, lr - std::log10(k2_km));
 }
 
+void PdModel::use_gains(const std::string &path) {
+  gains.clear();
+  terms.clear();
+  noise.clear();
+  for (const auto &r : read_csv(path)) {
+    const auto &end = r.at("end");
+    gains[r.at("station")].push_back(
+        {num(r, "start"),
+         end.empty() ? std::numeric_limits<double>::infinity() : std::stod(end),
+         num(r, "sensitivity")});
+  }
+}
+
 std::optional<PdModel> PdModel::load(const std::string &dir) {
   const std::string rel = dir + "/pd_relation.csv";
   if (!std::ifstream(rel))
@@ -95,13 +108,7 @@ std::optional<PdModel> PdModel::load(const std::string &dir) {
   if (m.windows.empty())
     throw std::runtime_error(rel + ": no windows");
   std::ranges::sort(m.windows, {}, &PdRelation::tau_s);
-  for (const auto &r : read_csv(dir + "/pd_gain.csv")) {
-    const auto &end = r.at("end");
-    m.gains[r.at("station")].push_back(
-        {num(r, "start"),
-         end.empty() ? std::numeric_limits<double>::infinity() : std::stod(end),
-         num(r, "sensitivity")});
-  }
+  m.use_gains(dir + "/pd_gain.csv");
   for (const auto &r : read_csv(dir + "/pd_terms.csv"))
     m.terms[r.at("station")][num(r, "tau_s")] = num(r, "term");
   for (const auto &r : read_csv(dir + "/pd_noise.csv"))

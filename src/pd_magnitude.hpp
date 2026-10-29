@@ -55,6 +55,13 @@ struct PdModel {
   // models/pd_relation.csv, pd_gain.csv and pd_terms.csv in `dir`; nullopt
   // when pd_relation.csv is absent.
   static std::optional<PdModel> load(const std::string &dir);
+  // A replay's own gains (pd_gain.csv's columns), for a network other than the
+  // one the relation was fitted on: they replace the model's gains, and the
+  // station terms and median noise levels, which are KO's and keyed by
+  // station code alone, are dropped, so that no station takes another
+  // network's values. Terms are then zero, and the noise-band exclusions
+  // (outside_noise_band) do not apply.
+  void use_gains(const std::string &path);
   [[nodiscard]] std::optional<double> sensitivity(const std::string &station,
                                                   double t) const;
   [[nodiscard]] double term(const std::string &station, double tau) const;

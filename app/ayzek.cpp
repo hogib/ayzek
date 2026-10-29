@@ -56,6 +56,11 @@ std::atomic<bool> g_stop{false};
 const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
 
   --models DIR          weights directory (default: models)
+  --stations FILE       station coordinates (code,lat,lon[,...]) in place of
+                        MODELS/stations.csv, for a replay of another network
+  --pd-gains FILE       the replay's own Pd gains (pd_gain.csv's columns) in
+                        place of MODELS/pd_gain.csv; KO's station terms and
+                        noise levels are then not used
   --speed X             replay speed; 1 = real time, 0 = as fast as possible (default 1)
   --from TIME           start detecting at this UTC time, e.g. 2025-11-10T18:19:00
   --threshold P         trigger when N consecutive windows reach P (default 0.8) ...
@@ -183,6 +188,7 @@ Percentiles percentiles(std::vector<float> v) {
 } // namespace
 
 int main(int argc, char **argv) try {
+  std::string stations_path, pd_gains_path;
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
               record_path, transformer_path, assess_csv;
   bool threshold_set = false, release_set = false, min_stations_set = false,
@@ -202,7 +208,11 @@ int main(int argc, char **argv) try {
         throw std::runtime_error(a + " needs a value");
       return argv[++i];
     };
-    if (a == "--models")
+    if (a == "--stations")
+      stations_path = next();
+    else if (a == "--pd-gains")
+      pd_gains_path = next();
+    else if (a == "--models")
       models = next();
     else if (a == "--speed")
       speed = std::stod(next());
@@ -419,6 +429,8 @@ int main(int argc, char **argv) try {
   // Magnitude from peak P displacement at every detector's onset
   // (docs/impl/17-pd-magnitude.md).
   if (pcfg.magnitude && !no_pd && (pd_model = PdModel::load(models))) {
+    if (!pd_gains_path.empty())
+      pd_model->use_gains(pd_gains_path);
     pcfg.pd = &*pd_model;
     ncfg.pd = &*pd_model;
   }
@@ -440,7 +452,8 @@ int main(int argc, char **argv) try {
   if (ncfg.assess)
     pcfg.pick = true;
   const auto bp = dsp::Bandpass::load(Weights::load(models + "/bandpass.ayzw"));
-  auto coords = load_stations(models + "/stations.csv");
+  auto coords = load_stations(stations_path.empty() ? models + "/stations.csv"
+                                                    : stations_path);
 
   std::vector<std::unique_ptr<ReplaySource>> sources;
   std::vector<std::unique_ptr<Station>> stations;
