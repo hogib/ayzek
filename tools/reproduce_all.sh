@@ -49,6 +49,21 @@ echo "reproduce: results in $OUT"
 
 ROOT=${ROOT:-$(cd "$(dirname "$0")/.." && pwd)}
 say() { printf '\n=== %s\n' "$1"; }
+# event_outcomes.py's detector options for the paired statistics: the two
+# STA/LTA settings of docs/impl/09 (equal unmatched: --detector stalta's
+# defaults; equal detections: 2-10 Hz, STA 0.5 s, LTA 10 s, ratio 6).
+# The setting goes last, after `--`.
+outcome_detector() {
+    case "$1" in
+        stalta_eqdet) echo "--detector stalta_eqfa --label stalta_eqdet" ;;
+        *) echo "--detector $1" ;;
+    esac
+}
+outcome_setting() {
+    case "$1" in
+        stalta_eqdet) echo "-- --stalta-band 2,10 --sta 0.5 --lta 10 --stalta-on 6" ;;
+    esac
+}
 
 say "0. published numbers against the files they came from"
 # Cheap: reads artefacts earlier runs wrote and checks the published figure is
@@ -163,8 +178,9 @@ else
             $(echo "$files" | tr , ' ') > /dev/null 2>&1 || echo "scores failed: $n"
         for d in learned stalta_eqfa stalta_eqdet; do
             python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog "tests/catalogs/$n.csv" \
-                --dataset "$n:$OUT/cache_$n:$files" --detector "$d" \
-                --out "$OUT/outcomes/${n}_$d.csv" >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: $n $d"
+                --dataset "$n:$OUT/cache_$n:$files" $(outcome_detector "$d") \
+                --out "$OUT/outcomes/${n}_$d.csv" $(outcome_setting "$d") \
+                >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: $n $d"
         done
     done
     python3 tools/significance.py --outcomes "$OUT/outcomes" \
@@ -258,8 +274,9 @@ else
     mkdir -p "$OUT/outcomes"
     for d in learned stalta_eqfa stalta_eqdet; do
         python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog tests/catalogs/simav26.csv \
-            --dataset "simav26:$OUT/cache_simav26:$files" --detector "$d" \
-            --out "$OUT/outcomes/simav26_$d.csv" >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: simav26 $d"
+            --dataset "simav26:$OUT/cache_simav26:$files" $(outcome_detector "$d") \
+            --out "$OUT/outcomes/simav26_$d.csv" $(outcome_setting "$d") \
+            >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: simav26 $d"
     done
     against=stalta_eqfa,stalta_eqdet
     for s in $SB_SETTINGS; do

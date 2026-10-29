@@ -11,9 +11,13 @@ is identified by its unshifted origin time, so the rows of one event line up
 across shifts and across detectors, which is what a paired test needs.
 
 --detector is `learned` (the cached window probabilities, default trigger
-rule), `stalta_eqfa` (--detector stalta), `stalta_eqdet` (the equal
-detections setting of docs/impl/09), `filterpicker` or `transformer` (their
-settings after `--`, and a --label); anything after `--` is passed to ayzek.
+rule), `stalta_eqfa` (--detector stalta), `filterpicker` or `transformer`;
+a setting goes after `--` (anything there is passed to ayzek), with a --label.
+`stalta_eqfa` alone is ayzek's default STA/LTA setting; the frozen settings of
+the held-out tests are in tools/heldout_settings.json, which
+tools/run_heldout.py passes after `--`. (The old `stalta_eqdet`, the equal
+detections setting of docs/impl/09, was removed before the freeze: it was not
+the frozen one; tools/reproduce_all.sh passes it after `--`.)
 Another model's scores (tools/seisbench_scores.py) run as `learned` with their
 own cache, trigger settings after `--`, and a --label. The dataset's CACHE may
 be empty for any detector, the learned one then running its own networks.
@@ -36,8 +40,6 @@ from sweep_trigger import data_span, write_catalogue  # noqa: E402
 DETECTORS = {
     "learned": [],
     "stalta_eqfa": ["--detector", "stalta"],
-    "stalta_eqdet": ["--detector", "stalta", "--stalta-band", "2,10", "--sta", "0.5",
-                     "--lta", "10", "--stalta-on", "6"],
     "filterpicker": ["--detector", "filterpicker"],
     "transformer": ["--detector", "transformer"],
 }
