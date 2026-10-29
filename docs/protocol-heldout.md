@@ -33,8 +33,14 @@ is fetched before then.
     (Crete), as one network group;
   - **New Zealand**: NZ (GeoNet);
   - **KO** (KOERI): held out in time only; both models trained on its stations.
-  - **Prospective**: New Zealand again, on data recorded after the freeze
-    (section 10), a result of its own.
+    Its retrospective pool is two months, which the pre-pool rate of
+    qualifying sequences (37 from 2024-01-01 to 2026-08-29, 1.16 a month, by
+    EMSC's catalogue and the stations usable in July-August 2026) puts at about
+    two sequences, one of them "now": the KO retrospective result is expected
+    to be far under its target and is reported as such, the Greek and New
+    Zealand results carrying the headline.
+  - **Prospective**: New Zealand and KO again, on data recorded after the
+    freeze (section 10), each a result of its own.
 - **Stations**: three HH channels at 100 Hz, open over the pool period, with at
   least 90% data coverage over it (from the availability services, before any
   waveform is fetched). Coordinates and gains from each network's StationXML
@@ -53,29 +59,48 @@ is fetched before then.
   Before each catalogue request the fetch tool asks the same service for a
   fixed pre-pool window known to contain events (its canary) and stops if
   fewer than about 40% of them come back; `dataset.json` records the check.
-- **Sequences**: every catalogue event of M >= 4.5 in the network's catalogue
-  within the pool period, with at least five usable
-  stations within 150 km, that is not within 3 h after an earlier qualifying
-  event (which belongs to that event's sequence). Each sequence is a replay of
-  3 h starting 10 min before its first event. Catalogue events
-  are scored within 250 km of the station centroid, at stations where they are
-  visible (SNR >= 3, as on the development data).
+- **Usable stations**: those of section 2 over the whole pool period (three
+  HH channels at 100 Hz, at least 90% coverage over the period).
+- **Sequences**: in time order, every catalogue event of M >= 4.5 within the
+  pool period with at least five usable stations within 150 km of its
+  epicentre starts a sequence, unless it lies within 3 h after the first event
+  of an earlier sequence with which its stations share one (it then belongs to
+  that sequence). A sequence is a replay of 3 h starting 10 min before its
+  first event, on the 8 nearest usable stations within 150 km of it (one per
+  station code). Catalogue events are scored within 250 km of the centroid of
+  the replay's stations, over the replayed span, as the development replays
+  were.
 - **Reserve split**: the qualifying sequences of each network, in time order,
-  are assigned to "now" or "reserve" by a coin with seed *[seed]*. Reserve
+  are assigned to "now" or "reserve" by a coin with seed 42: Python's
+  `random.Random(42)`, one draw per sequence, below 0.5 is "now". Reserve
   sequences are not fetched until a later protocol, committed in the same way,
   names them.
-- **Stopping rule**: "now" sequences are replayed in time order until the
-  scorable catalogue events reach **240 on KO and 150 on Greece and on New
-  Zealand**; the sequence that crosses the target is included whole. If a
-  network's "now" sequences do not reach it, all of them are used and the
-  result is reported as under the target.
-- **Quiet data**: 24 windows of 6 h per network, start times
-  drawn uniformly over the pool period with seed *[seed]*, on the station
-  clusters of the "now" sequences, each accepted only if no catalogue event
-  lies within 250 km of any of its stations during the window or 30 min on
-  either side. Where fewer than 24 windows qualify (New Zealand), catalogue
-  events below M2 farther than 100 km are disregarded. The first 30 min of each
-  window warm the filters and are not scored.
+- **Stopping rule**: "now" sequences are taken in time order until the
+  scorable catalogue events (as scored above, counted from the catalogue and
+  the station list before any waveform is fetched) reach **240 on KO and 150
+  on Greece and on New Zealand**; the sequence that crosses the target is
+  included whole. If a network's "now" sequences do not reach it, all of them
+  are used and the result is reported as under the target.
+- **Quiet data**: 24 windows of 6 h per network, drawn with Python's
+  `random.Random(43)`: each draw is a start time on the minute, uniform over
+  the pool period less 6 h and a 30 min margin at either end, then one of the
+  selected "now" sequences' station sets, uniform. A draw is accepted if no
+  catalogue event lies within 250 km of any of its stations during the window
+  or 30 min on either side, it does not overlap an accepted window that shares
+  a station, and the availability service gives every station at least 90%
+  of the window; draws continue until 24 are accepted. If 10,000 draws give
+  fewer (as expected for New Zealand), the draws start again from seed 43
+  with catalogue events below M2 farther than 100 km from every station
+  disregarded. The first 30 min of each window warm the filters and are not
+  scored.
+- **Tool**: `heldout select` of the held-out repository applies these rules
+  and writes the selection (`selection.json`: every qualifying sequence with
+  its coin, stations and scorable count, the stopping point, every quiet pass)
+  and the set files of the selected sequences and quiet windows; reserve
+  sequences get none. It refuses a pool period without `--allow-test-period`,
+  which is used only after the freeze. Its dry runs on 2022 (Greece, New
+  Zealand) and 2026-07-01 to 2026-08-29 (KO), before the pools, are kept with
+  the protocol.
 
 ## 4. Per-station STA/LTA (secondary baseline)
 
@@ -85,18 +110,27 @@ pool: four 6 h windows per network group, drawn with seed 20221231
 in 2022, KO from 2026-07-01 to 2026-08-29), with every station of the group
 that has three 100 Hz HH channels and 90% coverage. The setting is the
 network-wide equal-unmatched one (section 6) with the trigger ratio replaced by
-the lowest ratio of the grid (3, 4, 5, 6, 8, 10) at which the station's trigger
-rate on its quiet data over the four windows does not exceed the median
-per-station rate of the network-wide setting on the AFAD quiet windows. A
-station above the target at every ratio gets 10; a test station without tuning
-data keeps the network-wide ratio.
+the lowest ratio of the grid (3, 4, 5, 6, 8, 10, 12, 15) at which the station's
+trigger rate on its quiet data over the four windows does not exceed its
+network group's target: the median station rate of the network-wide setting
+(ratio 8) on the same windows, 0.845 triggers per quiet hour for Greece, 0.548
+for KO and 0.318 for New Zealand. A station above the target at every ratio
+gets 15; a test station without tuning data keeps the network-wide ratio.
 
-Quiet data, on the tuning windows and the AFAD quiet windows alike: the time
-outside [D/8 - 10 s, D/6 + 120 s] after the origin of every catalogued event
+Changed on 2026-10-29, before the freeze: the target was first the median
+station rate of the network-wide setting on the AFAD quiet windows (0.307 per
+quiet hour), with the grid ending at 10. Those windows were chosen for having
+no catalogued event within 250 km, the tuning windows are random, and against
+that target 117 of 150 Greek and 93 of 144 KO stations ended at the grid's top
+ratio, so that the baseline measured how quiet the AFAD windows were chosen to
+be rather than per-station tuning (`data/runs/stalta_stations_afad_target`).
+
+Quiet data: on each tuning window, the time outside [D/8 - 10 s, D/6 + 120 s]
+after the origin of every catalogued event
 visible at the station (epicentral distance D in km; visible within 50 km at
 any magnitude, 150 km from M2, 400 km from M3 and 1500 km from M4.5, as in
-`tools/compare_detectors.py`), after the first 30 min of each tuning window
-(the quiet windows' own lead-in is not scored). A rate is the station's
+`tools/compare_detectors.py`), after the first 30 min of the window. A rate is
+the station's
 detections in its quiet time per quiet hour. `tools/stalta_station_ratios.py`
 computes the target and the ratios (ayzek's `--stalta-on-stations`). These
 pre-pool data are fetched before the freeze, for this tuning only.
@@ -190,36 +224,39 @@ published where the networks' licences allow, each under its own licence (CC BY
 citations. Every run's command, commit and output is kept. Nothing is published
 before the data centre has confirmed in writing that its licence covers the
 redistribution: for the Greek networks this confirmation from NOA
-(eida@noa.gr) is still outstanding, and so is a check of EMSC's terms for the
+(eida@noa.gr), requested on 2026-10-29, is still outstanding, and so is a check of EMSC's terms for the
 KO catalogue excerpts.
 
-## 10. Prospective test (New Zealand)
+## 10. Prospective tests (New Zealand and KO)
 
-A test on data that did not exist when the method was frozen, reported as its
-own confirmatory result and never pooled with the retrospective New Zealand
-test or any other network.
+Tests on data that did not exist when the method was frozen, one per network,
+each reported as its own confirmatory result and never pooled with the
+retrospective test of the same network or with any other network.
 
-- **Data**: NZ (GeoNet), recorded from the freeze (the UTC time of this
-  protocol's public commit) on. Stations by the rule of section 2, their
-  availability checked over the span before any waveform is fetched.
+- **Data**: NZ (GeoNet) and KO (KOERI), recorded from the freeze (the UTC time
+  of this protocol's public commit) on. Stations by the rule of section 2,
+  their availability checked over the span before any waveform is fetched.
 - **Sequences**: by the rule of section 3 (M >= 4.5 in GeoNet's catalogue, at
   least five usable stations within 150 km, not within 3 h after an earlier
   qualifying event; 3 h from 10 min before), every qualifying sequence in time
   order, with no reserve split.
 - **Span and stopping rule**: from the freeze until the scorable catalogue
-  events of its sequences reach 150, the sequence that crosses the target
-  included whole, or 12 months, whichever comes first; if 12 months pass under
-  the target, every sequence is used and the result is reported as under it.
+  events of the network's sequences reach its target (150 for New Zealand, 240
+  for KO), the sequence that crosses the target included whole, or 12 months,
+  whichever comes first; if 12 months pass under the target, every sequence is
+  used and the result is reported as under it.
 - **Fetching**: once a month after the freeze, the qualifying sequences whose
-  first event is at least 4 weeks old, so that GeoNet's review is in, are
-  identified from its catalogue and fetched with the frozen tool, each with its
-  catalogue excerpt at that time and the canary check. A sequence is fetched
-  once; later catalogue revisions are not taken up.
-- **Quiet data**: after the span closes, 24 windows of 6 h drawn uniformly over
-  it with seed *[seed]* on the station clusters of its sequences, accepted by
-  the rule of section 3 (with its New Zealand fallback), and fetched then.
+  first event is at least 4 weeks old, so that the catalogue's review is in,
+  are identified from the network's catalogue (GeoNet's; EMSC's for KO) and
+  fetched with the frozen tool, each with its catalogue excerpt at that time
+  and the canary check. A sequence is fetched once; later catalogue revisions
+  are not taken up.
+- **Quiet data**: after the span closes, 24 windows of 6 h drawn over it by
+  the rule of section 3 with seed 44 (`heldout select nz --prospective`,
+  `heldout select ko --prospective`), on the station sets of the network's
+  sequences, and fetched then.
 - **Detectors, settings, scoring and endpoints**: those of sections 5 to 7 for
-  New Zealand, with the frozen release and settings; nothing is retuned. The
+  the network, with the frozen release and settings; nothing is retuned. The
   primary endpoint is that of section 7 on the prospective sequences.
 - **Not live**: the archive delivers the post-freeze data intact, so the test
   replays it like the retrospective ones. A live SeedLink run, if one is made,
