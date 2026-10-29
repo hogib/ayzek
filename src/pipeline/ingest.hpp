@@ -76,8 +76,10 @@ public:
   // Writes whatever the rings accept of the samples held back. True if none
   // is left.
   bool drain();
-  // Samples held back for want of room in a ring (gaps excluded).
+  // Samples held back for want of room in a ring (gaps excluded): all three
+  // components', or component `comp`'s.
   [[nodiscard]] std::size_t queued() const;
+  [[nodiscard]] std::size_t queued(std::size_t comp) const;
 
   // Waits while `held()` is true, writing whatever the rings accept meanwhile.
   // Gives up, returning false, when `stop` is set or after a minute in which

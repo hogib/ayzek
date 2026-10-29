@@ -236,7 +236,7 @@ input.
 | `--streams LIST` | | with `--seedlink`: the stations, `NET.STA` or `NET.STA.LOC` (`--` for the empty location), comma-separated; each needs coordinates in the station table, and its HHZ, HHN and HHE at 100 Hz are used |
 | `--archive DIR` | | with `--seedlink`: append every record received, as received, to `DIR/STATION.mseed`, which replays like any other file |
 | `--duration S` | until SIGINT or SIGTERM | with `--seedlink`: stop the input after S seconds; the first SIGINT or SIGTERM stops the input and the run ends with the report once what arrived is processed, a second one stops at once |
-| `--live-wait S` | 10 | with `--seedlink`: the longest a station's message waits for the other stations' data before the network stage takes it; a station that holds one back that long is not waited for until it catches up. With nothing out of order (the report counts it), a replay of the archive gives the live run's alarms |
+| `--live-wait S` | 10 | with `--seedlink`: about how long a station's message waits for the other stations' data before the network stage takes it; a station that holds one back that long is not waited for until it catches up. With nothing out of order (the report counts it), a replay of the archive gives the live run's alarms |
 | `--seedlink-timeout S` | 120 | with `--seedlink`: reconnect after S seconds with nothing received; reconnection is retried after 1, 2, 4, ... up to 30 s, and every station resumes after its last packet |
 | `--seedlink-keepalive S` | 60 | with `--seedlink`: send `INFO ID` after S seconds with nothing received (0: never); IRIS asks for no more than one every 4 minutes on an idle connection |
 

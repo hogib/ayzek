@@ -43,13 +43,11 @@ if not meson.is_cross_build()
   endforeach
 endif
 
-# Review tests of the live input (branch seedlink-review): each shows a defect
-# and fails until it is fixed. Suite 'review'; `meson test --no-suite review`
-# leaves them out.
-test('test_seedlink_review',
-  executable('test_seedlink_review', 'test_seedlink_review.cpp', dependencies: [ayzek_dep]),
-  suite: 'review')
+# Found in review of the live input: a one-component outage, and an error
+# after the threads have started.
+test('test_live_outage',
+  executable('test_live_outage', 'test_live_outage.cpp', dependencies: [ayzek_dep]))
 if not meson.is_cross_build()
-  test('seedlink_review_record', find_program('seedlink_review_record.sh'),
-    args: [ayzek_exe, meson.project_source_root()], timeout: 120, suite: 'review')
+  test('live_error_exit', find_program('live_error_exit.sh'),
+    args: [ayzek_exe, meson.project_source_root()], timeout: 120)
 endif

@@ -97,14 +97,6 @@ void LiveInput::on_record(std::size_t i, seedlink::Record rec,
                           *spec.loc));
     return;
   }
-  if (!spec.loc && !s.loc)
-    s.loc = loc;
-  if (!spec.loc && loc != *s.loc) {
-    reject(s, std::format("location '{}': HH? is taken from location '{}', "
-                          "the first one received (NET.STA.LOC chooses)",
-                          loc, *s.loc));
-    return;
-  }
   const std::string_view cha = h->cha();
   std::size_t comp = 3;
   if (cha == "HHZ")
@@ -127,15 +119,27 @@ void LiveInput::on_record(std::size_t i, seedlink::Record rec,
                           h->sample_rate));
     return;
   }
+  // Any location: the first HHZ, HHN or HHE record at 100 Hz fixes it, so a
+  // channel the pipeline does not take cannot.
+  if (!spec.loc && !s.loc)
+    s.loc = loc;
+  if (!spec.loc && loc != *s.loc) {
+    reject(s, std::format("location '{}': HH? is taken from location '{}', "
+                          "the first one received (NET.STA.LOC chooses)",
+                          loc, *s.loc));
+    return;
+  }
   const double end = static_cast<double>(h->start_ns) / 1e9 +
                      h->num_samples / h->sample_rate;
   s.stats.first_end = std::min(s.stats.first_end, end);
   s.stats.last_end = std::max(s.stats.last_end, end);
   s.stats.add_latency(arrival - end);
 
-  // The processor is more than a ring's worth behind: drop rather than wait
-  // (live.hpp).
-  if (s.feed.queued() > kMaxQueuedSamples) {
+  // The processor is more than a ring's worth behind this component: drop
+  // rather than wait (live.hpp). Only this component's backlog counts: one
+  // that has been out holds nothing back, and its records must reach the
+  // reorderer, which makes the outage a gap so the processor can advance.
+  if (s.feed.queued(comp) > kMaxQueuedSamples) {
     if (s.stats.dropped++ % 100 == 0)
       Log::get().line("warn", "33",
                       "{}: processor more than a ring behind; {} record(s) "

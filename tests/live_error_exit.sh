@@ -1,18 +1,17 @@
 #!/bin/sh
-# Review test (branch seedlink-review): an error raised in main() after the
-# threads have started must end a live run. Here --record names a file that
-# cannot be written; the Recorder is constructed after the live input and
-# processor threads have started, its exception unwinds through the
-# std::jthread vector, whose destructors join threads that only stop on
-# SIGINT/SIGTERM or --duration: the run hangs, retrying the server, and never
-# reports the error. The server is a closed local port; nothing is contacted.
-#   seedlink_review_record.sh AYZEK ROOT
+# Live input: an error raised in main() after the threads have started ends
+# the run with that error. Here --record names a file that cannot be written.
+# Found in review: the exception unwound through the std::jthread vector, whose
+# joins waited for threads that stop only on SIGINT/SIGTERM or --duration, so
+# the run hung retrying the server and never reported the error. The server
+# is a closed local port; nothing is contacted.
+#   live_error_exit.sh AYZEK ROOT
 set -u
 AYZEK=$1
 ROOT=$2
 [ -e "$ROOT/models/detector_s42.ayzw" ] || { echo "skipped: no models"; exit 77; }
 "$AYZEK" --help >/dev/null 2>&1 || { echo "skipped: cannot run $AYZEK here"; exit 77; }
-T=$(mktemp -d "${TMPDIR:-/tmp}/ayzek_review.XXXXXX")
+T=$(mktemp -d "${TMPDIR:-/tmp}/ayzek_live_error.XXXXXX")
 trap 'rm -rf "$T"' EXIT
 
 "$AYZEK" --no-color --models "$ROOT/models" --seedlink 127.0.0.1:1 \

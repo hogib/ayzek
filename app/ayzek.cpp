@@ -22,6 +22,7 @@
 #include <cmath>
 #include <csignal>
 #include <cstdio>
+#include <exception>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -161,8 +162,9 @@ live input, in place of the files (docs/impl/19-seedlink.md):
                         100 Hz; coordinates from the station table
   --archive DIR         append every record received to DIR/STATION.mseed
   --duration S          stop after S seconds (default: at SIGINT or SIGTERM)
-  --live-wait S         the longest a station's message waits for the other
-                        stations' data before it is processed (default 10)
+  --live-wait S         about how long a station's message waits for the
+                        other stations' data before it is processed
+                        (default 10)
   --seedlink-timeout S  reconnect after S seconds with nothing received
                         (default 120)
   --seedlink-keepalive S
@@ -444,9 +446,17 @@ int main(int argc, char **argv) try {
       throw std::runtime_error(
           "live SeedLink input is not available in this build (it needs "
           "POSIX sockets, which the Windows build does not have)");
-    if (lcfg.client.timeout_s <= 0 ||
-        (lcfg.client.keepalive_s > 0 &&
-         lcfg.client.keepalive_s >= lcfg.client.timeout_s))
+    // NaN fails every comparison, so each check is written to fail on it.
+    if (!(lcfg.duration_s >= 0) || std::isinf(lcfg.duration_s))
+      throw std::runtime_error("--duration must be 0 (until stopped) or more");
+    if (!(live_wait >= 0) || std::isinf(live_wait))
+      throw std::runtime_error("--live-wait must be 0 or more");
+    if (!(lcfg.client.timeout_s > 0) || std::isinf(lcfg.client.timeout_s))
+      throw std::runtime_error("--seedlink-timeout must be more than 0");
+    if (!(lcfg.client.keepalive_s >= 0) || std::isinf(lcfg.client.keepalive_s))
+      throw std::runtime_error("--seedlink-keepalive must be 0 (none) or more");
+    if (lcfg.client.keepalive_s > 0 &&
+        lcfg.client.keepalive_s >= lcfg.client.timeout_s)
       throw std::runtime_error(
           "--seedlink-keepalive must be shorter than --seedlink-timeout");
     lcfg.client.server = seedlink::parse_endpoint(seedlink_server);
@@ -693,7 +703,28 @@ int main(int argc, char **argv) try {
     procs.push_back(std::make_unique<Processor>(
         *st, detector, picker, bp, cfg, bus, path, in_path, transformer.get()));
   }
+  // Made before the threads start, so that an output that cannot be written
+  // ends the run before it begins.
+  Network net(used, ncfg);
+  std::unique_ptr<Recorder> recorder;
+  if (!record_path.empty())
+    recorder = live ? std::make_unique<Recorder>(record_path, used,
+                                                 ncfg.min_stations)
+                    : std::make_unique<Recorder>(record_path, used, t_first,
+                                                 t_last, ncfg.min_stations);
   std::vector<std::jthread> threads;
+  // An exception from here on unwinds through `threads`, whose joins would
+  // wait for threads that end only on a signal, --duration or the end of the
+  // data (live input: never). Destroyed before them, this stops them first.
+  struct StopOnUnwind {
+    int at = std::uncaught_exceptions();
+    ~StopOnUnwind() {
+      if (std::uncaught_exceptions() > at) {
+        g_input_stop = true;
+        g_stop = true;
+      }
+    }
+  } stop_on_unwind;
   if (live)
     threads.emplace_back([&] { live_in->run(g_input_stop, g_stop); });
   for (std::size_t i = 0; i < stations.size(); ++i) {
@@ -709,13 +740,6 @@ int main(int argc, char **argv) try {
   // promised. Messages with equal times are ordered by station code, then by
   // the order the station sent them, so the order does not depend on thread
   // timing.
-  Network net(used, ncfg);
-  std::unique_ptr<Recorder> recorder;
-  if (!record_path.empty())
-    recorder = live ? std::make_unique<Recorder>(record_path, used,
-                                                 ncfg.min_stations)
-                    : std::make_unique<Recorder>(record_path, used, t_first,
-                                                 t_last, ncfg.min_stations);
   std::map<std::string, double> watermark;
   for (auto &st : stations)
     watermark[st->code] = 0;

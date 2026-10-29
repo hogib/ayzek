@@ -146,6 +146,10 @@ std::size_t StationFeed::queued() const {
   return n;
 }
 
+std::size_t StationFeed::queued(std::size_t comp) const {
+  return writer_[comp].queued();
+}
+
 std::uint64_t StationFeed::written() const {
   std::uint64_t n = 0;
   for (const auto &c : st_.comp)

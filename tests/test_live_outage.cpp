@@ -1,17 +1,13 @@
-// Review tests for the live input (branch seedlink-review). Each shows a
-// defect found in review; the test fails until the defect is fixed.
+// Live input: an outage of one component longer than the ring.
 //
-// 1. A component outage longer than about a ring and a half stops the station
-//    for good. While a station holds more than kMaxQueuedSamples back,
-//    LiveInput::on_record drops *every* record of the station, whichever
-//    component it belongs to. During an outage of one component (here HHE)
-//    the processor cannot advance (it scores the minimum of the three ends),
-//    so Z and N fill their rings and then the queue. When HHE comes back its
-//    records are dropped too, before they reach the reorderer that would
-//    declare the outage a gap; without that gap the processor never advances,
-//    the queue never drains, and every later record of the station is dropped
-//    for the rest of the run. A replay of the same records recovers (run_ingest
-//    gives up holding the source after 60 s and offers HHE).
+// During an outage of one component (here HHE) the processor cannot advance
+// (it scores the minimum of the three ends), so Z and N fill their rings and
+// then their queues, and their records are dropped. When HHE comes back it
+// holds nothing back, so its records must be taken: the reorderer declares
+// the outage a gap, the processor advances and the station recovers. Found in
+// review: the drop limit was counted per station, so HHE's records were
+// dropped too and the station was lost for the rest of the run
+// (LiveInput::on_record).
 #include "pipeline/live.hpp"
 #include "records.hpp"
 #include "seedlink.hpp"
@@ -118,5 +114,5 @@ int main() {
   failed += component_outage();
   if (failed)
     return 1;
-  std::println("all review tests passed");
+  std::println("all live outage tests passed");
 }

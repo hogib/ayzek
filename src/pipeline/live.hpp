@@ -12,10 +12,12 @@
 // as it happens. A record that does not decode is counted in
 // Station::undecodable.
 //
-// The reader never waits for a processor. While a station holds more than a
-// ring's worth of samples back (kMaxQueuedSamples, writer.hpp), its new
+// The reader never waits for a processor. While a component holds more than
+// a ring's worth of samples back (kMaxQueuedSamples, writer.hpp), its new
 // records are dropped and counted. A dropped record becomes a gap when the
-// next one arrives, so no later sample moves in time.
+// next one arrives, so no later sample moves in time. A component that was
+// out holds nothing back, so its records are taken again at once and its
+// outage becomes a gap.
 //
 // With an archive directory, every record received is appended, as received,
 // to DIR/<STATION>.mseed, which the replay reads like any other file.

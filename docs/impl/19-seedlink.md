@@ -82,7 +82,9 @@ END                    no reply; packets follow
   timeout, a protocol error, the server closing — the client reconnects after
   1, 2, 4, ... up to 30 s, back to 1 s after a session that delivered data,
   and every station resumes after its last packet, so nothing the server
-  still holds is lost.
+  still holds is lost. A station that has not delivered a packet yet has no
+  number to resume from and asks again for real-time data, so what the
+  server buffered for it during the outage is not received.
 - **Duplicates.** A packet whose number is not after the station's last is
   discarded as already delivered, unless its data is newer than anything of
   its channel delivered: then the server's numbering has started again (a
@@ -98,18 +100,25 @@ END                    no reply; packets follow
   other record is counted by reason and reported, the first of each reason as
   it happens: another channel; HH1/HH2, which would need a rotation live
   input does not do; another rate (there is no resampling); a second location
-  code of an any-location station (the first one received is kept,
-  `NET.STA.LOC` chooses); an encoding the decoder does not support. A record
+  code of an any-location station (that of the first HHZ, HHN or HHE record
+  at 100 Hz is kept, `NET.STA.LOC` chooses); an encoding the decoder does not support. A record
   that does not decode is counted too (`bad data`).
-- **A full ring.** The reader never waits for a processor. While a station
-  holds more than a ring's worth of samples back (`kMaxQueuedSamples`), its
-  records are dropped, counted and reported. A dropped record becomes a gap
-  when the next one arrives (the reorderer declares it), so no later sample
-  moves in time; a replay instead holds the source back, which a live server
-  cannot be.
+- **A full ring.** The reader never waits for a processor. While a
+  component holds more than a ring's worth of samples back
+  (`kMaxQueuedSamples`), its records are dropped, counted and reported. A
+  dropped record becomes a gap when the next one arrives (the reorderer
+  declares it), so no later sample moves in time; a replay instead holds the
+  source back, which a live server cannot be. The limit is per component, not
+  per station: during an outage of one component the processor cannot
+  advance, the other two fill their rings, and when the missing one returns
+  it holds nothing back, so its records are taken and its outage becomes a
+  gap. Counted per station, its records would be dropped too and the station
+  never recover.
 - **Stopping.** The first SIGINT or SIGTERM, or the end of `--duration`,
   stops the input; what has been received is processed and the normal report
   printed, followed by the input's section. A second signal stops at once.
+  An error after the input has started (an output that cannot be written,
+  say) stops the input and the processors and ends the run with that error.
 
 ## The network stage, live
 
@@ -120,12 +129,15 @@ which costs the alarm the lag of the slowest station: a message waits until
 every station has processed its data past the message's time. That is a
 record's duration (about 2 to 7 s for 100 Hz Steim2 at the KO stations) plus
 telemetry delay. A station that stops sending would hold every alarm back
-forever, so a message waits `--live-wait` seconds (10) at most; the stations
+forever, so a message waits about `--live-wait` seconds (10); the stations
 that held it back that long are then not waited for until they have caught
 up with what has been processed, each time with a warning. What such a
 station sends for earlier times is processed out of order, and the report
 counts these messages. With none out of order the network stage saw exactly
-the replay's order.
+the replay's order. The wait is timed from when the oldest held message
+arrived, so a message that arrives later for an earlier time starts it again:
+a message can wait longer than `--live-wait`, but not for ever, and none is
+released out of order without being counted.
 
 `ISSUED` lines give each alarm's wall-clock time and how long after the data
 it came, which is what a live run measures and a replay cannot.
@@ -163,6 +175,8 @@ header is little-endian too are not supported, and are counted as such.
 | `test_steim` | Steim1's three codes, its integrity check, the encodings and byte orders the header parser accepts |
 | `test_mseed` | every encoding against ObsPy (above) |
 | `seedlink_live` | ayzek against the mock serving `data/demo_ko` at 20x real time: the report and `--record` file equal the file replay's, and so do those of a replay of the archive; nothing dropped or out of order |
+| `test_live_outage` | an outage of one component (HHE) longer than the ring: when it returns, its records are taken and the station recovers |
+| `live_error_exit` | an error after the threads have started (an unwritable `--record`, against a closed local port) ends the live run with the error |
 | `seedlink_reconnect` | the same with three dropped connections (halfway through a packet, with a reset), a stall answered by two-packet INFO replies to keepalives, a stall with INFO ignored past the read timeout, packets sent again after every resume and numbers across the wrap: the archive holds every record of the files exactly once, and the report and `--record` file equal the file replay's |
 
 The live tests need `data/demo_ko` and python3 and skip without them; they run
