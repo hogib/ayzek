@@ -151,9 +151,15 @@ class Runner:
     def files(self, s):
         return sorted(str(p) for p in (self.data / s).glob("*.mseed"))
 
-    def set_args(self, s):
+    def set_args(self, s, catalogue=True):
+        """The set's station table, catalogue and (Greece, New Zealand) Pd gains.
+        Without the catalogue for event_outcomes.py and sweep_trigger.py, which
+        pass their own, shifted for the chance level: ayzek takes the last
+        --catalog given, so the set's would replace it."""
         d = self.data / s
-        args = ["--stations", d / "stations.csv", "--catalog", d / "catalog.csv"]
+        args = ["--stations", d / "stations.csv"]
+        if catalogue:
+            args += ["--catalog", d / "catalog.csv"]
         if (d / "pd_gain.csv").exists() and self.group not in OWN_GAINS:
             args += ["--pd-gains", d / "pd_gain.csv"]
         return args
@@ -276,7 +282,7 @@ class Runner:
                       "--detector", OUTCOME_DETECTOR[v["detector"]], "--label", label,
                       "--shifts", SHIFTS, "--jobs", "7", "--out", out, "--",
                       *[x for x in self.detector_args(label, s) if x != "--scores-in" and x != c],
-                      *self.set_args(s)], log_to=d / f"{label}_{s}.log")
+                      *self.set_args(s, catalogue=False)], log_to=d / f"{label}_{s}.log")
             print(f"[outcomes] {label} {s}")
 
         with ThreadPoolExecutor(max(1, self.a.jobs // 7)) as pool:
@@ -296,7 +302,7 @@ class Runner:
             self.run([sys.executable, TOOLS / "sweep_trigger.py", "--binary", self.a.binary,
                       "--catalog", self.data / s / "catalog.csv",
                       "--dataset", f"{s}:{c or ''}:{','.join(self.files(s))}",
-                      "--args", " ".join(str(x) for x in self.set_args(s)),
+                      "--args", " ".join(str(x) for x in self.set_args(s, catalogue=False)),
                       *itertools.chain.from_iterable(("--set", f"{k}={' '.join(v)}") for k, v in g["grid"].items()),
                       "--shifts", SHIFTS, "--jobs", str(self.a.jobs), "--out", out],
                      log_to=d / f"sweep_{s}.log")
@@ -316,7 +322,7 @@ class Runner:
                           "--dataset", f"{s}:{c or ''}:{','.join(self.files(s))}",
                           "--detector", "learned", "--label", label,
                           "--shifts", SHIFTS, "--jobs", "7", "--out", out, "--",
-                          *opts, *self.set_args(s)], log_to=od / f"{label}_{s}.log")
+                          *opts, *self.set_args(s, catalogue=False)], log_to=od / f"{label}_{s}.log")
             print(f"[neighbours] outcomes {s}")
 
     def neighbour_settings(self):

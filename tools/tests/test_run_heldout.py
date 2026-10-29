@@ -396,3 +396,32 @@ def test_manifest_lists_the_endpoint_files(tmp_path):
     r.manifest()
     m = json.loads((r.out / "manifest.json").read_text())
     assert m["endpoint_files"] == r.endpoint_files()
+
+
+# --- the shifted catalogues reach ayzek ------------------------------------------------------
+
+def test_outcomes_and_neighbours_pass_no_second_catalogue(tmp_path, monkeypatch):
+    # event_outcomes.py and sweep_trigger.py give ayzek their own --catalog,
+    # shifted for the chance level; ayzek takes the last --catalog
+    # (app/ayzek.cpp: catalog_path = next()), so a set catalogue among the
+    # options passed on would replace the shifted one in every run: each
+    # "shifted" run then scored the unshifted catalogue (all of the
+    # smoke test's chance-corrected detections came out 0).
+    r = make_runner(tmp_path)
+    cmds = []
+    monkeypatch.setattr(r, "run", lambda cmd, log_to=None, check=True: cmds.append([str(c) for c in cmd]))
+    r.stage_outcomes()
+    r.stage_neighbours()
+    outcomes = [c for c in cmds if c[1].endswith("event_outcomes.py")]
+    sweeps = [c for c in cmds if c[1].endswith("sweep_trigger.py")]
+    # 6 detectors and 4 grid settings on 2 sequences; 2 sweeps.
+    assert (len(outcomes), len(sweeps)) == (6 * 2 + 4 * 2, 2)
+    for c in outcomes:
+        assert c.count("--catalog") == 1 and c.index("--catalog") < c.index("--")
+        assert "--stations" in c[c.index("--"):]
+    for c in sweeps:
+        args = c[c.index("--args") + 1]
+        assert "--catalog" not in args and "--stations" in args
+        assert c.count("--catalog") == 1
+    # The full runs keep the set's catalogue: they are scored against it.
+    assert "--catalog" in map(str, r.set_args("gr_nm_seq003"))
