@@ -183,6 +183,7 @@ tools/demo.sh all      # 7 stations, full speed
 | `--geo-sd-scale X`, `--geo-max-z Z`, `--geo-max-err-km KM` | 1, off, off | geometry locator: widen every station's distance sd, leave out or refuse stations whose distance disagrees with the solution, refuse a location with a 68% radius over KM (`docs/impl/15-geometry-location.md`) |
 | `--sta S`, `--lta S` | 1, 30 | STA/LTA averaging lengths in seconds |
 | `--stalta-on R`, `--stalta-off R` | 8, 1.5 | STA/LTA ratio that triggers, and below which a trigger re-arms |
+| `--stalta-on-stations FILE` | | per-station STA/LTA trigger ratios (`station,ratio`), the per-station baseline; stations not listed keep `--stalta-on` |
 | `--stalta-band LO,HI` | 2,20 | STA/LTA pass band in Hz (4th-order Butterworth high- and low-pass) |
 | `--stalta-3c` | | STA/LTA on the energy of all three components instead of the vertical |
 | `--fp-windows F,L,U` | 3,5,0.2 | FilterPicker filter window, long-term window and tUpEvent in seconds (Lomax et al. 2012 at 100 Hz; Earthworm's `pick_FP` uses 6,10,0.4) |

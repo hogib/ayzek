@@ -100,6 +100,9 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --anchor-picker       place the picker window from the anchored P too
   --sta S, --lta S      STA/LTA averaging lengths in seconds (default 1, 30)
   --stalta-on R         STA/LTA ratio that triggers (default 8)
+  --stalta-on-stations FILE
+                        per-station STA/LTA trigger ratios (CSV station,ratio);
+                        stations not listed keep --stalta-on
   --stalta-off R        STA/LTA ratio below which a trigger resets (default 1.5)
   --stalta-band LO,HI   STA/LTA pass band in Hz (default 2,20)
   --stalta-3c           STA/LTA on the energy of all three components (default: vertical)
@@ -188,7 +191,7 @@ Percentiles percentiles(std::vector<float> v) {
 } // namespace
 
 int main(int argc, char **argv) try {
-  std::string stations_path, pd_gains_path;
+  std::string stations_path, pd_gains_path, stalta_on_stations;
   std::string models = "models", scores_dir, scores_in_dir, catalog_path,
               record_path, transformer_path, assess_csv;
   bool threshold_set = false, release_set = false, min_stations_set = false,
@@ -268,6 +271,8 @@ int main(int argc, char **argv) try {
       pcfg.stalta.sta_seconds = std::stod(next());
     else if (a == "--lta")
       pcfg.stalta.lta_seconds = std::stod(next());
+    else if (a == "--stalta-on-stations")
+      stalta_on_stations = next();
     else if (a == "--stalta-on")
       pcfg.stalta_on = std::stod(next());
     else if (a == "--stalta-off")
@@ -530,14 +535,31 @@ int main(int argc, char **argv) try {
   Bus bus;
   StreamClock clock(start, speed);
   std::vector<std::unique_ptr<Processor>> procs;
+  // --stalta-on-stations: the per-station STA/LTA baseline, each station's own
+  // trigger ratio.
+  std::map<std::string, double> station_on;
+  if (!stalta_on_stations.empty()) {
+    std::ifstream f(stalta_on_stations);
+    if (!f)
+      throw std::runtime_error("cannot open " + stalta_on_stations);
+    std::string line;
+    std::getline(f, line); // header
+    while (std::getline(f, line)) {
+      const auto comma = line.find(',');
+      if (comma != std::string::npos)
+        station_on[line.substr(0, comma)] = std::stod(line.substr(comma + 1));
+    }
+  }
   for (auto &st : stations) {
     const std::string path =
         scores_dir.empty() ? "" : scores_dir + "/" + st->code + ".csv";
     const std::string in_path =
         scores_in_dir.empty() ? "" : scores_in_dir + "/" + st->code + ".csv";
+    auto cfg = pcfg;
+    if (auto it = station_on.find(st->code); it != station_on.end())
+      cfg.stalta_on = it->second;
     procs.push_back(std::make_unique<Processor>(
-        *st, detector, picker, bp, pcfg, bus, path, in_path,
-        transformer.get()));
+        *st, detector, picker, bp, cfg, bus, path, in_path, transformer.get()));
   }
   std::vector<std::jthread> threads;
   for (std::size_t i = 0; i < stations.size(); ++i) {
