@@ -50,6 +50,21 @@ in `data/fixtures/` and are skipped if these are missing. The end-to-end test
 (`demo_m49`) replays the 2025-11-10 Sındırgı M4.9. It requires the event to be
 detected, located within 10 km and given a magnitude between 3.9 and 5.9.
 
+The analysis tools (`tools/sweep_trigger.py`, `event_outcomes.py`,
+`significance.py`, `select_setting.py`, `quiet_sweep.py`,
+`stalta_station_ratios.py`, `quiet_without_stations.py`, `scorecard.py`'s
+parsers) have their own tests in `tools/tests/`, run in the tools' uv project:
+
+```bash
+uv run --project tools --with pytest pytest tools/tests -q
+```
+
+They need neither a build nor data: expected values are worked by hand, taken
+from scipy, or read off small captured ayzek reports (`tools/tests/fixtures/`),
+and tools that drive a binary run against a stand-in. A test marked `xfail`
+records a known defect (its reason says which); it fails the run if the defect
+disappears without the marker being removed.
+
 Raspberry Pi (static aarch64 binary, `docs/impl/06-raspberry-pi.md`):
 
 ```bash
