@@ -15,7 +15,8 @@ is fetched before then.
   relation, gains, terms, noise levels, transformer) is listed in the release
   notes.
 - **The transformer** (its own paper): its weights, threshold, dt restart,
-  station count and P-time uncertainty as in that release.
+  station count and P-time uncertainty as in that release. It is tested here
+  at those defaults (section 6), under this protocol; it has no separate one.
 - **The binary**: the tests run the release's static x86-64 binary
   (`build-linux`, zig/musl). On every development replay, for the learned
   detector, STA/LTA, FilterPicker and the transformer, its reports equal the
