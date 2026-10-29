@@ -110,6 +110,16 @@ is fetched before then.
   on Greece and on New Zealand**; the sequence that crosses the target is
   included whole. If a network's "now" sequences do not reach it, all of them
   are used and the result is reported as under the target.
+- **Scorable count**: for the stopping rule, a sequence's scorable count is
+  the number of events of the pool catalogue (any magnitude, with or without
+  depth) whose origin time t satisfies start <= t < end of the replay and
+  whose epicentre lies within 250 km of the centroid of its stations
+  (`heldout select`, `scorable`). ayzek scores a slightly different set: the
+  events of the set's catalogue excerpt with origin in [max(data start,
+  --from) - 30 s, end - 30 s] within 250 km of the centroid, and the excerpt
+  leaves out events without depth or magnitude. The two counts differ by at
+  most a few events per sequence; the stopping rule uses the first, and every
+  endpoint the second (the events in ayzek's report).
 - **Quiet data**: 24 windows of 6 h per network, drawn with Python's
   `random.Random(43)`: each draw is a start time on the minute, uniform over
   the pool period less 6 h and a 30 min margin at either end, then one of the
@@ -267,6 +277,28 @@ for STA/LTA at equal quiet alarms is the first secondary endpoint.
    events no deeper than 40 km (deeper ones reported apart);
 8. latency: alarm delay after origin, and warning time before S.
 
+**Depth**: every detection endpoint above (the primary, and secondary 1, 2,
+4, 5 and 6) is reported for all scorable events, which is the endpoint as defined, and
+also for the events no deeper than 40 km by the catalogue's depth (the
+per-event outcome rows restricted to those events, the same
+`tools/significance.py`), for every network. The reason is the matcher: ayzek
+predicts P in a uniform half-space (hypot(D, depth) / 6 km/s, within 6 s;
+`Network::match`) and S the same way at 3.5 km/s. Against iasp91 travel times
+(TauP), at 10 km depth the half-space P is within 0.6 s of iasp91 out to
+150 km, 2.3 s late at 200 km and 4.5 s at 250 km; at 100 km depth 2.8 to 4.2 s
+late within 100 km; at 150 km depth 5 to 6 s; at 200 km depth 7 to 8 s; at
+300 km depth 12 s. Events deeper than about 150 km are therefore scored as
+missed even when alarmed, their alarms counted as unmatched, for every
+detector alike, and "detected before S" is overstated for them; the pick and
+P-time locators (depth fixed at 10 km) and the Pd distances are wrong for them
+too (the Pd endpoint already reports events deeper than 40 km apart). In the
+pre-pool tuning catalogues 14 of 103 New Zealand events are deeper than 100 km
+and 7 deeper than 150 km, 1 of 45 Greek events deeper than 40 km; the
+development catalogues reach 71 km, nearly all under 30 km. A travel-time
+model in the matcher would also move the scoring of the development data at
+200-250 km, where the selection of the baselines' settings was made, and is
+not adopted.
+
 ## 8. Deviations
 
 A bug found after the test data are fetched is fixed, and the results are
@@ -317,3 +349,40 @@ retrospective test of the same network or with any other network.
 - **Not live**: the archive delivers the post-freeze data intact, so the test
   replays it like the retrospective ones. A live SeedLink run, if one is made,
   is reported apart and is not part of this test.
+
+## 11. Limitations stated before the freeze
+
+Known before any test data are fetched; none is changed, since a change now
+would be unmeasured or fitted after the fact. Each applies to every detector
+alike unless said otherwise.
+
+- **No dead-channel or coda exclusion for Pd on Greece and New Zealand.**
+  `--pd-gains` drops the stations' noise levels, so the rules that leave out a
+  channel whose noise lies more than a factor of 10 below or above its median
+  (docs/impl/17-pd-magnitude.md, section 2.2; on KO they moved the Mw 6.2
+  from M5.5 to M6.0) do not apply there, and a silent station's upper bound
+  makes a dead channel more harmful. The gain rule of section 2 removes the
+  systematic cases (responses not flat across Pd's band); a dead channel with
+  a flat response is not caught. A network-relative rule would be new,
+  untested method.
+- **Zero Pd station terms on Greece and New Zealand.** KO's unflagged station
+  terms have a mean of +0.07 to +0.10 in log10 Pd (125 stations, all windows),
+  so a station of average KO behaviour gets its magnitude biased by about
+  +0.1 under zero terms; small against the relation's sigma of about 0.3.
+- **Fixed parameters never swept**, all from the first pipeline commit and
+  applied to every detector: a station's detections within 40 s of its last
+  (`coda_seconds`, network.hpp) are absorbed, so a second event there is not
+  declared from that station; the 15 s between a station's triggers
+  (`retrigger_seconds`, processor.hpp); the trigger's release at 0.3 for 2
+  windows (fixed in every retuning grid); the pick checks (P and S pick
+  probability at least 0.5, S - P at most 60 s, P within -3 to +9 s of the
+  trigger window; network.cpp); the location's rms limit of 2 s; Pd's 20 km
+  location-error limit (`pd_max_err_km`); vp 6 km/s, vs 3.5 km/s and the fixed
+  10 km depth. Measured or documented and kept: `--slack` 3 s and
+  `--min-stations` 2 (05-pipeline.md), the anchor 3/1.5 (09-sta-lta.md), the
+  3 s onset window of the FP check (17, section 2.4), the P-time sigma 1.35 s,
+  the geometry locator's sd scale 2.1 and sigma_p 2.75 s (15), and Pd's
+  windows, noise window, SNR, lead, flag and noise factors (17, section 3).
+- **KO's catalogue.** EMSC lists fewer small events in KO's region than AFAD
+  does, which lowers KO's scorable counts and raises the unmatched alarms of
+  every detector (part of why KO is expected far under its target, section 2).
