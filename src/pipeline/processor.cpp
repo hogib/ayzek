@@ -609,6 +609,27 @@ void Processor::pd_push(std::uint64_t pos, std::optional<double> z) {
   if (d && pd_chain_->run_length() == 1)
     pd_run_start_ = pos;
   pd_ring_[pos % kPdRing] = d ? std::abs(*d) : std::numeric_limits<double>::quiet_NaN();
+  // A PdTrace per 50 positions, sent as soon as its last sample is in, so
+  // that its declared_at never precedes a Progress already sent.
+  constexpr std::uint64_t kBin = 50;
+  if (pos % kBin == 0) {
+    pd_bin_peak_ = 0;
+    pd_bin_missing_ = false;
+  }
+  if (d)
+    pd_bin_peak_ = std::max(pd_bin_peak_, std::abs(*d));
+  else
+    pd_bin_missing_ = true;
+  if ((pos + 1) % kBin == 0) {
+    const std::uint64_t first = pos + 1 - kBin;
+    const auto sens = cfg_.pd->sensitivity(st_.code, pos_to_epoch(first));
+    // Whole: every sample present, and the chain's run began by its first.
+    const bool whole = !pd_bin_missing_ && pd_run_start_ <= first && sens;
+    bus_.send(PdTrace{st_.code, pos_to_epoch(first), pos_to_epoch(pos + 1),
+                      whole ? pd_bin_peak_ / *sens
+                            : std::numeric_limits<double>::quiet_NaN(),
+                      pos_to_epoch(pd_run_start_), pos_to_epoch(pos + 1)});
+  }
 }
 
 // Pd(tau) = max |d| over [P, P + tau) and the noise level over [P - 11 s,

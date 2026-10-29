@@ -96,6 +96,26 @@ level enters as an upper bound. Values are excluded:
 
 An event with no value above its threshold receives no estimate.
 
+**Stations that did not trigger** (`NetworkConfig::pd_silent_bounds`). Every
+station with a gain also sends, for each 0.5 s of its vertical, the peak
+|displacement| (`PdTrace`), and the network keeps the last 120 s of them. Once
+an event is located (the distances above), each station without a detection
+for it contributes the peak over [P, P + τ) for the longest window τ its traces
+cover, with the noise level over [P − 11 s, P − 1 s), where P is predicted from
+the location in the half-space at the fixed depth. Traces are whole 0.5 s
+stretches, so both windows are widened by less than 0.5 s at each end. A
+station whose chain has not run since 41 s before P, or whose traces in these
+windows have a gap, is left out. Such a value is mostly below three times its
+noise and enters as an upper bound, as for onset's estimator, which uses every
+station of the event; without these bounds small events were estimated from
+their loudest stations only. Each new trace that completes one of a silent
+station's windows re-estimates the located events of the last two minutes.
+`PdTrace`s are not recorded (`--record`), so a replay of a recording estimates
+Pd without these bounds. On the development replays the effect is small,
+because nearly every station triggers for the events that receive an estimate:
+on marmara_ko one estimate (the ML 2.2 at 10:43:53) gains a fifth station and
+its first value moves from M2.9 to M3.1, its final value staying M3.0.
+
 A `PDMAG` line is printed when the estimate moves by 0.1 or more or when a
 station is added:
 
@@ -304,11 +324,11 @@ step for small events.
 
 ## 5. Limitations
 
-- Only stations that triggered contribute. In onset's evaluation every
-  station of the event pull contributes, including those at which the event
-  remained below the noise. The censored bounds of the stations that did not
-  trigger are absent here, which biases the estimates of small events
-  upward.
+- Stations that did not trigger contribute only once the event is located,
+  and only when their predicted P lies within their last 120 s of traces; in
+  onset's evaluation every station of the event pull contributes from the
+  catalogue P. Before the location, small events are estimated from the
+  stations that triggered and read high.
 - Inside the coda of a larger event the noise level is the coda itself: the
   values of later events are censored or, beyond ten times the station's
   median noise, excluded. Most aftershocks of a large event therefore receive

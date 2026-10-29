@@ -179,6 +179,17 @@ struct PdEstimate {
   double declared_at;
 };
 
+// The vertical's peak |displacement| over one 0.5 s stretch of samples
+// (positions aligned to 50), sent as the stretch ends, for the Pd upper bounds
+// of stations that did not trigger for an event (Network::report_pd).
+struct PdTrace {
+  std::string station;
+  double t0, t1;       // epoch of the first sample and after the last
+  double peak;         // metres; NaN if a sample is missing or has no gain
+  double run_start;    // epoch at which the displacement chain's run began
+  double declared_at;  // t1
+};
+
 struct StationDone {
   std::string station;
 };
@@ -193,7 +204,7 @@ struct Progress {
 };
 
 using Message = std::variant<Detection, Pick, StationGeometry, PdEstimate,
-                             StationDone, Progress>;
+                             PdTrace, StationDone, Progress>;
 
 inline double declared_at(const Message &m) {
   if (auto *d = std::get_if<Detection>(&m))
@@ -203,6 +214,8 @@ inline double declared_at(const Message &m) {
   if (auto *g = std::get_if<StationGeometry>(&m))
     return g->declared_at;
   if (auto *q = std::get_if<PdEstimate>(&m))
+    return q->declared_at;
+  if (auto *q = std::get_if<PdTrace>(&m))
     return q->declared_at;
   return 0;
 }

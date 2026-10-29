@@ -161,5 +161,53 @@ int main(int argc, char **argv) {
     CHECK(std::abs(e.pd_magnitude->mean - direct->mean) < 1e-9);
     CHECK(e.pd_first.has_value());
   }
+  // --- silent stations (NetworkConfig::pd_silent_bounds) ---------------------
+  // Five stations around a source trigger and report Pd as the relation
+  // predicts for M 3.5; a sixth records only noise (PdTraces at its median
+  // noise level). Once the P times locate the event, the sixth enters as an
+  // upper bound and lowers the estimate; without its traces it does not.
+  {
+    using namespace ayzek::pipeline;
+    Log::get().quiet = true;
+    const double lat0 = 39.0, lon0 = 28.0, origin = 1000.0, m_true = 3.5;
+    const std::vector<std::pair<std::string, std::pair<double, double>>> sites = {
+        {"ADVT", {39.3, 28.0}}, {"AFSR", {38.7, 28.1}}, {"AGRB", {39.0, 28.4}},
+        {"AKDG", {39.1, 27.6}}, {"AKDM", {38.8, 27.7}}, {"ANTB", {39.2, 28.3}}};
+    auto run = [&](bool traces) {
+      std::map<std::string, StationInfo> st;
+      for (const auto &[c, ll] : sites)
+        st[c] = {ll.first, ll.second};
+      NetworkConfig cfg;
+      cfg.pd = &*model;
+      cfg.p_sigma = 0.2; // exact P times: a radius within pd_max_err_km
+      Network net(st, cfg);
+      // The silent station's traces, from 60 s before the origin to 30 s after.
+      if (traces)
+        for (double t = origin - 60; t < origin + 30; t += 0.5)
+          net.on(PdTrace{"ANTB", t, t + 0.5, model->noise.at("ANTB"), origin - 300, t + 0.5});
+      const auto *w = model->window(5.0);
+      for (std::size_t i = 0; i + 1 < sites.size(); ++i) {
+        const auto &[c, ll] = sites[i];
+        const double d = distance_km(lat0, lon0, ll.first, ll.second);
+        const double p = origin + std::hypot(d, 10.0) / 6.0;
+        Detection det{c, p - 3.5, p + 4.0, 0.99f, 0.0};
+        det.p_time = p;
+        net.on(det);
+        net.on(PdEstimate{c, p - 3.5, p, 5.0,
+                          std::pow(10.0, w->mean(m_true, d) + model->term(c, 5.0)),
+                          model->noise.at(c), p + 5.0});
+      }
+      // Reported after every value is in: the traces arrived first here.
+      const auto &e = net.events().front();
+      CHECK(e.declared && e.p_location && e.p_location->err_km <= cfg.pd_max_err_km);
+      return *e.pd_magnitude;
+    };
+    const auto without = run(false), with = run(true);
+    std::println("  silent station: M{:.2f} from {} stations without its bound, "
+                 "M{:.2f} from {} with it",
+                 without.mean, without.stations, with.mean, with.stations);
+    CHECK(without.stations == 5 && with.stations == 6);
+    CHECK(with.mean < without.mean);
+  }
   std::println("Pd chain and estimator agree with onset");
 }

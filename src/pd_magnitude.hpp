@@ -93,6 +93,10 @@ private:
   std::size_t run_ = 0;
 };
 
+// Displacement run needed before P: the filters' run-in and the 10 s noise
+// window ending 1 s before P, as in onset's pd.py.
+inline constexpr double kPdLeadSeconds = 41.0;
+
 // One station's values for an event.
 struct PdObservation {
   std::string station;

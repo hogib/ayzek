@@ -150,6 +150,8 @@ const std::string &station_of(const Message &m) {
     return o->station;
   if (auto *q = std::get_if<PdEstimate>(&m))
     return q->station;
+  if (auto *q = std::get_if<PdTrace>(&m))
+    return q->station;
   throw std::invalid_argument("message has no station");
 }
 

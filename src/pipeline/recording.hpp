@@ -26,6 +26,8 @@
 //      declared_at  (older recordings have baz and kappa before declared_at;
 //      they are skipped)
 //   Q  station  trigger_window  p_time  tau  pd  pd_noise  declared_at
+// PdTrace messages (two per second per station) are not recorded, so a replay
+// of a recording estimates Pd without the bounds of silent stations.
 
 #include "common.hpp"
 #include "network.hpp"

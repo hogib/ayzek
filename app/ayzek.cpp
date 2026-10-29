@@ -574,6 +574,8 @@ int main(int argc, char **argv) try {
         net.on(*o);
       else if (auto *q = std::get_if<PdEstimate>(&m))
         net.on(*q);
+      else if (auto *t = std::get_if<PdTrace>(&m))
+        net.on(*t);
       if (recorder)
         recorder->write(m);
     }

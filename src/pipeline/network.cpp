@@ -504,22 +504,28 @@ static std::string pd_classes(const PdMagnitude &m) {
                      100 * m.class_p[2]);
 }
 
+// The pick or geometry location once it is good enough, else the P-time
+// location once it is; null before either.
+const Location *Network::pd_location(const Event &e) const {
+  if (e.location && !(e.location->err_km > cfg_.pd_max_err_km))
+    return &*e.location;
+  if (e.p_location && e.p_location->err_km <= cfg_.pd_max_err_km)
+    return &*e.p_location;
+  return nullptr;
+}
+
 void Network::report_pd(Event &e, double now) {
   if (!cfg_.pd || e.pd.empty())
     return;
   std::vector<PdObservation> obs;
   double tau = 0;
-  // The pick or geometry location once it is good enough, else the P-time
-  // location once it is, else each station's geometry distance.
-  const Location *loc = nullptr;
-  const char *from = "the stations' geometry";
-  if (e.location && !(e.location->err_km > cfg_.pd_max_err_km)) {
-    loc = &*e.location;
-    from = "the location";
-  } else if (e.p_location && e.p_location->err_km <= cfg_.pd_max_err_km) {
-    loc = &*e.p_location;
-    from = "the P-time location";
-  }
+  // Distances from the location once there is one good enough, else each
+  // station's geometry distance.
+  const Location *loc = pd_location(e);
+  const char *from = !loc ? "the stations' geometry"
+                     : e.p_location && loc == &*e.p_location
+                         ? "the P-time location"
+                         : "the location";
   for (const auto &[code, q] : e.pd) {
     auto st = stations_.find(code);
     if (st == stations_.end())
@@ -533,6 +539,10 @@ void Network::report_pd(Event &e, double now) {
       continue;
     obs.push_back({code, q.tau, q.pd, q.pd_noise, d});
     tau = std::max(tau, q.tau);
+  }
+  if (loc) {
+    const auto silent = silent_pd(e, *loc);
+    obs.insert(obs.end(), silent.begin(), silent.end());
   }
   const auto m = pd_magnitude(*cfg_.pd, obs);
   if (!m)
@@ -815,6 +825,88 @@ void Network::report_p_location(Event &e, double now) {
                   "origin {}, rms {:.2f} s from {} stations{}",
                   e.id, hms(now), loc.lat, loc.lon, loc.err_km, hms(loc.origin),
                   loc.rms, loc.n_stations, left_out);
+}
+
+void Network::on(const PdTrace &q) {
+  if (!cfg_.pd || !cfg_.pd_silent_bounds)
+    return;
+  auto &tr = traces_[q.station];
+  tr.push_back(q);
+  while (tr.front().t1 < q.t1 - 120.0)
+    tr.pop_front();
+  // Re-estimate the located events of the last two minutes for which this
+  // trace completes one of the station's windows after its predicted P.
+  auto st = stations_.find(q.station);
+  if (st == stations_.end())
+    return;
+  for (auto &e : events_) {
+    if (!e.declared || e.declared_at < q.t1 - 120.0 ||
+        e.detections.contains(q.station) || e.pd.empty())
+      continue;
+    const Location *loc = pd_location(e);
+    if (!loc)
+      continue;
+    const double p =
+        loc->origin +
+        std::hypot(distance_km(loc->lat, loc->lon, st->second.lat, st->second.lon),
+                   cfg_.depth_km) /
+            cfg_.vp;
+    if (std::ranges::any_of(cfg_.pd->windows, [&](const PdRelation &w) {
+          return p + w.tau_s > q.t0 && p + w.tau_s <= q.t1;
+        }))
+      report_pd(e, q.declared_at);
+  }
+}
+
+// pd_silent_bounds: for each station without a detection in `e`, the P
+// predicted from `loc` (half-space, cfg_.vp, fixed depth), and the peak of its
+// traces over [P, P + tau) for the longest window tau they cover, with the
+// noise level over [P - 11 s, P - 1 s), as the processor measures them for a
+// trigger. Traces are 0.5 s long, so both windows are widened to whole traces,
+// by less than 0.5 s at each end. A station whose chain has not run since
+// kPdLeadSeconds before P, or whose traces in these windows have a gap, is
+// left out.
+std::vector<PdObservation> Network::silent_pd(const Event &e,
+                                              const Location &loc) const {
+  std::vector<PdObservation> out;
+  if (!cfg_.pd_silent_bounds)
+    return out;
+  for (const auto &[code, tr] : traces_) {
+    if (tr.empty() || e.detections.contains(code) || e.pd.contains(code))
+      continue;
+    auto st = stations_.find(code);
+    if (st == stations_.end())
+      continue;
+    const double d =
+        distance_km(loc.lat, loc.lon, st->second.lat, st->second.lon);
+    const double p = loc.origin + std::hypot(d, cfg_.depth_km) / cfg_.vp;
+    // Peak over the traces overlapping [a, b); NaN unless they cover it
+    // without a gap or a missing sample, in one run begun by P - lead.
+    auto peak = [&](double a, double b) {
+      double m = 0, covered = a;
+      for (const auto &t : tr) {
+        if (t.t1 <= a || t.t0 >= b)
+          continue;
+        if (std::isnan(t.peak) || t.t0 > covered + 1e-6 ||
+            t.run_start > p - kPdLeadSeconds)
+          return std::numeric_limits<double>::quiet_NaN();
+        m = std::max(m, t.peak);
+        covered = t.t1;
+      }
+      return covered + 1e-6 >= b ? m : std::numeric_limits<double>::quiet_NaN();
+    };
+    const double noise = peak(p - 11.0, p - 1.0);
+    if (std::isnan(noise))
+      continue;
+    for (auto w = cfg_.pd->windows.rbegin(); w != cfg_.pd->windows.rend(); ++w) {
+      const double v = peak(p, p + w->tau_s);
+      if (!std::isnan(v)) {
+        out.push_back({code, w->tau_s, v, noise, d});
+        break;
+      }
+    }
+  }
+  return out;
 }
 
 const CatalogEvent *Network::match(const Event &e) const {

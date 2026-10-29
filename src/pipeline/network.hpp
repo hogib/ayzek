@@ -90,6 +90,12 @@ struct NetworkConfig {
   // model's (17-pd-magnitude.md, section 2.4).
   bool p_locate = true;
   double p_sigma = 1.35;
+  // Stations that record but did not trigger for an event contribute to its
+  // Pd estimate too, once it is located: their peak displacement after the P
+  // predicted from the location, from their PdTraces, which is mostly an
+  // upper bound below their noise (pd_magnitude.hpp). Without these, small
+  // events are estimated from their loudest stations only and read high.
+  bool pd_silent_bounds = true;
   double merge_rms = 1.0;     // P-time rms of one source for both, seconds
   std::size_t merge_min_fit = 4; // stations in that fit
   // The fit's source within this many degrees of the stations: from far
@@ -183,6 +189,7 @@ public:
   void on(const Pick &p);
   void on(const StationGeometry &g);
   void on(const PdEstimate &q);
+  void on(const PdTrace &q);
   // Final report: one block per declared event (magnitude, alarm, location,
   // catalogue comparison, S-wave warning time at each station and site), the
   // catalogue events not detected, and totals.
@@ -238,6 +245,8 @@ private:
   // Pd magnitude: re-estimates, and prints the estimate when it moves by 0.1
   // or more or a station is added.
   void report_pd(Event &e, double now);
+  // The location whose distances the Pd estimate uses (report_pd), or null.
+  [[nodiscard]] const Location *pd_location(const Event &e) const;
 
   struct Warning {
     std::string name;
@@ -254,6 +263,12 @@ private:
 
   std::map<std::string, StationInfo> stations_;
   NetworkConfig cfg_;
+  // pd_silent_bounds: each station's PdTraces of the last 120 s.
+  std::map<std::string, std::deque<PdTrace>> traces_;
+  // The Pd values of `e`'s silent stations (pd_silent_bounds) at the
+  // location `loc`, for the longest window each one's traces cover.
+  [[nodiscard]] std::vector<PdObservation> silent_pd(const Event &e,
+                                                     const Location &loc) const;
   std::vector<Event> events_;
   int next_id_ = 1;
   // Every detection per station, coda included, for trigger rates.

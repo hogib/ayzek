@@ -135,10 +135,6 @@ struct ProcessorConfig {
   const PdModel *pd = nullptr;
 };
 
-// Displacement run needed before P: the filters' run-in and the 10 s noise
-// window ending 1 s before P, as in onset's pd.py.
-inline constexpr double kPdLeadSeconds = 41.0;
-
 struct ProcessorStats {
   std::uint64_t windows = 0, gap_windows = 0, detections = 0, picks = 0,
                 abandoned_picks = 0;
@@ -227,6 +223,10 @@ private:
   std::optional<Displacement> pd_chain_;
   std::vector<double> pd_ring_;
   std::uint64_t pd_run_start_ = 0;
+  // The PdTrace being accumulated: its peak |displacement| in counts, and
+  // whether a sample of it was missing.
+  double pd_bin_peak_ = 0;
+  bool pd_bin_missing_ = false;
   std::uint64_t pd_next_ = kUnset; // window detectors: next sample to feed
   struct PdPending {
     std::uint64_t p;
