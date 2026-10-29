@@ -546,3 +546,81 @@ def test_quiet_counts_missing_report_stops(tmp_path):
     index.write_text("name,scored_hours\nw1,5.5\nw2,5.5\n")
     with pytest.raises(FileNotFoundError):
         sg.quiet_counts(index, {"learned": run})
+
+
+# --- --max-depth -------------------------------------------------------------------------------
+
+DEPTH_FIELDS = FIELDS + ["depth_km"]
+
+# 20 events of replay s1 (one per minute). Catalogue depths: events 0-9 10 km,
+# event 10 exactly 40.0 km (kept: depth <= 40), events 11-14 40.01 km
+# (deeper), event 15 without a depth, events 16-19 100 km.
+DEPTHS = ["10"] * 10 + ["40.0"] + ["40.01"] * 4 + [""] + ["100"] * 4
+
+
+def write_depth_table(path, detector, detected, shifted_detected=()):
+    """Observed run: the events in `detected`; shifts +-127: only the events in
+    `shifted_detected` detected (in the +127 run)."""
+    with open(path, "w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(DEPTH_FIELDS)
+        for shift in (0, 127, -127):
+            for i in range(20):
+                d = int(i in detected) if shift == 0 else int(shift == 127 and i in shifted_detected)
+                w.writerow(["s1", detector, shift, origin(i), "ML", "2.0", d, d, DEPTHS[i]])
+
+
+def depth_tables(d):
+    # Learned detects 0-10, 15 and 16; the other 0-8 and 16-19. In the +127
+    # run both "detect" event 16 (deep): a chance match that must not enter the
+    # restricted chance level.
+    write_depth_table(d / "learned.csv", "learned", set(range(11)) | {15, 16}, {16})
+    write_depth_table(d / "other.csv", "other", set(range(9)) | {16, 17, 18, 19}, {16})
+
+
+def test_load_outcomes_max_depth_boundary_and_missing(tmp_path):
+    depth_tables(tmp_path)
+    counts = {}
+    det = sg.load_outcomes(tmp_path, max_depth=40.0, counts=counts)
+    # Kept: events 0-10 (10 km and the boundary 40.0); left out: 11-14 and
+    # 16-19 deeper (8), 15 without a depth (1). In every run alike.
+    kept = {("s1", origin(i), "ML", "2.0") for i in range(11)}
+    for shift in (0, 127, -127):
+        assert set(det["learned"][shift]) == kept and set(det["other"][shift]) == kept
+    assert counts == {"kept": 11, "deeper": 8, "no_depth": 1}
+    # No filter: every event, and the depth column is ignored.
+    assert len(sg.load_outcomes(tmp_path)["learned"][0]) == 20
+    # Just below the boundary, the 40.0 km event goes too.
+    assert len(sg.load_outcomes(tmp_path, max_depth=39.99)["learned"][0]) == 10
+
+
+def test_max_depth_needs_the_column(tmp_path):
+    extra_detection_tables(tmp_path)          # tables without depth_km
+    with pytest.raises(SystemExit):
+        sg.load_outcomes(tmp_path, max_depth=40)
+    p = run_tool("significance", "--outcomes", tmp_path, "--against", "other", "--groups", "g=s1",
+                 "--max-depth", "40")
+    assert p.returncode != 0 and "no depth_km column" in p.stderr
+
+
+def test_main_max_depth_by_hand(tmp_path):
+    depth_tables(tmp_path)
+    p, s = run_main(tmp_path, "--max-depth", "40")
+    # Restricted to events 0-10 (11 events), every shifted run detects none of
+    # them, so c = 0 and corrected = detections: learned 11 (0-10), other 9
+    # (0-8); difference 2. Discordant: learned only 9 and 10, other only none:
+    # McNemar p = 2 * P(X <= 0 | n = 2) = 2 * 1/4 = 0.5.
+    assert s["g: learned corrected"] == 11.0
+    assert (s["g: other detected"], s["g: other corrected"], s["g: other difference"]) == (9, 9.0, 2.0)
+    assert s["g: other mcnemar p"] == 0.5
+    assert (s["depth: max km"], s["depth: events kept"], s["depth: events deeper"],
+            s["depth: events without depth"]) == (40.0, 11, 8, 1)
+    assert "learned vs other: 11 events" in p.stdout
+    assert "events no deeper than 40 km: 11 kept; left out 8 deeper and 1 without a depth" in p.stdout
+    # All events: learned 13 detected (0-10, 15, 16), the other 13 (0-8,
+    # 16-19); chance from the +127 run's one detection of 20 (event 16):
+    # c = (1/20 + 0/20) / 2 = 0.025, so both are corrected to
+    # (13/20 - 0.025) / 0.975 * 20 = 12.82 and differ by 0.
+    p, s = run_main(tmp_path)
+    assert (s["g: learned corrected"], s["g: other corrected"], s["g: other difference"]) == (12.8, 12.8, 0.0)
+    assert "depth: max km" not in s and "learned vs other: 20 events" in p.stdout

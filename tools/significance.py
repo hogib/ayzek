@@ -24,6 +24,17 @@ by two one-sided tests at 5%: the learned detector and OTHER are shown
 equivalent when the 90% paired bootstrap interval of the difference in
 chance-corrected detections lies within +-FRACTION of the group's events.
 
+--max-depth KM restricts every event comparison to the catalogue events no
+deeper than KM (depth <= KM, the outcome tables' depth_km column, which
+tools/event_outcomes.py writes): the rows of every other event are left out,
+in the observed and in the shifted runs and for every detector, before
+anything is computed (held-out protocol, section 7: the detection endpoints
+also for events no deeper than 40 km). An event without a depth (an empty
+depth_km) is left out too, since it cannot be shown to be that shallow; how
+many events were kept, deeper or without a depth is printed and written to the
+JSON under "depth: ...". A table without the depth_km column stops the run.
+The quiet-window comparison has no events and is not restricted.
+
 --block-minutes resamples blocks of origin time rather than single events,
 which keeps together events whose detectability is shared (noise state, the
 stations up, overlapping codas). --quiet-runs compares every run after the first
@@ -115,17 +126,35 @@ def pct(v, q):
     return v[min(len(v) - 1, max(0, int(round(q * (len(v) - 1)))))]
 
 
-def load_outcomes(d, column="detected"):
+def load_outcomes(d, column="detected", max_depth=None, counts=None):
     """{(dataset, detector): {shift: {event: outcome}}}, the outcome being
     `column` of tools/event_outcomes.py's tables (detected, or detected_pre_s
-    for the comparison restricted to detection before the S wave)."""
+    for the comparison restricted to detection before the S wave). With
+    max_depth, only the events whose depth_km is given and at most max_depth;
+    `counts`, if a dict, gets the number of distinct events kept, deeper and
+    without a depth."""
     out = collections.defaultdict(lambda: collections.defaultdict(dict))
+    kept, deeper, nodepth = set(), set(), set()
     for f in glob.glob(f"{d}/*.csv"):
-        for r in csv.DictReader(open(f)):
+        rows = csv.DictReader(open(f))
+        if max_depth is not None and "depth_km" not in (rows.fieldnames or []):
+            sys.exit(f"{f}: no depth_km column (a table from before event_outcomes wrote it)")
+        for r in rows:
             ev = (r["dataset"], r["origin"], r["type"], r["magnitude"])
             if r.get(column, "") == "":
                 sys.exit(f"{f}: no {column} column for {r['detector']} (a table from an older build?)")
+            if max_depth is not None:
+                depth = r["depth_km"].strip()
+                if depth == "":
+                    nodepth.add(ev)
+                    continue
+                if float(depth) > max_depth:
+                    deeper.add(ev)
+                    continue
+                kept.add(ev)
             out[r["detector"]][int(r["shift"])][ev] = int(r[column])
+    if counts is not None:
+        counts.update(kept=len(kept), deeper=len(deeper), no_depth=len(nodepth))
     return out
 
 
@@ -275,18 +304,32 @@ def main():
     ap.add_argument("--outcome", choices=("detected", "detected_pre_s"), default="detected",
                     help="the per-event outcome compared: detected, or detected before the "
                          "S wave (held-out protocol, section 7)")
+    ap.add_argument("--max-depth", type=float, metavar="KM",
+                    help="only catalogue events no deeper than KM; events without a depth "
+                         "are left out (held-out protocol, section 7)")
     ap.add_argument("--block-minutes", type=float, default=0,
                     help="bootstrap whole blocks of this many minutes of origin time "
                          "instead of single events (0: events)")
     a = ap.parse_args()
     rng = random.Random(a.seed)
 
-    det = load_outcomes(a.outcomes, a.outcome)
+    counts = {}
+    det = load_outcomes(a.outcomes, a.outcome, a.max_depth, counts)
     margins = {k: float(v) for k, v in (x.split("=", 1) for x in a.equivalence)}
     summary = {}
+    if a.max_depth is not None:
+        print(f"events no deeper than {a.max_depth:g} km: {counts['kept']} kept; left out "
+              f"{counts['deeper']} deeper and {counts['no_depth']} without a depth "
+              "(distinct events over every run)")
+        summary.update({"depth: max km": a.max_depth, "depth: events kept": counts["kept"],
+                        "depth: events deeper": counts["deeper"],
+                        "depth: events without depth": counts["no_depth"]})
     groups = {g.split("=")[0]: set(g.split("=")[1].split(",")) for g in a.groups.split(";")}
     for label, ds in groups.items():
         print(f"\n== {label}")
+        if not any(e[0] in ds for e in det["learned"][0]):
+            print(f"learned: no outcomes for {sorted(ds)}")
+            continue
         for other in a.against.split(","):
             if not any(e[0] in ds for e in det[other][0]):
                 print(f"learned vs {other}: no outcomes for {sorted(ds)}")
