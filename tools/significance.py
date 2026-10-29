@@ -19,6 +19,11 @@ Quiet windows: the exact conditional test of two Poisson counts over the same
 hours, with the exact interval of their ratio, and a bootstrap over windows,
 which keeps the clustering of alarms within a window (one station raises most).
 
+--equivalence OTHER=FRACTION adds, for that comparison, an equivalence test
+by two one-sided tests at 5%: the learned detector and OTHER are shown
+equivalent when the 90% paired bootstrap interval of the difference in
+chance-corrected detections lies within +-FRACTION of the group's events.
+
 --block-minutes resamples blocks of origin time rather than single events,
 which keeps together events whose detectability is shared (noise state, the
 stations up, overlapping codas). --quiet-runs compares every run after the first
@@ -182,6 +187,7 @@ def compare(det, a, b, datasets, rng, block=0):
         "events": n, "a_detected": ka, "b_detected": kb,
         "a_corrected": ca, "b_corrected": cb, "difference": ca - cb,
         "diff_ci": (pct(diffs, 0.025), pct(diffs, 0.975)),
+        "diff_ci90": (pct(diffs, 0.05), pct(diffs, 0.95)),
         "p_boot_le0": sum(d <= 0 for d in diffs) / B,
         "a_only": nb, "b_only": nc, "mcnemar_p": mcnemar(nb, nc),
         "a_cp": clopper_pearson(ka, n), "b_cp": clopper_pearson(kb, n),
@@ -236,6 +242,9 @@ def main():
                     help="NAME=DATASET,...;... replays pooled per comparison")
     ap.add_argument("--seed", type=int, default=20261022)
     ap.add_argument("--json", help="also write the figures here")
+    ap.add_argument("--equivalence", nargs="*", default=[], metavar="OTHER=FRACTION",
+                    help="equivalence margin, as a fraction of the group's events, "
+                         "for the comparison with OTHER")
     ap.add_argument("--block-minutes", type=float, default=0,
                     help="bootstrap whole blocks of this many minutes of origin time "
                          "instead of single events (0: events)")
@@ -243,6 +252,7 @@ def main():
     rng = random.Random(a.seed)
 
     det = load_outcomes(a.outcomes)
+    margins = {k: float(v) for k, v in (x.split("=", 1) for x in a.equivalence)}
     summary = {}
     groups = {g.split("=")[0]: set(g.split("=")[1].split(",")) for g in a.groups.split(";")}
     for label, ds in groups.items():
@@ -268,6 +278,17 @@ def main():
                   f"P(diff <= 0) = {r['p_boot_le0']:.4f})")
             print(f"  discordant          learned only {r['a_only']}, {other} only {r['b_only']}, "
                   f"exact McNemar p = {r['mcnemar_p']:.2g}")
+            if other in margins:
+                m = margins[other] * r["events"]
+                lo, hi = r["diff_ci90"]
+                eq = -m < lo and hi < m
+                summary.update({f"{k} equivalence margin": round(m, 1),
+                                f"{k} difference 90% low": round(lo, 1),
+                                f"{k} difference 90% high": round(hi, 1),
+                                f"{k} equivalent": eq})
+                print(f"  equivalence         margin +-{m:.1f} events ({margins[other]:.0%} of "
+                      f"{r['events']}); 90% interval {lo:+.1f} to {hi:+.1f}: "
+                      + ("equivalent (both one-sided tests p < 0.05)" if eq else "not shown"))
 
     if a.quiet and a.quiet_runs:
         runs = dict(x.split("=", 1) for x in a.quiet_runs)
