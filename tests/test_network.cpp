@@ -866,16 +866,19 @@ bool same_events(const std::vector<Event> &a, const std::vector<Event> &b) {
 // min_stations as recorded, the geometry locator if it holds geometry
 // estimates, every message (stations without coordinates included). Returns
 // the direct run and the replay, with network_subsets' own counts for the
-// full set on the recording and cfg's catalogue.
+// full set on the recording and a catalogue file of cfg's events, or of
+// `file_catalog` (the file ayzek would have read cfg's from). `from` is the
+// run's --from, recorded.
 std::pair<Run, Run>
 record_and_replay(const std::map<std::string, StationInfo> &st,
                   const NetworkConfig &cfg, const std::vector<Message> &msgs,
-                  double t_first, double t_last) {
+                  double t_first, double t_last, double from = 0,
+                  const std::vector<CatalogEvent> *file_catalog = nullptr) {
   const auto path = temp_path("recording.tsv");
   Network direct(st, cfg);
   std::string log;
   {
-    Recorder rec(path, st, t_first, t_last, cfg.min_stations);
+    Recorder rec(path, st, t_first, t_last, cfg.min_stations, from);
     log = printed([&] {
       for (const auto &m : msgs) {
         feed(direct, m);
@@ -885,9 +888,10 @@ record_and_replay(const std::map<std::string, StationInfo> &st,
     });
   }
   const auto rec = Recording::load(path);
-  auto subsets = subsets_full_set(path, cfg.catalog, st.size());
+  auto subsets = subsets_full_set(
+      path, file_catalog ? *file_catalog : cfg.catalog, st.size());
   std::filesystem::remove(path);
-  CHECK(rec.t_first == t_first && rec.t_last == t_last &&
+  CHECK(rec.t_first == t_first && rec.t_last == t_last && rec.from == from &&
         rec.min_stations == cfg.min_stations &&
         rec.stations.size() == st.size());
   for (const auto &[code, s] : st)
@@ -1058,6 +1062,28 @@ void station_without_coordinates() {
                replay.subsets ? "" : " (not run)");
 }
 
+// A run with --from: ayzek takes the catalogue from max(t_first, from) - 30 s
+// (app/ayzek.cpp). The data start at t_first = kT - 60 and --from is kT + 100,
+// so of quake(kT) and quake(kT + 200) in the catalogue file ayzek reads only
+// the second (from kT + 70): NORT and SOUT date P at kT + 207 and raise an
+// alarm that matches it; 1 event scored, 1 declared, none unmatched.
+// network_subsets read the file from t_first - 30 = kT - 90, and also scored
+// quake(kT), missed (2, 1, 0); the recording now holds --from, and it reads
+// from kT + 70 too.
+void recording_with_from() {
+  const std::vector<CatalogEvent> file = {quake(kT), quake(kT + 200)};
+  const std::vector<Message> msgs = {det("NORT", kT + 207, kT + 210),
+                                     det("SOUT", kT + 207, kT + 210.5)};
+  const auto [direct, replay] =
+      record_and_replay(stations(), config({quake(kT + 200)}), msgs, kT - 60,
+                        kT + 300, kT + 100, &file);
+  CHECK((direct.tally == Tally{1, 1, 0}));
+  CHECK(direct.log == replay.log && subsets_agree(direct, replay));
+  std::println("  a run with --from: network_subsets reads the catalogue from "
+               "it, as ayzek{}",
+               replay.subsets ? "" : " (not run)");
+}
+
 } // namespace
 
 int main(int argc, char **argv) {
@@ -1083,6 +1109,7 @@ int main(int argc, char **argv) {
   recording_round_trip_geometry();
   best_fit_beyond_radius();
   station_without_coordinates();
+  recording_with_from();
   std::println("network stage: association, matching and scoring as specified; "
                "{} known issue{} reported above",
                g_known_issues, g_known_issues == 1 ? "" : "s");

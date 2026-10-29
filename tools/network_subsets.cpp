@@ -198,9 +198,10 @@ int main(int argc, char **argv) try {
   clat /= static_cast<double>(rec.stations.size());
   clon /= static_cast<double>(rec.stations.size());
   const double radius_km = base.catalog_radius_km;
+  // The span as ayzek's: from the run's --from, when it had one.
   if (!catalog_path.empty())
     base.catalog =
-        load_afad_catalog(catalog_path, rec.t_first - 30, rec.t_last - 30);
+        load_afad_catalog(catalog_path, rec.catalog_from(), rec.t_last - 30);
   base.catalog_radius_km = 1e9; // scored() applies the radius
   auto in_scope = [&](const CatalogEvent &c) {
     return c.magnitude >= min_mag &&

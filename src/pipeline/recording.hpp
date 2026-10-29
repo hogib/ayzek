@@ -11,7 +11,10 @@
 // Format: tab-separated text, one record per line. Numbers are written in the
 // shortest form that reads back to the same value. Lines starting with '#'
 // are comments, except `# min_stations N`: the stations the run needed to
-// declare an event (absent in older recordings), the default for a replay.
+// declare an event (absent in older recordings), the default for a replay;
+// and `# from T`: the run's --from (0 without it; absent in older
+// recordings), from which ayzek takes the catalogue: from max(t_first, from)
+// less 30 s.
 //   S  code  lat  lon
 //   T  t_first  t_last
 //   D  station  window_start  declared_at  probability  compute_ms  [restart
@@ -32,6 +35,7 @@
 #include "common.hpp"
 #include "network.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <map>
 #include <string>
@@ -43,7 +47,7 @@ class Recorder {
 public:
   Recorder(const std::string &path,
            const std::map<std::string, StationInfo> &stations, double t_first,
-           double t_last, std::size_t min_stations);
+           double t_last, std::size_t min_stations, double from = 0);
   void write(const Message &m);
 
 private:
@@ -54,6 +58,11 @@ struct Recording {
   std::map<std::string, StationInfo> stations;
   double t_first = 0, t_last = 0;
   std::size_t min_stations = 0; // 0: not recorded
+  double from = 0;              // the run's --from; 0: none, or not recorded
+  // The start of the catalogue span ayzek used: max(t_first, from) - 30 s.
+  [[nodiscard]] double catalog_from() const {
+    return std::max(t_first, from) - 30;
+  }
   std::vector<Message> messages; // Detection, Pick, StationGeometry,
                                  // PdEstimate
 

@@ -9,12 +9,13 @@ namespace ayzek::pipeline {
 Recorder::Recorder(const std::string &path,
                    const std::map<std::string, StationInfo> &stations,
                    double t_first, double t_last,
-                   std::size_t min_stations)
+                   std::size_t min_stations, double from)
     : out_(path) {
   if (!out_)
     throw std::runtime_error("cannot write " + path);
   out_ << "# ayzek recording v1\n";
   out_ << std::format("# min_stations {}\n", min_stations);
+  out_ << std::format("# from {}\n", from);
   for (const auto &[code, s] : stations)
     out_ << std::format("S\t{}\t{}\t{}\n", code, s.lat, s.lon);
   out_ << std::format("T\t{}\t{}\n", t_first, t_last);
@@ -54,6 +55,10 @@ Recording Recording::load(const std::string &path) {
     ++lineno;
     if (line.starts_with("# min_stations ")) {
       r.min_stations = std::stoul(line.substr(15));
+      continue;
+    }
+    if (line.starts_with("# from ")) {
+      r.from = std::stod(line.substr(7));
       continue;
     }
     if (line.empty() || line[0] == '#')
