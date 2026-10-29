@@ -15,6 +15,7 @@ Datasets (data/, not tracked; a missing one is skipped and says so):
   demo        Sindirgi 2025-11-10, 30 min, DEMI MANT BAND     tuning (AFAD)
   marmara     Marmara Sea 2025-04-23, 3 h, 8 stations         tuning (AFAD)
   sindirgi61  Sindirgi 2025-08-10, 3 h, 6 stations            held out (AFAD)
+  simav26     Simav Mw 4.8 2026-04-11, 3 h, 6 stations        development (AFAD)
   noise_*     four catalogue-quiet windows, 33 h in total     false alarms (AFAD)
   demo_ko     the same Mw 4.9 on six KO stations              public
   marmara_ko  the Mw 6.2 and the hour after it, eight KO      public
@@ -51,6 +52,7 @@ DATASETS = {
              "demo", None, None, "tuning"),
     "marmara": (["data/marmara/*.mseed"], "marmara", None, None, "tuning"),
     "sindirgi61": (["data/sindirgi61/*.mseed"], "sindirgi61", None, None, "held out"),
+    "simav26": (["data/simav26/*.mseed"], "simav26", None, None, "development"),
     "noise_a1": (["data/noise_a1/*.mseed"], "noise_a1",
                  "2024-06-05T01:20:00", "2024-06-05T07:16:00", "noise"),
     "noise_a2": (["data/noise_a2/*.mseed"], "noise_a2",
