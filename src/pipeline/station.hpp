@@ -42,6 +42,7 @@ struct Station {
   std::array<ComponentStream, 3> comp;
   std::atomic<bool> ingest_done{false};
   std::atomic<std::uint64_t> records{0};
+  std::atomic<std::uint64_t> undecodable{0}; // records whose data did not decode
 };
 
 } // namespace ayzek::pipeline
