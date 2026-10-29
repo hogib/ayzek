@@ -1,8 +1,11 @@
 # Unit tests.
 foreach t : ['test_ring', 'test_steim', 'test_mseed_fuzz', 'test_reorder', 'test_writer', 'test_locate', 'test_trigger', 'test_assess', 'test_network', 'test_seedlink']
   exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
-  # test_network checks tools/network_subsets against the network stage.
-  test(t, exe, args: t == 'test_network' ? [network_subsets_exe] : [])
+  # test_network checks tools/network_subsets against the network stage. It
+  # runs it as a child process, which a cross build's exe_wrapper does not
+  # reach (qemu-aarch64 without binfmt): there those checks are skipped.
+  test(t, exe, args: t == 'test_network' and not meson.is_cross_build()
+                     ? [network_subsets_exe] : [])
 endforeach
 
 # Decoding of every supported encoding against ObsPy's reading of the same
