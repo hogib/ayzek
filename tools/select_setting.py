@@ -4,7 +4,8 @@
         --datasets demo,marmara --unmatched 26 --corrected 48.7
 
 Settings are the trigger options (--threshold, --trigger-windows,
---instant-threshold) or FilterPicker's (--fp-windows, --fp-thresholds).
+--instant-threshold), FilterPicker's (--fp-windows, --fp-thresholds) or
+STA/LTA's (--stalta-band, --sta, --lta, --stalta-on, --stalta-3c).
 Each directory holds one tools/sweep_trigger.py table per tuning replay
 (sweep_DATASET.csv), for one detector or one set of weights. Settings are summed
 over the replays, as §4.2 of the paper does, and the rules applied over every
@@ -23,15 +24,18 @@ import csv
 import glob
 from pathlib import Path
 
-KEYS = ("threshold", "trigger-windows", "instant-threshold", "fp-windows", "fp-thresholds")
+KEYS = ("threshold", "trigger-windows", "instant-threshold", "fp-windows", "fp-thresholds",
+        "stalta-band", "sta", "lta", "stalta-on", "stalta-3c")
 
 
 def threshold(setting):
-    """The tie-break of the first rule: the trigger threshold, or FilterPicker's
-    (threshold1, threshold2)."""
+    """The tie-break of the first rule: the trigger threshold, FilterPicker's
+    (threshold1, threshold2), or STA/LTA's trigger ratio."""
     s = dict(setting)
     if "fp-thresholds" in s:
         return tuple(float(x) for x in s["fp-thresholds"].split(","))
+    if "stalta-on" in s:
+        return (float(s["stalta-on"]),)
     return (float(s["threshold"]),)
 
 
