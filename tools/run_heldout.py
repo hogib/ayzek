@@ -208,7 +208,10 @@ class Runner:
         if quiet_from:
             cmd += ["--from", quiet_from]
         p = self.run([*cmd, *self.files(s)], check=False)
-        if p.returncode or "AFAD events within" not in p.stdout:
+        # A quiet window's in-span catalogue may be empty, and ayzek then prints
+        # no catalogue section; "Alarms raised" is in every report.
+        mark = "Alarms raised" if quiet_from else "AFAD events within"
+        if p.returncode or mark not in p.stdout:
             sys.exit(f"{label} {s}: ayzek exited {p.returncode} without a report\n{p.stderr[-1500:]}")
         rep.write_text(p.stdout)
         print(f"[runs] {label} {s}")
