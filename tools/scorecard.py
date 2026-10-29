@@ -73,13 +73,13 @@ DATASETS = {
 # One matched alarm's report block: ayzek's Pd magnitude, first and final
 # (groups 4 and 5, absent for an event without one), and the AFAD comparison.
 EVENT = re.compile(
-    r"^Event #\d+: detected (?:M([\d.]+) earthquake|earthquake \(no magnitude\)).*\n"
+    r"^Event #\d+: detected (?:M(-?[\d.]+) earthquake|earthquake \(no magnitude\)).*\n"
     r"  alarm\s+(\S+) UTC by (.*)\n"
-    r"(?:  Pd magn\.\s+M([\d.]+) (?:at the alarm|[\d.]+ s after the alarm), M([\d.]+) .*\n)?"
+    r"(?:  Pd magn\.\s+M(-?[\d.]+) (?:at the alarm|[\d.]+ s after the alarm), M(-?[\d.]+) .*\n)?"
     r"(?:  location .*\n)?"
     r"(?:  distance .*\n)?"
     r"(?:  P loc\. .*\n)?"
-    r"  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm ([-\d.]+) s after origin"
+    r"  AFAD\s+(\w+) (-?[\d.]+) at (\S+) UTC: alarm ([-\d.]+) s after origin"
     r"(?:, Pd magnitude ([+-][\d.]+))?(?:, epicentre ([\d.]+) km off)?", re.M)
 
 

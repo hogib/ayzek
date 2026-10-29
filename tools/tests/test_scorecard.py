@@ -109,6 +109,28 @@ def test_score_dataset_frozen_and_stalta():
     assert s["events"][2]["Pd_error"] == -0.3 and s["events"][2]["epicentre_km"] == 4.3
 
 
+NEGATIVE_BLOCK = """\
+Event #1: detected M-0.2 earthquake at 39.000N 28.000E, origin 10:01:00.00 UTC
+  alarm      10:00:58.50 UTC by PA, PB
+  Pd magn.   M-0.3 at the alarm, M-0.2 ± 0.1 (M<4 100%, 4-5.5 0%, M>=5.5 0%) final from 2 stations (2 above noise)
+  AFAD       ML -0.3 at 10:01:00.00 UTC: alarm -1.5 s after origin, Pd magnitude +0.1, epicentre 1.0 km off, origin +0.5 s
+  pre-S      2 of 2 alarm detections declared before the predicted S
+"""
+
+
+def test_event_regex_negative_magnitudes():
+    # Magnitudes printed with {:.1f} (src/pipeline/network.cpp:1090, 1134):
+    # a GeoNet ML -0.3 and a Pd magnitude below zero keep their sign.
+    m = sc.EVENT.search(NEGATIVE_BLOCK)
+    assert m is not None
+    assert groups(m) == ("ML", "-0.3", "10:01:00.00", "-1.5", "+0.1", "1.0", "PA, PB", "-0.3", "-0.2")
+    assert m.group(1) == "-0.2"
+    s = sc.score_dataset("demo_ko", NEGATIVE_BLOCK + "  AFAD events within 250 km                1\n")
+    assert s["events"] == [{"afad_type": "ML", "afad_M": -0.3, "origin": "10:01:00.00", "alarm_delay_s": -1.5,
+                            "epicentre_km": 1.0, "stations": "PA, PB", "Pd_alarm": -0.3, "Pd_final": -0.2,
+                            "Pd_error": 0.1}]
+
+
 def test_score_dataset_noise_rate():
     # noise_a1 is scored from 01:20 to 07:16: 5 h 56 min = 5.9333 h;
     # 3 unmatched alarms -> 24 * 3 / 5.9333 = 12.135 per day.

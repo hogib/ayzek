@@ -164,12 +164,9 @@ def test_count_mismatch_or_no_summary_stops(out):
         eo.outcomes(out, 0)
 
 
-@pytest.mark.xfail(strict=True, raises=SystemExit, reason=(
-    "DETECTED and MISSED (event_outcomes.py:44-46) take the magnitude as [\\d.]+, so "
-    "an event of negative magnitude (ML -0.3, possible in GeoNet's catalogue) is not "
-    "parsed and the report stops with a count mismatch. Latent: the tuning "
-    "catalogues' smallest magnitude is 0.63."))
 def test_negative_magnitude():
+    # GeoNet's catalogue has ML < 0; ayzek prints it with {:.1f} ("ML -0.3",
+    # src/pipeline/network.cpp:1134, 1364) in the AFAD and missed lines.
     out = (block(1, "10:00:05.00", "ML", "-0.3", "09:59:56.00", (2, 2))
            + summary(2, [("10:30:00.00", "ML", "-0.5")]))
     assert eo.outcomes(out, 0) == {("09:59:56.00", "ML", "-0.3"): (1, 1),

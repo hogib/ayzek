@@ -94,6 +94,34 @@ def test_largest_event_its_own_alarm_line():
     assert (row["main_M"], row["main_alarm_s"], row["main_stations"]) == (4.5, "12.5", "PA PB + PC")
 
 
+NEGATIVE = """\
+Event #1: detected M-0.2 earthquake at 39.000N 28.000E, origin 10:01:00.00 UTC
+  alarm      10:00:58.50 UTC by PA, PB
+  AFAD       ML -0.3 at 10:01:00.00 UTC: alarm -1.5 s after origin, Pd magnitude +0.1
+  pre-S      2 of 2 alarm detections declared before the predicted S
+
+Event #2: detected earthquake (no magnitude), not located
+  alarm      10:05:20.00 UTC by QA, QB
+  AFAD       ML -0.1 at 10:05:00.00 UTC: alarm 20.0 s after origin
+  pre-S      1 of 2 alarm detections declared before the predicted S
+
+SUMMARY
+  AFAD events within 250 km                2
+    alarm after origin time             median -1.5 s
+"""
+
+
+def test_negative_magnitude_and_alarm_delay():
+    # ayzek prints the catalogue magnitude and the alarm delay with {:.1f}
+    # (src/pipeline/network.cpp:1134): GeoNet's ML < 0 and an alarm declared
+    # before a catalogue origin that is late both carry a minus sign. The
+    # largest event is ML -0.1 (> -0.3), with its own delay 20.0; the median
+    # delay is -1.5 as printed.
+    row = st.parse_report(NEGATIVE)
+    assert (row["main_M"], row["main_alarm_s"], row["main_stations"]) == (-0.1, "20.0", "QA QB")
+    assert row["alarm_delay_s"] == "-1.5"
+
+
 def test_empty_report():
     row = st.parse_report("")
     assert all(row[k] == "" for k in FIELDS_EMPTY + st.BANDS + ["main_M", "main_alarm_s",

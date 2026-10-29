@@ -267,3 +267,53 @@ def test_magnitude_and_latency_from_the_fixture(tmp_path):
         ["learned", "<=40km", "MW", "4-5.5", "2", "2", "-0.20", "0.20", "-0.10", "0.10", "2/2", "2/2"],
         ["old", "<=40km", "ML", "-10-4", "14", "0", "-", "-", "-", "-", "-", "-"],
         ["old", "<=40km", "MW", "4-5.5", "2", "2", "-0.20", "0.20", "-0.10", "0.10", "2/2", "2/2"]]
+
+
+NEGATIVE_REPORT = """\
+ayzek 0.0 replaying 2 files
+
+Event #1: detected M-0.2 earthquake at 39.000N 28.000E, origin 10:01:00.00 UTC
+  alarm      10:00:58.50 UTC by PA, PB
+  Pd magn.   M-0.3 at the alarm, M-0.2 ± 0.1 (M<4 100%, 4-5.5 0%, M>=5.5 0%) final from 2 stations (2 above noise)
+  AFAD       ML -0.3 at 10:01:00.00 UTC: alarm -1.5 s after origin, Pd magnitude +0.1, epicentre 1.0 km off, origin +0.5 s
+  pre-S      2 of 2 alarm detections declared before the predicted S
+  warning               distance   S wave arrives            warning
+             PC            40 km   10:01:12.00 UTC (predicted)   +13.5 s  before S
+
+SUMMARY
+  AFAD events within 250 km                1
+"""
+
+
+def test_event_regex_negative_magnitudes():
+    # Magnitudes printed with {:.1f} (src/pipeline/network.cpp:1090, 1134):
+    # GeoNet's ML < 0 and a Pd magnitude below zero keep their sign.
+    m = rh.EVENT.search(NEGATIVE_REPORT)
+    assert m is not None
+    assert m.groups() == ("-0.2", "10:00:58.50", "PA, PB", "-0.3", None, "-0.2", "ML", "-0.3", "10:01:00.00",
+                          "-1.5", ", Pd magnitude +0.1, epicentre 1.0 km off, origin +0.5 s", "2", "2")
+
+
+def test_magnitude_and_latency_negative_magnitude_and_depth(tmp_path):
+    # The table and the warning leads carry the signed magnitude; the depth
+    # comes from the catalogue, here -1.2 km (above sea level, as GeoNet
+    # reports some).
+    r = make_runner(tmp_path, settings={"learned": SETTINGS["learned"]})
+    for s in r.sequences:
+        d = tmp_path / "out/runs/learned"
+        d.mkdir(parents=True, exist_ok=True)
+        (d / f"{s}.txt").write_text(NEGATIVE_REPORT)
+        (tmp_path / "data" / s / "catalog.csv").write_text(
+            "Date,Longitude,Latitude,Depth,Rms,Type,Magnitude,Location,EventID\n"
+            "01/08/2026 10:01:00,28.0,39.0,-1.2,0.3,ML,-0.3,x,1\n")
+    an = tmp_path / "out/analysis"
+    an.mkdir()
+    r.magnitude_and_latency(an)
+    rows = list(csv.DictReader(open(an / "magnitude_latency.csv")))
+    assert [(x["magnitude"], x["depth_km"], x["pd_first"], x["pd_final"], x["alarm_delay_s"]) for x in rows] == [
+        ("-0.3", "-1.2", "-0.3", "-0.2", "-1.5")] * 2
+    leads = list(csv.DictReader(open(an / "warning_leads.csv")))
+    assert [(x["magnitude"], x["station"], x["lead_s"]) for x in leads] == [("-0.3", "PC", "+13.5")] * 2
+    # Pd errors: first -0.3 - (-0.3) = 0.00, final -0.2 - (-0.3) = +0.10.
+    line = (an / "magnitude_summary.txt").read_text().splitlines()[1].split()
+    assert line == ["learned", "<=40km", "ML", "-10-4", "2", "2", "+0.00", "0.00", "+0.10", "0.10", "2/2", "2/2"]

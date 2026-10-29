@@ -43,9 +43,9 @@ DETECTORS = {
 }
 # Detected: the AFAD line of an event block, with the pre-S line after it
 # (absent in reports of older builds). Missed: the list after the counts.
-DETECTED = re.compile(r"^  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm[^\n]*\n"
+DETECTED = re.compile(r"^  AFAD\s+(\w+) (-?[\d.]+) at (\S+) UTC: alarm[^\n]*\n"
                       r"(?:  pre-S\s+(\d+) of (\d+) alarm detections)?", re.M)
-MISSED = re.compile(r"^    (\d\d:\d\d:\d\d\.\d\d) UTC  (\w+) ([\d.]+) ", re.M)
+MISSED = re.compile(r"^    (\d\d:\d\d:\d\d\.\d\d) UTC  (\w+) (-?[\d.]+) ", re.M)
 CATALOGUE = re.compile(r"AFAD events within \d+ km\s+(\d+)")
 
 
