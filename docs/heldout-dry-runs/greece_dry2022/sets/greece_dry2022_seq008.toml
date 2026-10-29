@@ -1,0 +1,14 @@
+# heldout select greece dry2022: sequence 8 of 17, first event 2022-06-19T23:24:35 MLh 4.826620625 (noa2022lyqcf)
+name = "greece_dry2022_seq008"
+network = ["HL", "HT", "HA", "HP", "HC"]
+start = "2022-06-19T23:14:35.505514"
+end = "2022-06-20T02:14:35.505514"
+centre = [35.32745, 27.15729]
+radius_km = 150.0
+max_stations = 6
+min_coverage = 0.0
+stations = ["HL.ZKR", "HC.STIA", "HL.ARG", "HL.NISR2", "HL.NPS", "HL.NISR"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

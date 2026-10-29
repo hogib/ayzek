@@ -1,0 +1,5 @@
+[select] no sequence qualified
+[select] 85 usable of 155 KO stations within 1100 km, 2026-07-01 to 2026-08-30 (fdsnws/availability)
+[select] 5578 catalogue events (2 requests; canary 69)
+[select] 1 qualifying sequences, 0 now; 0 selected, 0 scorable events (under the target 240)
+[select] 0 sequence sets and 0 quiet sets -> selections/ko_dry2026/sets

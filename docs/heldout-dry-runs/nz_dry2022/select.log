@@ -1,0 +1,8 @@
+  event service broke off 2022-01-08 00:00 to 2022-01-15 00:00; halving
+  event service broke off 2022-01-15 00:00 to 2022-01-22 00:00; halving
+[select] 50 usable of 78 NZ stations within 1000 km, 2022-01-01 to 2023-01-01 (day files in the open-data bucket (upper bound))
+[select] 19625 catalogue events (55 requests; canary 51)
+[select] 23 qualifying sequences, 12 now; 12 selected, 63 scorable events (under the target 150)
+[select] 24 quiet windows after 453 draws
+[select] 12 sequence sets and 24 quiet sets -> selections/nz_dry2022/sets
+nz exit 0

@@ -1,0 +1,14 @@
+# heldout select nz dry2022: quiet window 6 of 24 (draw 71), on the stations of sequence 4
+name = "nz_dry2022_quiet06"
+network = "NZ"
+start = "2022-06-09T22:37:00"
+end = "2022-06-10T04:37:00"
+centre = [-44.63803, 169.04442]
+radius_km = 104.7
+max_stations = 5
+min_coverage = 0.0
+stations = ["NZ.JCZ", "NZ.WKZ", "NZ.MSZ", "NZ.LBZ", "NZ.EAZ"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

@@ -1,0 +1,14 @@
+# heldout select nz dry2022: sequence 9 of 23, first event 2022-04-01T10:36:46 MLv 4.844404061 (2022p244438)
+name = "nz_dry2022_seq009"
+network = "NZ"
+start = "2022-04-01T10:26:46.316233"
+end = "2022-04-01T13:26:46.316233"
+centre = [-42.97712, 171.75967]
+radius_km = 150.0
+max_stations = 7
+min_coverage = 0.0
+stations = ["NZ.INZ", "NZ.OXZ", "NZ.LTZ", "NZ.RPZ", "NZ.MQZ", "NZ.WHSZ", "NZ.DSZ"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

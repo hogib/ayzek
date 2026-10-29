@@ -1,0 +1,6 @@
+[select] 100 usable of 166 HL/HT/HA/HP/HC stations within 650 km, 2022-01-01 to 2023-01-01 (fdsnws/availability)
+[select] 20674 catalogue events (53 requests; canary 14)
+[select] 17 qualifying sequences, 10 now; 10 selected, 161 scorable events (target 150 reached)
+[select] 24 quiet windows after 452 draws
+[select] 10 sequence sets and 24 quiet sets -> selections/greece_dry2022/sets
+greece exit 0

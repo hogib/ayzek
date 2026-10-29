@@ -1,0 +1,2648 @@
+{
+ "group": "greece",
+ "name": "dry2022",
+ "networks": [
+  "HL",
+  "HT",
+  "HA",
+  "HP",
+  "HC"
+ ],
+ "prospective": false,
+ "period": [
+  "2022-01-01T00:00:00",
+  "2023-01-01T00:00:00"
+ ],
+ "target": 150,
+ "rules": {
+  "min_magnitude": 4.5,
+  "min_stations": 5,
+  "station_radius_km": 150.0,
+  "stations": 8,
+  "lead_s": 600.0,
+  "span_s": 10800.0,
+  "gap_s": 10800.0,
+  "score_radius_km": 250.0,
+  "reserve_seed": 42,
+  "quiet_seed": 43,
+  "quiet_windows": 24,
+  "quiet_hours": 6.0,
+  "quiet_margin_s": 1800.0,
+  "quiet_min_coverage": 0.9,
+  "quiet_max_draws": 10000,
+  "relaxed": [
+   2.0,
+   100.0
+  ]
+ },
+ "stations": {
+  "basis": "fdsnws/availability",
+  "usable": [
+   {
+    "network": "HL",
+    "station": "THI1",
+    "lat": 38.38777,
+    "lon": 23.39447,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9964
+   },
+   {
+    "network": "HL",
+    "station": "THVA",
+    "lat": 38.329826,
+    "lon": 23.336006,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9469
+   },
+   {
+    "network": "HL",
+    "station": "THI2",
+    "lat": 38.3727,
+    "lon": 23.21098,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9637
+   },
+   {
+    "network": "HA",
+    "station": "AMPE",
+    "lat": 38.301522,
+    "lon": 23.268776,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9989
+   },
+   {
+    "network": "HA",
+    "station": "STFN",
+    "lat": 38.176616,
+    "lon": 23.544045,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9831
+   },
+   {
+    "network": "HL",
+    "station": "LKR",
+    "lat": 38.64957,
+    "lon": 22.998812,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9913
+   },
+   {
+    "network": "HA",
+    "station": "ATAL",
+    "lat": 38.6926,
+    "lon": 23.0213,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 1.0
+   },
+   {
+    "network": "HA",
+    "station": "MDRA",
+    "lat": 38.0606,
+    "lon": 23.4662,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 1.0
+   },
+   {
+    "network": "HA",
+    "station": "MRTH",
+    "lat": 38.12253,
+    "lon": 23.94087,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9886
+   },
+   {
+    "network": "HL",
+    "station": "PTL",
+    "lat": 38.04945,
+    "lon": 23.864591,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9916
+   },
+   {
+    "network": "HL",
+    "station": "ATH",
+    "lat": 37.97384,
+    "lon": 23.71767,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 1.0
+   },
+   {
+    "network": "HP",
+    "station": "LTK",
+    "lat": 38.0228,
+    "lon": 22.9673,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9863
+   },
+   {
+    "network": "HA",
+    "station": "LOUT",
+    "lat": 37.9879,
+    "lon": 22.9743,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9629
+   },
+   {
+    "network": "HT",
+    "station": "AOS2",
+    "lat": 39.1478,
+    "lon": 23.8436,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9835
+   },
+   {
+    "network": "HA",
+    "station": "THAL",
+    "lat": 38.0357,
+    "lon": 22.6634,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9999
+   },
+   {
+    "network": "HL",
+    "station": "NEO",
+    "lat": 39.30567,
+    "lon": 23.22189,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.997
+   },
+   {
+    "network": "HA",
+    "station": "KARY",
+    "lat": 38.0321,
+    "lon": 24.437,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9998
+   },
+   {
+    "network": "HA",
+    "station": "EPID",
+    "lat": 37.6144,
+    "lon": 23.1189,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 1.0
+   },
+   {
+    "network": "HA",
+    "station": "KALE",
+    "lat": 38.3911,
+    "lon": 22.1398,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9451
+   },
+   {
+    "network": "HP",
+    "station": "SERG",
+    "lat": 38.4133,
+    "lon": 22.0566,
+    "location": "00",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9991
+   },
+   {
+    "network": "HT",
+    "station": "KRND",
+    "lat": 37.383,
+    "lon": 23.1502,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9043
+   },
+   {
+    "network": "HL",
+    "station": "KLV",
+    "lat": 38.0435,
+    "lon": 22.1504,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9684
+   },
+   {
+    "network": "HP",
+    "station": "EFP",
+    "lat": 38.4269,
+    "lon": 21.9058,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9952
+   },
+   {
+    "network": "HP",
+    "station": "VVK",
+    "lat": 38.4222,
+    "lon": 21.8116,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9808
+   },
+   {
+    "network": "HP",
+    "station": "UPR",
+    "lat": 38.2836,
+    "lon": 21.7864,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9834
+   },
+   {
+    "network": "HL",
+    "station": "EVR",
+    "lat": 38.91657,
+    "lon": 21.8105,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9949
+   },
+   {
+    "network": "HP",
+    "station": "VLX",
+    "lat": 37.3703,
+    "lon": 22.3793,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9917
+   },
+   {
+    "network": "HT",
+    "station": "PAIG",
+    "lat": 39.9363,
+    "lon": 23.6768,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9976
+   },
+   {
+    "network": "HC",
+    "station": "THNO",
+    "lat": 37.6541,
+    "lon": 25.0221,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9825
+   },
+   {
+    "network": "HP",
+    "station": "DRO",
+    "lat": 37.952,
+    "lon": 21.71,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9871
+   },
+   {
+    "network": "HA",
+    "station": "SERI",
+    "lat": 37.1609,
+    "lon": 24.4853,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 1.0
+   },
+   {
+    "network": "HP",
+    "station": "PVO",
+    "lat": 38.616,
+    "lon": 21.525,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9972
+   },
+   {
+    "network": "HL",
+    "station": "THL",
+    "lat": 39.56468,
+    "lon": 22.0144,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9736
+   },
+   {
+    "network": "HP",
+    "station": "PLEV",
+    "lat": 38.4124,
+    "lon": 21.4073,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9112
+   },
+   {
+    "network": "HL",
+    "station": "RLS",
+    "lat": 38.05586,
+    "lon": 21.46475,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9811
+   },
+   {
+    "network": "HP",
+    "station": "AXS",
+    "lat": 38.1962,
+    "lon": 21.3763,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9913
+   },
+   {
+    "network": "HP",
+    "station": "AMT",
+    "lat": 37.5324,
+    "lon": 21.7089,
+    "location": "00",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9938
+   },
+   {
+    "network": "HT",
+    "station": "LIT",
+    "lat": 40.10031,
+    "lon": 22.48938,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9794
+   },
+   {
+    "network": "HL",
+    "station": "ITM",
+    "lat": 37.17872,
+    "lon": 21.92522,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9566
+   },
+   {
+    "network": "HP",
+    "station": "PDO",
+    "lat": 38.5986,
+    "lon": 21.1833,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9963
+   },
+   {
+    "network": "HP",
+    "station": "AMPL",
+    "lat": 38.9224,
+    "lon": 21.2135,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9983
+   },
+   {
+    "network": "HL",
+    "station": "VLI",
+    "lat": 36.71803,
+    "lon": 22.94686,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9946
+   },
+   {
+    "network": "HL",
+    "station": "PLG",
+    "lat": 40.37328,
+    "lon": 23.44443,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 1.0
+   },
+   {
+    "network": "HL",
+    "station": "LIA",
+    "lat": 39.89725,
+    "lon": 25.18055,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9872
+   },
+   {
+    "network": "HL",
+    "station": "TETR",
+    "lat": 39.3445,
+    "lon": 21.274667,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9897
+   },
+   {
+    "network": "HL",
+    "station": "MHLO",
+    "lat": 36.68984,
+    "lon": 24.40171,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 1.0
+   },
+   {
+    "network": "HT",
+    "station": "SIGR",
+    "lat": 39.2114,
+    "lon": 25.8553,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9943
+   },
+   {
+    "network": "HP",
+    "station": "PYL",
+    "lat": 36.8955,
+    "lon": 21.742,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9387
+   },
+   {
+    "network": "HP",
+    "station": "PRMD",
+    "lat": 39.5299,
+    "lon": 21.0965,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9856
+   },
+   {
+    "network": "HL",
+    "station": "APE",
+    "lat": 37.07274,
+    "lon": 25.52301,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9663
+   },
+   {
+    "network": "HT",
+    "station": "THE",
+    "lat": 40.6319,
+    "lon": 22.9628,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9902
+   },
+   {
+    "network": "HT",
+    "station": "RTZL",
+    "lat": 38.076,
+    "lon": 20.7715,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9714
+   },
+   {
+    "network": "HT",
+    "station": "NYDR",
+    "lat": 38.7135,
+    "lon": 20.6983,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9711
+   },
+   {
+    "network": "HT",
+    "station": "EVGI",
+    "lat": 38.621,
+    "lon": 20.656,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9864
+   },
+   {
+    "network": "HT",
+    "station": "LKD2",
+    "lat": 38.78893,
+    "lon": 20.65779,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.962
+   },
+   {
+    "network": "HL",
+    "station": "KZN",
+    "lat": 40.30331,
+    "lon": 21.78209,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9617
+   },
+   {
+    "network": "HP",
+    "station": "LTHK",
+    "lat": 37.7095,
+    "lon": 20.8367,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9908
+   },
+   {
+    "network": "HT",
+    "station": "TSLK",
+    "lat": 38.8249,
+    "lon": 20.6554,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.942
+   },
+   {
+    "network": "HL",
+    "station": "PRK",
+    "lat": 39.24565,
+    "lon": 26.26499,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 1.0
+   },
+   {
+    "network": "HC",
+    "station": "KTHR",
+    "lat": 36.2447,
+    "lon": 22.9939,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9994
+   },
+   {
+    "network": "HP",
+    "station": "FSK",
+    "lat": 38.4593,
+    "lon": 20.5623,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9557
+   },
+   {
+    "network": "HL",
+    "station": "VLS",
+    "lat": 38.17683,
+    "lon": 20.5886,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9498
+   },
+   {
+    "network": "HT",
+    "station": "THAS",
+    "lat": 40.6064,
+    "lon": 24.7194,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9981
+   },
+   {
+    "network": "HT",
+    "station": "PSDA",
+    "lat": 38.114,
+    "lon": 20.5841,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.966
+   },
+   {
+    "network": "HT",
+    "station": "SOH",
+    "lat": 40.82061,
+    "lon": 23.35568,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9855
+   },
+   {
+    "network": "HL",
+    "station": "JAN",
+    "lat": 39.65616,
+    "lon": 20.84874,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9832
+   },
+   {
+    "network": "HT",
+    "station": "DMLN",
+    "lat": 38.2385,
+    "lon": 20.3734,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9382
+   },
+   {
+    "network": "HL",
+    "station": "PENT",
+    "lat": 40.196088,
+    "lon": 21.138042,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9862
+   },
+   {
+    "network": "HL",
+    "station": "SMTH",
+    "lat": 40.47094,
+    "lon": 25.53045,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9998
+   },
+   {
+    "network": "HA",
+    "station": "SNT5",
+    "lat": 36.4037,
+    "lon": 25.3953,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "HT",
+    "station": "GRG",
+    "lat": 40.9557,
+    "lon": 22.4029,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9435
+   },
+   {
+    "network": "HL",
+    "station": "ANKY",
+    "lat": 35.86704,
+    "lon": 23.30117,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9119
+   },
+   {
+    "network": "HL",
+    "station": "THERA",
+    "lat": 36.366992,
+    "lon": 25.475263,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9998
+   },
+   {
+    "network": "HT",
+    "station": "IGT",
+    "lat": 39.53145,
+    "lon": 20.32996,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9419
+   },
+   {
+    "network": "HT",
+    "station": "NEST",
+    "lat": 40.4147,
+    "lon": 21.0489,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9719
+   },
+   {
+    "network": "HT",
+    "station": "KNT",
+    "lat": 41.167,
+    "lon": 22.9005,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9941
+   },
+   {
+    "network": "HL",
+    "station": "SMG",
+    "lat": 37.70425,
+    "lon": 26.83772,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9621
+   },
+   {
+    "network": "HL",
+    "station": "NVR",
+    "lat": 41.34846,
+    "lon": 23.86517,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9992
+   },
+   {
+    "network": "HC",
+    "station": "RODP",
+    "lat": 35.5604,
+    "lon": 23.7577,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9998
+   },
+   {
+    "network": "HL",
+    "station": "PRAS",
+    "lat": 41.35245,
+    "lon": 24.550021,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9474
+   },
+   {
+    "network": "HC",
+    "station": "CHAN",
+    "lat": 35.5193,
+    "lon": 24.0428,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9992
+   },
+   {
+    "network": "HL",
+    "station": "IMMV",
+    "lat": 35.4606,
+    "lon": 23.9811,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9452
+   },
+   {
+    "network": "HL",
+    "station": "RDO",
+    "lat": 41.14503,
+    "lon": 25.53553,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9999
+   },
+   {
+    "network": "HL",
+    "station": "KEK",
+    "lat": 39.7127,
+    "lon": 19.79623,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9988
+   },
+   {
+    "network": "HC",
+    "station": "IPPL",
+    "lat": 35.3486,
+    "lon": 24.4632,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9971
+   },
+   {
+    "network": "HC",
+    "station": "KNDR",
+    "lat": 35.2348,
+    "lon": 23.6248,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9997
+   },
+   {
+    "network": "HL",
+    "station": "IACM",
+    "lat": 35.3058,
+    "lon": 25.0709,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9811
+   },
+   {
+    "network": "HL",
+    "station": "NISR",
+    "lat": 36.6106,
+    "lon": 27.1309,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9522
+   },
+   {
+    "network": "HC",
+    "station": "KNSS",
+    "lat": 35.304187,
+    "lon": 25.18017,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.998
+   },
+   {
+    "network": "HL",
+    "station": "NISR2",
+    "lat": 36.57441,
+    "lon": 27.17666,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.985
+   },
+   {
+    "network": "HL",
+    "station": "KSTE",
+    "lat": 35.1801,
+    "lon": 25.3372,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9743
+   },
+   {
+    "network": "HL",
+    "station": "SIVA",
+    "lat": 35.01777,
+    "lon": 24.81204,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9997
+   },
+   {
+    "network": "HL",
+    "station": "NPS",
+    "lat": 35.26134,
+    "lon": 25.61037,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9999
+   },
+   {
+    "network": "HC",
+    "station": "IMOD",
+    "lat": 34.9731,
+    "lon": 24.7995,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9669
+   },
+   {
+    "network": "HC",
+    "station": "GVDS",
+    "lat": 34.8389,
+    "lon": 24.0585,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9997
+   },
+   {
+    "network": "HL",
+    "station": "GVD",
+    "lat": 34.83914,
+    "lon": 24.08738,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9907
+   },
+   {
+    "network": "HC",
+    "station": "PFKS",
+    "lat": 35.0429,
+    "lon": 25.4733,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9996
+   },
+   {
+    "network": "HC",
+    "station": "STIA",
+    "lat": 35.2021,
+    "lon": 26.0909,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9968
+   },
+   {
+    "network": "HL",
+    "station": "ZKR",
+    "lat": 35.1147,
+    "lon": 26.21691,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9973
+   },
+   {
+    "network": "HL",
+    "station": "ARG",
+    "lat": 36.21356,
+    "lon": 28.12122,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9905
+   }
+  ],
+  "rejected": [
+   {
+    "network": "HA",
+    "station": "MRKA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "THIV",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ERTR",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "VILL",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "DOMV",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "DION",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ATHU",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "ACHL",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "VLY",
+    "reason": "coverage 0.806 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "AXAR",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "AIGN",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HP",
+    "station": "DSF",
+    "reason": "coverage 0.875 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "ACOR",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "MET2",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "XOR",
+    "reason": "coverage 0.736 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "SKY",
+    "reason": "coverage 0.704 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "MET1",
+    "reason": "coverage 0.833 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "AGG",
+    "reason": "coverage 0.753 < 0.9"
+   },
+   {
+    "network": "HP",
+    "station": "GUR",
+    "reason": "coverage 0.877 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "LAKA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HP",
+    "station": "ANX",
+    "reason": "coverage 0.877 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "NESN",
+    "reason": "coverage 0.887 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "TYRN",
+    "reason": "coverage 0.813 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "LALA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "KURT",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "OUR",
+    "reason": "coverage 0.847 < 0.9"
+   },
+   {
+    "network": "HC",
+    "station": "KTRS",
+    "reason": "coverage 0.868 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "CLEM",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "CHOS",
+    "reason": "coverage 0.858 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "MRTH",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "HORT",
+    "reason": "coverage 0.554 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "KPRO",
+    "reason": "coverage 0.729 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KYPS",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KTHA",
+    "reason": "coverage 0.889 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "DRAG",
+    "reason": "coverage 0.690 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "ORTH",
+    "reason": "coverage 0.468 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "STRF",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "KOKK",
+    "reason": "coverage 0.536 < 0.9"
+   },
+   {
+    "network": "HP",
+    "station": "KSTR",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ATHR",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "HAVD",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "SAP3",
+    "reason": "coverage 0.789 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "CMBO",
+    "reason": "coverage 0.759 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "SNT1",
+    "reason": "coverage 0.657 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "SRS",
+    "reason": "coverage 0.819 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "THT1",
+    "reason": "coverage 0.315 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "KAVA",
+    "reason": "coverage 0.746 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "FNA5",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "FNA3",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "FLNA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "FNA1",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "FNA",
+    "reason": "coverage 0.097 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "FNA4",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "FNA2",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "ALN",
+    "reason": "coverage 0.862 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "VAM",
+    "reason": "coverage 0.891 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KOSD",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "IDI",
+    "reason": "loc --: HH at 80 Hz, not 100 Hz"
+   },
+   {
+    "network": "HC",
+    "station": "KOSP",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "OTHN",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "NIS1",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "CRE1",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HC",
+    "station": "TEFL",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "CRE3",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "KARP",
+    "reason": "coverage 0.551 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KSL",
+    "reason": "coverage 0.000 < 0.9"
+   }
+  ]
+ },
+ "catalogue": {
+  "agency": "NOA (National Observatory of Athens, Institute of Geodynamics)",
+  "requests": [
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-01-01T00%3A00%3A00&endtime=2022-01-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-01-08T00%3A00%3A00&endtime=2022-01-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-01-15T00%3A00%3A00&endtime=2022-01-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-01-22T00%3A00%3A00&endtime=2022-01-29T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-01-29T00%3A00%3A00&endtime=2022-02-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-02-05T00%3A00%3A00&endtime=2022-02-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-02-12T00%3A00%3A00&endtime=2022-02-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-02-19T00%3A00%3A00&endtime=2022-02-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-02-26T00%3A00%3A00&endtime=2022-03-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-03-05T00%3A00%3A00&endtime=2022-03-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-03-12T00%3A00%3A00&endtime=2022-03-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-03-19T00%3A00%3A00&endtime=2022-03-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-03-26T00%3A00%3A00&endtime=2022-04-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-04-02T00%3A00%3A00&endtime=2022-04-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-04-09T00%3A00%3A00&endtime=2022-04-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-04-16T00%3A00%3A00&endtime=2022-04-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-04-23T00%3A00%3A00&endtime=2022-04-30T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-04-30T00%3A00%3A00&endtime=2022-05-07T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-05-07T00%3A00%3A00&endtime=2022-05-14T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-05-14T00%3A00%3A00&endtime=2022-05-21T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-05-21T00%3A00%3A00&endtime=2022-05-28T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-05-28T00%3A00%3A00&endtime=2022-06-04T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-06-04T00%3A00%3A00&endtime=2022-06-11T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-06-11T00%3A00%3A00&endtime=2022-06-18T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-06-18T00%3A00%3A00&endtime=2022-06-25T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-06-25T00%3A00%3A00&endtime=2022-07-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-07-02T00%3A00%3A00&endtime=2022-07-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-07-09T00%3A00%3A00&endtime=2022-07-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-07-16T00%3A00%3A00&endtime=2022-07-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-07-23T00%3A00%3A00&endtime=2022-07-30T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-07-30T00%3A00%3A00&endtime=2022-08-06T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-08-06T00%3A00%3A00&endtime=2022-08-13T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-08-13T00%3A00%3A00&endtime=2022-08-20T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-08-20T00%3A00%3A00&endtime=2022-08-27T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-08-27T00%3A00%3A00&endtime=2022-09-03T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-09-03T00%3A00%3A00&endtime=2022-09-10T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-09-10T00%3A00%3A00&endtime=2022-09-17T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-09-17T00%3A00%3A00&endtime=2022-09-24T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-09-24T00%3A00%3A00&endtime=2022-10-01T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-10-01T00%3A00%3A00&endtime=2022-10-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-10-08T00%3A00%3A00&endtime=2022-10-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-10-15T00%3A00%3A00&endtime=2022-10-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-10-22T00%3A00%3A00&endtime=2022-10-29T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-10-29T00%3A00%3A00&endtime=2022-11-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-11-05T00%3A00%3A00&endtime=2022-11-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-11-12T00%3A00%3A00&endtime=2022-11-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-11-19T00%3A00%3A00&endtime=2022-11-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-11-26T00%3A00%3A00&endtime=2022-12-03T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-12-03T00%3A00%3A00&endtime=2022-12-10T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-12-10T00%3A00%3A00&endtime=2022-12-17T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-12-17T00%3A00%3A00&endtime=2022-12-24T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-12-24T00%3A00%3A00&endtime=2022-12-31T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-12-31T00%3A00%3A00&endtime=2023-01-01T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc"
+  ],
+  "events": 20674,
+  "canary": {
+   "window": [
+    "2022-01-15T18:08:00",
+    "2022-01-16T01:08:00"
+   ],
+   "centre": [
+    38.5,
+    23.5
+   ],
+   "radius_km": 950.0,
+   "min_events": 5,
+   "events": 14,
+   "request": "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-01-15T18%3A08%3A00&endtime=2022-01-16T01%3A08%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc"
+  }
+ },
+ "sequences": [
+  {
+   "index": 1,
+   "first": {
+    "time": "2022-01-09T21:43:47.148940",
+    "lat": 40.77896118,
+    "lon": 21.38259888,
+    "depth_km": 14.13686117,
+    "magnitude": 5.340443591,
+    "type": "MLh",
+    "id": "noa2022aqhdg"
+   },
+   "joined": [],
+   "start": "2022-01-09T21:33:47.148940",
+   "end": "2022-01-10T00:33:47.148940",
+   "usable_within_km": 10,
+   "stations": [
+    "HL.JAN",
+    "HL.KZN",
+    "HL.PENT",
+    "HT.GRG",
+    "HT.KNT",
+    "HT.LIT",
+    "HT.NEST",
+    "HT.THE"
+   ],
+   "assign": "reserve",
+   "coin": 0.6394267984578837,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 2,
+   "first": {
+    "time": "2022-01-16T11:48:05.977156",
+    "lat": 39.98336792,
+    "lon": 24.27474976,
+    "depth_km": 18.757710770000003,
+    "magnitude": 5.442059679,
+    "type": "MLh",
+    "id": "noa2022bcibq"
+   },
+   "joined": [],
+   "start": "2022-01-16T11:38:05.977156",
+   "end": "2022-01-16T14:38:05.977156",
+   "usable_within_km": 9,
+   "stations": [
+    "HL.LIA",
+    "HL.NEO",
+    "HL.PLG",
+    "HL.SMTH",
+    "HT.AOS2",
+    "HT.PAIG",
+    "HT.SOH",
+    "HT.THAS"
+   ],
+   "assign": "now",
+   "coin": 0.025010755222666936,
+   "scorable": 45,
+   "cumulative": 45,
+   "selected": true
+  },
+  {
+   "index": 3,
+   "first": {
+    "time": "2022-03-16T02:20:15.457770",
+    "lat": 34.91912842,
+    "lon": 25.27679443,
+    "depth_km": 14.23669434,
+    "magnitude": 4.601579464,
+    "type": "MLh",
+    "id": "noa2022ffkpv"
+   },
+   "joined": [],
+   "start": "2022-03-16T02:10:15.457770",
+   "end": "2022-03-16T05:10:15.457770",
+   "usable_within_km": 14,
+   "stations": [
+    "HC.IMOD",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.IACM",
+    "HL.KSTE",
+    "HL.NPS",
+    "HL.SIVA"
+   ],
+   "assign": "now",
+   "coin": 0.27502931836911926,
+   "scorable": 8,
+   "cumulative": 53,
+   "selected": true
+  },
+  {
+   "index": 4,
+   "first": {
+    "time": "2022-04-13T19:35:49.000790",
+    "lat": 34.75067139,
+    "lon": 24.68536377,
+    "depth_km": 19.08573405,
+    "magnitude": 4.535731441,
+    "type": "MLh",
+    "id": "noa2022hfxdv"
+   },
+   "joined": [],
+   "start": "2022-04-13T19:25:49.000790",
+   "end": "2022-04-13T22:25:49.000790",
+   "usable_within_km": 16,
+   "stations": [
+    "HC.GVDS",
+    "HC.IMOD",
+    "HC.IPPL",
+    "HC.KNSS",
+    "HL.GVD",
+    "HL.IACM",
+    "HL.KSTE",
+    "HL.SIVA"
+   ],
+   "assign": "now",
+   "coin": 0.22321073814882275,
+   "scorable": 7,
+   "cumulative": 60,
+   "selected": true
+  },
+  {
+   "index": 5,
+   "first": {
+    "time": "2022-04-16T17:00:39.426321",
+    "lat": 35.9197998,
+    "lon": 22.48718262,
+    "depth_km": 30.6949056,
+    "magnitude": 4.891026784,
+    "type": "MLh",
+    "id": "noa2022hleot"
+   },
+   "joined": [],
+   "start": "2022-04-16T16:50:39.426321",
+   "end": "2022-04-16T19:50:39.426321",
+   "usable_within_km": 9,
+   "stations": [
+    "HC.CHAN",
+    "HC.KNDR",
+    "HC.KTHR",
+    "HC.RODP",
+    "HL.ANKY",
+    "HL.IMMV",
+    "HL.VLI",
+    "HP.PYL"
+   ],
+   "assign": "reserve",
+   "coin": 0.7364712141640124,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 6,
+   "first": {
+    "time": "2022-04-27T01:51:53.487739",
+    "lat": 35.90698242,
+    "lon": 22.64282227,
+    "depth_km": 79.24235026000001,
+    "magnitude": 5.152942695,
+    "type": "MLh",
+    "id": "noa2022iedfg"
+   },
+   "joined": [],
+   "start": "2022-04-27T01:41:53.487739",
+   "end": "2022-04-27T04:41:53.487739",
+   "usable_within_km": 8,
+   "stations": [
+    "HC.CHAN",
+    "HC.KNDR",
+    "HC.KTHR",
+    "HC.RODP",
+    "HL.ANKY",
+    "HL.IMMV",
+    "HL.VLI",
+    "HP.PYL"
+   ],
+   "assign": "reserve",
+   "coin": 0.6766994874229113,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 7,
+   "first": {
+    "time": "2022-04-29T14:01:10.314408",
+    "lat": 35.01800537,
+    "lon": 24.98016357,
+    "depth_km": 12.98164876,
+    "magnitude": 4.507162153,
+    "type": "MLh",
+    "id": "noa2022iisig"
+   },
+   "joined": [],
+   "start": "2022-04-29T13:51:10.314408",
+   "end": "2022-04-29T16:51:10.314408",
+   "usable_within_km": 16,
+   "stations": [
+    "HC.IMOD",
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HL.IACM",
+    "HL.KSTE",
+    "HL.NPS",
+    "HL.SIVA"
+   ],
+   "assign": "reserve",
+   "coin": 0.8921795677048454,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 8,
+   "first": {
+    "time": "2022-06-19T23:24:35.505514",
+    "lat": 35.32745361,
+    "lon": 27.1572876,
+    "depth_km": 51.14644368,
+    "magnitude": 4.826620625,
+    "type": "MLh",
+    "id": "noa2022lyqcf"
+   },
+   "joined": [],
+   "start": "2022-06-19T23:14:35.505514",
+   "end": "2022-06-20T02:14:35.505514",
+   "usable_within_km": 6,
+   "stations": [
+    "HC.STIA",
+    "HL.ARG",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.NPS",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.08693883262941615,
+   "scorable": 3,
+   "cumulative": 63,
+   "selected": true
+  },
+  {
+   "index": 9,
+   "first": {
+    "time": "2022-09-03T04:13:09.574945",
+    "lat": 34.87335205,
+    "lon": 26.44317627,
+    "depth_km": 4.538614909,
+    "magnitude": 5.224437131,
+    "type": "MLh",
+    "id": "noa2022rgbcp"
+   },
+   "joined": [],
+   "start": "2022-09-03T04:03:09.574945",
+   "end": "2022-09-03T07:03:09.574945",
+   "usable_within_km": 8,
+   "stations": [
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.IACM",
+    "HL.KSTE",
+    "HL.NPS",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.4219218196852704,
+   "scorable": 4,
+   "cumulative": 67,
+   "selected": true
+  },
+  {
+   "index": 10,
+   "first": {
+    "time": "2022-09-08T07:36:20.475562",
+    "lat": 37.87078857,
+    "lon": 19.90264893,
+    "depth_km": 8.760131836000001,
+    "magnitude": 5.403883526,
+    "type": "MLh",
+    "id": "noa2022rpljr"
+   },
+   "joined": [],
+   "start": "2022-09-08T07:26:20.475562",
+   "end": "2022-09-08T10:26:20.475562",
+   "usable_within_km": 14,
+   "stations": [
+    "HL.VLS",
+    "HP.FSK",
+    "HP.LTHK",
+    "HT.DMLN",
+    "HT.EVGI",
+    "HT.NYDR",
+    "HT.PSDA",
+    "HT.RTZL"
+   ],
+   "assign": "now",
+   "coin": 0.029797219438070344,
+   "scorable": 42,
+   "cumulative": 109,
+   "selected": true
+  },
+  {
+   "index": 11,
+   "first": {
+    "time": "2022-10-02T04:04:00.614221",
+    "lat": 34.26544189,
+    "lon": 26.22528076,
+    "depth_km": 8.028523763,
+    "magnitude": 4.957373923,
+    "type": "MLh",
+    "id": "noa2022tharu"
+   },
+   "joined": [],
+   "start": "2022-10-02T03:54:00.614221",
+   "end": "2022-10-02T06:54:00.614221",
+   "usable_within_km": 6,
+   "stations": [
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.KSTE",
+    "HL.NPS",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.21863797480360336,
+   "scorable": 5,
+   "cumulative": 114,
+   "selected": true
+  },
+  {
+   "index": 12,
+   "first": {
+    "time": "2022-10-08T22:02:28.031418",
+    "lat": 38.3052063,
+    "lon": 22.51602173,
+    "depth_km": 12.71067301,
+    "magnitude": 4.989219336,
+    "type": "MLh",
+    "id": "noa2022ttjiz"
+   },
+   "joined": [],
+   "start": "2022-10-08T21:52:28.031418",
+   "end": "2022-10-09T00:52:28.031418",
+   "usable_within_km": 36,
+   "stations": [
+    "HA.KALE",
+    "HA.LOUT",
+    "HA.THAL",
+    "HL.KLV",
+    "HL.LKR",
+    "HP.EFP",
+    "HP.LTK",
+    "HP.SERG"
+   ],
+   "assign": "reserve",
+   "coin": 0.5053552881033624,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 13,
+   "first": {
+    "time": "2022-11-13T02:08:08.698447",
+    "lat": 34.42199707,
+    "lon": 26.47888184,
+    "depth_km": 10.72827148,
+    "magnitude": 4.765475138,
+    "type": "MLh",
+    "id": "noa2022wfqkp"
+   },
+   "joined": [],
+   "start": "2022-11-13T01:58:08.698447",
+   "end": "2022-11-13T04:58:08.698447",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.KSTE",
+    "HL.NPS",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.026535969683863625,
+   "scorable": 7,
+   "cumulative": 121,
+   "selected": true
+  },
+  {
+   "index": 14,
+   "first": {
+    "time": "2022-11-20T23:25:01.720272",
+    "lat": 35.80993652,
+    "lon": 26.46057129,
+    "depth_km": 46.896402990000006,
+    "magnitude": 5.48572782,
+    "type": "MLh",
+    "id": "noa2022wubdq"
+   },
+   "joined": [],
+   "start": "2022-11-20T23:15:01.720272",
+   "end": "2022-11-21T02:15:01.720272",
+   "usable_within_km": 11,
+   "stations": [
+    "HA.SNT5",
+    "HC.STIA",
+    "HL.KSTE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.NPS",
+    "HL.THERA",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.1988376506866485,
+   "scorable": 3,
+   "cumulative": 124,
+   "selected": true
+  },
+  {
+   "index": 15,
+   "first": {
+    "time": "2022-11-29T04:32:36.558391",
+    "lat": 38.24935913,
+    "lon": 24.27566528,
+    "depth_km": 13.16705322,
+    "magnitude": 4.70867942,
+    "type": "MLh",
+    "id": "noa2022xjbkg"
+   },
+   "joined": [],
+   "start": "2022-11-29T04:22:36.558391",
+   "end": "2022-11-29T07:22:36.558391",
+   "usable_within_km": 21,
+   "stations": [
+    "HA.KARY",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.STFN",
+    "HL.ATH",
+    "HL.PTL",
+    "HL.THI1",
+    "HL.THVA"
+   ],
+   "assign": "reserve",
+   "coin": 0.6498844377795232,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 16,
+   "first": {
+    "time": "2022-11-29T20:06:39.181390",
+    "lat": 38.25759888,
+    "lon": 24.25552368,
+    "depth_km": 9.002583822,
+    "magnitude": 4.975681654,
+    "type": "MLh",
+    "id": "noa2022xkgfp"
+   },
+   "joined": [],
+   "start": "2022-11-29T19:56:39.181390",
+   "end": "2022-11-29T22:56:39.181390",
+   "usable_within_km": 21,
+   "stations": [
+    "HA.KARY",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.STFN",
+    "HL.ATH",
+    "HL.PTL",
+    "HL.THI1",
+    "HL.THVA"
+   ],
+   "assign": "reserve",
+   "coin": 0.5449414806032167,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 17,
+   "first": {
+    "time": "2022-12-28T12:24:20.308667",
+    "lat": 38.56521606,
+    "lon": 23.69064331,
+    "depth_km": 13.3381958,
+    "magnitude": 4.884688663,
+    "type": "MLh",
+    "id": "noa2022zkqvo"
+   },
+   "joined": [],
+   "start": "2022-12-28T12:14:20.308667",
+   "end": "2022-12-28T15:14:20.308667",
+   "usable_within_km": 22,
+   "stations": [
+    "HA.AMPE",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.STFN",
+    "HL.PTL",
+    "HL.THI1",
+    "HL.THI2",
+    "HL.THVA"
+   ],
+   "assign": "now",
+   "coin": 0.2204406220406967,
+   "scorable": 37,
+   "cumulative": 161,
+   "selected": true
+  }
+ ],
+ "target_reached": true,
+ "quiet": {
+  "passes": [
+   {
+    "relaxed": false,
+    "draws": 452,
+    "accepted": 24,
+    "rejected": {
+     "catalogue event": 425,
+     "overlap": 0,
+     "coverage": 3
+    }
+   }
+  ],
+  "windows": [
+   {
+    "start": "2022-09-27T08:34:00",
+    "end": "2022-09-27T14:34:00",
+    "sequence": 3,
+    "draw": 3,
+    "stations": [
+     "HC.IMOD",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2022-12-11T11:52:00",
+    "end": "2022-12-11T17:52:00",
+    "sequence": 11,
+    "draw": 36,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-08-12T22:51:00",
+    "end": "2022-08-13T04:51:00",
+    "sequence": 3,
+    "draw": 40,
+    "stations": [
+     "HC.IMOD",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2022-10-11T09:24:00",
+    "end": "2022-10-11T15:24:00",
+    "sequence": 8,
+    "draw": 62,
+    "stations": [
+     "HC.STIA",
+     "HL.ARG",
+     "HL.NISR",
+     "HL.NISR2",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-02-14T05:10:00",
+    "end": "2022-02-14T11:10:00",
+    "sequence": 13,
+    "draw": 63,
+    "stations": [
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-09-09T15:30:00",
+    "end": "2022-09-09T21:30:00",
+    "sequence": 9,
+    "draw": 67,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-12-17T05:33:00",
+    "end": "2022-12-17T11:33:00",
+    "sequence": 13,
+    "draw": 91,
+    "stations": [
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-08-05T10:52:00",
+    "end": "2022-08-05T16:52:00",
+    "sequence": 3,
+    "draw": 103,
+    "stations": [
+     "HC.IMOD",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2022-11-13T10:27:00",
+    "end": "2022-11-13T16:27:00",
+    "sequence": 8,
+    "draw": 115,
+    "stations": [
+     "HC.STIA",
+     "HL.ARG",
+     "HL.NISR",
+     "HL.NISR2",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-08-13T13:09:00",
+    "end": "2022-08-13T19:09:00",
+    "sequence": 14,
+    "draw": 127,
+    "stations": [
+     "HA.SNT5",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NISR",
+     "HL.NISR2",
+     "HL.NPS",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-07-05T13:54:00",
+    "end": "2022-07-05T19:54:00",
+    "sequence": 3,
+    "draw": 128,
+    "stations": [
+     "HC.IMOD",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2022-11-23T06:18:00",
+    "end": "2022-11-23T12:18:00",
+    "sequence": 3,
+    "draw": 138,
+    "stations": [
+     "HC.IMOD",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2022-08-09T10:05:00",
+    "end": "2022-08-09T16:05:00",
+    "sequence": 9,
+    "draw": 198,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-04-01T05:12:00",
+    "end": "2022-04-01T11:12:00",
+    "sequence": 11,
+    "draw": 202,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-11-12T06:47:00",
+    "end": "2022-11-12T12:47:00",
+    "sequence": 13,
+    "draw": 209,
+    "stations": [
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-10-09T12:11:00",
+    "end": "2022-10-09T18:11:00",
+    "sequence": 11,
+    "draw": 218,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-07-29T05:58:00",
+    "end": "2022-07-29T11:58:00",
+    "sequence": 10,
+    "draw": 266,
+    "stations": [
+     "HL.VLS",
+     "HP.FSK",
+     "HP.LTHK",
+     "HT.DMLN",
+     "HT.EVGI",
+     "HT.NYDR",
+     "HT.PSDA",
+     "HT.RTZL"
+    ]
+   },
+   {
+    "start": "2022-11-01T09:28:00",
+    "end": "2022-11-01T15:28:00",
+    "sequence": 13,
+    "draw": 292,
+    "stations": [
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-10-08T02:10:00",
+    "end": "2022-10-08T08:10:00",
+    "sequence": 3,
+    "draw": 316,
+    "stations": [
+     "HC.IMOD",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2022-05-09T03:48:00",
+    "end": "2022-05-09T09:48:00",
+    "sequence": 8,
+    "draw": 333,
+    "stations": [
+     "HC.STIA",
+     "HL.ARG",
+     "HL.NISR",
+     "HL.NISR2",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-01-12T22:10:00",
+    "end": "2022-01-13T04:10:00",
+    "sequence": 9,
+    "draw": 344,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-10-16T19:16:00",
+    "end": "2022-10-17T01:16:00",
+    "sequence": 11,
+    "draw": 355,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-09-14T04:42:00",
+    "end": "2022-09-14T10:42:00",
+    "sequence": 11,
+    "draw": 401,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2022-09-08T20:06:00",
+    "end": "2022-09-09T02:06:00",
+    "sequence": 9,
+    "draw": 452,
+    "stations": [
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IACM",
+     "HL.KSTE",
+     "HL.NPS",
+     "HL.SIVA",
+     "HL.ZKR"
+    ]
+   }
+  ]
+ },
+ "selected_utc": "2026-10-29T19:42:54+00:00",
+ "tool": {
+  "name": "ayzek-heldout",
+  "git_commit": "e90ba46a281f"
+ }
+}

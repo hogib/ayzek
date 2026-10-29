@@ -1,0 +1,14 @@
+# heldout select greece dry2022: quiet window 18 of 24 (draw 292), on the stations of sequence 13
+name = "greece_dry2022_quiet18"
+network = ["HL", "HT", "HA", "HP", "HC"]
+start = "2022-11-01T09:28:00"
+end = "2022-11-01T15:28:00"
+centre = [35.16023, 25.74574]
+radius_km = 53.1
+max_stations = 5
+min_coverage = 0.0
+stations = ["HL.ZKR", "HC.STIA", "HC.PFKS", "HL.NPS", "HL.KSTE"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0
