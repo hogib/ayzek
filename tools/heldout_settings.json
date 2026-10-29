@@ -1,0 +1,286 @@
+{
+  "_comment": [
+    "The frozen detectors of the held-out tests (docs/protocol-heldout.md, section 6),",
+    "read by tools/run_heldout.py. Each entry: `detector` (learned, stalta, filterpicker,",
+    "transformer), `args` (ayzek options, without --detector), and for a published model",
+    "`model`, `weights`, `mode` (tools/seisbench_scores.py, its cache replacing the learned",
+    "detector's own networks through --scores-in). `stalta_station`: the per-station",
+    "baseline, `ratios` naming each network group's station,ratio file (--stalta-on-stations)",
+    "and `on` the ratio of stations without one. `TBD` marks a setting the retuning has",
+    "not yet delivered; run_heldout refuses to run with one."
+  ],
+  "learned": {
+    "detector": "learned",
+    "args": []
+  },
+  "learned_neighbours": {
+    "detector": "learned",
+    "grid": {
+      "threshold": [
+        "0.75",
+        "0.8",
+        "0.85"
+      ],
+      "trigger-windows": [
+        "6",
+        "8",
+        "10"
+      ],
+      "instant-threshold": [
+        "0.9"
+      ]
+    }
+  },
+  "stalta_eqfa": {
+    "detector": "stalta",
+    "args": [
+      "--stalta-band",
+      "1,10",
+      "--sta",
+      "0.5",
+      "--lta",
+      "10",
+      "--stalta-on",
+      "8",
+      "--stalta-off",
+      "1.5"
+    ]
+  },
+  "stalta_eqdet": {
+    "detector": "stalta",
+    "args": [
+      "--stalta-band",
+      "1,10",
+      "--sta",
+      "1",
+      "--lta",
+      "10",
+      "--stalta-on",
+      "4",
+      "--stalta-off",
+      "1.5"
+    ]
+  },
+  "stalta_eqquiet": {
+    "detector": "stalta",
+    "args": [
+      "--stalta-band",
+      "1,10",
+      "--sta",
+      "0.5",
+      "--lta",
+      "10",
+      "--stalta-on",
+      "10",
+      "--stalta-off",
+      "1.5",
+      "--stalta-3c"
+    ]
+  },
+  "stalta_station": {
+    "detector": "stalta",
+    "args": [
+      "--stalta-band",
+      "1,10",
+      "--sta",
+      "0.5",
+      "--lta",
+      "10",
+      "--stalta-off",
+      "1.5"
+    ],
+    "on": "8",
+    "ratios": {
+      "greece": "tools/stalta_stations/stalta_on_greece.csv",
+      "ko": "tools/stalta_stations/stalta_on_ko.csv",
+      "nz": "tools/stalta_stations/stalta_on_nz.csv"
+    }
+  },
+  "fp_eqfa": {
+    "detector": "filterpicker",
+    "args": [
+      "--fp-windows",
+      "6,10,0.4",
+      "--fp-thresholds",
+      "20,10"
+    ]
+  },
+  "fp_eqdet": {
+    "detector": "filterpicker",
+    "args": [
+      "--fp-windows",
+      "6,10,0.4",
+      "--fp-thresholds",
+      "15,8"
+    ]
+  },
+  "fp_eqquiet": {
+    "detector": "filterpicker",
+    "args": "TBD"
+  },
+  "phasenet_causal_eqfa": {
+    "detector": "learned",
+    "model": "phasenet",
+    "weights": "instance",
+    "mode": "causal",
+    "args": [
+      "--threshold",
+      "0.8",
+      "--trigger-windows",
+      "1",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "phasenet_causal_eqdet": {
+    "detector": "learned",
+    "model": "phasenet",
+    "weights": "instance",
+    "mode": "causal",
+    "args": [
+      "--threshold",
+      "0.5",
+      "--trigger-windows",
+      "4",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "phasenet_causal_eqquiet": {
+    "detector": "learned",
+    "model": "phasenet",
+    "weights": "instance",
+    "mode": "causal",
+    "args": [
+      "--threshold",
+      "0.7",
+      "--trigger-windows",
+      "2",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "eqt_causal_eqfa": {
+    "detector": "learned",
+    "model": "eqtransformer",
+    "weights": "instance",
+    "mode": "causal",
+    "args": [
+      "--threshold",
+      "0.7",
+      "--trigger-windows",
+      "8",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "eqt_causal_eqdet": {
+    "detector": "learned",
+    "model": "eqtransformer",
+    "weights": "instance",
+    "mode": "causal",
+    "args": [
+      "--threshold",
+      "0.3",
+      "--trigger-windows",
+      "8",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "eqt_causal_eqquiet": {
+    "detector": "learned",
+    "model": "eqtransformer",
+    "weights": "instance",
+    "mode": "causal",
+    "args": [
+      "--threshold",
+      "0.6",
+      "--trigger-windows",
+      "2",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "phasenet_lookahead_eqfa": {
+    "detector": "learned",
+    "model": "phasenet",
+    "weights": "instance",
+    "mode": "lookahead",
+    "args": [
+      "--threshold",
+      "0.7",
+      "--trigger-windows",
+      "4",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "phasenet_lookahead_eqdet": {
+    "detector": "learned",
+    "model": "phasenet",
+    "weights": "instance",
+    "mode": "lookahead",
+    "args": [
+      "--threshold",
+      "0.6",
+      "--trigger-windows",
+      "8",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "phasenet_lookahead_eqquiet": {
+    "detector": "learned",
+    "model": "phasenet",
+    "weights": "instance",
+    "mode": "lookahead",
+    "args": [
+      "--threshold",
+      "0.7",
+      "--trigger-windows",
+      "1",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "eqt_lookahead_eqfa": {
+    "detector": "learned",
+    "model": "eqtransformer",
+    "weights": "instance",
+    "mode": "lookahead",
+    "args": [
+      "--threshold",
+      "0.6",
+      "--trigger-windows",
+      "4",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "eqt_lookahead_eqdet": {
+    "detector": "learned",
+    "model": "eqtransformer",
+    "weights": "original",
+    "mode": "lookahead",
+    "args": [
+      "--threshold",
+      "0.7",
+      "--trigger-windows",
+      "8",
+      "--instant-threshold",
+      "2"
+    ]
+  },
+  "eqt_lookahead_eqquiet": {
+    "detector": "learned",
+    "model": "eqtransformer",
+    "weights": "TBD",
+    "mode": "lookahead",
+    "args": "TBD"
+  },
+  "transformer": {
+    "detector": "transformer",
+    "args": []
+  }
+}

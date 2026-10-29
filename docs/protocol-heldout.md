@@ -16,9 +16,22 @@ is fetched before then.
   notes.
 - **The transformer** (its own paper): its weights, threshold, dt restart,
   station count and P-time uncertainty as in that release.
-- **Analysis code**: `tools/sweep_trigger.py`, `tools/event_outcomes.py`,
-  `tools/significance.py` and the fetch tool of the held-out repository, at the
-  frozen commits.
+- **The binary**: the tests run the release's static x86-64 binary
+  (`build-linux`, zig/musl). On every development replay, for the learned
+  detector, STA/LTA, FilterPicker and the transformer, its reports equal the
+  development build's apart from compute times and the order of
+  station-thread lines (checked 2026-10-29; repeated at the tag).
+- **Analysis code**, at the frozen commits: `tools/run_heldout.py` (the test
+  end to end, from a selection to every endpoint, with its manifest) and the
+  tools it runs, `tools/sweep_trigger.py`, `tools/event_outcomes.py`,
+  `tools/significance.py`, `tools/quiet_sweep.py`,
+  `tools/quiet_without_stations.py` with `tools/network_subsets`,
+  `tools/seisbench_scores.py` with its pinned weight versions,
+  `tools/select_setting.py` and `tools/stalta_station_ratios.py` (the
+  selection of the settings); `tools/heldout_settings.json` (every frozen
+  setting) and `tools/detector_station_split.csv` (the 6 s detector's station
+  split, endpoint 6); and in the held-out repository `heldout select`,
+  `probe`, `pull` and `catalog`.
 
 ## 2. Development and test data
 

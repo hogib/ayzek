@@ -12,10 +12,11 @@ across shifts and across detectors, which is what a paired test needs.
 
 --detector is `learned` (the cached window probabilities, default trigger
 rule), `stalta_eqfa` (--detector stalta), `stalta_eqdet` (the equal
-detections setting of docs/impl/09) or `filterpicker` (its settings after
-`--`, and a --label); anything after `--` is passed to ayzek.
+detections setting of docs/impl/09), `filterpicker` or `transformer` (their
+settings after `--`, and a --label); anything after `--` is passed to ayzek.
 Another model's scores (tools/seisbench_scores.py) run as `learned` with their
-own cache, trigger settings after `--`, and a --label.
+own cache, trigger settings after `--`, and a --label. The dataset's CACHE may
+be empty for any detector, the learned one then running its own networks.
 Standard library only.
 """
 import argparse
@@ -38,6 +39,7 @@ DETECTORS = {
     "stalta_eqdet": ["--detector", "stalta", "--stalta-band", "2,10", "--sta", "0.5",
                      "--lta", "10", "--stalta-on", "6"],
     "filterpicker": ["--detector", "filterpicker"],
+    "transformer": ["--detector", "transformer"],
 }
 # Detected: the AFAD line of an event block, with the pre-S line after it
 # (absent in reports of older builds). Missed: the list after the counts.
@@ -98,7 +100,7 @@ def main():
             write_catalogue(a.catalog, cat, span, shift)
             cmd = [a.binary, "--speed", "0", "--no-color", "--no-magnitude", "--catalog", str(cat),
                    *DETECTORS[a.detector], *a.extra]
-            if a.detector == "learned":
+            if cache:
                 cmd += ["--scores-in", cache]
             p = subprocess.run([*cmd, *paths], capture_output=True, text=True)
             if p.returncode or not CATALOGUE.search(p.stdout):

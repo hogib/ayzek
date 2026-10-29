@@ -133,8 +133,12 @@ def corrected(obs, shifted, take_obs, take_shift):
             ts = [e for e in take_shift[s] if e[0] == ds]
             if ts:
                 cs.append(sum(shifted[s][e] for e in ts) / len(ts))
-        c = sum(cs) / len(cs)
-        total += (o - c) / (1 - c) * len(to)
+        # As tools/sweep_trigger.py: a chance level of 1 (every shifted event
+        # matched, as on a short replay) gives no corrected detections, and a
+        # resample without shifted events of this replay gives a chance level
+        # of 0.
+        c = sum(cs) / len(cs) if cs else 0.0
+        total += (o - c) / (1 - c) * len(to) if c < 1 else 0.0
     return total, sum(obs[e] for e in take_obs)
 
 
