@@ -15,6 +15,7 @@
 | `src/pipeline/common.hpp` | stream clock, messages, bus, logger |
 | `src/pipeline/station.hpp` | three component rings on one absolute sample clock |
 | `src/pipeline/ingest.cpp` | replay source, decode, reorder, ring writes |
+| `src/pipeline/live.cpp`, `src/seedlink.cpp` | live input from a SeedLink server (`19-seedlink.md`) |
 | `src/pipeline/processor.cpp` | windows, detector, trigger, picker |
 | `src/pipeline/network.cpp` | association, declaration, location, catalogue scoring |
 | `app/ayzek.cpp` | CLI, threads, stream-time ordering, summary |
@@ -23,10 +24,13 @@
 
 - **Source.** `ReplaySource` reads a miniSEED file and orders records by the
   time of their last sample, the earliest a datalogger could have sent them.
-  Each record is released when the stream clock reaches that time. A SeedLink
-  client would replace this class and nothing downstream changes.
-- **Decoding.** `src/mseed.hpp` decodes Steim2 and uncompressed 16- and 32-bit
-  integer records, the latter in either byte order. During the 2025-04-23
+  Each record is released when the stream clock reaches that time. Live input
+  (`--seedlink`, `19-seedlink.md`) takes its place: one thread receives every
+  station's records from a SeedLink server and releases each on arrival.
+  Both feed the rings through `StationFeed`, and nothing downstream changes.
+- **Decoding.** `src/mseed.hpp` decodes Steim2, Steim1 (added for live input)
+  and uncompressed 16- and 32-bit integer records, the latter in either byte
+  order. During the 2025-04-23
   Mw 6.2 Marmara earthquake the dataloggers at CATL (57 km) and ARNA (68 km)
   switched from Steim2 to 32-bit integer records; ELBA (38 km) did not. The
   first version accepted only Steim2, so CATL and ARNA lost every record of
@@ -53,8 +57,9 @@
   of real samples (`kMaxQueuedSamples`), and resumes as the processor catches
   up. Nothing is dropped, because a dropped sample does not shift time by the
   length of the loss alone — every later sample of that component moves earlier
-  with it, since position is ring index plus base. Live input will drop in the
-  socket instead, which is the one place where a loss stays a gap.
+  with it, since position is ring index plus base. Live input cannot hold a
+  server back, so it drops whole records before they reach the reorderer
+  instead, which is the one place where a loss stays a gap.
 
 ## Processor
 
@@ -393,7 +398,6 @@ minutes cut out: 3.6 s now, 886.8 s and 41,236 dropped samples before.
 
 ## Not done yet
 
-- **Live SeedLink.** `ReplaySource` is the seam.
 - **Velocity model.** A 1D model with Moho and Pn would keep distant stations
   in the location instead of dropping them.
 - **Late records.** Replay delivers records on time. The archive's own late

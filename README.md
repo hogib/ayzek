@@ -21,9 +21,9 @@ three-component waveforms from several stations and, for each earthquake:
    stations or more), for the Pd magnitude's distances until the picks arrive
 
 All inference is hand-written (no ML runtime), with NEON kernels on aarch64.
-The target platform is a Raspberry Pi 4 or 5. The input is currently a replay
-of AFAD miniSEED files at real time or faster; a live SeedLink client is not
-implemented yet.
+The target platform is a Raspberry Pi 4 or 5. The input is a replay of
+miniSEED files at real time or faster, or live data from a SeedLink server
+(`--seedlink`, `docs/impl/19-seedlink.md`).
 
 Named after my pet bird.
 
@@ -93,7 +93,9 @@ ayzek.exe --speed 10 --from 2025-11-10T18:20:00 data\demo\DEMI.mseed data\demo\M
 - Colour is disabled automatically when the output is redirected to a file.
   The colours are ANSI escapes, which Windows Terminal renders and the legacy
   console may print as `[32m` instead; `--no-color` turns them off.
-- Everything else is the same as on Linux, including the option table below.
+- Everything else is the same as on Linux, including the option table below,
+  except live input: `--seedlink` needs POSIX sockets, which the Windows build
+  does not have, and says so.
 
 **Not yet run on Windows.** The binaries are built and linked, and the
 numerical tests have not been executed on a Windows machine or under wine. If
@@ -163,6 +165,26 @@ tools/demo.sh          # 3 stations, 10x
 tools/demo.sh all      # 7 stations, full speed
 ```
 
+Live, from a SeedLink server instead of files, keeping every record received
+for a replay afterwards (`docs/impl/19-seedlink.md`):
+
+```
+ayzek [options] --seedlink HOST:PORT --streams NET.STA[.LOC][,NET.STA...]
+```
+
+```bash
+build-release/app/ayzek --seedlink geofon.gfz.de:18000 --streams GE.WLF \
+    --stations my_stations.csv --archive data/live/session1
+# later: the same records through the file path
+build-release/app/ayzek --speed 0 data/live/session1/*.mseed
+```
+
+Each station's HHZ, HHN and HHE at 100 Hz are taken; other channels and rates,
+and HH1/HH2 (live input does not rotate), are rejected and counted. Every
+station needs coordinates in the station table. The run ends at SIGINT or
+SIGTERM, or after `--duration`, with the usual report and a section on the
+input.
+
 ### Options
 
 | option | default | meaning |
@@ -210,6 +232,13 @@ tools/demo.sh all      # 7 stations, full speed
 | `--record FILE` | | write all station outputs, for `tools/network_subsets` |
 | `--verbose` | | print every station detection, pick and Pd value |
 | `--no-color` | | |
+| `--seedlink HOST:PORT` | | live input from this SeedLink 3 server (port 18000 if omitted), in place of the files; not in the Windows build (`docs/impl/19-seedlink.md`) |
+| `--streams LIST` | | with `--seedlink`: the stations, `NET.STA` or `NET.STA.LOC` (`--` for the empty location), comma-separated; each needs coordinates in the station table, and its HHZ, HHN and HHE at 100 Hz are used |
+| `--archive DIR` | | with `--seedlink`: append every record received, as received, to `DIR/STATION.mseed`, which replays like any other file |
+| `--duration S` | until SIGINT or SIGTERM | with `--seedlink`: stop the input after S seconds; the first SIGINT or SIGTERM stops the input and the run ends with the report once what arrived is processed, a second one stops at once |
+| `--live-wait S` | 10 | with `--seedlink`: the longest a station's message waits for the other stations' data before the network stage takes it; a station that holds one back that long is not waited for until it catches up. With nothing out of order (the report counts it), a replay of the archive gives the live run's alarms |
+| `--seedlink-timeout S` | 120 | with `--seedlink`: reconnect after S seconds with nothing received; reconnection is retried after 1, 2, 4, ... up to 30 s, and every station resumes after its last packet |
+| `--seedlink-keepalive S` | 60 | with `--seedlink`: send `INFO ID` after S seconds with nothing received (0: never); IRIS asks for no more than one every 4 minutes on an idle connection |
 
 ### Output
 
@@ -249,6 +278,8 @@ especially during aftershock sequences.
 | `tools/network_subsets` | runs the network stage for every subset of stations from one `--record` file; identical to running ayzek on each subset |
 | `tools/station_geometry.py` | coverage, alert time, blind zone and location error of station subsets over a grid of epicentres, without waveforms |
 | `tools/mseed_dump`, `tools/validate_mseed.py` | record-level inspection, and a decoding check against ObsPy |
+| `tools/make_mseed_fixtures.py` | the small files of every supported encoding, and ObsPy's reading of them, that `test_mseed` decodes |
+| `tools/seedlink_mock.py` | a SeedLink 3 server that serves miniSEED files at a chosen speed, with dropped connections, stalls and reordering on request, for the live-input tests |
 | `tools/replay_check`, `tools/gaps_vs_events.py` | gap statistics of the archive, and their relation to earthquake times |
 | `tools/gap_scan.py` | spans and gaps of any miniSEED files, from the record headers alone; flags gaps longer than the sample ring |
 | `tools/scan_encodings.py` | counts the miniSEED data encodings in archive chunks |
@@ -344,20 +375,22 @@ Türkiye), https://deprem.afad.gov.tr/.
 
 - `docs/DESIGN.md`: the architecture and the reasoning behind it
 - `docs/IMPLEMENTATION.md`: an overview of what was built, with an index of
-  `docs/impl/01`–`16` (SIMD kernels, weights format, conditioning, models,
+  `docs/impl/01`–`19` (SIMD kernels, weights format, conditioning, models,
   pipeline, Raspberry Pi, magnitude, station selection, STA/LTA benchmark,
   benchmarks and the scorecard, Windows build, environment, claims, the
-  streaming transformer, location from its geometry head, alarm assessment)
+  streaming transformer, location from its geometry head, alarm assessment,
+  Pd magnitude, FilterPicker, live SeedLink input)
 
 ## Layout
 
 ```
-src/            ring buffer, miniSEED decoding, reordering, SIMD kernels, layers, models, DSP, magnitude
-src/pipeline/   ingest, per-station processor and the transformer's trigger, network association,
-                location (picks or geometry), alarm assessment, recording
+src/            ring buffer, miniSEED decoding, reordering, SeedLink client, SIMD kernels, layers,
+                models, DSP, magnitude
+src/pipeline/   ingest (replay and live), per-station processor and the transformer's trigger,
+                network association, location (picks or geometry), alarm assessment, recording
 app/            the ayzek binary
 tests/          unit tests, agreement with PyTorch/scipy/torchaudio, end-to-end check
-tools/          model export, data preparation, evaluation, the scorecard
+tools/          model export, data preparation, evaluation, the scorecard, a SeedLink test server
 bench/          ayzek_bench, and reference results in bench/results/
 cross/          zig toolchain wrappers and the Raspberry Pi and Windows cross files
 docs/           design and implementation notes
