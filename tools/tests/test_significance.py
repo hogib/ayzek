@@ -48,13 +48,25 @@ def test_mcnemar_no_discordant_pairs():
     assert sg.mcnemar(0, 0) == 1.0
 
 
-@pytest.mark.xfail(strict=True, raises=OverflowError, reason=(
-    "binom_cdf (significance.py:52) multiplies math.comb(n, i), an int, by a float: "
-    "from n = b + c of about 1030 the int is beyond the float range and McNemar raises "
-    "OverflowError. Events never reach it (240 per network); quiet() applies the same "
-    "test to alarm totals, which would need above ~500 each."))
-def test_mcnemar_large_counts():
-    assert sg.mcnemar(510, 530) == pytest.approx(stats.binomtest(510, 1040, 0.5).pvalue, rel=1e-9)
+@pytest.mark.parametrize("b, c", [(510, 530), (954, 1046), (0, 1040), (1040, 0), (2400, 2600),
+                                  (2500, 2500), (0, 5000), (2300, 2700)])
+def test_mcnemar_large_counts(b, c):
+    # Alarm totals of test networks exceed 1000 (development: 954 for one
+    # detector); scipy's exact binomial test is the reference, to n = 5000.
+    assert sg.mcnemar(b, c) == pytest.approx(stats.binomtest(b, b + c, 0.5).pvalue, rel=1e-9, abs=1e-300)
+
+
+@pytest.mark.parametrize("k, n, p", [(3, 10, 0.3), (0, 50, 0.01), (50, 50, 0.99), (2000, 5000, 0.4),
+                                     (4999, 5000, 0.999), (1, 3000, 0.0002)])
+def test_binom_cdf_general_p_matches_scipy(k, n, p):
+    assert sg.binom_cdf(k, n, p) == pytest.approx(stats.binom.cdf(k, n, p), rel=1e-8, abs=1e-300)
+
+
+def test_binom_cdf_exact_cases_by_hand():
+    # P(X <= 1) for Binomial(3, 1/2) = (1 + 3) / 8; P(X <= n) = 1; P(X <= 0) = 2^-n.
+    assert sg.binom_cdf(1, 3) == 0.5
+    assert sg.binom_cdf(3, 3) == 1.0 and sg.binom_cdf(0, 10) == 2 ** -10
+    assert sg.binom_cdf(5000, 5000) == 1.0 and sg.binom_cdf(0, 5000) == 2.0 ** -5000
 
 
 @pytest.mark.parametrize("k, n", [(0, 1), (1, 1), (0, 10), (3, 10), (10, 10), (8, 9), (4, 12),
