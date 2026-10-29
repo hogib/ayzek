@@ -359,7 +359,8 @@ void match_by_p_time() {
 // sqrt(25.2^2 + 10^2) / 6 = 4.519 s after kT, 25.2 km from each. The
 // detections' window starts are set 30 s before those P times, so that a
 // catalogue event near the source cannot match by P time (it misses by 30 s,
-// less at most 30.1 / 6 = 5 s for its distance), only by location.
+// less at most 30.1 / 6 = 5 s for its distance, or 5.1 s for its origin, and
+// L's offset from the source), only by location.
 double geometry_p() { return kT + std::sqrt(kEpi * kEpi + 10.0 * 10.0) / 6.0; }
 
 Network geometry_alarm(std::vector<CatalogEvent> catalog) {
