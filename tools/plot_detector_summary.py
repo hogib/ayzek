@@ -10,7 +10,7 @@ Two steps, so the figure can be redrawn without the runs:
 
     # 2. the figure, from that table alone
     uv run --with matplotlib python tools/plot_detector_summary.py plot \\
-        --csv ../ayzek_paper/figures/fig_detectors.csv --out ../ayzek_paper/figures/fig3_detectors
+        --csv ../ayzek_paper/figures/fig3_detectors.csv --out ../ayzek_paper/figures/fig3_detectors
 
 Detections are chance-corrected (tools/significance.py, groups `sindirgi61` and
 `simav26`); quiet-window alarms are counted as tools/significance.py counts them,
@@ -103,7 +103,7 @@ def plot(a):
                               "eqt_causal_fa": (8, 0, R), "eqt_causal_det": (8, -4, R),
                               "pn_look_fa": (8, 3, R), "pn_look_det": (0, 9, C), "eqt_look": (-8, 0, L)},
         "simav_corrected": {"learned": (8, -4, R), "stalta_eqfa": (8, -5, R), "stalta_eqdet": (8, 4, R),
-                            "fp_fa": (8, -5, R), "fp_det": (-8, -7, L), "pn_causal": (-8, 2, L),
+                            "fp_fa": (8, -5, R), "fp_det": (4, -12, C), "pn_causal": (-8, 2, L),
                             "eqt_causal_fa": (8, 0, R), "eqt_causal_det": (8, -5, R),
                             "pn_look_fa": (8, -7, R), "pn_look_det": (0, 9, C), "eqt_look": (-8, 0, L)},
     }

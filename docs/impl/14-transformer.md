@@ -109,8 +109,9 @@ validation operating point, stored in `models/transformer.ayzw`: the lowest
 threshold with at most one false trigger per hour on validation noise, and half
 of it for release. The 6 s defaults (0.8, 0.3, 8 windows) do not apply.
 
-**Noise baseline** (magnitude). Each token counts as the 6 s window ending with
-it, so `maybe_add_noise` gates on the same probability rule.
+**Noise baseline** (retired regressor's magnitude, until v0.1.0-beta.6). Each
+token counted as the 6 s window ending with it, so `maybe_add_noise` gated on
+the same probability rule.
 
 ## Export and agreement
 

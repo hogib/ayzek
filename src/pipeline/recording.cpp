@@ -22,9 +22,9 @@ Recorder::Recorder(const std::string &path,
 
 void Recorder::write(const Message &m) {
   if (auto *d = std::get_if<Detection>(&m)) {
-    out_ << std::format("D\t{}\t{}\t{}\t{}\t{}\t{}\n", d->station,
+    out_ << std::format("D\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", d->station,
                         d->window_start, d->declared_at, d->probability,
-                        d->compute_ms, d->restart ? 1 : 0);
+                        d->compute_ms, d->restart ? 1 : 0, p_of(*d));
   } else if (auto *p = std::get_if<Pick>(&m)) {
     out_ << std::format("P\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}", p->station,
                         p->trigger_window, p->p_time, p->s_time, p->p_prob,
@@ -32,11 +32,6 @@ void Recorder::write(const Message &m) {
     if (p->event_id)
       out_ << std::format("\t{}\t{}", p->event_id, p->event_alarm);
     out_ << '\n';
-  } else if (auto *g = std::get_if<MagnitudeEstimate>(&m)) {
-    out_ << std::format("M\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", g->station,
-                        g->trigger_window, g->at_pick ? 1 : 0, g->window_start,
-                        g->magnitude, g->noise_windows, g->declared_at,
-                        g->compute_ms);
   } else if (auto *o = std::get_if<StationGeometry>(&m)) {
     out_ << std::format("G\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n", o->station,
                         o->trigger_window, o->p_time, o->since_p, o->log_dist,
@@ -77,14 +72,23 @@ Recording Recording::load(const std::string &path) {
       Detection d;
       f >> d.station >> d.window_start >> d.declared_at >> d.probability >>
           d.compute_ms;
-      // The restart flag is absent in recordings made before it existed.
+      // The restart flag and the P time are absent in recordings made
+      // before they existed; P is then the window start + 3.5 s.
+      d.p_time = d.window_start + 3.5;
       if (!f.fail()) {
         int restart = 0;
-        if (f >> restart)
+        if (f >> restart) {
           d.restart = restart != 0;
-        else if (!f.eof())
+          double p = 0;
+          if (f >> p)
+            d.p_time = p;
+          else if (!f.eof())
+            throw std::runtime_error(
+                std::format("{}:{}: malformed record", path, lineno));
+        } else if (!f.eof()) {
           throw std::runtime_error(
               std::format("{}:{}: malformed record", path, lineno));
+        }
         f.clear();
       }
       r.messages.emplace_back(std::move(d));
@@ -102,12 +106,7 @@ Recording Recording::load(const std::string &path) {
       }
       r.messages.emplace_back(std::move(p));
     } else if (tag == "M") {
-      MagnitudeEstimate g;
-      int at_pick = 0;
-      f >> g.station >> g.trigger_window >> at_pick >> g.window_start >>
-          g.magnitude >> g.noise_windows >> g.declared_at >> g.compute_ms;
-      g.at_pick = at_pick != 0;
-      r.messages.emplace_back(std::move(g));
+      continue; // the retired magnitude regressor (recording.hpp)
     } else if (tag == "G") {
       StationGeometry o;
       f >> o.station >> o.trigger_window >> o.p_time >> o.since_p >>
@@ -147,8 +146,6 @@ const std::string &station_of(const Message &m) {
     return d->station;
   if (auto *p = std::get_if<Pick>(&m))
     return p->station;
-  if (auto *g = std::get_if<MagnitudeEstimate>(&m))
-    return g->station;
   if (auto *o = std::get_if<StationGeometry>(&m))
     return o->station;
   if (auto *q = std::get_if<PdEstimate>(&m))

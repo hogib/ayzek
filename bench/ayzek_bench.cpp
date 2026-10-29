@@ -9,21 +9,19 @@
 // Groups:
 //   stages    the pipeline's per-window, per-pick and per-estimate work, with
 //             the shipped models: both detectors, STA/LTA, the picker, and
-//             both magnitudes (the CNN ensemble and Pd)
+//             the Pd magnitude
 //   layers    each network layer at the shape a shipped model runs it at
 //   shapes    layers at the shapes given with --layer, to price a candidate
 //             architecture before it exists in C++, e.g.
 //               --layer lstm:T=125,in=96,h=64 --layer attn:T=125,d=128,heads=4
 //   capacity  detector throughput on 1..N threads, the number of stations that
-//             fits (6 s detector, then the transformer), and the magnitude
-//             estimate's latency while they run
+//             fits (6 s detector, then the transformer)
 //
 // Inputs are synthetic and seeded: inference time here does not depend on the
 // sample values, so no waveform data is needed.
 
 #include "bench_version.hpp"
 #include "dsp.hpp"
-#include "magnitude.hpp"
 #include "models.hpp"
 #include "nn.hpp"
 #include "pd_magnitude.hpp"
@@ -442,7 +440,7 @@ void bench_spec(const Options &o, const std::string &spec) {
 // --- the shipped models ---------------------------------------------------
 
 struct Models {
-  std::vector<Weights> detectors, magnitude;
+  std::vector<Weights> detectors;
   std::unique_ptr<Weights> picker, bandpass;
   std::unique_ptr<Weights> transformer; // null without transformer.ayzw
   std::optional<PdModel> pd;            // nullopt without pd_relation.csv
@@ -453,9 +451,6 @@ Models load_models(const std::string &dir) {
   for (int seed : {42, 43, 44})
     m.detectors.push_back(
         Weights::load(std::format("{}/detector_s{}.ayzw", dir, seed)));
-  for (int p = 0; p < 3; ++p)
-    m.magnitude.push_back(
-        Weights::load(std::format("{}/magnitude_p{}.ayzw", dir, p)));
   m.picker = std::make_unique<Weights>(Weights::load(dir + "/spicker.ayzw"));
   m.bandpass = std::make_unique<Weights>(Weights::load(dir + "/bandpass.ayzw"));
   if (std::filesystem::exists(dir + "/transformer.ayzw"))
@@ -463,15 +458,6 @@ Models load_models(const std::string &dir) {
         std::make_unique<Weights>(Weights::load(dir + "/transformer.ayzw"));
   m.pd = PdModel::load(dir);
   return m;
-}
-
-// A noise baseline with enough windows to be used, as a station has after its
-// first minutes.
-StationNoise ready_noise(const dsp::Bandpass &bp) {
-  NoiseBaseline nb(bp);
-  for (int i = 0; i < 8; ++i)
-    nb.add(raw_counts(kMagWindow, 3));
-  return nb.noise();
 }
 
 // Work per detector window, as the station processor does it every 0.5 s:
@@ -588,24 +574,6 @@ void bench_stages(const Options &o, const Models &m) {
             [&] { g_sink = static_cast<float>(pk.pick(x).p_seconds); });
   }
 
-  // Magnitude: the estimate includes conditioning and the spectrogram.
-  {
-    const auto noise = ready_noise(bp);
-    auto raw = raw_counts(kMagWindow, 3);
-    MagnitudeEstimator est(m.magnitude, bp);
-    time_it(o, "stages", "magnitude estimate (3 models)", "1000x3",
-            [&] { g_sink = est.estimate(raw, noise); });
-    MagnitudeRegressor one(m.magnitude[0]);
-    const auto seq = est.seq, img = est.img;
-    time_it(o, "stages", "magnitude, one model", "1000x3 + 3x65x32",
-            [&] { g_sink = one.predict(seq, img); });
-    NoiseBaseline nb(bp);
-    time_it(o, "stages", "noise baseline update", "1000x3", [&] {
-      nb.add(raw);
-      g_sink = static_cast<float>(nb.noise().windows);
-    });
-  }
-
   // Transformer detector: one step per 0.1 s token against a full key/value
   // cache, the context it re-encodes after a quiet minute, and the stream
   // that does both on raw counts.
@@ -692,15 +660,6 @@ void bench_layers(const Options &o) {
        P{{"L", 1500}, {"cin", 64}, {"cout", 64}, {"k", 7}, {"s", 2}}},
       {"picker BiLSTM", "lstm", P{{"T", 250}, {"in", 64}, {"h", 32}}},
       {"picker attention", "attn", P{{"T", 250}, {"d", 64}, {"heads", 4}}},
-      {"magnitude BiLSTM (1D)", "lstm", P{{"T", 1000}, {"in", 3}, {"h", 64}}},
-      {"magnitude attention (1D)", "attn",
-       P{{"T", 1000}, {"d", 128}, {"heads", 4}}},
-      {"magnitude conv 1 (2D)", "conv2d",
-       P{{"H", 65}, {"W", 32}, {"cin", 3}, {"cout", 32}, {"k", 3}, {"s", 1}}},
-      {"magnitude conv 2 (2D)", "conv2d",
-       P{{"H", 65}, {"W", 32}, {"cin", 32}, {"cout", 64}, {"k", 3}, {"s", 2}}},
-      {"magnitude conv 3 (2D)", "conv2d",
-       P{{"H", 33}, {"W", 16}, {"cin", 64}, {"cout", 128}, {"k", 3}, {"s", 2}}},
   };
   for (const auto &[name, kind, p] : L)
     bench_layer(o, "layers", name, kind, p);
@@ -721,7 +680,6 @@ struct Capacity {
   double windows_per_s = 0, stations = 0;
 };
 std::vector<Capacity> g_capacity, g_capacity_transformer;
-double g_mag_idle_p50 = 0, g_mag_loaded_p50 = 0, g_mag_loaded_p99 = 0;
 
 // `make()` builds one station's work, with any warm-up done.
 template <class Make>
@@ -794,43 +752,6 @@ void bench_capacity(const Options &o, const Models &m) {
           return w;
         },
         g_capacity_transformer);
-
-  // The magnitude estimate runs on a station's own thread and holds up that
-  // station while it runs, so its latency with the other cores busy is the
-  // figure that decides how late the magnitude arrives.
-  const auto noise = ready_noise(bp);
-  auto raw = raw_counts(kMagWindow, 3);
-  MagnitudeEstimator est(m.magnitude, bp);
-  auto sample = [&](std::size_t k) {
-    std::vector<double> ms;
-    for (std::size_t i = 0; i < k; ++i) {
-      const auto t0 = Clock::now();
-      g_sink = est.estimate(raw, noise);
-      ms.push_back(
-          std::chrono::duration<double, std::milli>(Clock::now() - t0).count());
-    }
-    return ms;
-  };
-  const std::size_t k = o.quick ? 3 : 20;
-  g_mag_idle_p50 = pct(sample(k), 0.5);
-  std::atomic<bool> stop{false};
-  std::vector<std::thread> load;
-  for (std::size_t i = 0; i + 1 < n; ++i)
-    load.emplace_back([&] {
-      WindowWork w(bp, m.detectors);
-      while (!stop.load(std::memory_order_relaxed))
-        g_sink = w();
-    });
-  const auto loaded = sample(k);
-  stop = true;
-  for (auto &th : load)
-    th.join();
-  g_mag_loaded_p50 = pct(loaded, 0.5);
-  g_mag_loaded_p99 = pct(loaded, 0.99);
-  std::println("\nmagnitude estimate (3 models): {:.1f} ms alone, {:.1f} ms "
-               "(p99 {:.1f}) "
-               "with {} detector threads running",
-               g_mag_idle_p50, g_mag_loaded_p50, g_mag_loaded_p99, n - 1);
 }
 
 // --- output ---------------------------------------------------------------
@@ -889,9 +810,7 @@ void write_json(const Options &o) {
                        i + 1 < cap->size() ? "," : "");
     }
   }
-  f << std::format("  ],\n  \"magnitude_latency_ms\": {{\"idle_p50\": {:.6g}, "
-                   "\"loaded_p50\": {:.6g}, \"loaded_p99\": {:.6g}}}\n}}\n",
-                   g_mag_idle_p50, g_mag_loaded_p50, g_mag_loaded_p99);
+  f << "  ]\n}\n";
   std::println("\nresults -> {}", o.json);
 }
 

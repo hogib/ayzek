@@ -19,7 +19,7 @@ build-release/bench/ayzek_bench --layer lstm:T=125,in=96,h=64 --layer attn:T=125
 
 | group | what it times |
 |---|---|
-| `stages` | the pipeline's work with the shipped models: conditioning, one detector and the ensemble, 50 STA/LTA samples, the per-window total (every 0.5 s per station), the picker, the magnitude estimate and one magnitude model, the noise baseline update |
+| `stages` | the pipeline's work with the shipped models: conditioning, one detector and the ensemble, 50 STA/LTA samples, the per-window total (every 0.5 s per station), the picker, the Pd chain and estimate, the transformer (until v0.1.0-beta.6 also the retired magnitude regressor and its noise baseline) |
 | `layers` | every network layer at the shape a shipped model runs it at, with multiply-accumulates per call and the rate achieved |
 | `shapes` | layers at shapes given with `--layer KIND:K=V,...` (kinds `conv1d`, `conv2d`, `lstm`, `attn`, `linear`), to price an architecture before it exists in C++ |
 | `capacity` | detector windows per second on 1 to N threads, the stations that fit (two windows per station per second), and the magnitude estimate's latency while the other cores run detectors |

@@ -13,16 +13,10 @@ uv run --project tools python tools/export_models.py \
 It needs `data/demo/DEMI.mseed` for the fixtures, so run
 `tools/make_demo_data.py` first (see `05-pipeline.md`).
 
-The magnitude regressor's inputs come from seismic_cli's encoder, which needs
-torchaudio, so its export runs in the data_downloader environment:
-
-```bash
-uv run --project tools python tools/export_magnitude.py \
-    --partition P0.pth --partition P1.pth --partition P2.pth --dataset dataset_magreg_fdsn_10s
-```
-
-It writes `models/magnitude_p{0,1,2}.ayzw` and `data/fixtures/magnitude.ayzw`.
-Both scripts share the writer in `tools/ayzw.py`.
+The exports share the writer in `tools/ayzw.py`. The magnitude regressor's
+export (`tools/export_magnitude.py`, `models/magnitude_p{0,1,2}.ayzw`) was
+removed with the regressor after v0.1.0-beta.6 (`07-magnitude.md`); the Pd
+model is exported by `tools/export_pd.py` (`17-pd-magnitude.md`).
 
 ## What it writes
 

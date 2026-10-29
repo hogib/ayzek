@@ -47,7 +47,7 @@ double travel(const Sta &s, double v) {
 // S shifted by `s_shift` seconds (0: the true S). Each station triggered once
 // in `span` seconds, which sets the chance-coincidence rate.
 Assessment run(const std::vector<std::pair<int, double>> &picked,
-               bool magnitudes = false, double prob = 0.9, double span = 1200) {
+               double prob = 0.9, double span = 1200) {
   NetworkConfig cfg;
   cfg.assess = true;
   Network net(stations(), cfg);
@@ -58,14 +58,8 @@ Assessment run(const std::vector<std::pair<int, double>> &picked,
   for (const auto &[i, shift] : picked) {
     const auto &s = kStations[i];
     const double p = kOrigin + travel(s, 6.0), sv = kOrigin + travel(s, 3.5) + shift;
-    net.on(Pick{s.code, p - 3.5, p, sv, prob, prob, p + 56.5, 1.0, nullptr});
+    net.on(Pick{s.code, p - 3.5, p, sv, prob, prob, p + 56.5, 1.0});
   }
-  if (magnitudes)
-    for (const auto &s : kStations) {
-      const double p = kOrigin + travel(s, 6.0);
-      net.on(MagnitudeEstimate{s.code, p - 3.5, false, p - 2, 3.0f + 0.1f * (s.code[0] - 'A'),
-                               0, p + 8, 1.0});
-    }
   CHECK(net.declared_count() == 1);
   return net.assess(net.events().front(), kOrigin - span / 2, kOrigin + span / 2);
 }
@@ -79,20 +73,18 @@ void four_consistent_stations_are_an_earthquake() {
 
 void two_stations_need_support() {
   // Stations triggering every few seconds: a coincidence is no evidence.
-  CHECK(run({{0, 0}, {2, 0}}, false, 0.9, 10).verdict == Verdict::Possible);
+  CHECK(run({{0, 0}, {2, 0}}, 0.9, 10).verdict == Verdict::Possible);
   // Rare triggers: it is.
-  CHECK(run({{0, 0}, {2, 0}}, false, 0.9, 1e6).verdict == Verdict::Earthquake);
-  // Station magnitudes that agree support it too, with nothing against.
-  CHECK(run({{0, 0}, {2, 0}}, true, 0.9, 400).verdict == Verdict::Earthquake);
+  CHECK(run({{0, 0}, {2, 0}}, 0.9, 1e6).verdict == Verdict::Earthquake);
 }
 
 void s_p_that_no_source_explains_is_a_misfire() {
   // C's S 14 s late: ~120 km too far. Two stations cannot say which pick is
   // wrong, so it takes an objection besides: frequent triggers.
-  CHECK(run({{0, 0}, {2, 14.0}}, false, 0.9, 10).verdict == Verdict::Misfire);
-  CHECK(run({{0, 0}, {2, 14.0}}, false, 0.9, 1e6).verdict == Verdict::Unclassified);
+  CHECK(run({{0, 0}, {2, 14.0}}, 0.9, 10).verdict == Verdict::Misfire);
+  CHECK(run({{0, 0}, {2, 14.0}}, 0.9, 1e6).verdict == Verdict::Unclassified);
   // Three stations that no single source reconciles, even leaving one out.
-  CHECK(run({{0, 0}, {1, 14.0}, {2, 10.0}}, false, 0.9, 1e6).verdict ==
+  CHECK(run({{0, 0}, {1, 14.0}, {2, 10.0}}, 0.9, 1e6).verdict ==
         Verdict::Misfire);
 }
 
@@ -109,7 +101,7 @@ void one_bad_station_among_good_ones_is_left_out() {
 
 void too_few_picks_are_unclassified() {
   CHECK(run({{0, 0}}).verdict == Verdict::Unclassified);
-  const auto a = run({{0, 0}, {1, 0}}, false, 0.3); // both fail the pick QC
+  const auto a = run({{0, 0}, {1, 0}}, 0.3); // both fail the pick QC
   CHECK(a.verdict == Verdict::Unclassified && a.picks_rejected == 2);
 }
 
@@ -124,7 +116,7 @@ void pick_at_a_station_that_did_not_trigger() {
     const double p = kOrigin + travel(s, 6.0);
     net.on(Detection{s.code, p - 3.5, p + 1.0, 0.99f, 0.0});
     net.on(Pick{s.code, p - 3.5, p, kOrigin + travel(s, 3.5), 0.9, 0.9,
-                p + 56.5, 1.0, nullptr});
+                p + 56.5, 1.0});
   }
   const auto req = net.pick_requests(kOrigin - 600, kOrigin + 600);
   CHECK(req.size() == 1 && req[0].station == "D");
@@ -132,7 +124,7 @@ void pick_at_a_station_that_did_not_trigger() {
   CHECK(std::abs(req[0].p_pred - (kOrigin + travel(d, 6.0))) < 0.5);
   net.on(Pick{"D", req[0].p_pred - 3.5, kOrigin + travel(d, 6.0),
               kOrigin + travel(d, 3.5), 0.8, 0.8, req[0].p_pred + 54.5, 1.0,
-              nullptr, req[0].event_id, req[0].event_alarm});
+              req[0].event_id, req[0].event_alarm});
   const auto a = net.assess(net.events().front(), kOrigin - 600, kOrigin + 600);
   CHECK(a.stations.size() == 4 && a.stations[3].requested);
   CHECK(a.verdict == Verdict::Earthquake);

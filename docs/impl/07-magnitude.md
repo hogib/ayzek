@@ -1,7 +1,15 @@
-# 07 · Magnitude
+# 07 · Magnitude (retired)
+
+**Retired after v0.1.0-beta.6.** The regressor described here, its weights
+(`models/magnitude_p{0,1,2}.ayzw`), its code (`src/magnitude.*`,
+`src/spectrogram.*`), its export (`tools/export_magnitude.py`) and its test
+were removed; the magnitude is now the Pd estimate of `17-pd-magnitude.md`,
+for every detector. This document records the implementation as it was in
+v0.1.0-beta.6, where the code it refers to can be found. Its results, and the
+comparisons with it in `17-pd-magnitude.md`, are from that release.
 
 With the transformer, a second estimate from the peak displacement of the P
-wave runs alongside this regressor (`17-pd-magnitude.md`). It was introduced
+wave ran alongside this regressor (`17-pd-magnitude.md`). It was introduced
 because the regressor, trained on few large events, underestimates them.
 
 Each triggered station sizes the event from a 10 s window, and the network

@@ -5,9 +5,9 @@ foreach t : ['test_ring', 'test_steim', 'test_reorder', 'test_writer', 'test_loc
 endforeach
 
 # Comparisons with reference outputs from tools/export_models.py,
-# tools/export_magnitude.py, tools/export_stalta.py and tools/export_pd.py.
+# tools/export_stalta.py and tools/export_pd.py.
 # Skipped (exit 77) if those files are missing.
-foreach t : ['test_dsp', 'test_models', 'test_magnitude', 'test_stalta', 'test_transformer', 'test_pd']
+foreach t : ['test_dsp', 'test_models', 'test_stalta', 'test_transformer', 'test_pd']
   exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
   test(t, exe, args: [meson.project_source_root()], timeout: 300)
 endforeach
@@ -22,6 +22,8 @@ if add_languages('c', required: false, native: false)
   test('test_filterpicker', exe, args: [meson.project_source_root()], timeout: 300)
 endif
 
-# End-to-end test on the demo data; see demo_check.sh.
+# End-to-end tests on the demo data; see demo_check.sh.
 test('demo_m49', find_program('demo_check.sh'),
-  args: [ayzek_exe, meson.project_source_root()], timeout: 600, is_parallel: false)
+  args: [ayzek_exe, meson.project_source_root(), 'demo', '0'], timeout: 600, is_parallel: false)
+test('demo_ko_m49', find_program('demo_check.sh'),
+  args: [ayzek_exe, meson.project_source_root(), 'demo_ko', '1'], timeout: 600, is_parallel: false)

@@ -2,8 +2,9 @@
 
 // Network stage (one instance): associates station detections into events,
 // declares an event when enough stations detect it, locates it (from the
-// transformer's per-station geometry, or from P and S picks), combines station
-// magnitudes, and optionally compares events with a catalogue.
+// transformer's per-station geometry, or from P and S picks, and early from
+// the P times alone), estimates the magnitude from peak P displacement, and
+// optionally compares events with a catalogue.
 
 #include "assess.hpp"
 #include "common.hpp"
@@ -76,6 +77,19 @@ struct NetworkConfig {
   // before, each station's own geometry distance (a poorly constrained early
   // location can be hundreds of km off, and Pd scales with distance).
   double pd_max_err_km = 20.0;
+  // Without the geometry locator, each declared event is also located from
+  // its detections' P times alone (locate.hpp, locate_p_times), from
+  // kMinPTimeStations on, so that the Pd magnitude has distances before the
+  // S-P picks of the 60 s picker window locate the event. This P-time
+  // location serves the Pd distances only, until a pick location replaces
+  // it there; catalogue matching and the warning times keep the pick
+  // location. `p_sigma` is the P-time uncertainty in its misfit, which sets
+  // its 68% radius: 1.35 s makes that radius contain the catalogue epicentre
+  // for 69% of the 118 located events of the development replays, the onsets'
+  // own error (0.09 s, robust) being much smaller than the half-space
+  // model's (17-pd-magnitude.md, section 2.4).
+  bool p_locate = true;
+  double p_sigma = 1.35;
   double merge_rms = 1.0;     // P-time rms of one source for both, seconds
   std::size_t merge_min_fit = 4; // stations in that fit
   // The fit's source within this many degrees of the stations: from far
@@ -92,7 +106,7 @@ struct NetworkConfig {
   double catalog_radius_km =
       250;                 // evaluation radius around the station centroid
   std::vector<Site> sites; // additional places for the warning-time report
-  bool verbose = false;    // per-station detection, pick and magnitude lines
+  bool verbose = false;    // per-station detection, pick and Pd lines
   // --assess (assess.hpp): an ASSESS line while running and a section in the
   // report. `context_catalog` reaches further back than `catalog`, for the
   // aftershock-zone context; empty means `catalog`.
@@ -101,7 +115,6 @@ struct NetworkConfig {
   double assess_max_rms = 2.5;     // S-P fit rms, seconds
   double assess_station_tol = 3.5; // largest P or S residual at one station, s
   double assess_max_sp_km = 200;   // an S-P distance beyond this is a bad pick
-  double assess_mag_spread = 0.5; // station magnitudes agree within this sd
   double assess_p_chance = 0.01;  // below this, not a chance coincidence
   double assess_geo_z = 2.0;      // geometry agrees within this many sds
 };
@@ -131,14 +144,12 @@ struct Event {
   std::map<std::string, Detection> detections;
   std::map<std::string, Pick> picks;
   std::size_t coda = 0; // later detections assigned to this event
-  std::map<std::string, MagnitudeEstimate>
-      magnitudes;                  // per station; pick-based replaces early
-  std::optional<double> magnitude; // median over stations
-  std::size_t magnitude_stations = 0;
-  std::optional<double> first_magnitude; // first reported event magnitude
-  double first_magnitude_at = 0;         // and the stream time it was reported
   std::optional<Location> location;
   double first_located_at = 0; // stream time of the first accepted location
+  // Window detectors: the P-time location (NetworkConfig::p_locate) and the
+  // stream time of the first one.
+  std::optional<Location> p_location;
+  double first_p_located_at = 0;
   // Geometry locator: the latest estimate per station (common.hpp).
   std::map<std::string, StationGeometry> geometry;
   // Pd magnitude: the latest (longest window) value per station, the current
@@ -170,13 +181,8 @@ public:
   Network(std::map<std::string, StationInfo> stations, NetworkConfig cfg);
   void on(const Detection &d);
   void on(const Pick &p);
-  void on(const MagnitudeEstimate &m);
   void on(const StationGeometry &g);
   void on(const PdEstimate &q);
-  // True if the detection at `station` dated `trigger_window` belongs to a
-  // declared event. Magnitude estimates at the picked P are computed only then.
-  [[nodiscard]] bool declared(const std::string &station,
-                              double trigger_window) const;
   // Final report: one block per declared event (magnitude, alarm, location,
   // catalogue comparison, S-wave warning time at each station and site), the
   // catalogue events not detected, and totals.
@@ -222,13 +228,13 @@ private:
          std::string *worst) const;
   [[nodiscard]] const CatalogEvent *match(const Event &e) const;
   void report_location(Event &e, double now);
+  void report_p_location(Event &e, double now);
   // Geometry locator with too few stations to locate: each station's
   // distance and its one-sd range, "42 km from DEMI (31-57 km), ...".
   [[nodiscard]] std::string ranges(const Event &e) const;
   // The stations of `e.geometry` with coordinates, the ones the locator uses.
   [[nodiscard]] std::size_t geometry_stations(const Event &e) const;
   void report_ranges(Event &e, double now);
-  void report_magnitude(Event &e, double now);
   // Pd magnitude: re-estimates, and prints the estimate when it moves by 0.1
   // or more or a station is added.
   void report_pd(Event &e, double now);

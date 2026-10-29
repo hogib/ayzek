@@ -9,7 +9,7 @@
 //
 // Output: one CSV row per subset. The main event is the largest catalogue
 // event within the evaluation radius; its columns give the alert delay, the
-// S-wave blind-zone radius at the alert, the first and final magnitude, and
+// S-wave blind-zone radius at the alert, the first and final Pd magnitude (with --pd), and
 // the location error; the last two columns count catalogue events located
 // within 30 km and beyond 50 km. A summary of the best subsets per size and of the
 // marginal gain from adding each station is written to stderr.
@@ -222,8 +222,6 @@ int main(int argc, char **argv) try {
         net.on(*d);
       else if (auto *p = std::get_if<Pick>(&m))
         net.on(*p);
-      else if (auto *g = std::get_if<MagnitudeEstimate>(&m))
-        net.on(*g);
       else if (auto *o = std::get_if<StationGeometry>(&m))
         net.on(*o);
       else if (auto *q = std::get_if<PdEstimate>(&m))
@@ -249,8 +247,8 @@ int main(int argc, char **argv) try {
         row.located_30km += loc_error <= 30.0;
         row.located_far += loc_error > 50.0;
       }
-      if (e->magnitude)
-        mag_errors.push_back(std::abs(*e->magnitude - c.magnitude));
+      if (e->pd_magnitude)
+        mag_errors.push_back(std::abs(e->pd_magnitude->mean - c.magnitude));
       // The network holds its own copy of the catalogue; compare by value.
       if (c.time == main_event->time && c.lat == main_event->lat &&
           c.lon == main_event->lon) {
@@ -258,12 +256,12 @@ int main(int argc, char **argv) try {
         row.main_alert = alert;
         row.main_blind_km = std::sqrt(
             std::max(kVs * kVs * alert * alert - c.depth * c.depth, 0.0));
-        if (e->first_magnitude) {
-          row.main_first_mag = *e->first_magnitude;
-          row.main_first_mag_delay = e->first_magnitude_at - c.time;
+        if (e->pd_first) {
+          row.main_first_mag = *e->pd_first;
+          row.main_first_mag_delay = e->pd_first_at - c.time;
         }
-        if (e->magnitude)
-          row.main_final_mag = *e->magnitude;
+        if (e->pd_magnitude)
+          row.main_final_mag = e->pd_magnitude->mean;
         row.main_location_error = loc_error;
       }
     }

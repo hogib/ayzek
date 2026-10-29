@@ -10,12 +10,15 @@ three-component waveforms from several stations and, for each earthquake:
    (`--detector transformer`, one output per 0.1 s, `docs/impl/14-transformer.md`);
    a recursive STA/LTA is available for comparison
 2. declares an event when stations agree within the P travel time between them
-3. estimates the magnitude from 10 s of waveform per station, and, with the
-   transformer, from the peak displacement of the P wave and the stations'
-   distances (`docs/impl/17-pd-magnitude.md`)
+3. estimates the magnitude from the peak displacement of the P wave and the
+   stations' distances, with the probability of each size class
+   (`docs/impl/17-pd-magnitude.md`); the learned magnitude regressor of
+   v0.1.0-beta.6 and earlier is retired (`docs/impl/07-magnitude.md`)
 4. locates the event by grid search: from the streaming transformer's
    per-station distance (three stations or more) when it has the geometry head
-   (`docs/impl/15-geometry-location.md`), otherwise from P and S picks
+   (`docs/impl/15-geometry-location.md`), otherwise from P and S picks, and,
+   seconds after the alarm, from the detections' P times alone (three
+   stations or more), for the Pd magnitude's distances until the picks arrive
 
 All inference is hand-written (no ML runtime), with NEON kernels on aarch64.
 The target platform is a Raspberry Pi 4 or 5. The input is currently a replay
@@ -166,7 +169,7 @@ tools/demo.sh all      # 7 stations, full speed
 |---|---|---|
 | `--models DIR` | `models` | weights directory |
 | `--speed X` | 1 | replay speed; 1 = real time, 0 = as fast as possible |
-| `--from TIME` | start of data | no triggers before this UTC time; earlier data only updates the station noise baselines |
+| `--from TIME` | start of data | no triggers before this UTC time; earlier data still runs through the detectors' and the Pd chain's filters |
 | `--threshold P` | 0.8 | trigger when `--trigger-windows` consecutive windows reach P |
 | `--trigger-windows N` | 8 | see `--threshold`; 8 windows add 3.5 s to a trigger |
 | `--instant-threshold P` | 0.9 | also trigger on a single window at or above P; a value > 1 disables this |
@@ -184,9 +187,10 @@ tools/demo.sh all      # 7 stations, full speed
 | `--fp-thresholds T1,T2` | 10,10 | FilterPicker trigger threshold and the mean characteristic function over tUpEvent needed to accept a pick |
 | `--no-anchor` | | do not take the P time of a model trigger from the STA/LTA onset |
 | `--anchor-on R` | 3 | STA/LTA ratio taken as the onset when anchoring |
-| `--anchor-picker`, `--anchor-magnitude` | | also place the picker and early magnitude windows from the anchored P; both make their models worse (`docs/impl/09-sta-lta.md`) |
+| `--anchor-picker` | | also place the picker window from the anchored P; it makes the picker worse (`docs/impl/09-sta-lta.md`) |
+| `--no-onset-fp` | | 6 s detector: do not date the P-time location and Pd by the FilterPicker pick within 3 s of the trigger's P (`docs/impl/17-pd-magnitude.md`, section 2.4) |
+| `--no-p-locate`, `--p-sigma S` | , 1.35 | window detectors: no location from the detections' P times alone; its P-time uncertainty, which sets its 68% radius |
 | `--require-onset` | | a detector trigger also needs an STA/LTA onset; measured, and worse than not requiring one (`docs/impl/09-sta-lta.md`) |
-| `--mag-lead S` | 2 | magnitude window start, seconds before P |
 | `--step N` | 50 | samples between detector windows (0.5 s at 100 Hz) |
 | `--min-stations N` | 2; transformer 3 | station detections needed to declare an event; 3 halves the unmatched alarms in a dense network but costs warning time (`docs/impl/05-pipeline.md`); the transformer, which also fires in codas, needs 3 (`docs/impl/14-transformer.md`) |
 | `--slack S` | 3 | tolerance on the inter-station P travel time, seconds |
@@ -194,30 +198,26 @@ tools/demo.sh all      # 7 stations, full speed
 | `--assess` | | diagnostic: judge every alarm earthquake, possible, misfire or unclassified from its S-P picks (runs the picker even with the geometry locator); `ASSESS` lines while running, a report section (`docs/impl/16-alarm-assessment.md`) |
 | `--assess-csv FILE` | | with `--assess`: one row per alarm, readable by `tools/plot_candidates.py` |
 | `--no-pick` | | no P/S picker, and so no location unless `--locate geometry` |
-| `--no-magnitude` | | no magnitude regressor. Otherwise each trigger gets an early estimate, and triggers of declared events a second one at the picked P |
-| `--no-pd-magnitude` | | transformer: no magnitude from peak P displacement. On by default when `models/pd_relation.csv` exists (`tools/export_pd.py`, `docs/impl/17-pd-magnitude.md`) |
+| `--no-magnitude` | | no magnitude estimate, as `--no-pd-magnitude`; with `--from`, a detector that needs no earlier data (the transformer) also starts reading there |
+| `--no-pd-magnitude` | | no magnitude from peak P displacement. On by default, for every detector, when `models/pd_relation.csv` exists and the station has a gain in `models/pd_gain.csv` (`tools/export_pd.py`, `docs/impl/17-pd-magnitude.md`) |
 | `--catalog CSV` | | AFAD catalogue export; each alarm is compared with it |
 | `--site NAME,LAT,LON` | | also report the S-wave warning time at this place (repeatable) |
 | `--scores DIR` | | write every window's detector probability to `DIR/STATION.csv` |
 | `--scores-in DIR` | | use the probabilities of an earlier `--scores` run instead of running the detector |
 | `--record FILE` | | write all station outputs, for `tools/network_subsets` |
-| `--verbose` | | print every station detection, pick and magnitude estimate |
+| `--verbose` | | print every station detection, pick and Pd value |
 | `--no-color` | | |
 
 ### Output
 
-While running, one line per alarm and per magnitude or location update:
+While running, one line per alarm and per magnitude or location update
+(demo_ko):
 
 ```
-ALARM    #3   18:21:09.00  earthquake detected by DEMI, MANT  (AFAD MW 4.9 at 18:20:51.00, 18.0 s ago)
-MAG      #3   18:21:09.00  magnitude M4.3 from 1 station (DEMI 4.3)
-LOCATE   #3   18:22:05.00  located at 39.221N 28.088E, origin 18:20:52.02, rms 0.16 s from 3 stations
-```
-
-With the transformer, the Pd magnitude is printed the same way (demo_ko):
-
-```
-PDMAG    #3   18:21:09.10  Pd magnitude M4.5 ± 0.2 from 2 stations (2 above noise), windows up to 4 s, distances from the stations' geometry
+ALARM    #3   18:21:09.00  earthquake detected by KULA, SIMA  (AFAD MW 4.9 at 18:20:51.00, 18.0 s ago)
+PLOC     #3   18:21:10.50  P times locate it at 39.240N 28.119E +-23 km, origin 18:20:52.18, rms 0.01 s from 3 stations
+PDMAG    #3   18:21:12.50  Pd magnitude M4.7 ± 0.2 (M<4 0%, 4-5.5 100%, M>=5.5 0%) from 3 stations (3 above noise), windows up to 5 s, distances from the P-time location
+LOCATE   #3   18:22:04.50  located at 39.206N 28.137E, origin 18:20:52.66, rms 0.21 s from 5 stations
 ```
 
 At the end:
@@ -229,7 +229,7 @@ At the end:
 - **Summary:** alarms that match an AFAD event and alarms that do not, AFAD
   events detected and missed (in total and by magnitude band), alarm delay,
   and lists of missed events and unmatched alarms.
-- **Station processing:** windows, triggers, picks and magnitude estimates per
+- **Station processing:** windows, triggers, picks and Pd values per
   station, and the time per window, pick and estimate.
 
 An alarm matches an AFAD event if its location agrees (epicentre within 30 km,
@@ -285,9 +285,11 @@ catalogue (events within 250 km):
   (`docs/impl/05-pipeline.md`).
 - **Alarm time.** Set by the P travel time to the second station, not by
   computation.
-- **Magnitude.** Saturates for large events (final M4.7 for the Mw 6.1, M4.8
-  for the Mw 6.2). The regressor was trained on 10 s windows with few events
-  above M5.5 (`docs/impl/07-magnitude.md`).
+- **Magnitude.** The magnitudes in this table are the retired regressor's,
+  which saturated for large events (final M4.7 for the Mw 6.1, M4.8 for the
+  Mw 6.2; `docs/impl/07-magnitude.md`). The Pd magnitude that replaces it needs
+  the AFAD stations' gains, which `models/pd_gain.csv` does not hold yet; on
+  KO's marmara_ko it gives the Mw 6.2 M6.0 (`docs/impl/17-pd-magnitude.md`).
 - **Unmatched alarms.** Some are probably uncatalogued aftershocks. Of the 24
   in the Marmara replay, 9 were located and 5 of those within 15 km of the
   Mw 6.2.

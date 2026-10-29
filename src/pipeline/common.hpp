@@ -5,10 +5,12 @@
 // queue, and the logger.
 
 #include <chrono>
+#include <cmath>
 #include <condition_variable>
 #include <cstdint>
 #include <deque>
 #include <format>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -123,9 +125,18 @@ struct Detection {
   // onset in another event's coda (trigger.hpp). The network stage does not
   // absorb it as coda.
   bool restart = false;
+  // The P time of the station's onset, epoch: for the 6 s detector a
+  // FilterPicker pick near the trigger's P when there is one
+  // (ProcessorConfig::onset_fp), otherwise the trigger's P. It dates the
+  // P-time location and the Pd measurement; window_start, which the
+  // association and the catalogue matching use, is unchanged by it. NaN (a
+  // detection made without it) means window_start + 3.5 s (p_of).
+  double p_time = std::numeric_limits<double>::quiet_NaN();
 };
 
-struct MagnitudeWindow; // processor.hpp
+inline double p_of(const Detection &d) {
+  return std::isnan(d.p_time) ? d.window_start + 3.5 : d.p_time;
+}
 
 struct Pick {
   std::string station;
@@ -134,27 +145,11 @@ struct Pick {
   double p_prob, s_prob;
   double declared_at; // stream time at the end of the 60 s picker window
   double compute_ms;
-  // Data for a magnitude estimate at the picked P, if P is confident and near
-  // the trigger. Not recorded.
-  std::shared_ptr<const MagnitudeWindow> magnitude_window;
   // --assess: a pick at a station that did not trigger, made for the event
   // with this id and alarm time (Network::pick_requests); 0 for the picks that
   // follow a detection. `trigger_window` is then the predicted P - 3.5 s.
   int event_id = 0;
   double event_alarm = 0;
-};
-
-struct MagnitudeEstimate {
-  std::string station;
-  double trigger_window; // window_start of the Detection this follows
-  bool at_pick; // false: window placed from the trigger time; true: from the
-                // picked P
-  double window_start;
-  float magnitude;
-  std::size_t noise_windows; // noise windows in the station baseline; 0 =
-                             // per-window normalisation
-  double declared_at;
-  double compute_ms;
 };
 
 // Transformer with the geometry head: how far the event is from one station
@@ -197,16 +192,14 @@ struct Progress {
   double until;
 };
 
-using Message = std::variant<Detection, Pick, MagnitudeEstimate,
-                             StationGeometry, PdEstimate, StationDone, Progress>;
+using Message = std::variant<Detection, Pick, StationGeometry, PdEstimate,
+                             StationDone, Progress>;
 
 inline double declared_at(const Message &m) {
   if (auto *d = std::get_if<Detection>(&m))
     return d->declared_at;
   if (auto *p = std::get_if<Pick>(&m))
     return p->declared_at;
-  if (auto *g = std::get_if<MagnitudeEstimate>(&m))
-    return g->declared_at;
   if (auto *g = std::get_if<StationGeometry>(&m))
     return g->declared_at;
   if (auto *q = std::get_if<PdEstimate>(&m))

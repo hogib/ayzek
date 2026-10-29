@@ -1,16 +1,13 @@
 #pragma once
 
 // Processing stage, one thread per station: sliding windows -> preprocessing ->
-// detector ensemble (or STA/LTA, FilterPicker, or the streaming transformer) -> trigger. A trigger schedules an early
-// magnitude estimate and a 60 s picker window. A confident P pick carries the
-// 10 s window for a magnitude estimate at the picked P, which the network stage
-// runs only for declared events. Windows scored as noise update the station's
-// noise baseline used by the magnitude regressor.
+// detector ensemble (or STA/LTA, FilterPicker, or the streaming transformer) ->
+// trigger. A trigger schedules a 60 s picker window and, with a Pd model, the
+// peak-displacement measurements at its onset (pd_magnitude.hpp).
 
 #include "common.hpp"
 #include "dsp.hpp"
 #include "filterpicker.hpp"
-#include "magnitude.hpp"
 #include "models.hpp"
 #include "pd_magnitude.hpp"
 #include "stalta.hpp"
@@ -54,12 +51,11 @@ struct ProcessorConfig {
   double picker_lead =
       2.0; // picker window start, seconds before the triggering window
   bool pick = true;
+  // Magnitude (the Pd estimate, `pd` below). Off, a replay with `from` also
+  // starts reading at `from` where no STA/LTA or FilterPicker needs the earlier
+  // data, as it did when this switched off the former regressor.
   bool magnitude = true;
-  double noise_every = 30.0; // seconds between noise-baseline windows
-  float noise_below =
-      0.3f;        // max detector probability over a window accepted as noise
-  double from = 0; // no triggers before this epoch; earlier windows update the
-                   // noise baseline only
+  double from = 0; // no triggers before this epoch
 
   // STA/LTA (detector = StaLta): trigger when the ratio reaches `stalta_on`,
   // re-arm when it falls below `stalta_off`. The P onset is taken to be the
@@ -73,13 +69,11 @@ struct ProcessorConfig {
                            .fs = 100.0};
   double stalta_on = 8.0;
   double stalta_off = 1.5;
-  double stalta_noise_below = 2.0; // max ratio over a window accepted as noise
 
   // FilterPicker (detector = FilterPicker) on the vertical component: every
   // pick triggers, dated at the pick, and is declared at the sample that
   // accepted it. Defaults: Lomax et al. (2012) at 100 Hz (18-filterpicker.md).
   dsp::FilterPickerConfig fp{};
-  double fp_noise_below = 5.0; // max clipped CF over a window accepted as noise
 
   // Anchoring (detector = Model): an STA/LTA runs alongside the detector and
   // its onsets give the P time of a trigger, in place of the assumption that P
@@ -89,13 +83,19 @@ struct ProcessorConfig {
   double anchor_on = 3.0;      // ratio taken as an onset
   double anchor_off = 1.5;     // ratio below which the next onset can be taken
   bool require_onset = false;  // a trigger also needs an onset in that range
-  double magnitude_lead = 2.0; // magnitude window start, seconds before P
-  // The picker and early magnitude windows are placed from the detector's run
-  // start even when the trigger is anchored, unless these are set. Both models
-  // were trained on windows placed that way, and moving a window changes what
-  // they see (09-sta-lta.md).
+  // The picker window is placed from the detector's run start even when the
+  // trigger is anchored, unless this is set. The picker was trained on
+  // windows placed that way, and moving the window changes what it sees
+  // (09-sta-lta.md).
   bool anchor_picker = false;
-  bool anchor_magnitude = false;
+  // 6 s detector: a FilterPicker at its default settings runs alongside on
+  // the vertical, and a trigger's onset (Detection::p_time, which dates the
+  // P-time location and the Pd measurement) is its pick nearest the
+  // trigger's P within onset_fp_window s, or that P without one. It never
+  // triggers anything and leaves the detection's window start alone
+  // (17-pd-magnitude.md).
+  bool onset_fp = true;
+  double onset_fp_window = 3.0;
 
   // Transformer (detector = Transformer): trigger when a token's probability
   // reaches `threshold`, re-arm when it falls below `release`. The detection
@@ -125,11 +125,13 @@ struct ProcessorConfig {
   bool geometry = false;
   double geometry_every = 1.0;
   double geometry_seconds = 20.0;
-  // Transformer: with a Pd model (pd_magnitude.hpp) and a gain for the
-  // station, the raw vertical component runs through the displacement chain,
-  // and each trigger is followed by a PdEstimate as each of the model's
-  // windows after the dated P ends. A value needs the chain to have run
-  // without a gap from kPdLeadSeconds before P to the end of its window.
+  // With a Pd model (pd_magnitude.hpp) and a gain for the station, the raw
+  // vertical component runs through the displacement chain, and each trigger
+  // is followed by a PdEstimate as each of the model's windows after the
+  // trigger's P ends: the transformer's dated P, the anchoring onset (or 3.5 s
+  // into the window) for the window detector, the onset or pick for STA/LTA
+  // and FilterPicker. A value needs the chain to have run without a gap from
+  // kPdLeadSeconds before P to the end of its window.
   const PdModel *pd = nullptr;
 };
 
@@ -137,37 +139,28 @@ struct ProcessorConfig {
 // window ending 1 s before P, as in onset's pd.py.
 inline constexpr double kPdLeadSeconds = 41.0;
 
-// The 10 s window starting 2 s before a picked P and the station's noise
-// baseline at that time, sent with the Pick (common.hpp).
-struct MagnitudeWindow {
-  double start = 0;        // epoch of the first sample
-  std::vector<double> raw; // (1000, 3) interleaved counts
-  StationNoise noise;
-};
-
 struct ProcessorStats {
   std::uint64_t windows = 0, gap_windows = 0, detections = 0, picks = 0,
-                abandoned_picks = 0, magnitudes = 0;
+                abandoned_picks = 0;
   std::uint64_t anchored =
       0; // detections whose P time came from an STA/LTA onset
   std::uint64_t unconfirmed =
       0; // runs of windows dropped for want of an onset (require_onset)
   std::uint64_t context_refreshes = 0; // transformer: station context updates
   std::uint64_t geometry = 0; // transformer: StationGeometry messages sent
-  std::uint64_t pd_values = 0; // transformer: PdEstimate messages sent
+  std::uint64_t pd_values = 0; // PdEstimate messages sent
+  std::uint64_t onset_picks = 0; // onset_fp: detections dated by a pick
   std::uint64_t dt_resets = 0; // transformer: detections from a dt restart
-  std::size_t noise_windows = 0;
   std::vector<float>
       window_ms; // conditioning + ensemble (or STA/LTA update), per window
-  std::vector<float> pick_ms,
-      magnitude_ms; // magnitude_ms: early estimates only
+  std::vector<float> pick_ms;
 };
 
 class Processor {
 public:
   Processor(Station &st, const std::vector<Weights> &detector,
-            const Weights &picker, const std::vector<Weights> &magnitude,
-            const dsp::Bandpass &bp, ProcessorConfig cfg, Bus &bus,
+            const Weights &picker, const dsp::Bandpass &bp,
+            ProcessorConfig cfg, Bus &bus,
             const std::string &scores_path,
             const std::string &scores_in_path = "",
             const Weights *transformer = nullptr);
@@ -189,15 +182,19 @@ private:
   [[nodiscard]] std::uint64_t onset_for(std::uint64_t run_start) const;
   void trigger(std::uint64_t run_start, std::uint64_t p_pos,
                std::uint64_t model_start, double declared_at, float p,
-               double ms, bool restart = false);
+               double ms, bool restart = false, std::uint64_t onset = kUnset);
+  // onset_fp: the window's new vertical samples into the onset FilterPicker,
+  // and the pick nearest `p_pos` within the window, or kUnset.
+  void update_onset_fp(std::uint64_t start);
+  [[nodiscard]] std::uint64_t onset_pick(std::uint64_t p_pos) const;
   void run_jobs(std::uint64_t limit);
   void run_pick(std::uint64_t start, double trigger, std::uint64_t p_pos);
-  void run_early_magnitude(std::uint64_t start, double trigger);
-  void maybe_add_noise(std::uint64_t window_start);
   // Pd: one vertical sample into the displacement chain, and the
   // measurements whose windows have ended by `pos`.
   void pd_push(std::uint64_t pos, std::optional<double> z);
   void pd_measure(std::uint64_t pos);
+  // Window detectors: the window's new vertical samples into the chain.
+  void pd_feed_window(std::uint64_t start);
 
   Station &st_;
   ProcessorConfig cfg_;
@@ -207,11 +204,15 @@ private:
       cached_; // window start -> probability, from --scores-in
   DetectorEnsemble detector_;
   std::unique_ptr<Picker> picker_;
-  std::unique_ptr<MagnitudeEstimator> magnitude_;
   std::unique_ptr<dsp::StaLta> stalta_;
   std::unique_ptr<dsp::FilterPicker> fp_;
   std::uint64_t fp_next_ = kUnset; // next sample to feed; kUnset after a gap
   std::uint64_t fp_origin_ = 0;    // position of the FilterPicker's sample 0
+  // onset_fp: the FilterPicker alongside the 6 s detector, as fp_ above, and
+  // the positions of its picks of the last 120 s.
+  std::unique_ptr<dsp::FilterPicker> fpo_;
+  std::uint64_t fpo_next_ = kUnset, fpo_origin_ = 0;
+  std::deque<std::uint64_t> fpo_picks_;
   std::unique_ptr<OnsetStream> onset_;
   std::vector<OnsetStream::Token> tokens_;
   std::optional<TokenTrigger> token_trigger_; // transformer
@@ -226,6 +227,7 @@ private:
   std::optional<Displacement> pd_chain_;
   std::vector<double> pd_ring_;
   std::uint64_t pd_run_start_ = 0;
+  std::uint64_t pd_next_ = kUnset; // window detectors: next sample to feed
   struct PdPending {
     std::uint64_t p;
     double trigger_window;
@@ -240,9 +242,8 @@ private:
       onsets_;               // recent (sample, ratio) of STA/LTA onsets
   std::deque<float> ratios_; // STA/LTA ratio of the last 60 s, for anchoring
   std::uint64_t ratios_end_ = 0; // position after the last of them
-  NoiseBaseline noise_;
   dsp::Conditioner cond6_, cond60_;
-  std::vector<double> raw_, noise_raw_;
+  std::vector<double> raw_;
   std::vector<float> standardized_, planar60_;
   std::vector<std::int32_t> tmp_;
 
@@ -252,21 +253,16 @@ private:
   std::size_t above_ = 0;       // consecutive windows at or above the threshold
   std::uint64_t run_start_ = 0; // start of the first of those windows
   double last_trigger_ = -1e18;
-  // Scheduled picker and early magnitude windows: (start position, window start
-  // of the detection that scheduled it), in start order.
+  // Scheduled picker windows, in start order.
   struct PickJob {
     std::uint64_t start;  // window start position
     double trigger;       // window_start of the detection it follows
     std::uint64_t p_pos;  // the detector's P, kUnset: search the whole window
   };
   std::deque<PickJob> picks_;
-  std::deque<std::pair<std::uint64_t, double>> early_;
   // Transformer: P positions of this station's accepted triggers, newest
   // last, for ending the S search of an earlier pick at the next onset.
   std::deque<std::uint64_t> onsets_p_;
-  std::deque<std::pair<std::uint64_t, float>>
-      recent_; // (window start, probability)
-  std::uint64_t last_noise_end_ = 0;
   double last_progress_ = 0;
   ProcessorStats stats_;
 };

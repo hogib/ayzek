@@ -58,4 +58,22 @@ std::optional<GeometryFit> locate_geometry(const std::vector<GeometryObs> &obs,
                                            const GeometryLocatorConfig &cfg,
                                            std::string *worst = nullptr);
 
+// Locating from P times alone: J without the distance term, which is what
+// locate_geometry computes when every station's log_dist_sd is infinite. The
+// window detectors use it for an early location, before the S-P picks of the
+// 60 s picker window, for the Pd magnitude's distances (network.hpp). Three
+// stations are needed: two P times leave a hyperbola of solutions.
+inline constexpr std::size_t kMinPTimeStations = 3;
+
+struct PTimeObs {
+  std::string station;
+  double lat = 0, lon = 0;
+  double p_time = 0; // epoch
+};
+
+// nullopt with fewer than kMinPTimeStations. The fit's dist_z_max is NaN.
+std::optional<GeometryFit> locate_p_times(const std::vector<PTimeObs> &obs,
+                                          const GeometryLocatorConfig &cfg,
+                                          std::string *worst = nullptr);
+
 } // namespace ayzek::pipeline

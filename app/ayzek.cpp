@@ -77,19 +77,22 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --retrigger S         minimum time between a station's triggers (default 15;
                         transformer: 5, so an aftershock 5-15 s into the coda
                         of the last event can still trigger)
-  --no-pd-magnitude     transformer: no magnitude from peak P displacement
-                        (default: on when MODELS/pd_relation.csv exists)
+  --no-pd-magnitude     no magnitude from peak P displacement (default: on
+                        when MODELS/pd_relation.csv exists)
   --no-merge            transformer: do not merge an event into a declared one
                         whose P times it fits (one earthquake, one alarm)
   --pick-anywhere       transformer: let the picker search the whole 60 s window
                         (default: P within 3 s of the transformer's P, S before
                         the station's next trigger)
   --no-anchor           do not date model triggers by the STA/LTA onset
+  --no-onset-fp         do not date the P-time location and Pd of model
+                        triggers by a FilterPicker pick (default: the pick
+                        within 3 s of the trigger's P, if any)
+  --no-p-locate         no location from the detections' P times alone
+  --p-sigma S           P-time uncertainty of that location, s (default 1.35)
   --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
   --require-onset       a detector trigger also needs an STA/LTA onset
   --anchor-picker       place the picker window from the anchored P too
-  --anchor-magnitude    place the early magnitude window from the anchored P too
-  --mag-lead S          magnitude window start, seconds before P (default 2)
   --sta S, --lta S      STA/LTA averaging lengths in seconds (default 1, 30)
   --stalta-on R         STA/LTA ratio that triggers (default 8)
   --stalta-off R        STA/LTA ratio below which a trigger resets (default 1.5)
@@ -120,7 +123,9 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --assess-csv FILE     with --assess: one row per alarm, readable by
                         tools/plot_candidates.py
   --no-pick             detector only
-  --no-magnitude        skip the magnitude regressor
+  --no-magnitude        no magnitude estimate (as --no-pd-magnitude); with
+                        --from, reading also starts there where no STA/LTA
+                        or FilterPicker needs earlier data
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
                         (DIR is created if missing)
@@ -282,18 +287,20 @@ int main(int argc, char **argv) try {
       pcfg.fp.threshold1 = std::stod(v.substr(0, comma));
       pcfg.fp.threshold2 = std::stod(v.substr(comma + 1));
     }
+    else if (a == "--no-onset-fp")
+      pcfg.onset_fp = false;
+    else if (a == "--no-p-locate")
+      ncfg.p_locate = false;
+    else if (a == "--p-sigma")
+      ncfg.p_sigma = std::stod(next());
     else if (a == "--no-anchor")
       pcfg.anchor = false;
     else if (a == "--anchor-on")
       pcfg.anchor_on = std::stod(next());
     else if (a == "--anchor-picker")
       pcfg.anchor_picker = true;
-    else if (a == "--anchor-magnitude")
-      pcfg.anchor_magnitude = true;
     else if (a == "--require-onset")
       pcfg.require_onset = true;
-    else if (a == "--mag-lead")
-      pcfg.magnitude_lead = std::stod(next());
     else if (a == "--step")
       pcfg.step = std::stoul(next());
     else if (a == "--slack")
@@ -401,12 +408,6 @@ int main(int argc, char **argv) try {
     // With triggers 5 s apart a station can trigger twice in one earthquake,
     // which split events into duplicate alarms (14-transformer.md).
     ncfg.merge_duplicates = !no_merge;
-    // Magnitude from peak P displacement, alongside the regressor
-    // (docs/impl/17-pd-magnitude.md).
-    if (!no_pd && (pd_model = PdModel::load(models))) {
-      pcfg.pd = &*pd_model;
-      ncfg.pd = &*pd_model;
-    }
     // Two stations are too easy to satisfy for a detector that also fires in
     // codas (dt restarts): on the Sindirgi and Marmara sequences two far
     // stations ringing together made most of the false alarms, and a third
@@ -414,6 +415,12 @@ int main(int argc, char **argv) try {
     // (docs/impl/14-transformer.md).
     if (!min_stations_set)
       ncfg.min_stations = 3;
+  }
+  // Magnitude from peak P displacement at every detector's onset
+  // (docs/impl/17-pd-magnitude.md).
+  if (pcfg.magnitude && !no_pd && (pd_model = PdModel::load(models))) {
+    pcfg.pd = &*pd_model;
+    ncfg.pd = &*pd_model;
   }
   // Location from the transformer's geometry head replaces the S-P picks: it
   // is available from the trigger on instead of after the 60 s picker window.
@@ -432,21 +439,6 @@ int main(int argc, char **argv) try {
     throw std::runtime_error("--assess-csv needs --assess");
   if (ncfg.assess)
     pcfg.pick = true;
-  std::vector<Weights> magnitude;
-  if (pcfg.magnitude) {
-    for (int p = 0; p < 3; ++p) {
-      const auto path = std::format("{}/magnitude_p{}.ayzw", models, p);
-      if (std::ifstream(path).good())
-        magnitude.push_back(Weights::load(path));
-    }
-    if (magnitude.empty()) {
-      Log::get().line("warn", "33",
-                      "no magnitude models in {} (tools/export_magnitude.py); "
-                      "magnitude off",
-                      models);
-      pcfg.magnitude = false;
-    }
-  }
   const auto bp = dsp::Bandpass::load(Weights::load(models + "/bandpass.ayzw"));
   auto coords = load_stations(models + "/stations.csv");
 
@@ -503,8 +495,7 @@ int main(int argc, char **argv) try {
       pcfg.geometry ? " + geometry locator"
       : pcfg.pick   ? " + picker"
                     : "",
-      pcfg.magnitude ? std::format(" + {}-model magnitude", magnitude.size())
-                     : "",
+      pcfg.pd ? " + Pd magnitude" : "",
       ymd_hms(t_first), hms(t_last),
       speed > 0 ? std::format("{:g}x", speed) : std::string("full speed"));
   if (!catalog_path.empty()) {
@@ -532,7 +523,7 @@ int main(int argc, char **argv) try {
     const std::string in_path =
         scores_in_dir.empty() ? "" : scores_in_dir + "/" + st->code + ".csv";
     procs.push_back(std::make_unique<Processor>(
-        *st, detector, picker, magnitude, bp, pcfg, bus, path, in_path,
+        *st, detector, picker, bp, pcfg, bus, path, in_path,
         transformer.get()));
   }
   std::vector<std::jthread> threads;
@@ -568,20 +559,6 @@ int main(int argc, char **argv) try {
   std::priority_queue<Held, std::vector<Held>, decltype(later)> held(later);
   std::map<std::string, std::uint64_t> sent;
 
-  // Magnitude at the picked P, for picks of declared events only. The pick
-  // carries the window and the station's noise baseline, so the estimate
-  // equals one made in the station thread. It runs when the pick is released,
-  // in stream-time order, so the decision does not depend on thread timing.
-  // With --record every pick is estimated, for tools/network_subsets.
-  std::unique_ptr<MagnitudeEstimator> pick_magnitude;
-  if (pcfg.magnitude)
-    pick_magnitude = std::make_unique<MagnitudeEstimator>(magnitude, bp);
-  struct PickMagnitudeStats {
-    std::size_t estimated = 0, skipped = 0;
-    std::vector<float> ms;
-  };
-  std::map<std::string, PickMagnitudeStats> pick_stats;
-
   auto release = [&] {
     const double safe = watermark.empty()
                             ? 1e18
@@ -593,42 +570,12 @@ int main(int argc, char **argv) try {
         net.on(*d);
       else if (auto *p = std::get_if<Pick>(&m))
         net.on(*p);
-      else if (auto *g = std::get_if<MagnitudeEstimate>(&m))
-        net.on(*g);
       else if (auto *o = std::get_if<StationGeometry>(&m))
         net.on(*o);
       else if (auto *q = std::get_if<PdEstimate>(&m))
         net.on(*q);
       if (recorder)
         recorder->write(m);
-
-      const auto *p = std::get_if<Pick>(&m);
-      if (!p || !p->magnitude_window || !pick_magnitude)
-        continue;
-      auto &ps = pick_stats[p->station];
-      if (!recorder && !net.declared(p->station, p->trigger_window)) {
-        ++ps.skipped;
-        continue;
-      }
-      const auto &w = *p->magnitude_window;
-      const auto t0 = std::chrono::steady_clock::now();
-      const float mag = pick_magnitude->estimate(w.raw, w.noise);
-      const double ms = std::chrono::duration<double, std::milli>(
-                            std::chrono::steady_clock::now() - t0)
-                            .count();
-      ++ps.estimated;
-      ps.ms.push_back(static_cast<float>(ms));
-      const MagnitudeEstimate g{p->station,
-                                p->trigger_window,
-                                true,
-                                w.start,
-                                mag,
-                                w.noise.ready ? w.noise.windows : 0,
-                                p->declared_at,
-                                ms};
-      net.on(g);
-      if (recorder)
-        recorder->write(g);
     }
   };
   while (!watermark.empty()) {
@@ -680,8 +627,7 @@ int main(int argc, char **argv) try {
                             .count();
       Pick p{r.station, r.p_pred - 3.5,  t0 + pk.p_seconds, t0 + pk.s_seconds,
              pk.p_prob, pk.s_prob,       t0 + Picker::kWindow / kFs,
-             ms,        nullptr,         r.event_id,
-             r.event_alarm};
+             ms,        r.event_id,      r.event_alarm};
       net.on(p);
       if (recorder)
         recorder->write(p);
@@ -716,21 +662,14 @@ int main(int argc, char **argv) try {
   log.plain(false, "");
   log.plain(true, "Station processing ({} backend)", simd::kBackend);
   log.plain(false,
-            "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>17}   {:>16} {:>9} {:>14}", "",
-            "windows", "with gap", "triggers", "picks", "magnitudes early/P",
-            "ms/window (p99)", "ms/pick", "ms/magnitude");
-  std::uint64_t windows = 0, triggers = 0, anchored = 0;
-  std::size_t pick_estimated = 0, pick_skipped = 0;
+            "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>9}   {:>16} {:>9}", "",
+            "windows", "with gap", "triggers", "picks", "Pd values",
+            "ms/window (p99)", "ms/pick");
+  std::uint64_t windows = 0, triggers = 0, anchored = 0, onset_picks = 0;
   for (std::size_t i = 0; i < stations.size(); ++i) {
     const auto &s = procs[i]->stats();
-    const auto &ps = pick_stats[stations[i]->code];
-    pick_estimated += ps.estimated;
-    pick_skipped += ps.skipped;
     const auto w = percentiles(s.window_ms);
     const auto pk = percentiles(s.pick_ms);
-    std::vector<float> magnitude_ms = s.magnitude_ms;
-    magnitude_ms.insert(magnitude_ms.end(), ps.ms.begin(), ps.ms.end());
-    const auto mg = percentiles(magnitude_ms);
     std::uint64_t stale = 0, dropped = 0;
     for (auto &c : stations[i]->comp) {
       stale += c.stale.load();
@@ -742,22 +681,21 @@ int main(int argc, char **argv) try {
     windows += s.windows;
     triggers += s.detections;
     anchored += s.anchored;
+    onset_picks += s.onset_picks;
     if (stale)
       log.line("warn", "33", "{}: {} late records discarded", stations[i]->code,
                stale);
     log.plain(false,
-              "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>17}   {:>8.3f} ({:>5.3f}) "
-              "{:>9.0f} {:>14.0f}",
+              "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>9}   {:>8.3f} ({:>5.3f}) "
+              "{:>9.0f}",
               stations[i]->code, s.windows, s.gap_windows, s.detections,
-              s.picks, std::format("{}/{}", s.magnitudes, ps.estimated), w.mean,
-              w.p99, pk.mean, mg.mean);
+              s.picks, s.pd_values, w.mean, w.p99, pk.mean);
   }
   if (pcfg.detector == DetectorKind::Transformer) {
-    std::uint64_t refreshes = 0, geometry = 0, dt_resets = 0, pd_values = 0;
+    std::uint64_t refreshes = 0, geometry = 0, dt_resets = 0;
     for (const auto &pr : procs) {
       refreshes += pr->stats().context_refreshes;
       geometry += pr->stats().geometry;
-      pd_values += pr->stats().pd_values;
       dt_resets += pr->stats().dt_resets;
     }
     log.plain(false,
@@ -766,20 +704,24 @@ int main(int argc, char **argv) try {
               refreshes, dt_resets, triggers,
               (pcfg.geometry
                    ? std::format("; {} geometry estimates sent", geometry)
-                   : std::string()) +
-                  (pcfg.pd ? std::format("; {} Pd values sent", pd_values)
-                           : std::string()));
+                   : std::string()));
+  }
+  if (pcfg.pd) {
+    std::uint64_t pd_values = 0;
+    for (const auto &pr : procs)
+      pd_values += pr->stats().pd_values;
+    log.plain(false, "  Pd: {} values sent", pd_values);
   }
   if (pcfg.detector == DetectorKind::Model && pcfg.anchor)
     log.plain(false,
               "  P time from an STA/LTA onset for {} of {} triggers ({} from "
               "the window start)",
               anchored, triggers, triggers - anchored);
-  if (pcfg.magnitude)
+  if (pcfg.detector == DetectorKind::Model && pcfg.onset_fp)
     log.plain(false,
-              "  magnitude at the picked P: {} estimated, {} not (trigger not "
-              "part of a declared event)",
-              pick_estimated, pick_skipped);
+              "  onset from a FilterPicker pick for {} of {} triggers (P-time "
+              "location and Pd)",
+              onset_picks, triggers);
   log.plain(false, "  {} windows in {:.1f} s: {:.0f}x real time per station",
             windows, wall, stream_seconds / wall);
   return 0;

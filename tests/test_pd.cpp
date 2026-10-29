@@ -104,6 +104,25 @@ int main(int argc, char **argv) {
     std::println("  case {}: M{:.3f} ± {:.3f} (onset M{:.3f} ± {:.3f}), {} of {} above noise",
                  c, got->mean, got->sd, mean, sd, got->above, got->stations);
     CHECK(std::abs(got->mean - mean) < 1e-6 && std::abs(got->sd - sd) < 1e-6);
+    const auto &cp = got->class_p;
+    CHECK(std::abs(cp[0] + cp[1] + cp[2] - 1) < 1e-12);
+    CHECK(std::ranges::all_of(cp, [](double p) { return p >= 0 && p <= 1; }));
+  }
+  // Size classes: values at the relation's own prediction for M 2.5 and M 6.5,
+  // at three stations 30 km away and at their median noise, fall almost
+  // wholly in the small and the large class.
+  for (const double m : {2.5, 6.5}) {
+    std::vector<PdObservation> obs;
+    for (const auto *st : {"ADVT", "AFSR", "AGRB"})
+      obs.push_back({st, 5.0,
+                     std::pow(10.0, model->window(5.0)->mean(m, 30.0) +
+                                        model->term(st, 5.0)),
+                     model->noise.at(st), 30.0});
+    const auto got = pd_magnitude(*model, obs);
+    CHECK(got.has_value());
+    std::println("  M{:.1f} at 30 km: M{:.2f}, classes {:.3f} {:.3f} {:.3f}", m,
+                 got->mean, got->class_p[0], got->class_p[1], got->class_p[2]);
+    CHECK(got->class_p[m < 4 ? 0 : 2] > 0.99);
   }
   // No station above the threshold: no estimate.
   CHECK(!pd_magnitude(*model, {{"ADVT", 5.0, 1e-7, 1e-7, 50.0}}).has_value());

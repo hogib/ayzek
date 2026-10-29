@@ -231,6 +231,31 @@ void restart_is_not_coda() {
   }
 }
 
+// P times alone (locate_p_times): exact times at four stations recover the
+// source, from four stations and from three; two are not enough.
+void p_times_only() {
+  auto obs_of = [](std::size_t n) {
+    std::vector<PTimeObs> obs;
+    for (std::size_t i = 0; i < n; ++i) {
+      const auto &s = kStations[i];
+      const double d = distance_km(s.lat, s.lon, kEpiLat, kEpiLon);
+      obs.push_back({s.code, s.lat, s.lon,
+                     kOrigin + std::hypot(d, 10.0) / 6.0});
+    }
+    return obs;
+  };
+  const auto f = locate_p_times(obs_of(4), kCfg);
+  CHECK(f && off(*f) < 1.0);
+  CHECK(std::abs(f->origin - kOrigin) < 0.1 && f->rms < 0.05);
+  CHECK(f->n_stations == 4 && std::isnan(f->dist_z_max));
+  CHECK(!locate_p_times(obs_of(2), kCfg));
+  const auto three = locate_p_times(obs_of(3), kCfg);
+  CHECK(three && off(*three) < 1.0);
+  std::println("  P times only: {:.2f} km off, +-{:.0f} km from 4 stations, "
+               "+-{:.0f} km from 3",
+               off(*f), f->err_km, three->err_km);
+}
+
 } // namespace
 
 int main() {
@@ -245,5 +270,6 @@ int main() {
   ranges_until_three();
   merge_duplicates();
   restart_is_not_coda();
+  p_times_only();
   std::println("geometry locator agrees with onset.locate");
 }

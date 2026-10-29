@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
-#include <numeric>
 #include <ranges>
 
 namespace ayzek::pipeline {
@@ -224,25 +223,6 @@ Assessment Network::assess(const Event &e, double t0, double t1) const {
                                     a.geo_z_median, where));
   }
 
-  // Station magnitudes.
-  if (e.magnitudes.size() >= 2) {
-    std::vector<double> m;
-    for (const auto &[_, sm] : e.magnitudes)
-      m.push_back(sm.magnitude);
-    const double mean = std::accumulate(m.begin(), m.end(), 0.0) / m.size();
-    double sq = 0;
-    for (double x : m)
-      sq += (x - mean) * (x - mean);
-    a.mag_spread = std::sqrt(sq / m.size());
-    const auto [lo, hi] = std::ranges::minmax(m);
-    if (a.mag_spread <= cfg_.assess_mag_spread)
-      support.push_back(std::format("station magnitudes agree (M{:.1f}-{:.1f})",
-                                    lo, hi));
-    else if (a.mag_spread > 2 * cfg_.assess_mag_spread)
-      against.push_back(std::format(
-          "station magnitudes disagree (M{:.1f}-{:.1f})", lo, hi));
-  }
-
   // Chance coincidence: the other declaring stations each triggering inside
   // their association window with the first, at their own trigger rates.
   std::vector<const Detection *> declaring;
@@ -360,7 +340,7 @@ bool Network::write_assessments(const std::string &path, double t0, double t1,
   // time_utc, station_a, station_b, dt_s and record are what
   // tools/plot_candidates.py reads (the columns of tools/misfire_review.py).
   f << "event,alarm_utc,matched,verdict,picked_stations,sp,rms_s,lat,lon,"
-       "origin_utc,geo_z_median,geo_offset_km,mag_spread,p_chance,context,"
+       "origin_utc,geo_z_median,geo_offset_km,p_chance,context,"
        "reasons,record,time_utc,station_a,station_b,dt_s\n";
   for (const auto &e : events_) {
     if (!e.declared)
@@ -379,14 +359,14 @@ bool Network::write_assessments(const std::string &path, double t0, double t1,
       return std::isnan(v) ? std::string() : std::format("{:.{}f}", v, prec);
     };
     f << std::format(
-        "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{:.2f},{},{},{}\n",
+        "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{:.2f},{},{},{}\n",
         e.id, ymd_hms(e.declared_at),
         c ? std::format("{} {:.1f} {}", c->type, c->magnitude, hms(c->time))
           : std::string(),
         verdict_name(a.verdict), a.stations.size(), sp, num(a.rms, 2),
         num(a.lat, 4), num(a.lon, 4),
         std::isnan(a.origin) ? std::string() : ymd_hms(a.origin),
-        num(a.geo_z_median, 2), num(a.geo_offset_km, 1), num(a.mag_spread, 2),
+        num(a.geo_z_median, 2), num(a.geo_offset_km, 1),
         std::isnan(a.p_chance) ? std::string() : std::format("{:.3g}", a.p_chance),
         csv_text(a.context), csv_text(join(a.reasons, " | ")), record,
         d.front()->window_start, d.front()->station,

@@ -103,4 +103,19 @@ std::optional<GeometryFit> locate_geometry(const std::vector<GeometryObs> &obs,
                      err,      obs.size(), z};
 }
 
+std::optional<GeometryFit> locate_p_times(const std::vector<PTimeObs> &obs,
+                                          const GeometryLocatorConfig &cfg,
+                                          std::string *worst) {
+  static_assert(kMinPTimeStations == kMinGeometryStations);
+  std::vector<GeometryObs> geo;
+  geo.reserve(obs.size());
+  for (const auto &o : obs)
+    geo.push_back({o.station, o.lat, o.lon, o.p_time, 0.0,
+                   std::numeric_limits<double>::infinity()});
+  auto fit = locate_geometry(geo, cfg, worst);
+  if (fit)
+    fit->dist_z_max = std::numeric_limits<double>::quiet_NaN();
+  return fit;
+}
+
 } // namespace ayzek::pipeline

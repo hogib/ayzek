@@ -104,15 +104,6 @@
    "tolerance": 0.51
   },
   {
-   "id": "magnitude_bias_big",
-   "where": "release notes, docs/impl/07",
-   "claim": "events of AFAD M>=4 are underestimated, mean bias -0.68",
-   "source": "scorecard",
-   "key": "summary.magnitude bias, AFAD M>=4",
-   "expect": -0.68,
-   "tolerance": 0.05
-  },
-  {
    "id": "epicentre",
    "where": "README Results",
    "claim": "median epicentre error 10 km over the matched events of the AFAD replays",
@@ -164,24 +155,6 @@
    "key": "result.per-window total.p50_ms",
    "expect": 5.2,
    "tolerance": 1.5
-  },
-  {
-   "id": "magnitude_ms",
-   "where": "README Results, docs/impl/10",
-   "claim": "288 ms per magnitude estimate, three models",
-   "source": "bench_stages",
-   "key": "result.magnitude estimate (3 models).p50_ms",
-   "expect": 288.0,
-   "tolerance": 60.0
-  },
-  {
-   "id": "attention_share",
-   "where": "docs/impl/10",
-   "claim": "the 1D attention layer is 85.6 ms of the magnitude model's 94 ms",
-   "source": "bench_layers",
-   "key": "result.magnitude attention (1D).p50_ms",
-   "expect": 85.6,
-   "tolerance": 20.0
   },
   {
    "id": "capacity",
@@ -321,36 +294,6 @@
    "expect": 5,
    "tolerance": 0,
    "repro": "python3 tools/misfire_review.py --records 'data/runs/quiet100_stalta/*.rec' --csv data/runs/quiet100_stalta/misfires.csv"
-  },
-  {
-   "id": "corpus_windows",
-   "where": "revisions2 R3.1",
-   "claim": "the enlarged magnitude corpus holds 25,594 windows",
-   "artifact": "cascade_impl:dataset_magreg_fdsn_10s_v2/manifest.csv",
-   "probe": "csvcount:",
-   "expect": 25594,
-   "tolerance": 0,
-   "repro": "cascade_impl: recut --seconds 10 then encode-magnitude --dual (revisions2 R3.2)"
-  },
-  {
-   "id": "corpus_m6",
-   "where": "revisions2 R3.1",
-   "claim": "413 windows above M6 in the enlarged corpus",
-   "artifact": "cascade_impl:dataset_magreg_fdsn_10s_v2/manifest.csv",
-   "probe": "csvcount:magnitude>=6.0",
-   "expect": 413,
-   "tolerance": 0,
-   "repro": "as corpus_windows"
-  },
-  {
-   "id": "corpus_m55",
-   "where": "revisions2 R3.1",
-   "claim": "1,214 windows at M>=5.5 in the enlarged corpus",
-   "artifact": "cascade_impl:dataset_magreg_fdsn_10s_v2/manifest.csv",
-   "probe": "csvcount:magnitude>=5.5",
-   "expect": 1214,
-   "tolerance": 0,
-   "repro": "as corpus_windows"
   },
   {
    "id": "corpus_nan_distance",

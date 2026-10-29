@@ -14,7 +14,6 @@
 //
 //   geometry    the transformer's own distance (and epicentre) agrees with
 //               the picker's S-P distances
-//   magnitude   the station magnitudes agree with each other
 //   chance      the other declaring stations were unlikely to trigger inside
 //               their association windows by chance, given their trigger rates
 //
@@ -68,7 +67,6 @@ struct Assessment {
   bool consistent = false;
   double geo_z_median = NAN;   // median |geo_z| over stations
   double geo_offset_km = NAN;  // geometry epicentre to S-P source
-  double mag_spread = NAN;     // standard deviation of station magnitudes
   double p_chance = NAN;       // all other declaring stations by chance
   std::string context;         // catalogue context, if any
 };

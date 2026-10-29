@@ -1,13 +1,17 @@
 # 17 · Magnitude from peak P-wave displacement
 
-With `--detector transformer` and the Pd model in `models/` (exported by
-`tools/export_pd.py`), every declared event receives a second magnitude
-estimate, alongside that of the regressor of `07-magnitude.md`. It is
-computed from the peak displacement of the P wave (Pd) at the stations that
-triggered and from their distances. The estimator, its calibration and its
+With the Pd model in `models/` (exported by `tools/export_pd.py`), every
+declared event receives its magnitude estimate from it, whichever detector
+runs; until v0.1.0-beta.6 it ran alongside the learned regressor of
+`07-magnitude.md`, since retired. It is computed from
+the peak displacement of the P wave (Pd) at the stations that triggered and
+from their distances, and comes with the probability of each size class
+(section 2.3). The estimator, its calibration and its
 evaluation are described in onset's `docs/MAGNITUDE.md`. This document
 describes the implementation in ayzek, its agreement with onset and its
-results on the continuous replays. `--no-pd-magnitude` disables it.
+results on the continuous replays. `--no-pd-magnitude` (or `--no-magnitude`)
+disables it. Sections 4 and 5 compare it with the regressor as it ran in
+v0.1.0-beta.6 and earlier.
 
 ## 1. Motivation
 
@@ -34,8 +38,12 @@ of samples starts from rest at its first sample, and a gap ends the run, as
 in onset's `pd.displacement`. The processor keeps |displacement| for the last
 64 s.
 
-When the transformer triggers, a measurement is scheduled at the P time that
-the trigger dates (token end minus dt). As each window τ of the model
+When a station triggers, a measurement is scheduled at the detection's onset
+(`Detection::p_time`): for the transformer the P it dates (token end minus
+dt); for the 6 s window detector the pick of a FilterPicker running alongside
+it that lies nearest the trigger's P within 3 s, or that P (the anchoring
+STA/LTA onset, or 3.5 s into the first window of the run) without one
+(section 2.4); for STA/LTA its trigger sample and for FilterPicker its pick. As each window τ of the model
 (1, 2, 3, 4, 5, 7 and 10 s) ends, the station sends a `PdEstimate` with
 
     Pd(τ) = max |d(t)| over [P, P + τ),
@@ -48,15 +56,26 @@ without a gap from 41 s before P, the run-in and noise window of onset's
 measurement. A trigger dated so far back that its noise window has left the
 64 s buffer is not measured.
 
+The transformer feeds the chain one sample at a time and runs it through
+gaps in the horizontals. The window detectors (6 s detector, STA/LTA,
+FilterPicker) feed it the vertical samples of each scored window not yet
+seen, and a window that crosses a gap in any component is not scored, so
+there the chain's run ends at a gap in any component and starts again at
+the first window after it. Their values are sent at the end of the window
+in which τ ends, at most 0.5 s after the transformer would send them.
+
 ### 2.2 Network stage (`Network::report_pd`)
 
 Each event keeps, for each station, the value of the longest window
 received. The estimate is recomputed whenever a value arrives, when the event
 is declared, merged or relocated. The station's epicentral distance is
-taken from the event's location once the location's 68% radius is within
-20 km (`NetworkConfig::pd_max_err_km`), and from the station's own geometry
-estimate before then. A poorly constrained early location can lie hundreds
-of kilometres from the epicentre, and Pd depends on distance.
+taken from the event's location (the S-P picks, or the transformer's
+geometry) once the location's 68% radius is within 20 km
+(`NetworkConfig::pd_max_err_km`); before that, for the window detectors,
+from the P-time location (section 2.4) once its radius is within 20 km, and
+for the transformer from the station's own geometry estimate. A poorly
+constrained early location can lie hundreds of kilometres from the
+epicentre, and Pd depends on distance.
 
 The estimate (`pd_magnitude`) is the posterior mean, under a
 Gutenberg–Richter prior with the exported b-value, of the censored likelihood
@@ -81,7 +100,7 @@ A `PDMAG` line is printed when the estimate moves by 0.1 or more or when a
 station is added:
 
 ```
-PDMAG    #2   09:49:22.39  Pd magnitude M5.7 ± 0.1 from 7 stations (6 above noise), windows up to 5 s, distances from the location
+PDMAG    #3   18:22:00.50  Pd magnitude M4.8 ± 0.1 (M<4 0%, 4-5.5 100%, M>=5.5 0%) from 6 stations (6 above noise), windows up to 10 s, distances from the location
 ```
 
 The final report gives, for each event, the first and the final estimate
@@ -89,6 +108,74 @@ The final report gives, for each event, the first and the final estimate
 absolute error and the bias over the catalogued events that have an estimate.
 `--record` writes the values as `Q` records, and `tools/network_subsets
 --pd models` recomputes the estimates from a recording.
+
+### 2.3 Size classes
+
+With each estimate the network stage reports the posterior probability of
+three size classes, small (M < 4), medium (4 ≤ M < 5.5) and large
+(M ≥ 5.5), the bounds of `kPdClassBounds` (`pd_magnitude.hpp`). They are
+sums of the same posterior over the same grid as the mean, a grid point at
+a bound counting in the class above it. For events whose rupture outlasts
+the 10 s window the estimate is a lower bound (section 5), and so is the
+class.
+
+### 2.4 Early distances for the window detectors
+
+The S-P picks come from a 60 s picker window, so a location from them, and
+with it the first Pd estimate, came about 52 s after the alarm. The window
+detectors therefore also locate each declared event from its detections'
+onsets alone (`locate_p_times`, `locate.hpp`): the geometry locator's grid
+search with the distance term left out, from three stations on, the station
+contributing most to the misfit removed while the rms exceeds 2 s and more
+than three remain. This P-time location (`PLOC` lines, `P loc.` in the
+report) serves the Pd distances only, until a pick location replaces it
+there. Catalogue matching and the warning times keep the pick location, so
+it changes no detection result.
+
+The onsets come from a FilterPicker at its default settings running alongside
+the 6 s detector on the vertical (`ProcessorConfig::onset_fp`). It triggers
+nothing and does not move the detection's window start, which the
+association and the catalogue matching use. A trigger takes the pick nearest
+its own P within 3 s, and keeps its own P without one. Measured on the six
+development replays (demo_ko, marmara_ko, demo, marmara, sindirgi61,
+simav26) against TauP P refined by an AIC pick on the station's vertical,
+for the 540 detected arrivals whose AIC pick was accepted:
+
+| onset | arrivals | median error | within 0.5 s | within 1 s | robust sd |
+|---|---:|---:|---:|---:|---:|
+| the detection's own P, all | 540 | 0.69 s | 44% | 59% | 0.90 s |
+| the detection's own P, where a pick exists | 418 | 0.51 s | 50% | 65% | 0.56 s |
+| FilterPicker pick nearest it within 3 s | 418 | 0.06 s | 86% | 93% | 0.09 s |
+
+A pick exists for 77% of the detected arrivals. Windows of 2 and 1.5 s find
+fewer (375 and 305) and are no more accurate; the earliest pick in the window
+instead of the nearest gives the same result.
+
+The P-time uncertainty in the locator's misfit (`NetworkConfig::p_sigma`,
+`--p-sigma`) sets its 68% radius, and so whether Pd uses the location. It is
+1.35 s, the value at which the radius contains the catalogue epicentre for
+69% of the 118 catalogue-matched events the P-time location locates on the
+same replays (0.5 s gave 31%, 1.75 s 85%). It is much larger than the onsets'
+own error because the uniform half-space at a fixed 10 km depth dominates.
+Against the pick location (median epicentre error; first location after the
+alarm, median):
+
+| replay | stations | pick location | P-time location | P-time located |
+|---|---:|---|---|---:|
+| demo_ko | 6 | 3.7 km, 52 s | 3.3 km, 3.8 s | 8 of 8 |
+| marmara_ko | 8 | 6.1 km, 52 s | 7.0 km, 1.0 s | 23 of 28 |
+| marmara | 8 | 10.6 km, 52 s | 16.3 km, 2.0 s | 37 of 44 |
+| simav26 | 6 | 6.1 km, 51 s | 16.1 km, 10.5 s | 23 of 37 |
+| sindirgi61 | 6 | 32.2 km, 52 s | 46.2 km, 24 s | 23 of 39 |
+| demo | 3 | 5.3 km, 52 s | 109 km, 6.8 s | 4 of 7 |
+
+Within a dense network it matches the picks about 50 s earlier. Where most
+stations lie far from the source (sindirgi61, four of six at 230-300 km) or
+there are only three (demo), it is poor, its radius says so, and Pd waits
+for the pick location. On the KO replays, the only ones with gains, the four
+events that receive a Pd estimate get their first one a median 3.0 s after
+the alarm (from 52 s with the pick location alone), with a mean absolute
+error of 0.30 units at the first and at the final estimate.
 
 ## 3. Agreement with onset
 

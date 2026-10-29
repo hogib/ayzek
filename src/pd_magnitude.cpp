@@ -216,17 +216,25 @@ std::optional<PdMagnitude> pd_magnitude(const PdModel &model,
     lp[static_cast<std::size_t>(k)] = s;
     peak = std::max(peak, s);
   }
+  // Grid indices of the class bounds: a grid point at a bound belongs to the
+  // class above it.
+  const auto bound = [](double m) { return static_cast<int>(std::lround((m - 1.0) / 0.01)); };
+  const int k_medium = bound(kPdClassBounds[0]), k_large = bound(kPdClassBounds[1]);
   double z = 0, mean = 0, sq = 0;
+  std::array<double, 3> cls{};
   for (int k = 0; k < kN; ++k) {
     const double p = std::exp(lp[static_cast<std::size_t>(k)] - peak);
     const double m = 1.0 + 0.01 * k;
     z += p;
     mean += p * m;
     sq += p * m * m;
+    cls[k < k_medium ? 0 : k < k_large ? 1 : 2] += p;
   }
   mean /= z;
+  for (auto &c : cls)
+    c /= z;
   return PdMagnitude{mean, std::sqrt(std::max(0.0, sq / z - mean * mean)),
-                     rows.size(), above};
+                     rows.size(), above, cls};
 }
 
 } // namespace ayzek

@@ -136,10 +136,10 @@ re-triggers where the ratio never rises from quiet, and they keep the
 convention.
 
 **Only the reported P time is anchored.** The detector's own clock still drives
-the trigger state and the re-trigger interval, and the picker and early
-magnitude windows keep the placement their models were trained on
-(`--anchor-picker`, `--anchor-magnitude` change that). Moving those windows
-makes both models worse: with the picker window anchored, the median epicentre
+the trigger state and the re-trigger interval, and the picker window (and,
+until v0.1.0-beta.6, the retired regressor's early magnitude window) keeps the
+placement its model was trained on (`--anchor-picker` changes that). Moving
+those windows made both models worse: with the picker window anchored, the median epicentre
 error over the events both runs detect went from 9.4 to 10.3 km on Marmara.
 
 Effect on the two 3 h replays, over the catalogue events both runs detect:

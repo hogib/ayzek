@@ -2,8 +2,8 @@
 
 A real-time earthquake early-warning pipeline in C++23 with hand-written
 inference. It replays AFAD miniSEED through a trained detector, a P/S picker,
-a magnitude regressor, network association and location, and it runs on a
-Raspberry Pi.
+network association and location, and a magnitude from peak P displacement,
+and it runs on a Raspberry Pi.
 
 `DESIGN.md` is the reasoning behind the architecture. The documents here
 describe what was built.
@@ -16,7 +16,7 @@ describe what was built.
 | [04 · Models](impl/04-models.md) | the layers, the 3-seed detector, the picker, and their agreement with PyTorch |
 | [05 · Pipeline](impl/05-pipeline.md) | threads, rings, trigger, association, location, the M4.9 demo and its results |
 | [06 · Raspberry Pi](impl/06-raspberry-pi.md) | cross-compiling with zig, running under qemu, deploying |
-| [07 · Magnitude](impl/07-magnitude.md) | the regressor, station noise baselines, spectrogram, results |
+| [07 · Magnitude (retired)](impl/07-magnitude.md) | the learned regressor of v0.1.0-beta.6 and earlier, station noise baselines, spectrogram, results |
 | [08 · Station selection](impl/08-station-selection.md) | recording and subset replay, geometry model, 2025-04-23 Mw 6.2 Marmara results |
 | [09 · STA/LTA benchmark](impl/09-sta-lta.md) | a recursive STA/LTA in place of the detector, tuned and compared on the same replays |
 | [10 · Benchmarks and the scorecard](impl/10-benchmarks.md) | time per stage and layer, real-time capacity, and one scorecard of detection, false alarms and magnitude for every model change |
@@ -37,32 +37,32 @@ AFAD miniSEED ─> decode (Steim2) ─> reorder ─> ring Z/N/E ─┐   one pai
                                                            │   detrend · taper · 1–45 Hz · z-score
                                                            │   3-seed CNN-BiLSTM-attention (NEON)
                                                            │   trigger ─> 60 s P/S picker (NEON)
-                                                           │   trigger ─> 10 s magnitude, station noise baseline (NEON)
-                                                           └─> network: associate ─> declare ─> locate ─> median M
+                                                           │   trigger ─> peak P displacement at the onset (Pd)
+                                                           └─> network: associate ─> declare ─> locate ─> Pd M
 ```
 
 On the 2025-11-10 Sındırgı M4.9, from DEMI, MANT and BAND:
 
-- **Declared** 18.0 s after origin, carrying **M4.3**. That is the second
-  station's P travel time, not compute.
-- **Magnitude** refined to **M4.6** once the picks are in, 63 s after origin.
+- **Declared** 18.0 s after origin. That is the second station's P travel
+  time, not compute.
+- **Magnitude:** none here. The Pd magnitude needs the stations' gains, which
+  `models/pd_gain.csv` does not yet hold for the AFAD stations. On the six KO
+  stations of `demo_ko` the M4.9 gets M4.7 3.5 s after the alarm and M4.8
+  final (`impl/17-pd-magnitude.md`).
 - **Located** 5.3 km from AFAD's epicentre, origin within 1.0 s, rms 0.16 s.
 - **Aftershocks:** 6 of the other 8 catalogue events declared. Four (ML 1.4,
   1.9, 3.6, 2.7) are located 3.7–6.1 km from AFAD; two located from two
-  distant stations are 100 and 199 km off. Magnitude error averages 0.40
-  units over the seven declared events.
+  distant stations are 100 and 199 km off.
 - **Unmatched alarms:** two of nine alarms in 30 minutes have no catalogue
   event.
 - **Trigger rule:** 8 consecutive windows at p ≥ 0.8, or one at p ≥ 0.9. The
   earlier rule (one window at p ≥ 0.9) declared 5 of 9 events here, and 24
   instead of 37 of 66 on a held-out 3 h replay of the Sındırgı Mw 6.1
   (`impl/05-pipeline.md`, *Threshold*).
-- **Speed:** 5.2 ms per detector window (three models) and 300 ms per
-  magnitude estimate on x86. Seven stations with everything on run at 67× real
-  time per station.
+- **Speed:** 5.2 ms per detector window (three models) on x86.
 - **Agreement with training:** all three networks match PyTorch to about 1e-6
-  on their outputs, the conditioning matches scipy to float rounding, the
-  spectrogram matches torchaudio to 2e-3 dB, and the NEON build passes the same
+  on their outputs, the conditioning matches scipy to float rounding, the Pd
+  chain matches onset's reference to 1e-9, and the NEON build passes the same
   tests under qemu.
 
 ## First run
@@ -77,12 +77,10 @@ python3 tools/make_demo_data.py --out data/demo \
 # 2. weights and test fixtures from the PyTorch checkpoints
 uv run --project tools python tools/export_models.py \
     --detector-dir CKPT_DIR --picker wave_n250.pt
-uv run --project tools python tools/export_magnitude.py \
-    --partition P0.pth --partition P1.pth --partition P2.pth --dataset dataset_magreg_fdsn_10s
 
 # 3. build and test
 meson setup build-release --buildtype=release
-meson test -C build-release          # includes the end-to-end M4.9 check
+meson test -C build-release          # includes the end-to-end M4.9 checks
 
 # 4. demo
 tools/demo.sh                        # 3 stations, 10x real time
@@ -109,21 +107,19 @@ ayzek [options] STATION.mseed...
   --no-anchor           do not date model triggers by the STA/LTA onset
   --anchor-on R         STA/LTA ratio taken as the onset when anchoring (default 3)
   --anchor-picker       place the picker window from the anchored P too
-  --anchor-magnitude    place the early magnitude window from the anchored P too
   --require-onset       a detector trigger also needs an STA/LTA onset
-  --mag-lead S          magnitude window start, seconds before P (default 2)
   --step N              samples between detector windows (default 50 = 0.5 s)
   --min-stations N      detections needed to declare an event (default 2;
                         transformer: 3)
   --slack S             tolerance on the inter-station P travel time, seconds (default 3)
   --no-pick             detector only
-  --no-magnitude        skip the magnitude regressor
+  --no-magnitude        no magnitude estimate (the Pd magnitude)
   --catalog CSV         AFAD catalogue export to score events against
   --scores DIR          write every window's probability to DIR/STATION.csv
   --scores-in DIR       use probabilities from an earlier --scores run instead of the detector
   --record FILE         write all station outputs, for tools/network_subsets
   --site NAME,LAT,LON   also report the S-wave warning time at this place (repeatable)
-  --verbose             print every station detection, pick and magnitude estimate
+  --verbose             print every station detection, pick and Pd value
   --no-color
 ```
 
@@ -132,26 +128,32 @@ ayzek [options] STATION.mseed...
 While running, one line per alarm and one per magnitude or location update:
 
 ```
-ALARM    #3   18:21:09.00  earthquake detected by DEMI, MANT  (AFAD MW 4.9 at 18:20:51.00, 18.0 s ago)
-MAG      #3   18:21:09.00  magnitude M4.3 from 1 station (DEMI 4.3)
-LOCATE   #3   18:22:05.00  located at 39.221N 28.088E, origin 18:20:52.02, rms 0.16 s from 3 stations
+ALARM    #3   18:21:09.00  earthquake detected by KULA, SIMA  (AFAD MW 4.9 at 18:20:51.00, 18.0 s ago)
+PLOC     #3   18:21:10.50  P times locate it at 39.240N 28.119E +-23 km, origin 18:20:52.18, rms 0.01 s from 3 stations
+PDMAG    #3   18:21:12.50  Pd magnitude M4.7 ± 0.2 (M<4 0%, 4-5.5 100%, M>=5.5 0%) from 3 stations (3 above noise), windows up to 5 s, distances from the P-time location
+LOCATE   #3   18:22:04.50  located at 39.206N 28.137E, origin 18:20:52.66, rms 0.21 s from 5 stations
 ```
+
+(demo_ko; `README.md` lists every option.)
 
 At the end, a report with one block per alarm, a summary, and station
 processing statistics:
 
 ```
-Event #3: detected M4.6 earthquake at 39.221N 28.088E, origin 18:20:52.02 UTC
-  alarm      18:21:09.00 UTC by DEMI, MANT; later BAND
-  magnitude  M4.3 at the alarm, M4.6 final from 3 stations
-  location   rms 0.16 s from 3 stations
-  AFAD       MW 4.9 at 18:20:51.00 UTC: alarm 18.0 s after origin, magnitude -0.3, epicentre 5.3 km off, origin +1.0 s
+Event #3: detected M4.8 earthquake at 39.206N 28.137E, origin 18:20:52.66 UTC
+  alarm      18:21:09.00 UTC by KULA, SIMA; later DKL, KCTX, TVSB, YAYO
+  Pd magn.   M4.7 3.5 s after the alarm, M4.8 ± 0.1 (M<4 0%, 4-5.5 100%, M>=5.5 0%) final from 6 stations (6 above noise)
+  location   rms 0.21 s from 5 stations, first 51.5 s after the alarm (P and S picks)
+  P loc.     39.247N 28.121E +-8 km from 6 stations, first 1.5 s after the alarm, epicentre 2.2 km off
+  AFAD       MW 4.9 at 18:20:51.00 UTC: alarm 18.0 s after origin, Pd magnitude -0.1, epicentre 3.7 km off, origin +1.7 s
   S wave     had travelled 62 km from the epicentre when the alarm sounded (AFAD hypocentre)
   warning               distance   S wave arrives            warning
-             DEMI          54 km   18:21:08.76 UTC (picked)      -0.2 s  after S
-             MANT          91 km   18:21:17.88 UTC (picked)      +8.9 s  before S
-             BAND         124 km   18:21:28.16 UTC (picked)     +19.2 s  before S
-             Istanbul     209 km   18:21:50.80 UTC (predicted)   +41.8 s  before S
+             SIMA          74 km   18:21:14.42 UTC (picked)      +5.4 s  before S
+             KULA          92 km   18:21:18.14 UTC (picked)      +9.1 s  before S
+             YAYO         101 km   18:21:22.02 UTC (picked)     +13.0 s  before S
+             DKL          109 km   18:21:23.54 UTC (picked)     +14.5 s  before S
+             KCTX         115 km   18:21:23.97 UTC (predicted)   +15.0 s  before S
+             TVSB         116 km   18:21:25.98 UTC (picked)     +17.0 s  before S
 ```
 
 The warning time is the S-wave arrival minus the alarm time: positive means
@@ -167,11 +169,11 @@ event and each false alarm.
 ## Layout
 
 ```
-src/            ring, mseed, reorder (stages 1–2); simd, nn, models, dsp, weights, spectrogram, magnitude, stalta
+src/            ring, mseed, reorder (stages 1–2); simd, nn, models, dsp, weights, stalta, filterpicker, transformer, pd_magnitude
 src/pipeline/   ingest, processor, network
 app/            the ayzek binary
 tests/          unit tests, PyTorch/scipy agreement, end-to-end demo check
-tools/          export_models.py, export_magnitude.py, export_stalta.py, make_demo_data.py, demo.sh, mseed_dump,
+tools/          export_models.py, export_pd.py, export_stalta.py, make_demo_data.py, demo.sh, mseed_dump,
                 replay_check, network_subsets, station_geometry.py, scan_encodings.py, sweep_trigger.py
 cross/          zig toolchain wrappers and the Raspberry Pi cross file
 ```

@@ -68,17 +68,17 @@ DATASETS = {
                  "2024-01-03T11:35:00", "2024-01-03T17:25:00", "public noise"),
 }
 
-# One matched alarm's report block: ayzek's magnitudes, and the AFAD comparison.
+# One matched alarm's report block: ayzek's Pd magnitude, first and final
+# (groups 4 and 5, absent for an event without one), and the AFAD comparison.
 EVENT = re.compile(
-    r"^Event #\d+: detected M([\d.]+) .*\n"
+    r"^Event #\d+: detected (?:M([\d.]+) earthquake|earthquake \(no magnitude\)).*\n"
     r"  alarm\s+(\S+) UTC by (.*)\n"
-    r"  magnitude\s+M([\d.]+) (?:at the alarm|[\d.]+ s after the alarm), M([\d.]+) final.*\n"
-    # With the transformer and models/pd_*.csv: the Pd estimate, at the alarm
-    # and final (groups 12 and 13).
     r"(?:  Pd magn\.\s+M([\d.]+) (?:at the alarm|[\d.]+ s after the alarm), M([\d.]+) .*\n)?"
     r"(?:  location .*\n)?"
-    r"  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm ([\d.]+) s after origin, "
-    r"magnitude ([+-][\d.]+)(?:, Pd magnitude ([+-][\d.]+))?(?:, epicentre ([\d.]+) km off)?", re.M)
+    r"(?:  distance .*\n)?"
+    r"(?:  P loc\. .*\n)?"
+    r"  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm ([-\d.]+) s after origin"
+    r"(?:, Pd magnitude ([+-][\d.]+))?(?:, epicentre ([\d.]+) km off)?", re.M)
 
 
 # ayzek --assess: "    unmatched alarms   3 earthquake, 1 possible, 4 misfire, 2 unclassified".
@@ -125,8 +125,6 @@ def score_dataset(name, out):
          "catalogue": num("catalogue"), "detected": num("detected"),
          "alarm_delay_median_s": float(row["alarm_delay_s"]) if row["alarm_delay_s"] else None,
          "bands": {b: row[b] for b in BANDS if row.get(b)}}
-    m = re.search(r"magnitude error\s+mean ([\d.]+) units", out)
-    s["magnitude_mae"] = float(m.group(1)) if m else None
     m = re.search(r"Pd magnitude error\s+mean ([\d.]+) units, bias ([+-]?[\d.]+), (\d+) events", out)
     if m:
         s["pd_magnitude_mae"], s["pd_magnitude_bias"] = float(m.group(1)), float(m.group(2))
@@ -136,15 +134,13 @@ def score_dataset(name, out):
     s["warning_median_s"] = float(m.group(3)) if m else None
     events = []
     for e in EVENT.finditer(out):
-        ev = {"afad_type": e.group(8), "afad_M": float(e.group(9)),
-              "origin": e.group(10), "alarm_delay_s": float(e.group(11)),
-              "M_alarm": float(e.group(4)), "M_final": float(e.group(5)),
-              "M_error": float(e.group(12)),
-              "epicentre_km": float(e.group(14)) if e.group(14) else None,
+        ev = {"afad_type": e.group(6), "afad_M": float(e.group(7)),
+              "origin": e.group(8), "alarm_delay_s": float(e.group(9)),
+              "epicentre_km": float(e.group(11)) if e.group(11) else None,
               "stations": e.group(3).replace("; later", " +")}
-        if e.group(13):
-            ev.update({"Pd_alarm": float(e.group(6)), "Pd_final": float(e.group(7)),
-                       "Pd_error": float(e.group(13))})
+        if e.group(10):
+            ev.update({"Pd_alarm": float(e.group(4)), "Pd_final": float(e.group(5)),
+                       "Pd_error": float(e.group(10))})
         events.append(ev)
     s["events"] = events
     s["assessed"] = assessed(out)
@@ -167,7 +163,7 @@ def bench(build):
     if p.returncode != 0:
         return {"error": p.stderr.strip()[-300:]}
     r = json.loads(out.read_text())
-    keep = {"per-window total", "picker", "magnitude estimate (3 models)"}
+    keep = {"per-window total", "picker", "Pd magnitude estimate"}
     return {"cpu": r["cpu"], "version": r["version"],
             **{x["name"]: x["p50_ms"] for x in r["results"] if x["name"] in keep}}
 
@@ -203,11 +199,6 @@ def summarise(sets):
         h[f"hours ({role})"] = round(hrs, 1)
     evs = [e for v in sets.values() if "noise" not in v["role"] for e in v["events"]]
     if evs:
-        h["magnitude MAE, all matched"] = round(statistics.mean(abs(e["M_error"]) for e in evs), 3)
-        big = [e for e in evs if e["afad_M"] >= 4.0]
-        if big:
-            h["magnitude MAE, AFAD M>=4"] = round(statistics.mean(abs(e["M_error"]) for e in big), 3)
-            h["magnitude bias, AFAD M>=4"] = round(statistics.mean(e["M_error"] for e in big), 3)
         pd = [e for e in evs if "Pd_error" in e]
         if pd:
             h["Pd magnitude MAE, all matched"] = round(statistics.mean(abs(e["Pd_error"]) for e in pd), 3)
@@ -232,13 +223,13 @@ def print_card(card):
           f"({card['date']}, {card['version']})")
     print("\n  " + "\n  ".join(f"{k:34s} {v}" for k, v in card["summary"].items()))
     print(f"\n  {'dataset':11s} {'role':13s} {'st':>3} {'detected':>9} {'alarms':>7} "
-          f"{'unmatched':>9} {'delay':>6} {'mag MAE':>8} {'false/day':>9}")
+          f"{'unmatched':>9} {'delay':>6} {'Pd MAE':>8} {'false/day':>9}")
     for n, v in card["datasets"].items():
         print(f"  {n:11s} {v['role']:13s} {v['stations']:>3} "
               f"{str(v['detected']) + '/' + str(v['catalogue']):>9} {v['alarms']:>7} "
               f"{v['unmatched']:>9} "
               f"{(str(v['alarm_delay_median_s']) if v['alarm_delay_median_s'] else '-'):>6} "
-              f"{(str(v['magnitude_mae']) if v['magnitude_mae'] else '-'):>8} "
+              f"{(str(v['pd_magnitude_mae']) if v.get('pd_magnitude_mae') else '-'):>8} "
               f"{(f'{v['false_per_day']:.1f}' if 'false_per_day' in v else '-'):>9}")
     for n, why in card["skipped"].items():
         print(f"  {n:11s} skipped: {why}")
@@ -247,9 +238,8 @@ def print_card(card):
         print("\n  large events (AFAD M>=4)")
         for n, e in big:
             print(f"    {n:11s} {e['afad_type']} {e['afad_M']:.1f} at {e['origin']}: alarm +{e['alarm_delay_s']} s, "
-                  f"M{e['M_alarm']} at the alarm, M{e['M_final']} final ({e['M_error']:+.1f}), "
                   + (f"Pd M{e['Pd_alarm']} at the alarm, M{e['Pd_final']} final ({e['Pd_error']:+.1f}), "
-                     if "Pd_error" in e else "")
+                     if "Pd_error" in e else "no Pd magnitude, ")
                   + f"epicentre {e['epicentre_km'] if e['epicentre_km'] is not None else '-'} km")
     if card.get("bench"):
         b = card["bench"]
@@ -267,11 +257,18 @@ def compare(a, b):
     ea = {(n, e["origin"]): e for n, v in A["datasets"].items() for e in v["events"] if e["afad_M"] >= 4}
     eb = {(n, e["origin"]): e for n, v in B["datasets"].items() for e in v["events"] if e["afad_M"] >= 4}
     if ea or eb:
-        print("\n  large events: final magnitude error, A -> B")
+        print("\n  large events: final Pd magnitude error, A -> B")
+
+        def err(card, key):
+            if key not in card:
+                return "missed"
+            e = card[key]
+            # Scorecards from before the regressor was retired carry M_error.
+            v = e.get("Pd_error", e.get("M_error"))
+            return f"{v:+.1f}" if v is not None else "no Pd"
         for key in sorted(set(ea) | set(eb)):
             e = ea.get(key) or eb[key]
-            fa = f"{ea[key]['M_error']:+.1f}" if key in ea else "missed"
-            fb = f"{eb[key]['M_error']:+.1f}" if key in eb else "missed"
+            fa, fb = err(ea, key), err(eb, key)
             print(f"    {key[0]:11s} {e['afad_type']} {e['afad_M']:.1f} {key[1]}: {fa:>7} -> {fb}")
     for side, card in (("A", A), ("B", B)):
         if card.get("bench"):

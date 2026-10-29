@@ -79,10 +79,11 @@
   position of the scored windows rather than by how much data ingest has
   written, because in a fast replay ingest can be far ahead, and the result
   would then depend on thread timing (see *Two mistakes worth recording*).
-- **Magnitude.** An early estimate runs 11.5 s after every trigger. A
-  confident pick carries the 10 s window at its P, and the main thread
-  estimates the magnitude from it if the trigger belongs to a declared event.
-  Quiet windows keep the station's noise baseline current (`07-magnitude.md`).
+- **Magnitude.** The peak displacement after each trigger's onset, in windows
+  of 1 to 10 s, gives the Pd magnitude of the event, at the P-time location's
+  distances seconds after the alarm and at the pick location's later
+  (`17-pd-magnitude.md`). The learned regressor that ran here until
+  v0.1.0-beta.6 is retired (`07-magnitude.md`).
 - **STA/LTA.** One runs alongside the detector and gives the P time of a
   trigger, in place of the convention that P lies 3.5 s into the window; it
   never triggers anything. With `--detector stalta` it replaces the detector
@@ -392,9 +393,6 @@ minutes cut out: 3.6 s now, 886.8 s and 41,236 dropped samples before.
 
 ## Not done yet
 
-- **Early magnitude off the detector thread.** The at-pick estimate runs in
-  the main thread, but the early estimate still pauses the station's windows
-  for 300 ms. It should be its own worker (`07-magnitude.md`).
 - **Live SeedLink.** `ReplaySource` is the seam.
 - **Velocity model.** A 1D model with Moho and Pn would keep distant stations
   in the location instead of dropping them.

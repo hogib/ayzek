@@ -102,10 +102,17 @@ struct PdObservation {
   double distance_km; // epicentral
 };
 
+// The size classes reported with an estimate: small below the first bound,
+// medium from it to the second, large from the second up.
+inline constexpr std::array<double, 2> kPdClassBounds{4.0, 5.5};
+
 struct PdMagnitude {
   double mean, sd;
   std::size_t stations; // used
   std::size_t above;    // of them, above the threshold
+  // Posterior probability of each class of kPdClassBounds: small, medium,
+  // large. They sum to 1.
+  std::array<double, 3> class_p{};
 };
 
 // The event's posterior over M on [1, 8.5] in steps of 0.01, as onset's
