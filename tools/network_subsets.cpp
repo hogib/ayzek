@@ -8,7 +8,10 @@
 // the other stations, this equals running ayzek on each subset. As in ayzek,
 // alarms are matched against every catalogue event in the recording's span,
 // and the events scored are those within the radius (and --min-mag) of the
-// full network's centroid, the same for every subset.
+// full network's centroid, the same for every subset; a station without
+// coordinates (recorded, but not in the recording's station list) counts
+// towards alarms in every subset, as it does in ayzek. The full set therefore
+// gives ayzek's own counts.
 //
 // Output: one CSV row per subset. The main event is the largest catalogue
 // event within the evaluation radius; its columns give the alert delay, the
@@ -54,6 +57,7 @@
 #include <limits>
 #include <map>
 #include <print>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -218,6 +222,24 @@ int main(int argc, char **argv) try {
       main_event = &c;
   const bool has_main = main_event != nullptr;
 
+  // Stations without coordinates: in the recording's messages, not in its
+  // station list. ayzek's network stage takes their detections (compatible
+  // with any station within 30 s) though it cannot locate with them, so
+  // every subset replays them.
+  std::set<std::string> no_coordinates;
+  for (const auto &m : rec.messages)
+    if (!rec.stations.contains(station_of(m)))
+      no_coordinates.insert(station_of(m));
+  if (!no_coordinates.empty()) {
+    std::string names;
+    for (const auto &s : no_coordinates)
+      names += (names.empty() ? "" : ", ") + s;
+    std::println(stderr,
+                 "stations without coordinates, in every subset as in "
+                 "ayzek: {}",
+                 names);
+  }
+
   std::vector<std::string> codes;
   for (const auto &[code, _] : rec.stations)
     codes.push_back(code);
@@ -247,7 +269,8 @@ int main(int argc, char **argv) try {
 
     Network net(subset, base);
     for (const auto &m : rec.messages) {
-      if (!subset.contains(station_of(m)))
+      if (!subset.contains(station_of(m)) &&
+          !no_coordinates.contains(station_of(m)))
         continue;
       if (auto *d = std::get_if<Detection>(&m))
         net.on(*d);

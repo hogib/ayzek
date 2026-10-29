@@ -864,7 +864,7 @@ bool same_events(const std::vector<Event> &a, const std::vector<Event> &b) {
 // release()), reads the recording back, checks it holds what was written,
 // and replays it as network_subsets does for the full set: its stations,
 // min_stations as recorded, the geometry locator if it holds geometry
-// estimates, the messages of its stations only. Returns
+// estimates, every message (stations without coordinates included). Returns
 // the direct run and the replay, with network_subsets' own counts for the
 // full set on the recording and cfg's catalogue.
 std::pair<Run, Run>
@@ -912,8 +912,7 @@ record_and_replay(const std::map<std::string, StationInfo> &st,
   Network replay(rec.stations, base);
   const auto replay_log = printed([&] {
     for (const auto &m : rec.messages)
-      if (rec.stations.contains(station_of(m)))
-        feed(replay, m);
+      feed(replay, m);
     replay.report(rec.t_first, rec.t_last);
   });
   auto r = finish(replay, replay_log);
@@ -1037,23 +1036,26 @@ void best_fit_beyond_radius() {
 
 // A station without coordinates (ayzek warns "no coordinates, excluded from
 // location") still takes part in association and declaration: compatible()
-// allows 30 s between it and any station. ayzek records its messages, but
-// the recording's stations are the ones with coordinates, and network_subsets
-// replays only the messages of those: NOXY and NORT raise an alarm in the
-// run and none in the replay.
+// allows 30 s between it and any station. ayzek records its messages, though
+// the recording's station list holds only the stations with coordinates:
+// NOXY (P dated 1 s after NORT) and NORT raise an alarm, declared at
+// kT + 11, which matches quake(kT) through NORT (P at kT + 7, 0 s off; NOXY
+// has no position to predict P at). The replay, and network_subsets, which
+// replays such stations in every subset, give the same alarm: 1 event, 1
+// declared, none unmatched.
 void station_without_coordinates() {
   const std::vector<Message> msgs = {det("NORT", kT + kP, kT + 10),
                                      det("NOXY", kT + kP + 1.0, kT + 11)};
   const auto [direct, replay] = record_and_replay(
       stations(), config({quake(kT)}), msgs, kT - 60, kT + 120);
-  CHECK(direct.events.size() == 1 && direct.events[0].declared);
-  KNOWN_ISSUE(
-      same_events(direct.events, replay.events) &&
-          subsets_agree(direct, replay),
-      "detections at a station without coordinates count towards an "
-      "alarm in ayzek (network.cpp:66) and are recorded, but "
-      "network_subsets drops them (network_subsets.cpp:250): its replay "
-      "of the full station set misses that alarm");
+  CHECK(direct.events.size() == 1 && direct.events[0].declared &&
+        direct.events[0].declared_at == kT + 11);
+  CHECK((direct.tally == Tally{1, 1, 0}));
+  CHECK(same_events(direct.events, replay.events) && direct.log == replay.log &&
+        subsets_agree(direct, replay));
+  std::println("  a station without coordinates: the same alarm in the run, "
+               "the replay and network_subsets{}",
+               replay.subsets ? "" : " (not run)");
 }
 
 } // namespace
