@@ -1,6 +1,6 @@
 """Window probabilities from a published SeisBench model, as an ayzek score cache.
 
-    uv run --with seisbench python tools/seisbench_scores.py \\
+    uv run --with seisbench==0.12.6 python tools/seisbench_scores.py \\
         --model eqtransformer --weights instance --mode causal \\
         --out data/runs/sb/eqt_instance_causal/marmara data/marmara/*.mseed
 
@@ -50,6 +50,14 @@ import torch
 from obspy import read
 
 MODELS = {"eqtransformer": sbm.EQTransformer, "phasenet": sbm.PhaseNet}
+# The weight versions the candidates were selected with (held-out protocol,
+# section 6): SeisBench's from_pretrained takes the latest version by default,
+# which a later upload would change under the frozen method. SHA-256 of each
+# .pt file in the release notes.
+VERSIONS = {("eqtransformer", "original"): "3", ("eqtransformer", "stead"): "2",
+            ("eqtransformer", "instance"): "2", ("eqtransformer", "ethz"): "2",
+            ("phasenet", "original"): "2", ("phasenet", "stead"): "2",
+            ("phasenet", "instance"): "2", ("phasenet", "ethz"): "2"}
 STEP, WINDOW = 0.5, 6.0  # ayzek's grid and window, seconds
 
 
@@ -132,6 +140,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--model", choices=MODELS, required=True)
     ap.add_argument("--weights", required=True)
+    ap.add_argument("--weights-version", help="SeisBench weight version (default: VERSIONS)")
     ap.add_argument("--mode", choices=("causal", "lookahead"), required=True)
     ap.add_argument("--out", required=True, help="cache directory, one STATION.csv per file")
     ap.add_argument("--ahead", type=float, default=0.0,
@@ -143,7 +152,10 @@ def main():
         ap.error("--ahead needs --mode causal")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = MODELS[a.model].from_pretrained(a.weights).to(device).eval()
+    version = a.weights_version or VERSIONS.get((a.model, a.weights))
+    if version is None:
+        ap.error(f"no pinned version for {a.model} {a.weights}; give --weights-version")
+    model = MODELS[a.model].from_pretrained(a.weights, version_str=version).to(device).eval()
     fs = model.sampling_rate
     if a.model == "eqtransformer":
         label = 0  # detection

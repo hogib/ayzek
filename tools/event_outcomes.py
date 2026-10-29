@@ -66,8 +66,8 @@ def outcomes(out, shift):
     for hms, kind, mag in MISSED.findall(tail):
         ev[(unshift(hms, shift), kind, mag)] = (0, 0)
     m = CATALOGUE.search(out)
-    if m and int(m.group(1)) != len(ev):
-        sys.exit(f"parsed {len(ev)} events, the report counts {m.group(1)}")
+    if not m or int(m.group(1)) != len(ev):
+        sys.exit(f"parsed {len(ev)} events, the report counts {m.group(1) if m else 'none'}")
     return ev
 
 
@@ -100,8 +100,11 @@ def main():
                    *DETECTORS[a.detector], *a.extra]
             if a.detector == "learned":
                 cmd += ["--scores-in", cache]
-            out = subprocess.run([*cmd, *paths], capture_output=True, text=True).stdout
-            return shift, outcomes(out, shift)
+            p = subprocess.run([*cmd, *paths], capture_output=True, text=True)
+            if p.returncode or not CATALOGUE.search(p.stdout):
+                sys.exit(f"{name} shift {shift}: ayzek exited {p.returncode} without a report"
+                         f"\n{p.stderr[-800:]}")
+            return shift, outcomes(p.stdout, shift)
 
         with concurrent.futures.ThreadPoolExecutor(a.jobs) as pool:
             results = dict(pool.map(run, shifts))

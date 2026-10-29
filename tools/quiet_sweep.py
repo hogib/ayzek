@@ -55,11 +55,12 @@ def main():
                 cmd.append(f"--{option}")
             elif value != "off":
                 cmd += [f"--{option}", value]
-        out = subprocess.run([*cmd, *sorted(glob.glob(f"{a.data}/{w['name']}/*.mseed"))],
-                             capture_output=True, text=True).stdout
-        m = ALARMS.search(out)
-        if not m:
-            raise SystemExit(f"no report for {w['name']} at {setting}")
+        p = subprocess.run([*cmd, *sorted(glob.glob(f"{a.data}/{w['name']}/*.mseed"))],
+                           capture_output=True, text=True)
+        m = ALARMS.search(p.stdout)
+        if p.returncode or not m:
+            raise SystemExit(f"{w['name']} at {setting}: ayzek exited {p.returncode} without a "
+                             f"report\n{p.stderr[-800:]}")
         return tuple(setting), int(m.group(1))
 
     jobs = [(s, w) for s in settings for w in windows]

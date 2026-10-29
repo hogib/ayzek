@@ -159,8 +159,13 @@ def main():
                 cmd.append(f"--{option}")
             elif value != "off":
                 cmd += [f"--{option}", value]
-        out = subprocess.run([*cmd, *files], capture_output=True, text=True).stdout
-        return name, tuple(setting), shift, parse_report(out)
+        p = subprocess.run([*cmd, *files], capture_output=True, text=True)
+        # A run that died, or ended without its summary, must not pass for a
+        # setting with no catalogue events.
+        if p.returncode or not re.search(PATTERNS["catalogue"], p.stdout):
+            sys.exit(f"{name} {' '.join(f'--{o} {v}' for o, v in setting)} shift {shift}: "
+                     f"ayzek exited {p.returncode} without a report\n{p.stderr[-800:]}")
+        return name, tuple(setting), shift, parse_report(p.stdout)
 
     jobs = [(d, s, shift) for d in datasets for s in settings for shift in [0, *shifts]]
     results = {}
