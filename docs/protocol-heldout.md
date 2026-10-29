@@ -33,6 +33,8 @@ is fetched before then.
     (Crete), as one network group;
   - **New Zealand**: NZ (GeoNet);
   - **KO** (KOERI): held out in time only; both models trained on its stations.
+  - **Prospective**: New Zealand again, on data recorded after the freeze
+    (section 10), a result of its own.
 - **Stations**: three HH channels at 100 Hz, open over the pool period, with at
   least 90% data coverage over it (from the availability services, before any
   waveform is fetched). Coordinates and gains from each network's StationXML
@@ -183,5 +185,38 @@ reported both ways, labelled as a deviation. Nothing is re-tuned on test data.
 ## 9. Records
 
 The fetched sets (miniSEED, StationXML, catalogue excerpts, `dataset.json`) are
-published where the networks' licences allow. Every run's command, commit and
-output is kept.
+published where the networks' licences allow, each under its own licence (CC BY
+4.0 for the NOA node's services, CC BY 3.0 NZ for GeoNet's) with the networks'
+citations. Every run's command, commit and output is kept.
+
+## 10. Prospective test (New Zealand)
+
+A test on data that did not exist when the method was frozen, reported as its
+own confirmatory result and never pooled with the retrospective New Zealand
+test or any other network.
+
+- **Data**: NZ (GeoNet), recorded from the freeze (the UTC time of this
+  protocol's public commit) on. Stations by the rule of section 2, their
+  availability checked over the span before any waveform is fetched.
+- **Sequences**: by the rule of section 3 (M >= 4.5 in GeoNet's catalogue, at
+  least five usable stations within 150 km, not within 3 h after an earlier
+  qualifying event; 3 h from 10 min before), every qualifying sequence in time
+  order, with no reserve split.
+- **Span and stopping rule**: from the freeze until the scorable catalogue
+  events of its sequences reach 150, the sequence that crosses the target
+  included whole, or 12 months, whichever comes first; if 12 months pass under
+  the target, every sequence is used and the result is reported as under it.
+- **Fetching**: once a month after the freeze, the qualifying sequences whose
+  first event is at least 4 weeks old, so that GeoNet's review is in, are
+  identified from its catalogue and fetched with the frozen tool, each with its
+  catalogue excerpt at that time and the canary check. A sequence is fetched
+  once; later catalogue revisions are not taken up.
+- **Quiet data**: after the span closes, 24 windows of 6 h drawn uniformly over
+  it with seed *[seed]* on the station clusters of its sequences, accepted by
+  the rule of section 3 (with its New Zealand fallback), and fetched then.
+- **Detectors, settings, scoring and endpoints**: those of sections 5 to 7 for
+  New Zealand, with the frozen release and settings; nothing is retuned. The
+  primary endpoint is that of section 7 on the prospective sequences.
+- **Not live**: the archive delivers the post-freeze data intact, so the test
+  replays it like the retrospective ones. A live SeedLink run, if one is made,
+  is reported apart and is not part of this test.
