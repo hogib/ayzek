@@ -56,9 +56,25 @@ is fetched before then.
     freeze (section 10), each a result of its own.
 - **Stations**: three HH channels at 100 Hz, open over the pool period, with at
   least 90% data coverage over it (from the availability services, before any
-  waveform is fetched). Coordinates and gains from each network's StationXML
-  (`--stations`, `--pd-gains`); Pd station terms are zero for Greece and New
-  Zealand.
+  waveform is fetched), whose components' orientations can be rotated to north
+  and east (the determinant of their three unit vectors, from azimuth and dip,
+  at least 0.5 in absolute value; NZ.MKTZ from 2025-09-30 fails it).
+  Coordinates from each set's StationXML (`--stations`).
+- **Pd gains, station terms and noise levels**:
+  - Greece and New Zealand: the gains of each set's StationXML (`pd_gain.csv`,
+    `--pd-gains`). A vertical channel epoch gets a gain only if its velocity
+    response divided by the stated sensitivity lies within 0.8-1.25 at 0.1,
+    0.2, 0.5, 1, 2 and 5 Hz (Pd divides by that one number); otherwise the
+    station is not measured for Pd, and the held-out tool records the reason
+    (16 of the 166 Greek vertical epochs of the tuning sets fail it, none of
+    KO's or New Zealand's). With `--pd-gains` the Pd station terms are zero and
+    no station noise levels apply (no dead-channel or coda exclusion, section
+    11).
+  - KO: runs without `--pd-gains` (`tools/run_heldout.py`). It keeps the
+    gains, station terms and noise levels of its calibration in `models/`
+    (`pd_gain.csv`, `pd_terms.csv`, `pd_noise.csv`, keyed by station code),
+    with the exclusions that calibration flagged; a KO station without a gain
+    epoch there covering the replay is not measured for Pd.
 
 ## 3. Pools and the reserve
 

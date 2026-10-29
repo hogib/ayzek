@@ -8,8 +8,13 @@ frozen detector on every selected set, then every endpoint of the protocol
 
 The sets are the selection's sequences and quiet windows, fetched with the
 held-out tool (DATA/<set>/: STATION.mseed, stations.csv, pd_gain.csv,
-catalog.csv, dataset.json); every run takes the set's own station table, gains
-and catalogue. Stages, each skipped where its outputs exist (--stages picks):
+catalog.csv, dataset.json); every run takes the set's own station table and
+catalogue, and on Greece and New Zealand the set's own Pd gains (--pd-gains,
+which zeroes the Pd station terms and drops the noise levels). KO's sets run
+without --pd-gains: KO keeps the gains, station terms and noise levels of its
+calibration in models/ (protocol, section 2), and a KO station without a gain
+there is not measured for Pd. Stages, each skipped where its outputs exist
+(--stages picks):
 
   scores     the published models' window probabilities on every set
              (tools/seisbench_scores.py, pinned weights), written to NAME.tmp
@@ -59,6 +64,7 @@ SHIFTS = "127,263,391"
 EQUIVALENCE = {"phasenet_causal_eqfa": 0.10}   # protocol 7.2
 EXCLUDE_TOP, EXCLUDE_BY = 2, "stalta_eqfa"     # protocol 7.3
 PRIMARY_AGAINST = "stalta_eqfa"                # protocol 7, primary
+OWN_GAINS = {"ko"}       # groups that keep models/' Pd gains, terms and noise (protocol 2)
 OUTCOME_DETECTOR = {"learned": "learned", "stalta": "stalta_eqfa", "filterpicker": "filterpicker",
                     "transformer": "transformer"}
 EVENT = re.compile(
@@ -129,7 +135,7 @@ class Runner:
     def set_args(self, s):
         d = self.data / s
         args = ["--stations", d / "stations.csv", "--catalog", d / "catalog.csv"]
-        if (d / "pd_gain.csv").exists():
+        if (d / "pd_gain.csv").exists() and self.group not in OWN_GAINS:
             args += ["--pd-gains", d / "pd_gain.csv"]
         return args
 
