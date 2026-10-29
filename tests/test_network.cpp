@@ -558,15 +558,16 @@ void alarm_without_event() {
   std::println("  an alarm with no catalogue event is false, the event missed");
 }
 
-// "The first alarm": the event list is in creation order, not alarm order.
-// NORT dates P 5 s before quake(kT)'s P (kT + 2) and starts event A. EAST and
-// WEST date it 4.5 s after (kT + 11.5), 9.5 s after NORT (8.94 s allowed), so
-// they start event B, which WEST's detection declares: alarm #1 at
-// kT + 14.5. SOUT dates P 5.5 s after (kT + 12.5), 10.5 s after NORT (11.4 s
-// allowed): it joins A, the first compatible event, and declares it: alarm #2
-// at kT + 15. Both fit the event (A by 5 s through NORT, B by 4.5 s). The
-// protocol credits the event to the first alarm credited with it, #1; score()
-// credits the first event in its list, A, alarm #2, and counts #1 false.
+// "The first alarm" is the first declared, although the event list is in
+// creation order. NORT dates P 5 s before quake(kT)'s P (kT + 2) and starts
+// event A. EAST and WEST date it 4.5 s after (kT + 11.5), 9.5 s after NORT
+// (8.94 s allowed), so they start event B, which WEST's detection declares:
+// alarm #1 at kT + 14.5. SOUT dates P 5.5 s after (kT + 12.5), 10.5 s after
+// NORT (11.4 s allowed): it joins A, the first compatible event, and declares
+// it: alarm #2 at kT + 15. Both fit the event (A by 5 s through NORT, B by
+// 4.5 s). The protocol credits the event to the first alarm credited with it,
+// #1 (B, the second in the list); #2 is false. Summary: 2 alarms, 1 correct
+// (50%), 1 false (50%), the false one #2 at kT + 15 = 00:16:55.00.
 void first_alarm_is_first_declared() {
   Network net(stations(), config({quake(kT)}));
   net.on(det("NORT", kT + 2.0, kT + 5.0));
@@ -580,15 +581,13 @@ void first_alarm_is_first_declared() {
   CHECK(b.id == 1 && b.declared_at == kT + 14.5 &&
         b.detections.contains("WEST"));
   const auto s = net.score();
-  CHECK(s.size() == 1 && s[0].detected);
-  KNOWN_ISSUE(s[0].detected->id == 1,
-              "the catalogue event goes to alarm #2 (kT + 15 s), not to #1 "
-              "(kT + 14.5 s), which fits it too and is counted false: score() "
-              "credits the first event in creation order (network.cpp:975), "
-              "and an event started by an early trigger is created first but "
-              "declared later");
-  std::println("  credited alarm #{} of two that fit the event",
-               s[0].detected->id);
+  CHECK(s.size() == 1 && s[0].detected == &b);
+  CHECK(net.unmatched_count() == 1);
+  const auto out = lines(printed([&] { net.report(kT - 60, kT + 120); }));
+  CHECK((counts(out, "    correct  (match an AFAD event)") == Counts{1, 50}));
+  CHECK((counts(out, "    false    (no AFAD event)") == Counts{1, 50}));
+  line_index(out, "    00:16:55.00 UTC  #2  no magnitude, not located");
+  std::println("  the first alarm declared is credited, not the first created");
 }
 
 // --- scoring -----------------------------------------------------------------
