@@ -12,7 +12,7 @@ stalta_eqfa,simav26,50,17,33,56,0.083,30.9,16.0,200,
 stalta_eqfa,demo_ko,9,1,8,9,0.068,7.9,19.1,48,
 stalta_eqfa,quiet100,,,,,,,,,63
 stalta_eqdet,demo,11,3,8,9,0.064,7.9,16.9,34,
-stalta_eqdet,marmara,106,61,45,57,0.283,40.3,10.4,532,
+stalta_eqdet,marmara,106,61,45,57,0.283,40.3,10.2,532,
 stalta_eqdet,sindirgi61,56,14,42,66,0.123,38.6,17.0,281,
 stalta_eqdet,simav26,71,32,39,56,0.109,36.9,16.2,291,
 stalta_eqdet,demo_ko,11,3,8,9,0.124,7.9,16.9,70,
@@ -50,7 +50,7 @@ phasenet_causal_eqfa,quiet100,,,,,,,,,49
 phasenet_causal_eqdet,demo,10,3,7,9,0.021,7.0,18.5,33,
 phasenet_causal_eqdet,marmara,65,22,43,57,0.136,40.8,12.5,329,
 phasenet_causal_eqdet,sindirgi61,50,11,39,66,0.108,35.7,18.5,201,
-phasenet_causal_eqdet,simav26,70,30,40,56,0.115,37.9,17.8,239,
+phasenet_causal_eqdet,simav26,70,30,40,56,0.115,37.9,17.5,239,
 phasenet_causal_eqdet,demo_ko,11,4,7,9,0.035,6.9,19.0,50,
 phasenet_causal_eqdet,quiet100,,,,,,,,,29
 phasenet_causal_eqquiet,demo,9,3,6,9,0.021,5.9,17.8,30,
@@ -68,7 +68,7 @@ eqt_causal_eqfa,quiet100,,,,,,,,,7
 eqt_causal_eqdet,demo,17,10,7,9,0.201,6.5,19.5,70,
 eqt_causal_eqdet,marmara,113,62,51,57,0.270,48.8,15.5,552,
 eqt_causal_eqdet,sindirgi61,91,50,41,66,0.218,34.0,30.5,363,
-eqt_causal_eqdet,simav26,91,55,36,56,0.158,32.3,19.2,375,
+eqt_causal_eqdet,simav26,91,55,36,56,0.158,32.3,19.0,375,
 eqt_causal_eqdet,demo_ko,13,6,7,9,0.066,6.9,26.0,76,
 eqt_causal_eqdet,quiet100,,,,,,,,,26
 eqt_causal_eqquiet,demo,13,5,8,9,0.087,7.9,20.0,54,
