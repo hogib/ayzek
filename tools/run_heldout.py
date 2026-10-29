@@ -28,7 +28,10 @@ there is not measured for Pd. Stages, each skipped where its outputs exist
   outcomes   tools/event_outcomes.py per detector and sequence set, with the
              chance shifts: the per-event tables of the paired tests;
   neighbours tools/sweep_trigger.py over the learned detector's adjacent
-             settings on the sequence sets (endpoint 4);
+             settings on the sequence sets (endpoint 4), and each setting's
+             per-event table (tools/event_outcomes.py, label nb_<setting>,
+             in OUT/neighbours/outcomes) for its comparison with the frozen
+             rule;
              outcomes and neighbours replay the learned detector from its
              probabilities (--scores-in, the same reports as running its
              networks; docs/impl/05-pipeline.md, Evaluation), or run its
@@ -43,7 +46,13 @@ there is not measured for Pd. Stages, each skipped where its outputs exist
              (dataset_specdual_6s_catalog/manifest.csv, 183 station keys; KRBG
              and MDNY appear under two keys in two splits and count as
              training). A sequence set counts as "test-split stations only"
-             when every station is a test-split station.
+             when every station is a test-split station. Every detection
+             endpoint (significance, significance_pre_s, station_split,
+             neighbours) is computed twice: for all events, and for the events
+             no deeper than 40 km (protocol section 7, Depth; significance.py
+             --max-depth 40, an event without a depth left out) in the files
+             of the same name with _depth40. manifest.json lists both sets of
+             files under "endpoint_files".
 
 This script adds no statistic: every number comes from the tools named above,
 run with the commands written to OUT/commands.log. OUT/manifest.json records
@@ -58,6 +67,7 @@ import hashlib
 import itertools
 import json
 import re
+import shutil
 import subprocess
 import sys
 from collections import defaultdict
@@ -72,6 +82,8 @@ EQUIVALENCE = {"phasenet_causal_eqfa": 0.10}   # protocol 7.2
 EXCLUDE_TOP, EXCLUDE_BY = 2, "stalta_eqfa"     # protocol 7.3
 PRIMARY_AGAINST = "stalta_eqfa"                # protocol 7, primary
 OWN_GAINS = {"ko"}       # groups that keep models/' Pd gains, terms and noise (protocol 2)
+MAX_DEPTH_KM = 40.0      # protocol 7, Depth: detection endpoints also for events this shallow
+DEPTH_SUFFIX = "_depth40"
 OUTCOME_DETECTOR = {"learned": "learned", "stalta": "stalta_eqfa", "filterpicker": "filterpicker",
                     "transformer": "transformer"}
 EVENT = re.compile(
@@ -289,6 +301,35 @@ class Runner:
                       "--shifts", SHIFTS, "--jobs", str(self.a.jobs), "--out", out],
                      log_to=d / f"sweep_{s}.log")
             print(f"[neighbours] {s}")
+        # Each setting's per-event table, for its paired comparison with the
+        # frozen rule, for all events and for the shallow ones (endpoint 4).
+        od = d / "outcomes"
+        od.mkdir(exist_ok=True)
+        for s in self.sequences:
+            for label, opts in self.neighbour_settings():
+                out = od / f"{label}_{s}.csv"
+                if out.exists():
+                    continue
+                c = self.learned_cache(s)
+                self.run([sys.executable, TOOLS / "event_outcomes.py", "--binary", self.a.binary,
+                          "--catalog", self.data / s / "catalog.csv",
+                          "--dataset", f"{s}:{c or ''}:{','.join(self.files(s))}",
+                          "--detector", "learned", "--label", label,
+                          "--shifts", SHIFTS, "--jobs", "7", "--out", out, "--",
+                          *opts, *self.set_args(s)], log_to=od / f"{label}_{s}.log")
+            print(f"[neighbours] outcomes {s}")
+
+    def neighbour_settings(self):
+        """(label, ayzek options) of every setting of the learned detector's grid."""
+        g = self.settings.get("learned_neighbours")
+        if not g:
+            return []
+        keys = list(g["grid"])
+        out = []
+        for combo in itertools.product(*(g["grid"][k] for k in keys)):
+            label = "nb_" + "_".join(f"{k}{v}" for k, v in zip(keys, combo))
+            out.append((label, [x for k, v in zip(keys, combo) for x in (f"--{k}", v)]))
+        return out
 
     # ---- analysis ----------------------------------------------------------
     def catalogue_depths(self, s):
@@ -372,10 +413,25 @@ class Runner:
         base = [sys.executable, TOOLS / "significance.py", "--outcomes", self.out / "outcomes",
                 "--groups", group_arg, "--against", ",".join(against)]
         eq = [f"{k}={v}" for k, v in EQUIVALENCE.items() if k in self.detectors]
-        self.run([*base, *(["--equivalence", *eq] if eq else []), "--json", an / "significance.json"],
-                 log_to=an / "significance.txt")
-        self.run([*base, "--outcome", "detected_pre_s", "--json", an / "significance_pre_s.json"],
-                 log_to=an / "significance_pre_s.txt")
+
+        def both(cmd, name):
+            """A detection endpoint for all events, and again for the events no
+            deeper than MAX_DEPTH_KM (protocol 7, Depth), in NAME_depth40."""
+            for suffix, extra in (("", []), (DEPTH_SUFFIX, ["--max-depth", f"{MAX_DEPTH_KM:g}"])):
+                self.run([*cmd, *extra, "--json", an / f"{name}{suffix}.json"],
+                         log_to=an / f"{name}{suffix}.txt")
+
+        both([*base, *(["--equivalence", *eq] if eq else [])], "significance")
+        both([*base, "--outcome", "detected_pre_s"], "significance_pre_s")
+        nb = self.neighbour_settings()
+        nd = self.out / "neighbours" / "outcomes"
+        if nb and nd.is_dir():
+            # The frozen rule's tables beside its neighbours', so that
+            # significance.py compares each setting with it.
+            for s in self.sequences:
+                shutil.copy(self.out / "outcomes" / f"learned_{s}.csv", nd / f"learned_{s}.csv")
+            both([sys.executable, TOOLS / "significance.py", "--outcomes", nd, "--groups", group_arg,
+                  "--against", ",".join(l for l, _ in nb)], "neighbours")
         if self.quiet:
             index = self.write_quiet_index()
             runs = [f"{l}={self.out / 'quiet' / l}" for l in ["learned", *against]]
@@ -396,9 +452,17 @@ class Runner:
                 roles = {split.get(c, "unknown") for c in codes}
                 groups["test-split stations only" if roles <= {"test"} else "with training-split stations"].append(s)
             garg = ";".join(f"{k}={','.join(v)}" for k, v in groups.items() if v)
-            self.run([*base, "--groups", garg, "--against", PRIMARY_AGAINST,
-                      "--json", an / "station_split.json"], log_to=an / "station_split.txt")
+            both([*base, "--groups", garg, "--against", PRIMARY_AGAINST], "station_split")
         print(f"[analysis] -> {an}")
+
+    def endpoint_files(self):
+        """The analysis files present, all events and events no deeper than
+        MAX_DEPTH_KM apart (relative to OUT)."""
+        an = self.out / "analysis"
+        files = sorted(p.relative_to(self.out).as_posix() for p in an.glob("*")) if an.is_dir() else []
+        deep = [f for f in files if Path(f).stem.endswith(DEPTH_SUFFIX)]
+        return {"all_events": [f for f in files if f not in deep],
+                f"events_no_deeper_than_{MAX_DEPTH_KM:g}_km": deep}
 
     def manifest(self):
         tool_commit = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
@@ -415,6 +479,7 @@ class Runner:
                           "content": self.settings},
              "ayzek_code": {"commit": tool_commit, "dirty": bool(dirty)},
              "sequences": self.sequences, "quiet_windows": [s for s, _ in self.quiet],
+             "endpoint_files": self.endpoint_files(),
              "stages": self.a.stages, "run_utc": dt.datetime.now(dt.UTC).isoformat(timespec="seconds")}
         (self.out / "manifest.json").write_text(json.dumps(m, indent=1))
 

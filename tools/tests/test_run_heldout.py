@@ -317,3 +317,82 @@ def test_magnitude_and_latency_negative_magnitude_and_depth(tmp_path):
     # Pd errors: first -0.3 - (-0.3) = 0.00, final -0.2 - (-0.3) = +0.10.
     line = (an / "magnitude_summary.txt").read_text().splitlines()[1].split()
     assert line == ["learned", "<=40km", "ML", "-10-4", "2", "2", "+0.00", "0.00", "+0.10", "0.10", "2/2", "2/2"]
+
+
+# --- events no deeper than 40 km (protocol 7, Depth) -------------------------------------------
+
+def test_neighbour_settings_from_the_grid(tmp_path):
+    # SETTINGS' grid: threshold 0.75/0.85 x trigger-windows 6/10, in the
+    # grid's key order, every combination once (by hand).
+    r = make_runner(tmp_path)
+    assert r.neighbour_settings() == [
+        ("nb_threshold0.75_trigger-windows6", ["--threshold", "0.75", "--trigger-windows", "6"]),
+        ("nb_threshold0.75_trigger-windows10", ["--threshold", "0.75", "--trigger-windows", "10"]),
+        ("nb_threshold0.85_trigger-windows6", ["--threshold", "0.85", "--trigger-windows", "6"]),
+        ("nb_threshold0.85_trigger-windows10", ["--threshold", "0.85", "--trigger-windows", "10"])]
+
+
+def recorded_analysis(tmp_path, monkeypatch):
+    """stage_analysis with the commands recorded instead of run."""
+    split = tmp_path / "split.csv"
+    split.write_text("station,split\nAAA,test\nBBB,training\nCCC,test\n")
+    r = make_runner(tmp_path)
+    r.a.station_split = str(split)
+    for s in r.sequences:
+        (r.out / "outcomes").mkdir(parents=True, exist_ok=True)
+        (r.out / "outcomes" / f"learned_{s}.csv").write_text("x\n")
+    (r.out / "neighbours" / "outcomes").mkdir(parents=True)
+    cmds = []
+    monkeypatch.setattr(r, "run", lambda cmd, log_to=None, check=True: cmds.append(([str(c) for c in cmd], str(log_to))))
+    monkeypatch.setattr(r, "magnitude_and_latency", lambda an: None)
+    r.stage_analysis()
+    return r, cmds
+
+
+def json_name(cmd):
+    return cmd[cmd.index("--json") + 1].rsplit("/", 1)[1]
+
+
+def test_every_detection_endpoint_also_for_events_no_deeper_than_40_km(tmp_path, monkeypatch):
+    r, cmds = recorded_analysis(tmp_path, monkeypatch)
+    by_name = {json_name(c): (c, log) for c, log in cmds if "significance.py" in c[1]}
+    # Endpoints 1, 2 (significance), 5 (significance_pre_s), 4 (neighbours)
+    # and 6 (station_split): each twice, the second with --max-depth 40 and
+    # _depth40 names, otherwise the same command.
+    for name in ("significance", "significance_pre_s", "neighbours", "station_split"):
+        full, log = by_name[f"{name}.json"]
+        shallow, log40 = by_name[f"{name}_depth40.json"]
+        assert "--max-depth" not in full and log.endswith(f"/{name}.txt")
+        assert shallow[shallow.index("--max-depth") + 1] == "40"
+        assert log40.endswith(f"/{name}_depth40.txt")
+        strip = lambda c: [x for x in c if x not in ("--max-depth", "40") and not x.endswith(".json")]
+        assert strip(full) == strip(shallow)
+    # The quiet windows have no events: no depth version.
+    assert "quiet.json" in by_name and "quiet_depth40.json" not in by_name
+    assert all("--max-depth" not in c for c, _ in cmds if "quiet_without_stations.py" in c[1])
+    # The neighbours' comparison: the frozen rule's tables copied beside the
+    # neighbours', every grid setting against it.
+    nb, _ = by_name["neighbours.json"]
+    assert nb[nb.index("--outcomes") + 1] == str(r.out / "neighbours" / "outcomes")
+    assert nb[nb.index("--against") + 1] == ",".join(l for l, _ in r.neighbour_settings())
+    assert sorted(p.name for p in (r.out / "neighbours" / "outcomes").glob("learned_*.csv")) == [
+        "learned_gr_nm_seq003.csv", "learned_gr_nm_seq012.csv"]
+    assert len(by_name) == 9
+
+
+def test_manifest_lists_the_endpoint_files(tmp_path):
+    r = make_runner(tmp_path)
+    an = r.out / "analysis"
+    an.mkdir(parents=True)
+    for n in ("significance.json", "significance.txt", "significance_depth40.json",
+              "significance_depth40.txt", "quiet.txt", "magnitude_summary.txt"):
+        (an / n).write_text("")
+    assert r.endpoint_files() == {
+        "all_events": ["analysis/magnitude_summary.txt", "analysis/quiet.txt",
+                       "analysis/significance.json", "analysis/significance.txt"],
+        "events_no_deeper_than_40_km": ["analysis/significance_depth40.json",
+                                        "analysis/significance_depth40.txt"]}
+    (tmp_path / "ayzek").write_bytes(b"binary")          # hashed by the manifest
+    r.manifest()
+    m = json.loads((r.out / "manifest.json").read_text())
+    assert m["endpoint_files"] == r.endpoint_files()

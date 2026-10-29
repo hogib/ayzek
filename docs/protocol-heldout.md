@@ -279,9 +279,19 @@ for STA/LTA at equal quiet alarms is the first secondary endpoint.
 
 **Depth**: every detection endpoint above (the primary, and secondary 1, 2,
 4, 5 and 6) is reported for all scorable events, which is the endpoint as defined, and
-also for the events no deeper than 40 km by the catalogue's depth (the
-per-event outcome rows restricted to those events, the same
-`tools/significance.py`), for every network. The reason is the matcher: ayzek
+also for the events no deeper than 40 km by the catalogue's depth, for every
+network. The restriction is applied to the per-event outcome tables before
+any statistic: `tools/event_outcomes.py` writes each event's catalogue depth
+(`depth_km`), and `tools/significance.py --max-depth 40` keeps the events
+with a depth of at most 40.0 km, in the observed and in the shifted runs and
+for every detector alike. An event without a catalogue depth is left out of
+the restricted results (it cannot be shown to be that shallow) and counted;
+ayzek itself scores no such event, since its catalogue reader skips it.
+`tools/run_heldout.py` writes the restricted results beside the all-events
+ones, in files of the same name ending in `_depth40`, and lists both in its
+manifest; for endpoint 4 it compares each adjacent setting's per-event table
+with the frozen rule's, for all events and for the restricted ones. The
+reason is the matcher: ayzek
 predicts P in a uniform half-space (hypot(D, depth) / 6 km/s, within 6 s;
 `Network::match`) and S the same way at 3.5 km/s. Against iasp91 travel times
 (TauP), at 10 km depth the half-space P is within 0.6 s of iasp91 out to
