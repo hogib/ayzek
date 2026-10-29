@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <cstring>
 #include <expected>
+#include <limits>
 #include <span>
 #include <string_view>
 
@@ -126,7 +127,10 @@ struct Header {
 
 // SEED BTIME (year, day of year, time, 1e-4 s fraction) plus blockette 1001
 // microseconds, as nanoseconds since the Unix epoch. A leap second (sec == 60)
-// carries into the next minute, as ObsPy does.
+// carries into the next minute, as ObsPy does. Times that int64 nanoseconds
+// cannot hold, from 2^63 ns = 2262-04-11 23:47:16.854775808 UTC on, are a bad
+// time: the seconds and the nanoseconds within them are checked against that
+// limit before they are combined, so that no signed arithmetic overflows.
 [[nodiscard]] inline std::expected<std::int64_t, Error>
 btime_to_ns(std::uint16_t year, std::uint16_t doy, std::uint8_t hour,
             std::uint8_t min, std::uint8_t sec, std::uint16_t fract_1e4,
@@ -138,9 +142,17 @@ btime_to_ns(std::uint16_t year, std::uint16_t doy, std::uint8_t hour,
   }
   const sys_days day0 =
       sys_days{std::chrono::year{year} / January / 1} + days{doy - 1};
-  const auto t = day0 + hours{hour} + minutes{min} + seconds{sec} +
-                 microseconds{fract_1e4 * 100LL + micro};
-  return duration_cast<nanoseconds>(t.time_since_epoch()).count();
+  // Whole seconds (at most about 1.7e10 for year 2500) and the nanoseconds
+  // after them, -127000 to 1000027000.
+  const std::int64_t s =
+      (day0 + hours{hour} + minutes{min} + seconds{sec}).time_since_epoch() /
+      seconds{1};
+  const std::int64_t sub = fract_1e4 * 100'000LL + micro * 1'000LL;
+  constexpr std::int64_t kMax = std::numeric_limits<std::int64_t>::max();
+  constexpr std::int64_t kMaxS = kMax / 1'000'000'000; // 9223372036
+  if (s > kMaxS || (s == kMaxS && sub > kMax % 1'000'000'000))
+    return std::unexpected(Error::BadTime);
+  return s * 1'000'000'000 + sub;
 }
 
 [[nodiscard]] inline double sample_rate(std::int16_t factor,
@@ -234,8 +246,16 @@ parse_header(std::span<const std::byte> rec) noexcept {
   h.start_ns = *t;
   // Activity flag bit 0x02 set: the time correction is already included in the
   // start time. Otherwise it is added here.
-  if ((activity & 0x02) == 0)
-    h.start_ns += std::int64_t{correction} * 100'000;
+  // The correction (at most 2^31 x 1e-4 s, 2.1e14 ns) must not take the time
+  // past what int64 nanoseconds hold either.
+  if ((activity & 0x02) == 0) {
+    const std::int64_t c = std::int64_t{correction} * 100'000;
+    constexpr std::int64_t kMax = std::numeric_limits<std::int64_t>::max();
+    if ((c > 0 && h.start_ns > kMax - c) ||
+        (c < 0 && h.start_ns < std::numeric_limits<std::int64_t>::min() - c))
+      return std::unexpected(Error::BadTime);
+    h.start_ns += c;
+  }
 
   return h;
 }

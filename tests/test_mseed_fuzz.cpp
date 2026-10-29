@@ -14,15 +14,11 @@
 // mseed_dump.cpp, replay_check.cpp) read whole 512-byte records and pass each
 // to parse_header and then to decode, as run() does here.
 //
-// A behaviour the decoder's own checks prescribe otherwise is reported as a
-// KNOWN ISSUE line, not a failure (see KNOWN_ISSUE); there is one, the start
-// time of years after 2262, a signed overflow in bits/chrono.h. Under
-// -fsanitize=undefined, which meson test runs with halt_on_error=1, it would
-// stop the test at the first record so dated (the random damage makes some:
-// byte 20 set to 0x08 dates a record 0x08E9 = 2281). tests/meson.build then
-// defines AYZEK_UBSAN, and records dated 2262 to 2500 are redated 2025 before
-// they are decoded, and counted (redated()), so that UBSan still checks
-// everything else; the KNOWN ISSUE case is then not run.
+// Under -fsanitize=undefined (meson test runs it with halt_on_error=1),
+// "never a crash" includes no undefined behaviour: the random phases date
+// records up to 2500 (the plausible headers, and byte 20 damaged to 0x08 gives
+// 0x08E9 = 2281), past what int64 nanoseconds hold, which btime_to_ns must
+// refuse without overflowing.
 
 #include "mseed.hpp"
 
@@ -47,21 +43,6 @@
 using namespace ayzek::mseed;
 
 namespace {
-
-// As in test_network.cpp: `holds` is what the decoder's checks prescribe.
-// While it does not hold, the test prints it and goes on; once it holds, the
-// line says so, and the statement can become a CHECK.
-int g_known_issues = 0;
-void known_issue(bool holds, int line, std::string_view what) {
-  if (holds) {
-    std::println("NOW HOLDS    test_mseed_fuzz.cpp:{}: {} -- make it a CHECK",
-                 line, what);
-    return;
-  }
-  ++g_known_issues;
-  std::println("KNOWN ISSUE  test_mseed_fuzz.cpp:{}: {}", line, what);
-}
-#define KNOWN_ISSUE(holds, what) known_issue((holds), __LINE__, (what))
 
 // splitmix64 (Steele, Lea and Flood 2014): the same sequence everywhere,
 // unlike the standard library's distributions.
@@ -253,33 +234,9 @@ Result run(const Record &r, std::size_t out = kMaxDiffs) {
   return res;
 }
 
-#ifdef AYZEK_UBSAN
-constexpr bool kUbsan = true;
-#else
-constexpr bool kUbsan = false;
-#endif
-
-// Under UBSan, a 512-byte record dated 2262 to 2500 (big-endian year at byte
-// 20; parse_header refuses the others before the overflow) redated 2025, and
-// counted; otherwise the record as it is.
-std::size_t g_redated = 0;
-Record redated(const Record &r) {
-  Record c = r;
-  if (kUbsan && c.size() == kRecordLength) {
-    const auto year =
-        static_cast<unsigned>(c[20]) << 8 | static_cast<unsigned>(c[21]);
-    if (year >= 2262 && year <= 2500) {
-      put16(c, 20, 2025);
-      ++g_redated;
-    }
-  }
-  return c;
-}
-
 // Both output sizes: what the callers pass, and exactly the record's count
 // (ASan then sees a write past the count). Returns the first.
-Result run_both(const Record &original) {
-  const Record r = redated(original);
+Result run_both(const Record &r) {
   const Result a = run(r);
   if (const auto h = parse_header(r); h && h->num_samples <= kMaxDiffs) {
     const Result b = run(r, h->num_samples);
@@ -585,36 +542,61 @@ int main() {
   std::println("  {} single damages: the error each must give",
                std::size(damages));
 
-  // Years 2263 to 2500 pass parse_header's range check (mseed.hpp:135, year
-  // <= 2500), but nanoseconds since the epoch exceed int64 from 2^63 ns =
-  // 9223372036.854775807 s, 2262-04-11 23:47:16.85 UTC, on: the duration_cast
-  // to nanoseconds in btime_to_ns (mseed.hpp:143) then overflows a signed
-  // integer, undefined behaviour, which in practice wraps to a start before
-  // 1970. 1 January 2263 00:00:00 is 293 years after 1970, 71 of them leap
-  // (1972 to 2260), so 107016 days = 9246182400 s, past the limit. Its record
-  // should be refused as a bad start time; it parses.
-  if (kUbsan) {
-    ++g_known_issues;
-    std::println("KNOWN ISSUE  test_mseed_fuzz.cpp:{}: a record dated "
-                 "2263-01-01 is not refused as a bad start time (not run "
-                 "under UBSan, where it stops the test: mseed.hpp:143)",
-                 __LINE__);
-  } else {
-    Record r = steim;
-    put16(r, 20, 2263);
-    put16(r, 22, 1);
-    put8(r, 24, 0);
-    put8(r, 25, 0);
-    put8(r, 26, 0);
-    put16(r, 28, 0);
-    const auto res = run_both(r);
-    KNOWN_ISSUE(res.error == Error::BadTime,
-                std::format("a record dated 2263-01-01 parses with start_ns {} "
-                            "(nanoseconds since 1970 overflow int64 after "
-                            "2262-04-11; mseed.hpp:135 accepts years to 2500, "
-                            "mseed.hpp:143 overflows for them)",
-                            res.error ? -1 : res.h.start_ns));
+  // The end of int64 nanoseconds: 2^63 - 1 ns = 9223372036.854775807 s after
+  // 1970, 2262-04-11 23:47:16.854775807 UTC (2262 is not a leap year, so
+  // 11 April is day 31 + 28 + 31 + 11 = 101). A start of 23:47:16.8547 plus
+  // blockette 1001's 75 us is 9223372036.854775 s, which fits; 76 us is
+  // .854776, which does not, and is a bad start time. So is that start plus a
+  // time correction of 1e-4 s (.8548), unless the activity flags say it is
+  // already applied. Years to 2500 pass the range check of mseed.hpp:
+  // 1 January 2263 00:00:00 is 293 years after 1970, 71 of them leap (1972 to
+  // 2260, without 2100 and 2200), so 107016 days = 9246182400 s, past the end:
+  // a bad start time, as are 2500 day 366 and 2262 day 102.
+  {
+    auto dated = [&](unsigned year, unsigned doy, unsigned h, unsigned m,
+                     unsigned s, unsigned fract) {
+      Record r = steim;
+      put16(r, 20, year);
+      put16(r, 22, doy);
+      put8(r, 24, h);
+      put8(r, 25, m);
+      put8(r, 26, s);
+      put16(r, 28, fract);
+      return r;
+    };
+    auto with_micro = [](Record r, unsigned micro) {
+      put16(r, 50, 56);
+      put16(r, 56, 1001);
+      put8(r, 61, micro);
+      return r;
+    };
+    const Record last = dated(2262, 101, 23, 47, 16, 8547);
+    auto res = run_both(with_micro(last, 75));
+    CHECK(!res.error && res.h.start_ns == 9223372036'854775'000 &&
+          res.samples == xs);
+    CHECK(run_both(with_micro(last, 76)).error == Error::BadTime);
+    res = run_both(last);
+    CHECK(!res.error && res.h.start_ns == 9223372036'8547'00000);
+    Record corrected = last;
+    put32(corrected, 40, 1);
+    CHECK(run_both(corrected).error == Error::BadTime);
+    put8(corrected, 36, 0x02);
+    res = run_both(corrected);
+    CHECK(!res.error && res.h.start_ns == 9223372036'8547'00000);
+    CHECK(run_both(dated(2263, 1, 0, 0, 0, 0)).error == Error::BadTime);
+    CHECK(run_both(dated(2500, 366, 23, 59, 60, 9999)).error == Error::BadTime);
+    CHECK(run_both(dated(2262, 102, 0, 0, 0, 0)).error == Error::BadTime);
+    // The other end: 1900-01-01 is 70 years before 1970, 17 of them leap
+    // (1904 to 1968), 25567 days = 2208988800 s; a correction of -2^31 x
+    // 1e-4 s moves it 214748.3648 s earlier, well within int64.
+    Record early = dated(1900, 1, 0, 0, 0, 0);
+    put32(early, 40, 0x80000000u);
+    res = run_both(early);
+    CHECK(!res.error &&
+          res.h.start_ns == -2208988800'000000000LL - 214748'3648'00000LL);
   }
+  std::println("  start times: the last that int64 nanoseconds hold decodes, "
+               "1 us or 1e-4 s later is a bad start time");
 
   // --- random damage to valid records ----------------------------------------
   // 1 to 8 random bytes of a record replaced, or one bit flipped. Where every
@@ -687,11 +669,6 @@ int main() {
       "  100000 random records with a plausible header, 100000 random records");
   for (const auto &[what, count] : g_outcomes)
     std::println("    {:<56} {:>6}", what, count);
-  if (kUbsan)
-    std::println("  under UBSan, {} records dated 2262 to 2500 were redated "
-                 "2025 before decoding",
-                 g_redated);
-  std::println("mseed decoder: errors, never a crash, on damaged and random "
-               "records; {} known issue{} reported above",
-               g_known_issues, g_known_issues == 1 ? "" : "s");
+  std::println(
+      "mseed decoder: errors, never a crash, on damaged and random records");
 }
