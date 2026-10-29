@@ -49,7 +49,15 @@ B = 10000
 
 
 def binom_cdf(k, n, p=0.5):
-    return sum(math.comb(n, i) * p**i * (1 - p) ** (n - i) for i in range(k + 1))
+    """P(X <= k) for X ~ Binomial(n, p). At p = 1/2 (the only p used) exact in
+    integer arithmetic, sum C(n, i) / 2^n, which Python's int division rounds
+    correctly however large n is; otherwise each term in log space. The
+    product math.comb(n, i) * p**i overflowed from n of about 1030."""
+    if p == 0.5:
+        return sum(math.comb(n, i) for i in range(k + 1)) / 2**n
+    lp, lq = math.log(p), math.log1p(-p)
+    return sum(math.exp(math.lgamma(n + 1) - math.lgamma(i + 1) - math.lgamma(n - i + 1)
+                        + i * lp + (n - i) * lq) for i in range(k + 1))
 
 
 def mcnemar(b, c):
@@ -209,8 +217,12 @@ def quiet_counts(index, runs):
     for label, d in runs.items():
         counts[label] = {}
         for name in hours:
-            m = re.search(r"Alarms raised\s+(\d+)", Path(f"{d}/{name}.txt").read_text())
-            counts[label][name] = int(m.group(1)) if m else 0
+            f = Path(f"{d}/{name}.txt")
+            m = re.search(r"Alarms raised\s+(\d+)", f.read_text())
+            if not m:
+                sys.exit(f"{f}: no 'Alarms raised' line, so not a complete ayzek report "
+                         "(a run that crashed or was cut short?)")
+            counts[label][name] = int(m.group(1))
     return hours, counts
 
 
@@ -219,9 +231,15 @@ def quiet(hours, counts, rng):
     T = sum(hours.values())
     xa, xb = sum(a.values()), sum(b.values())
     # Conditional on the total, xa ~ Binomial(xa + xb, 1/2) under equal rates.
+    # A detector without an alarm leaves the ratio undefined: inf (or nan when
+    # neither raised one), as its bootstrap below already reports ra / 0, and
+    # the exact interval's upper bound inf; the exact test still holds (every
+    # alarm fell to one detector), and the JSON carries Infinity/NaN as
+    # Python's json module writes them.
     p = mcnemar(xa, xb)
     lo, hi = clopper_pearson(xa, xa + xb)
-    ratio_ci = (lo / (1 - lo), hi / (1 - hi))
+    ratio_ci = (lo / (1 - lo), hi / (1 - hi) if hi < 1 else float("inf"))
+    ratio = xa / xb if xb else (float("inf") if xa else float("nan"))
     names = sorted(hours)
     boot = []
     for _ in range(B):
@@ -232,7 +250,7 @@ def quiet(hours, counts, rng):
     return {
         "hours": T, la: xa, lb: xb,
         f"{la}_per_day": 24 * xa / T, f"{lb}_per_day": 24 * xb / T,
-        "ratio": xa / xb, "ratio_exact_ci": ratio_ci, "p_equal_rates": p,
+        "ratio": ratio, "ratio_exact_ci": ratio_ci, "p_equal_rates": p,
         f"{la}_per_day_boot_ci": (pct([x[0] for x in boot], 0.025), pct([x[0] for x in boot], 0.975)),
         f"{lb}_per_day_boot_ci": (pct([x[1] for x in boot], 0.025), pct([x[1] for x in boot], 0.975)),
         "ratio_boot_ci": (pct([x[2] for x in boot], 0.025), pct([x[2] for x in boot], 0.975)),

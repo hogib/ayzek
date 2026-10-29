@@ -53,7 +53,7 @@ PATTERNS = {
     "catalogue": r"AFAD events within \d+ km\s+(\d+)",
     "detected": r"^\s+detected\s+(\d+)",
     "missed": r"^\s+missed\s+(\d+)",
-    "alarm_delay_s": r"alarm after origin time\s+median ([\d.]+) s",
+    "alarm_delay_s": r"alarm after origin time\s+median (-?[\d.]+) s",
 }
 BANDS = ["M < 2", "M 2-3", "M 3-4", "M 4-5", "M 5+"]
 
@@ -68,7 +68,7 @@ def parse_report(out):
         row[band] = f"{m.group(2)}/{m.group(1)}" if m else ""
     # Largest catalogue event that raised an alarm: its alarm delay and stations.
     best = None
-    for m in re.finditer(r"^  alarm\s+\S+ UTC by (.*)\n(?:.*\n){0,3}?  AFAD\s+\w+ ([\d.]+) at .*?alarm ([\d.]+) s after origin",
+    for m in re.finditer(r"^  alarm\s+\S+ UTC by (.*)\n(?:.*\n){0,3}?  AFAD\s+\w+ (-?[\d.]+) at .*?alarm (-?[\d.]+) s after origin",
                          out, re.M):
         if best is None or float(m.group(2)) > best[0]:
             best = (float(m.group(2)), m.group(3), m.group(1).replace("; later", " +").replace(",", ""))

@@ -75,11 +75,11 @@ OWN_GAINS = {"ko"}       # groups that keep models/' Pd gains, terms and noise (
 OUTCOME_DETECTOR = {"learned": "learned", "stalta": "stalta_eqfa", "filterpicker": "filterpicker",
                     "transformer": "transformer"}
 EVENT = re.compile(
-    r"^Event #\d+: detected (?:M([\d.]+) earthquake|earthquake \(no magnitude\)).*\n"
+    r"^Event #\d+: detected (?:M(-?[\d.]+) earthquake|earthquake \(no magnitude\)).*\n"
     r"  alarm\s+(\S+) UTC by (.*)\n"
-    r"(?:  Pd magn\.\s+M([\d.]+) (?:at the alarm|([\d.]+) s after the alarm), M([\d.]+) .*\n)?"
+    r"(?:  Pd magn\.\s+M(-?[\d.]+) (?:at the alarm|([\d.]+) s after the alarm), M(-?[\d.]+) .*\n)?"
     r"(?:  (?:location|distance|P loc\.) .*\n)*"
-    r"  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm ([-\d.]+) s after origin(.*)\n"
+    r"  AFAD\s+(\w+) (-?[\d.]+) at (\S+) UTC: alarm ([-\d.]+) s after origin(.*)\n"
     r"(?:  pre-S\s+(\d+) of (\d+) alarm detections.*\n)?", re.M)
 WARNING = re.compile(r"^\s+(\S+)\s+(\d+) km\s+\S+ UTC \(predicted\)\s+([+-][\d.]+) s\s+(before|after) S", re.M)
 
@@ -322,7 +322,7 @@ class Runner:
                                  "pd_final": pd_final or "", "pre_s_before": pre_before or "",
                                  "pre_s_used": pre_used or "", "stations": by})
                 for block in re.split(r"\nEvent #", rep)[1:]:
-                    a = re.search(r"^  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC", block, re.M)
+                    a = re.search(r"^  AFAD\s+(\w+) (-?[\d.]+) at (\S+) UTC", block, re.M)
                     if not a:
                         continue
                     for st, dist, lead, side in WARNING.findall(block):
