@@ -774,12 +774,6 @@ void Network::report_location(Event &e, double now) {
                   loc->n_stations == 1 ? "" : "s", left_out);
 }
 
-// Matching catalogue event, if any. A catalogue event matches if the location
-// agrees (origin within 5 s, epicentre within 30 km), or if its predicted P
-// arrival at a station that raised the alarm is within 6 s of that detection's
-// window start plus 3.5 s. The second criterion does not require a location.
-// Detections that joined after the alarm are not used for it: they show that
-// the event was recorded, not that the alarm was raised by it.
 // P-time location (NetworkConfig::p_locate): the stations' detection P times,
 // the station contributing most to the misfit removed while the rms exceeds
 // max_rms and more than kMinPTimeStations remain. Printed as PLOC when it
@@ -909,6 +903,12 @@ std::vector<PdObservation> Network::silent_pd(const Event &e,
   return out;
 }
 
+// Matching catalogue event, if any. A catalogue event matches if the location
+// agrees (origin within 5 s, epicentre within 30 km), or if its predicted P
+// arrival at a station that raised the alarm is within 6 s of that detection's
+// window start plus 3.5 s. The second criterion does not require a location.
+// Detections that joined after the alarm are not used for it: they show that
+// the event was recorded, not that the alarm was raised by it.
 const CatalogEvent *Network::match(const Event &e) const {
   const CatalogEvent *best = nullptr;
   double best_miss = 1e18;
