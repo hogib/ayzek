@@ -239,8 +239,8 @@ def outcomes_env(tmp_path):
     cat = tmp_path / "cat.csv"
     cat.write_text("Date,Longitude,Latitude,Depth,Rms,Type,Magnitude,Location,EventID\n"
                    "10/11/2025 18:10:00,28.1,39.2,7.0,0.3,ML,2.0,a,1\n"
-                   "10/11/2025 18:20:51,28.1,39.2,7.0,0.3,MW,4.9,b,2\n"
-                   "10/11/2025 18:25:00,28.1,39.2,7.0,0.3,ML,1.5,c,3\n")
+                   "10/11/2025 18:20:51,28.1,39.2,40.0,0.3,MW,4.9,b,2\n"
+                   "10/11/2025 18:25:00,28.1,39.2,120.5,0.3,ML,1.5,c,3\n")
     fake = write_fake_binary(tmp_path / "ayzek", FAKE_AYZEK)
     log = tmp_path / "argv.jsonl"
 
@@ -269,18 +269,21 @@ def test_main_table(outcomes_env):
     assert p.returncode == 0, p.stderr
     # By hand: shift 0 detects the first two (pre-S 2 of 2 -> 1, 1 of 2 -> 0)
     # and misses the third; +127 detects the first only; -127 none. Origins
-    # are the unshifted catalogue times in every run.
+    # are the unshifted catalogue times in every run; the last column is each
+    # event's depth as the catalogue file gives it (7.0, 40.0, 120.5), the same
+    # in every run.
     assert rows == [
-        ["dataset", "detector", "shift", "origin", "type", "magnitude", "detected", "detected_pre_s"],
-        ["dk", "learned", "0", "18:10:00.00", "ML", "2.0", "1", "1"],
-        ["dk", "learned", "0", "18:20:51.00", "MW", "4.9", "1", "0"],
-        ["dk", "learned", "0", "18:25:00.00", "ML", "1.5", "0", "0"],
-        ["dk", "learned", "127", "18:10:00.00", "ML", "2.0", "1", "1"],
-        ["dk", "learned", "127", "18:20:51.00", "MW", "4.9", "0", "0"],
-        ["dk", "learned", "127", "18:25:00.00", "ML", "1.5", "0", "0"],
-        ["dk", "learned", "-127", "18:10:00.00", "ML", "2.0", "0", "0"],
-        ["dk", "learned", "-127", "18:20:51.00", "MW", "4.9", "0", "0"],
-        ["dk", "learned", "-127", "18:25:00.00", "ML", "1.5", "0", "0"]]
+        ["dataset", "detector", "shift", "origin", "type", "magnitude", "detected", "detected_pre_s",
+         "depth_km"],
+        ["dk", "learned", "0", "18:10:00.00", "ML", "2.0", "1", "1", "7.0"],
+        ["dk", "learned", "0", "18:20:51.00", "MW", "4.9", "1", "0", "40.0"],
+        ["dk", "learned", "0", "18:25:00.00", "ML", "1.5", "0", "0", "120.5"],
+        ["dk", "learned", "127", "18:10:00.00", "ML", "2.0", "1", "1", "7.0"],
+        ["dk", "learned", "127", "18:20:51.00", "MW", "4.9", "0", "0", "40.0"],
+        ["dk", "learned", "127", "18:25:00.00", "ML", "1.5", "0", "0", "120.5"],
+        ["dk", "learned", "-127", "18:10:00.00", "ML", "2.0", "0", "0", "7.0"],
+        ["dk", "learned", "-127", "18:20:51.00", "MW", "4.9", "0", "0", "40.0"],
+        ["dk", "learned", "-127", "18:25:00.00", "ML", "1.5", "0", "0", "120.5"]]
     assert p.stdout.strip() == "dk learned: 2 of 3 detected, 1 before S; +127: 1/3, -127: 0/3"
     assert len(argvs) == 3
     for argv in argvs:
@@ -324,3 +327,46 @@ def test_main_stops_when_ayzek_fails(outcomes_env):
     p, rows, _ = outcomes_env({"exit": 2}, "--dataset", outcomes_env.dataset,
                               "--detector", "learned", "--shifts", "127")
     assert p.returncode != 0 and "without a report" in p.stderr and rows is None
+
+
+# --- depth_km -------------------------------------------------------------------------------
+
+def test_catalogue_depths_by_hand(tmp_path):
+    # Span 10:00:00-13:00:00 on 2025-11-10 (epoch from calendar.timegm, not the
+    # tool), margin 451 s (391 + 60): events from 09:52:29 to 13:07:31 count.
+    t0 = calendar.timegm((2025, 11, 10, 10, 0, 0, 0, 0, 0))
+    cat = tmp_path / "cat.csv"
+    cat.write_text(
+        "\ufeffDate,Longitude,Latitude,Depth,Rms,Type,Magnitude,Location,EventID\n"
+        "10/11/2025 09:52:28,0,0,5.0,0,ML,2.0,before the margin,1\n"
+        "10/11/2025 09:52:29,0,0,6.0,0,ML,2.0,first second of the margin,2\n"
+        "10/11/2025 10:30:00,0,0,40.0,0,ML,1.29,printed 1.3,3\n"
+        "10/11/2025 11:00:00,0,0,,0,ML,2.2,no depth,4\n"
+        "10/11/2025 12:00:00,0,0,10.0,0,ML,3.0,same identity,5\n"
+        "10/11/2025 12:00:00,0,0,12.0,0,ML,3.0,same identity,6\n"
+        "11/11/2025 10:30:00,0,0,99.0,0,ML,1.3,next day: outside,7\n"
+        "10/11/2025 13:07:31,0,0,8.0,0,MW,4.1,last second of the margin,8\n")
+    d = eo.catalogue_depths(cat, (t0, t0 + 3 * 3600), 451)
+    assert d == {("09:52:29.00", "ML", "2.0"): {"6.0"},
+                 ("10:30:00.00", "ML", "1.3"): {"40.0"},
+                 ("11:00:00.00", "ML", "2.2"): {""},
+                 ("12:00:00.00", "ML", "3.0"): {"10.0", "12.0"},
+                 ("13:07:31.00", "MW", "4.1"): {"8.0"}}
+    assert eo.depth_of(("10:30:00.00", "ML", "1.3"), d) == "40.0"
+    assert eo.depth_of(("11:00:00.00", "ML", "2.2"), d) == ""          # no depth given
+    assert eo.depth_of(("12:00:00.00", "ML", "3.0"), d) == ""          # two depths: ambiguous
+    assert eo.depth_of(("09:52:28.00", "ML", "2.0"), d) == ""          # not in the window
+    assert eo.depth_of(("10:30:00.00", "ML", "1.29"), d) == ""         # not as the report prints it
+
+
+def test_main_warns_for_an_event_without_depth(outcomes_env, tmp_path):
+    # The second catalogue event loses its depth: its rows get "", and the tool
+    # says so on stderr; the others keep theirs.
+    cat = tmp_path / "cat.csv"
+    cat.write_text(cat.read_text().replace(",40.0,", ",,"))
+    p, rows, _ = outcomes_env(SCENARIO, "--dataset", outcomes_env.dataset,
+                              "--detector", "learned", "--shifts", "127")
+    assert p.returncode == 0, p.stderr
+    assert {r[3]: r[8] for r in rows[1:]} == {"18:10:00.00": "7.0", "18:20:51.00": "",
+                                             "18:25:00.00": "120.5"}
+    assert "dk: no depth for 18:20:51.00 MW 4.9 (the catalogue gives none)" in p.stderr

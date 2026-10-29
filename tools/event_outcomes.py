@@ -10,6 +10,16 @@ and writes one row per catalogue event and run: detected or missed. The event
 is identified by its unshifted origin time, so the rows of one event line up
 across shifts and across detectors, which is what a paired test needs.
 
+The last column, depth_km, is the event's depth as the catalogue gives it,
+found by the same identity (origin time of day, magnitude type, magnitude as
+the report prints it with one decimal) among the catalogue's events within the
+replay's span widened by the largest shift and a minute, so the restriction to
+events no deeper than 40 km of the held-out protocol (section 7,
+tools/significance.py --max-depth) can be applied to the table. It is empty,
+with a warning, when no such catalogue event or two with different depths
+are found (ayzek itself scores no event without a depth: its catalogue reader
+skips it).
+
 --detector is `learned` (the cached window probabilities, default trigger
 rule), `stalta_eqfa` (--detector stalta), `filterpicker` or `transformer`;
 a setting goes after `--` (anything there is passed to ayzek), with a --label.
@@ -54,6 +64,31 @@ CATALOGUE = re.compile(r"AFAD events within \d+ km\s+(\d+)")
 def unshift(hms, shift):
     t = dt.datetime.strptime(hms, "%H:%M:%S.%f") - dt.timedelta(seconds=shift)
     return t.strftime("%H:%M:%S.%f")[:-4]
+
+
+def catalogue_depths(path, span, margin):
+    """{(origin 'HH:MM:SS.ff', type, magnitude with one decimal): {depth, ...}}
+    of the catalogue's events within [span[0] - margin, span[1] + margin],
+    the depth as written in the catalogue ('' when it gives none)."""
+    out = {}
+    lo, hi = span[0] - margin, span[1] + margin
+    with open(path, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            try:
+                t = dt.datetime.strptime(r["Date"], "%d/%m/%Y %H:%M:%S").replace(tzinfo=dt.UTC)
+                mag = f"{float(r['Magnitude']):.1f}"
+            except (ValueError, TypeError):
+                continue
+            if lo <= t.timestamp() <= hi:
+                key = (t.strftime("%H:%M:%S.%f")[:-4], r["Type"], mag)
+                out.setdefault(key, set()).add((r.get("Depth") or "").strip())
+    return out
+
+
+def depth_of(event, depths):
+    """The event's catalogue depth, or '' when none or several differ."""
+    found = depths.get(event, set())
+    return next(iter(found)) if len(found) == 1 else ""
 
 
 def outcomes(out, shift):
@@ -113,13 +148,23 @@ def main():
         with concurrent.futures.ThreadPoolExecutor(a.jobs) as pool:
             results = dict(pool.map(run, shifts))
 
+    depths = catalogue_depths(a.catalog, span, max(abs(s) for s in shifts) + 60)
+    events = sorted({e for r in results.values() for e in r})
+    for e in events:
+        if depth_of(e, depths) == "":
+            found = depths.get(e, set())
+            why = ("no such catalogue event" if not found else
+                   "the catalogue gives none" if found == {""} else
+                   f"{len(found)} catalogue events with different depths")
+            print(f"{name}: no depth for {' '.join(e)} ({why})", file=sys.stderr)
     with open(a.out, "w", newline="") as fh:
         w = csv.writer(fh)
         w.writerow(["dataset", "detector", "shift", "origin", "type", "magnitude", "detected",
-                    "detected_pre_s"])
+                    "detected_pre_s", "depth_km"])
         for shift in shifts:
             for (origin, kind, mag), (d, pre_s) in sorted(results[shift].items()):
-                w.writerow([name, a.label or a.detector, shift, origin, kind, mag, d, pre_s])
+                w.writerow([name, a.label or a.detector, shift, origin, kind, mag, d, pre_s,
+                            depth_of((origin, kind, mag), depths)])
     obs = results[0]
     n = {s: sum(d for d, _ in results[s].values()) for s in shifts}
     pre = sum(p for _, p in obs.values() if p != "")
