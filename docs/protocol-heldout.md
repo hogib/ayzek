@@ -177,15 +177,42 @@ at the learned detector's counts on those replays (`data/runs/tune_dev/run.sh`,
   first two rules.
 
 
-| detector | setting |
-|---|---|
-| learned (6 s) | 0.8 x 8 windows, or 0.9 once |
-| STA/LTA, equal unmatched alarms | *[from the retuning]* |
-| STA/LTA, equal detections | *[from the retuning]* |
-| STA/LTA, equal quiet alarms | *[from the retuning]* |
-| FilterPicker, the three rules | *[from the retuning]* |
-| PhaseNet, EQTransformer, causal; and look-ahead (offline) | *[weights and settings from the retuning]* |
-| per-station STA/LTA | section 4 |
+Selected 2026-10-29 on the five development event replays (197 catalogued
+events; the learned detector: 128.2 chance-corrected detections, 52 unmatched
+alarms, 16 alarms on the 23 AFAD quiet windows, 3.74 a day). "Corrected" and
+"unmatched" are the setting's totals over the five replays; "quiet" its alarms
+on the quiet windows (102.8 h). The published models' rules 1 and 2 ran over
+the original, STEAD, INSTANCE and ETHZ weights of EQTransformer and the STEAD,
+INSTANCE and ETHZ weights of PhaseNet; rule 3 within the weights they chose.
+`tools/heldout_settings.json` holds every setting as ayzek options.
+
+| detector | rule | setting | corrected | unmatched | quiet |
+|---|---|---|---|---|---|
+| learned (6 s) | fixed | 0.8 x 8 windows, or 0.9 once | 128.2 | 52 | 16 |
+| STA/LTA | equal unmatched | 1-10 Hz, STA 0.5 s, LTA 10 s, ratio 8, vertical | 110.3 | 47 | 63 |
+| STA/LTA | equal detections | 1-10 Hz, STA 1 s, LTA 10 s, ratio 4, vertical | 131.6 | 113 | 224 |
+| STA/LTA | equal quiet alarms | 1-10 Hz, STA 0.5 s, LTA 10 s, ratio 10, three components | 64.8 | 27 | 12 |
+| STA/LTA, per station | section 4 | the equal-unmatched setting with each station's own ratio (3 to 15) | | | |
+| FilterPicker | equal unmatched | windows 6/10/0.4 s, thresholds 20 and 10 | 102.5 | 44 | 291 |
+| FilterPicker | equal detections | windows 6/10/0.4 s, thresholds 15 and 8 | 130.9 | 101 | 954 |
+| FilterPicker | equal quiet alarms | windows 6/10/0.4 s, thresholds 6 and 15 | 52.0 | 9 | 9 |
+| PhaseNet, causal | equal unmatched | INSTANCE, 0.8 x 1 | 119.7 | 52 | 49 |
+| PhaseNet, causal | equal detections | INSTANCE, 0.5 x 4 | 128.3 | 70 | 29 |
+| PhaseNet, causal | equal quiet alarms | INSTANCE, 0.7 x 2 | 126.1 | 62 | 15 |
+| EQTransformer, causal | equal unmatched | INSTANCE, 0.7 x 8 | 62.1 | 49 | 7 |
+| EQTransformer, causal | equal detections | INSTANCE, 0.3 x 8 | 128.5 | 183 | 26 |
+| EQTransformer, causal | equal quiet alarms | INSTANCE, 0.6 x 2 | 94.4 | 130 | 14 |
+| PhaseNet, look-ahead (offline) | equal unmatched | INSTANCE, 0.7 x 4 | 123.2 | 52 | 12 |
+| PhaseNet, look-ahead (offline) | equal detections | INSTANCE, 0.6 x 8 | 135.9 | 61 | 14 |
+| PhaseNet, look-ahead (offline) | equal quiet alarms | INSTANCE, 0.7 x 1 | 138.1 | 74 | 16 |
+| EQTransformer, look-ahead (offline) | equal unmatched | INSTANCE, 0.6 x 4 | 113.0 | 50 | 11 |
+| EQTransformer, look-ahead (offline) | equal detections | original, 0.7 x 8 | 140.0 | 88 | 13 |
+| EQTransformer, look-ahead (offline) | equal quiet alarms | original, 0.6 x 2 | 153.2 | 116 | 16 |
+| transformer (its own paper) | fixed | the model's defaults; geometry locator sd scale 2.1, sigma_p 2.75 s | 121.9 | 70 | 6 |
+
+The published models' "threshold x windows" is the trigger rule on the model's
+window probability, the instant branch off. Quiet alarms of the learned
+detector and the baselines are network alarms on the 23 windows.
 
 ## 7. Endpoints
 

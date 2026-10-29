@@ -116,7 +116,12 @@
   },
   "fp_eqquiet": {
     "detector": "filterpicker",
-    "args": "TBD"
+    "args": [
+      "--fp-windows",
+      "6,10,0.4",
+      "--fp-thresholds",
+      "6,15"
+    ]
   },
   "phasenet_causal_eqfa": {
     "detector": "learned",
@@ -275,9 +280,16 @@
   "eqt_lookahead_eqquiet": {
     "detector": "learned",
     "model": "eqtransformer",
-    "weights": "TBD",
+    "weights": "original",
     "mode": "lookahead",
-    "args": "TBD"
+    "args": [
+      "--threshold",
+      "0.6",
+      "--trigger-windows",
+      "2",
+      "--instant-threshold",
+      "2"
+    ]
   },
   "transformer": {
     "detector": "transformer",
