@@ -42,3 +42,14 @@ if not meson.is_cross_build()
       args: [ayzek_exe, meson.project_source_root(), mode], timeout: 1800, is_parallel: false)
   endforeach
 endif
+
+# Review tests of the live input (branch seedlink-review): each shows a defect
+# and fails until it is fixed. Suite 'review'; `meson test --no-suite review`
+# leaves them out.
+test('test_seedlink_review',
+  executable('test_seedlink_review', 'test_seedlink_review.cpp', dependencies: [ayzek_dep]),
+  suite: 'review')
+if not meson.is_cross_build()
+  test('seedlink_review_record', find_program('seedlink_review_record.sh'),
+    args: [ayzek_exe, meson.project_source_root()], timeout: 120, suite: 'review')
+endif
