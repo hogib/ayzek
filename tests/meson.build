@@ -32,3 +32,13 @@ test('demo_m49', find_program('demo_check.sh'),
   args: [ayzek_exe, meson.project_source_root(), 'demo', '0'], timeout: 600, is_parallel: false)
 test('demo_ko_m49', find_program('demo_check.sh'),
   args: [ayzek_exe, meson.project_source_root(), 'demo_ko', '1'], timeout: 600, is_parallel: false)
+
+# Live SeedLink input against tools/seedlink_mock.py on demo_ko; see
+# seedlink_check.sh. Native builds only: under qemu ayzek would not keep up
+# with the mock server.
+if not meson.is_cross_build()
+  foreach mode : ['live', 'reconnect']
+    test('seedlink_' + mode, find_program('seedlink_check.sh'),
+      args: [ayzek_exe, meson.project_source_root(), mode], timeout: 1800, is_parallel: false)
+  endforeach
+endif
