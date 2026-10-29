@@ -3,18 +3,23 @@
 // miniSEED 2 record parsing and decoding.
 //
 // Supported: 512-byte records with a big-endian fixed header, blockette 1000,
-// optional blockette 1001 for microseconds, and the data encodings used in the
-// TDVMS archive:
+// optional blockette 1001 for microseconds, and these data encodings:
 //   11  Steim2 (big-endian frames)
+//   10  Steim1 (big-endian frames)
 //    3  32-bit integers, byte order from blockette 1000
 //    1  16-bit integers, byte order from blockette 1000
-// The dataloggers at ARNA and CATL switched from Steim2 to uncompressed 32-bit
-// integers during the 2025-04-23 Mw 6.2 Marmara earthquake and its aftershocks;
-// these are the only non-Steim2 records among 398 million in the archive
-// (tools/scan_encodings.py). Other layouts return an error.
+// The TDVMS archive uses Steim2 and, rarely, 32-bit integers: the dataloggers
+// at ARNA and CATL switched to uncompressed 32-bit integers during the
+// 2025-04-23 Mw 6.2 Marmara earthquake and its aftershocks, and these are the
+// only non-Steim2 records among 398 million in the archive
+// (tools/scan_encodings.py). Steim1 is for live input, where other networks'
+// dataloggers may write it (docs/impl/19-seedlink.md). Other layouts return
+// an error.
 //
 // All encodings are lossless, so decoding is validated by exact comparison with
-// ObsPy/libmseed (tools/validate_mseed.py).
+// ObsPy/libmseed: tools/validate_mseed.py on archive files, and
+// tests/test_mseed.cpp on small files of every encoding written by ObsPy
+// (tools/make_mseed_fixtures.py).
 
 #include <array>
 #include <bit>
@@ -34,6 +39,7 @@ inline constexpr std::size_t kFrameLength = 64;
 
 inline constexpr std::uint8_t kInt16 = 1;
 inline constexpr std::uint8_t kInt32 = 3;
+inline constexpr std::uint8_t kSteim1 = 10;
 inline constexpr std::uint8_t kSteim2 = 11;
 
 enum class Error : std::uint8_t {
@@ -48,6 +54,10 @@ enum class Error : std::uint8_t {
   InvalidSteimCode,
   IntegrityMismatch, // last decoded sample != the record's stored Xn
 };
+
+[[nodiscard]] constexpr bool is_steim(std::uint8_t encoding) noexcept {
+  return encoding == kSteim1 || encoding == kSteim2;
+}
 
 [[nodiscard]] constexpr std::string_view to_string(Error e) noexcept {
   switch (e) {
@@ -68,9 +78,9 @@ enum class Error : std::uint8_t {
   case Error::TooManySamples:
     return "more samples than the record can hold";
   case Error::InvalidSteimCode:
-    return "invalid Steim2 code";
+    return "invalid Steim code";
   case Error::IntegrityMismatch:
-    return "Steim2 integrity check failed";
+    return "Steim integrity check failed";
   }
   return "unknown";
 }
@@ -201,8 +211,8 @@ parse_header(std::span<const std::byte> rec) noexcept {
       const auto encoding = static_cast<std::uint8_t>(rec[off + 4u]);
       const auto word_order = static_cast<std::uint8_t>(rec[off + 5u]);
       const auto len_exp = static_cast<std::uint8_t>(rec[off + 6u]);
-      if ((encoding != kSteim2 && encoding != kInt32 && encoding != kInt16) ||
-          word_order > 1 || (encoding == kSteim2 && word_order != 1)) {
+      if ((!is_steim(encoding) && encoding != kInt32 && encoding != kInt16) ||
+          word_order > 1 || (is_steim(encoding) && word_order != 1)) {
         return std::unexpected(Error::UnsupportedEncoding);
       }
       h.encoding = encoding;
@@ -218,9 +228,9 @@ parse_header(std::span<const std::byte> rec) noexcept {
   if (!have_1000)
     return std::unexpected(Error::MissingBlockette1000);
 
-  // Steim2 data must consist of whole 64-byte frames; integer data need not.
+  // Steim data must consist of whole 64-byte frames; integer data need not.
   if (h.data_offset < 48 || h.data_offset >= kRecordLength ||
-      (h.encoding == kSteim2 &&
+      (is_steim(h.encoding) &&
        (kRecordLength - h.data_offset) % kFrameLength != 0)) {
     return std::unexpected(Error::BadDataOffset);
   }
@@ -278,6 +288,26 @@ constexpr void unpack(std::uint32_t word, unsigned n, unsigned bits,
   for (unsigned i = 0; i < n; ++i) {
     out[i] = sign_extend((word >> ((n - 1 - i) * bits)) & mask, bits);
   }
+}
+
+// Integrates the first `out.size()` differences into samples, Steim1 and
+// Steim2 alike. The first difference is relative to the previous record's last
+// sample, so it is skipped and X0 is sample 0. The running sum is unsigned so
+// that malformed input cannot cause signed overflow. Integrity check: the last
+// decoded sample must equal the stored Xn.
+[[nodiscard]] inline std::expected<std::size_t, Error>
+integrate(std::span<const std::int32_t> diffs, std::int32_t x0,
+          std::int32_t xn, std::span<std::int32_t> out) noexcept {
+  const std::size_t n = out.size();
+  std::uint32_t acc = static_cast<std::uint32_t>(x0);
+  out[0] = x0;
+  for (std::size_t i = 1; i < n; ++i) {
+    acc += static_cast<std::uint32_t>(diffs[i]);
+    out[i] = static_cast<std::int32_t>(acc);
+  }
+  if (out[n - 1] != xn)
+    return std::unexpected(Error::IntegrityMismatch);
+  return n;
 }
 
 } // namespace detail
@@ -363,22 +393,70 @@ decode_steim2(std::span<const std::byte> rec, const Header &h,
   }
   if (nd < n)
     return std::unexpected(Error::TooManySamples);
+  return detail::integrate(diffs, x0, xn, out.first(n));
+}
 
-  // Integrate the differences. The first difference is relative to the
-  // previous record's last sample, so it is skipped and X0 is sample 0. The
-  // running sum is unsigned so that malformed input cannot cause signed
-  // overflow.
-  std::uint32_t acc = static_cast<std::uint32_t>(x0);
-  out[0] = x0;
-  for (std::size_t i = 1; i < n; ++i) {
-    acc += static_cast<std::uint32_t>(diffs[i]);
-    out[i] = static_cast<std::int32_t>(acc);
+// ---------------------------------------------------------------------------
+// Steim1.
+//
+// The frames of Steim2 (control word, 15 data words, X0 and Xn in words 1 and
+// 2 of the first frame) with one difference width per code and no dnib:
+//
+//   code 01  four  8-bit
+//   code 10  two  16-bit
+//   code 11  one  32-bit
+//
+// Code 00 marks a word that holds no differences.
+
+[[nodiscard]] inline std::expected<std::size_t, Error>
+decode_steim1(std::span<const std::byte> rec, const Header &h,
+              std::span<std::int32_t> out) noexcept {
+  const std::size_t n = h.num_samples;
+  if (n > kMaxDiffs || n > out.size())
+    return std::unexpected(Error::TooManySamples);
+  if (n == 0)
+    return std::size_t{0};
+
+  // At most 7 frames x 15 words x 4 differences, well within kMaxDiffs.
+  std::array<std::int32_t, kMaxDiffs> diffs{};
+  std::size_t nd = 0;
+  std::int32_t x0 = 0, xn = 0;
+
+  const std::size_t frames = (kRecordLength - h.data_offset) / kFrameLength;
+  for (std::size_t f = 0; f < frames && nd < n; ++f) {
+    const std::size_t base = h.data_offset + f * kFrameLength;
+    const auto ctrl = read_be<std::uint32_t>(rec, base);
+
+    for (unsigned w = 1; w < 16 && nd < n; ++w) {
+      const auto word = read_be<std::uint32_t>(rec, base + 4u * w);
+      const unsigned code = (ctrl >> (30 - 2 * w)) & 0b11;
+      std::span<std::int32_t> dst(diffs.data() + nd, kMaxDiffs - nd);
+
+      switch (code) {
+      case 0b00:
+        if (f == 0 && w == 1)
+          x0 = static_cast<std::int32_t>(word);
+        if (f == 0 && w == 2)
+          xn = static_cast<std::int32_t>(word);
+        break;
+      case 0b01:
+        detail::unpack(word, 4, 8, dst);
+        nd += 4;
+        break;
+      case 0b10:
+        detail::unpack(word, 2, 16, dst);
+        nd += 2;
+        break;
+      case 0b11: // a whole word; unpack() cannot shift by 32
+        dst[0] = static_cast<std::int32_t>(word);
+        nd += 1;
+        break;
+      }
+    }
   }
-
-  // Integrity check: the last decoded sample must equal the stored Xn.
-  if (out[n - 1] != xn)
-    return std::unexpected(Error::IntegrityMismatch);
-  return n;
+  if (nd < n)
+    return std::unexpected(Error::TooManySamples);
+  return detail::integrate(diffs, x0, xn, out.first(n));
 }
 
 // Decodes 16- or 32-bit integer data (encodings 1 and 3) in the byte order
@@ -413,6 +491,8 @@ decode(std::span<const std::byte> rec, const Header &h,
        std::span<std::int32_t> out) noexcept {
   if (h.encoding == kSteim2)
     return decode_steim2(rec, h, out);
+  if (h.encoding == kSteim1)
+    return decode_steim1(rec, h, out);
   return decode_integers(rec, h, out);
 }
 

@@ -1,0 +1,122 @@
+{
+ "command": "tools/make_mseed_fixtures.py",
+ "generator_sha256": "d049befcdc3b63c9c84711a881c7df865daafc475d2e251561278a7319fe5c9f",
+ "argv": [
+  "--out",
+  "tests/reference/mseed"
+ ],
+ "parameters": {
+  "seed": 20251110,
+  "stretch": 200,
+  "start": "2025-11-10T18:00:00.000000Z",
+  "id": "XX.FIXT..HHZ",
+  "sampling_rate": 100.0,
+  "reclen": 512
+ },
+ "git_commit": "f54e958a590d754eeb28f13d6ef2e6a65ddc32e0",
+ "git_dirty": true,
+ "versions": {
+  "python": "3.13.16",
+  "obspy": "1.5.1",
+  "numpy": "2.5.4"
+ },
+ "files": {
+  "steim1": {
+   "encoding": "STEIM1",
+   "header": "big-endian",
+   "data": "big-endian",
+   "difference_bounds": [
+    100,
+    30000,
+    1000000000,
+    7,
+    32767,
+    2147483647
+   ],
+   "records": 7,
+   "samples": 1200,
+   "start": "2025-11-10T18:00:00.000000Z",
+   "sha256_mseed": "6b4bee4b5e27b659eb907861e1d45d08f969550812b7147f0c949bf5b1bdde55",
+   "sha256_i32": "b62e5e4d18a105a213053933751a80cb3fda265c4b3adc121ca307c067599c6f"
+  },
+  "steim2": {
+   "encoding": "STEIM2",
+   "header": "big-endian",
+   "data": "big-endian",
+   "difference_bounds": [
+    7,
+    15,
+    31,
+    127,
+    511,
+    16383,
+    536870911
+   ],
+   "records": 6,
+   "samples": 1400,
+   "start": "2025-11-10T18:00:00.000000Z",
+   "sha256_mseed": "3dd6bbc021a48abf918c121917a80c6e5a869068eb135e4d0ea6325cb2b21ed6",
+   "sha256_i32": "628f61dda06a4a82402de00eb831de1b7632fc762f609572177f639e99d6c687"
+  },
+  "int16_be": {
+   "encoding": "INT16",
+   "header": "big-endian",
+   "data": "big-endian",
+   "difference_bounds": [
+    100,
+    3000,
+    30000
+   ],
+   "records": 3,
+   "samples": 600,
+   "start": "2025-11-10T18:00:00.000000Z",
+   "sha256_mseed": "94f8f1e9058211a55d55b2ef01952c8b30df79af1011959c3ad09a05c79c6a3d",
+   "sha256_i32": "c6181c48dde3f8d703f702a41607d7405903aaa92d55a17ff8dc4524dfea44bb"
+  },
+  "int16_le": {
+   "encoding": "INT16",
+   "header": "big-endian",
+   "data": "little-endian",
+   "difference_bounds": [
+    100,
+    3000,
+    30000
+   ],
+   "records": 3,
+   "samples": 600,
+   "start": "2025-11-10T18:00:00.000000Z",
+   "sha256_mseed": "2c4da107256f0d68c21eb9103f0499d7a6ab66afe5c3703a3758791213dc94a8",
+   "sha256_i32": "1075a419d88e6088b5b20b1d1ee3d1a4ed25b85cc2689c323e971815e11b0d7d"
+  },
+  "int32_be": {
+   "encoding": "INT32",
+   "header": "big-endian",
+   "data": "big-endian",
+   "difference_bounds": [
+    100,
+    100000,
+    1000000000
+   ],
+   "records": 6,
+   "samples": 600,
+   "start": "2025-11-10T18:00:00.000000Z",
+   "sha256_mseed": "4221747cdd5cbc5bbb051ea8ef6f7e75a35feecc3c4a15ac805d5fa8f0786ef9",
+   "sha256_i32": "c3d50231588ad80e473037b959c8d14a3359b4ed72d88a01241894425db5cff1"
+  },
+  "int32_le": {
+   "encoding": "INT32",
+   "header": "big-endian",
+   "data": "little-endian",
+   "difference_bounds": [
+    100,
+    100000,
+    1000000000
+   ],
+   "records": 6,
+   "samples": 600,
+   "start": "2025-11-10T18:00:00.000000Z",
+   "sha256_mseed": "434f207ba36aa935360d352b1c798c36e7186845a49dfe117a423b103f7b76e6",
+   "sha256_i32": "68a83052ec915e614e60305771234e821092c7c8ec4cf08a7544681639a95c66"
+  }
+ }
+}

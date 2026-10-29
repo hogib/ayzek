@@ -4,6 +4,11 @@ foreach t : ['test_ring', 'test_steim', 'test_reorder', 'test_writer', 'test_loc
   test(t, exe)
 endforeach
 
+# Decoding of every supported encoding against ObsPy's reading of the same
+# files (tests/reference/mseed, tools/make_mseed_fixtures.py).
+test('test_mseed', executable('test_mseed', 'test_mseed.cpp', dependencies: [ayzek_dep]),
+  args: [meson.project_source_root()])
+
 # Comparisons with reference outputs from tools/export_models.py,
 # tools/export_stalta.py and tools/export_pd.py.
 # Skipped (exit 77) if those files are missing.
