@@ -88,15 +88,30 @@ sequence.
 ## 6. Detectors and their settings
 
 Selected on the development event replays (the four AFAD sequences and demo_ko)
-by the two rules, at the learned detector's counts on those replays
-(`data/runs/tune_dev/run.sh`, `tools/select_setting.py`):
+at the learned detector's counts on those replays (`data/runs/tune_dev/run.sh`,
+`tools/select_setting.py`), by three rules:
+
+- **equal unmatched alarms**: the most chance-corrected detections among the
+  settings with at most the learned detector's unmatched alarms;
+- **equal detections**: the fewest unmatched alarms among the settings with at
+  least its chance-corrected detections;
+- **equal quiet alarms**: the most chance-corrected detections among the
+  settings that raise at most its alarms on the 23 AFAD quiet windows (102.8 h;
+  `data/runs/tune_dev/run_quiet.sh`). Unmatched alarms in an aftershock sequence
+  are partly uncatalogued earthquakes, more so for a sensitive detector, so the
+  first rule places a baseline at a higher true false-alarm rate than the learned
+  detector; this rule matches the rate on data without catalogued seismicity.
+  For the published models it is applied within the weights selected by the
+  first two rules.
+
 
 | detector | setting |
 |---|---|
 | learned (6 s) | 0.8 x 8 windows, or 0.9 once |
 | STA/LTA, equal unmatched alarms | *[from the retuning]* |
 | STA/LTA, equal detections | *[from the retuning]* |
-| FilterPicker, both rules | *[from the retuning]* |
+| STA/LTA, equal quiet alarms | *[from the retuning]* |
+| FilterPicker, the three rules | *[from the retuning]* |
 | PhaseNet, EQTransformer, causal; and look-ahead (offline) | *[weights and settings from the retuning]* |
 | per-station STA/LTA | section 4 |
 
@@ -104,7 +119,8 @@ by the two rules, at the learned detector's counts on those replays
 
 **Primary, per network**: the difference in chance-corrected detections between
 the learned detector and STA/LTA at equal unmatched alarms, over the network's
-"now" sequences, with its 95% paired bootstrap interval.
+"now" sequences, with its 95% paired bootstrap interval. The same difference
+for STA/LTA at equal quiet alarms is the first secondary endpoint.
 
 **Secondary, per network**:
 1. every other detector against the learned detector, as in the primary;
@@ -112,7 +128,10 @@ the learned detector and STA/LTA at equal unmatched alarms, over the network's
    one-sided tests at 5% with a margin of +-10% of the scorable events
    (`tools/significance.py --equivalence`);
 3. alarms per day on the quiet windows, every detector, with exact Poisson
-   intervals;
+   intervals; and the same with the network's two stations of most STA/LTA
+   (equal unmatched alarms) station detections on its quiet windows left out,
+   for every detector alike (`tools/quiet_without_stations.py --exclude-top 2
+   --by stalta`), so that the comparison does not rest on two noisy stations;
 4. the neighbourhood of the learned detector's rule: the adjacent settings of
    its grid (threshold 0.75 and 0.85; 6 and 10 windows), reported beside it;
 5. detection before S: the share of matched detections whose triggering window
