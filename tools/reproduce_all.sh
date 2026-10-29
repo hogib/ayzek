@@ -64,6 +64,11 @@ outcome_setting() {
         stalta_eqdet) echo "-- --stalta-band 2,10 --sta 0.5 --lta 10 --stalta-on 6" ;;
     esac
 }
+# The window-probability cache replays the 6 s detector only: ayzek refuses
+# --scores-in with any other detector, so STA/LTA gets an empty cache field.
+outcome_cache() {
+    [ "$1" = learned ] && echo "$2"
+}
 
 say "0. published numbers against the files they came from"
 # Cheap: reads artefacts earlier runs wrote and checks the published figure is
@@ -178,7 +183,7 @@ else
             $(echo "$files" | tr , ' ') > /dev/null 2>&1 || echo "scores failed: $n"
         for d in learned stalta_eqfa stalta_eqdet; do
             python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog "tests/catalogs/$n.csv" \
-                --dataset "$n:$OUT/cache_$n:$files" $(outcome_detector "$d") \
+                --dataset "$n:$(outcome_cache "$d" "$OUT/cache_$n"):$files" $(outcome_detector "$d") \
                 --out "$OUT/outcomes/${n}_$d.csv" $(outcome_setting "$d") \
                 >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: $n $d"
         done
@@ -274,7 +279,7 @@ else
     mkdir -p "$OUT/outcomes"
     for d in learned stalta_eqfa stalta_eqdet; do
         python3 tools/event_outcomes.py --binary "$BUILD/app/ayzek" --catalog tests/catalogs/simav26.csv \
-            --dataset "simav26:$OUT/cache_simav26:$files" $(outcome_detector "$d") \
+            --dataset "simav26:$(outcome_cache "$d" "$OUT/cache_simav26"):$files" $(outcome_detector "$d") \
             --out "$OUT/outcomes/simav26_$d.csv" $(outcome_setting "$d") \
             >> "$OUT/outcomes.log" 2>&1 || echo "outcomes failed: simav26 $d"
     done
