@@ -187,7 +187,11 @@ reported both ways, labelled as a deviation. Nothing is re-tuned on test data.
 The fetched sets (miniSEED, StationXML, catalogue excerpts, `dataset.json`) are
 published where the networks' licences allow, each under its own licence (CC BY
 4.0 for the NOA node's services, CC BY 3.0 NZ for GeoNet's) with the networks'
-citations. Every run's command, commit and output is kept.
+citations. Every run's command, commit and output is kept. Nothing is published
+before the data centre has confirmed in writing that its licence covers the
+redistribution: for the Greek networks this confirmation from NOA
+(eida@noa.gr) is still outstanding, and so is a check of EMSC's terms for the
+KO catalogue excerpts.
 
 ## 10. Prospective test (New Zealand)
 
