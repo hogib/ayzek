@@ -196,6 +196,12 @@ public:
   void on(const StationGeometry &g);
   void on(const PdEstimate &q);
   void on(const PdTrace &q);
+  // Replaces the catalogue. Live input knows the span of its data only at the
+  // end, so it restricts the catalogue to that span before the report, as a
+  // replay does before it starts.
+  void set_catalog(std::vector<CatalogEvent> catalog) {
+    cfg_.catalog = std::move(catalog);
+  }
   // Final report: one block per declared event (magnitude, alarm, location,
   // catalogue comparison, S-wave warning time at each station and site), the
   // catalogue events not detected, and totals.

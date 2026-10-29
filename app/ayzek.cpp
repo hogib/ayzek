@@ -1,30 +1,37 @@
 // ayzek: earthquake detection, phase picking, magnitude estimation and location
-// on miniSEED data replayed in real time, one file per station.
+// on miniSEED data replayed in real time, one file per station, or received
+// live from a SeedLink server.
 //
 //   ayzek [options] STATION.mseed...
+//   ayzek [options] --seedlink HOST:PORT --streams NET.STA[,NET.STA...]
 //
 // See docs/IMPLEMENTATION.md.
 
 #include "pipeline/common.hpp"
 #include "pipeline/ingest.hpp"
+#include "pipeline/live.hpp"
 #include "pipeline/network.hpp"
 #include "pipeline/processor.hpp"
 #include "pipeline/recording.hpp"
 #include "pipeline/station.hpp"
+#include "seedlink.hpp"
 #include "simd.hpp"
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <csignal>
 #include <cstdio>
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <limits>
 #include <map>
 #include <memory>
 #include <numeric>
 #include <queue>
 #include <ranges>
+#include <set>
 #include <sstream>
 #include <thread>
 #include <tuple>
@@ -52,8 +59,12 @@ using namespace ayzek::pipeline;
 namespace {
 
 std::atomic<bool> g_stop{false};
+// Live input: the first SIGINT or SIGTERM stops the input, and the run ends
+// once what was received has been processed; a second stops at once.
+std::atomic<bool> g_input_stop{false};
 
 const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
+       ayzek [options] --seedlink HOST:PORT --streams NET.STA[,NET.STA...]
 
   --models DIR          weights directory (default: models)
   --stations FILE       station coordinates (code,lat,lon[,...]) in place of
@@ -143,7 +154,28 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
   --site NAME,LAT,LON   report the S-wave warning time at this place (repeatable)
   --verbose             print every station detection, pick and magnitude estimate
   --no-color
+
+live input, in place of the files (docs/impl/19-seedlink.md):
+  --seedlink HOST:PORT  receive from this SeedLink server (port 18000 if omitted)
+  --streams LIST        NET.STA[.LOC],...: each station's HHZ, HHN and HHE at
+                        100 Hz; coordinates from the station table
+  --archive DIR         append every record received to DIR/STATION.mseed
+  --duration S          stop after S seconds (default: at SIGINT or SIGTERM)
+  --live-wait S         the longest a station's message waits for the other
+                        stations' data before it is processed (default 10)
+  --seedlink-timeout S  reconnect after S seconds with nothing received
+                        (default 120)
+  --seedlink-keepalive S
+                        send INFO ID after S seconds with nothing received
+                        (default 60; 0: never)
 )";
+
+// Seconds since the Unix epoch by the system clock.
+double wall_epoch() {
+  return std::chrono::duration<double>(
+             std::chrono::system_clock::now().time_since_epoch())
+      .count();
+}
 
 double parse_time(const std::string &s) {
   const auto t = parse_utc(s, "ymdhms");
@@ -204,6 +236,11 @@ int main(int argc, char **argv) try {
   NetworkConfig ncfg;
   std::optional<PdModel> pd_model; // outlives the processors and the network
   std::vector<std::string> files;
+  // Live input (docs/impl/19-seedlink.md).
+  std::string seedlink_server, streams;
+  LiveConfig lcfg;
+  double live_wait = 10.0;
+  bool speed_set = false, live_option = false;
 
   for (int i = 1; i < argc; ++i) {
     std::string a = argv[i];
@@ -219,7 +256,7 @@ int main(int argc, char **argv) try {
     else if (a == "--models")
       models = next();
     else if (a == "--speed")
-      speed = std::stod(next());
+      speed = std::stod(next()), speed_set = true;
     else if (a == "--from")
       pcfg.from = parse_time(next());
     else if (a == "--threshold") {
@@ -365,6 +402,20 @@ int main(int argc, char **argv) try {
       ncfg.assess = true;
     else if (a == "--assess-csv")
       assess_csv = next();
+    else if (a == "--seedlink")
+      seedlink_server = next();
+    else if (a == "--streams")
+      streams = next(), live_option = true;
+    else if (a == "--archive")
+      lcfg.archive_dir = next(), live_option = true;
+    else if (a == "--duration")
+      lcfg.duration_s = std::stod(next()), live_option = true;
+    else if (a == "--live-wait")
+      live_wait = std::stod(next()), live_option = true;
+    else if (a == "--seedlink-timeout")
+      lcfg.client.timeout_s = std::stod(next()), live_option = true;
+    else if (a == "--seedlink-keepalive")
+      lcfg.client.keepalive_s = std::stod(next()), live_option = true;
     else if (a == "-h" || a == "--help") {
       std::print("{}", kUsage);
       return 0;
@@ -374,7 +425,37 @@ int main(int argc, char **argv) try {
       files.push_back(a);
     }
   }
-  if (files.empty()) {
+  const bool live = !seedlink_server.empty();
+  if (live) {
+    if (!files.empty())
+      throw std::runtime_error(
+          "--seedlink takes the place of the miniSEED files; give one or the "
+          "other");
+    if (streams.empty())
+      throw std::runtime_error("--seedlink needs --streams NET.STA[,...]");
+    if (speed_set)
+      throw std::runtime_error(
+          "--speed applies to replays; live input arrives at its own pace");
+    if (ncfg.assess)
+      throw std::runtime_error(
+          "--assess reads the replay files after the run; replay an "
+          "--archive instead");
+    if (!seedlink::Client::available())
+      throw std::runtime_error(
+          "live SeedLink input is not available in this build (it needs "
+          "POSIX sockets, which the Windows build does not have)");
+    if (lcfg.client.timeout_s <= 0 ||
+        (lcfg.client.keepalive_s > 0 &&
+         lcfg.client.keepalive_s >= lcfg.client.timeout_s))
+      throw std::runtime_error(
+          "--seedlink-keepalive must be shorter than --seedlink-timeout");
+    lcfg.client.server = seedlink::parse_endpoint(seedlink_server);
+    lcfg.client.streams = seedlink::parse_streams(streams);
+  } else if (live_option) {
+    throw std::runtime_error("--streams, --archive, --duration, --live-wait "
+                             "and --seedlink-* need --seedlink");
+  }
+  if (files.empty() && !live) {
     std::print(stderr, "{}", kUsage);
     return 2;
   }
@@ -387,7 +468,16 @@ int main(int argc, char **argv) try {
   }
   if (!stdout_is_tty())
     Log::get().color = false;
-  std::signal(SIGINT, [](int) { g_stop = true; });
+  if (live) {
+    const auto on_signal = [](int) {
+      if (g_input_stop.exchange(true))
+        g_stop = true;
+    };
+    std::signal(SIGINT, on_signal);
+    std::signal(SIGTERM, on_signal);
+  } else {
+    std::signal(SIGINT, [](int) { g_stop = true; });
+  }
 
   // --- load
   // ---------------------------------------------------------------------
@@ -460,8 +550,9 @@ int main(int argc, char **argv) try {
   if (ncfg.assess)
     pcfg.pick = true;
   const auto bp = dsp::Bandpass::load(Weights::load(models + "/bandpass.ayzw"));
-  auto coords = load_stations(stations_path.empty() ? models + "/stations.csv"
-                                                    : stations_path);
+  const std::string station_table =
+      stations_path.empty() ? models + "/stations.csv" : stations_path;
+  auto coords = load_stations(station_table);
 
   std::vector<std::unique_ptr<ReplaySource>> sources;
   std::vector<std::unique_ptr<Station>> stations;
@@ -484,10 +575,34 @@ int main(int argc, char **argv) try {
     sources.push_back(std::move(src));
     stations.push_back(std::move(st));
   }
+  // Live input: one station per stream, and every one in the station table,
+  // since a station that cannot be located from would be a silent hole in a
+  // live network.
+  for (const auto &spec : lcfg.client.streams) {
+    auto st = std::make_unique<Station>();
+    st->code = spec.sta;
+    const auto it = coords.find(st->code);
+    if (it == coords.end())
+      throw std::runtime_error(std::format(
+          "{}: not in the station table {}; live input needs the "
+          "coordinates of every station (--stations FILE)",
+          spec.id(), station_table));
+    st->lat = it->second.lat;
+    st->lon = it->second.lon;
+    used[st->code] = it->second;
+    stations.push_back(std::move(st));
+  }
+  std::unique_ptr<LiveInput> live_in;
+  if (live) {
+    std::vector<Station *> fed;
+    for (auto &st : stations)
+      fed.push_back(st.get());
+    live_in = std::make_unique<LiveInput>(lcfg, std::move(fed));
+  }
 
-  const double start =
-      pcfg.from > 0 ? pcfg.from - 70.0
-                    : t_first; // 70 s covers a picker window before `from`
+  // 70 s covers a picker window before `from`. Live input knows t_first only
+  // at the end, where `start` is set again.
+  double start = pcfg.from > 0 ? pcfg.from - 70.0 : t_first;
   const std::string detector_name =
       pcfg.detector == DetectorKind::Transformer
           ? std::format("onset transformer (p >= {:g}, release {:g}, {}P from dt)",
@@ -509,17 +624,30 @@ int main(int argc, char **argv) try {
                 pcfg.stalta.sta_seconds, pcfg.stalta.lta_seconds,
                 pcfg.stalta_on, pcfg.stalta_off, pcfg.stalta.f_lo,
                 pcfg.stalta.f_hi, pcfg.stalta.three_component ? "Z+N+E" : "Z");
-  Log::get().line(
-      "ayzek", "1",
-      "{} stations, {} backend, {}{}{}, replay {} to {} UTC at {}",
-      stations.size(), simd::kBackend, detector_name,
-      pcfg.geometry ? " + geometry locator"
-      : pcfg.pick   ? " + picker"
-                    : "",
-      pcfg.pd ? " + Pd magnitude" : "",
-      ymd_hms(t_first), hms(t_last),
-      speed > 0 ? std::format("{:g}x", speed) : std::string("full speed"));
-  if (!catalog_path.empty()) {
+  const std::string input =
+      live ? std::format("live from {}:{}", lcfg.client.server.host,
+                         lcfg.client.server.port)
+           : std::format("replay {} to {} UTC at {}", ymd_hms(t_first),
+                         hms(t_last),
+                         speed > 0 ? std::format("{:g}x", speed)
+                                   : std::string("full speed"));
+  Log::get().line("ayzek", "1", "{} stations, {} backend, {}{}{}, {}",
+                  stations.size(), simd::kBackend, detector_name,
+                  pcfg.geometry ? " + geometry locator"
+                  : pcfg.pick   ? " + picker"
+                                : "",
+                  pcfg.pd ? " + Pd magnitude" : "", input);
+  if (!catalog_path.empty() && live) {
+    // The span is known at the end, when the report keeps the events a
+    // replay of the same data would (set_catalog below).
+    ncfg.catalog =
+        load_afad_catalog(catalog_path, -std::numeric_limits<double>::infinity(),
+                          std::numeric_limits<double>::infinity());
+    Log::get().line("ayzek", "1",
+                    "catalogue: {} events; the report keeps those in the "
+                    "span received",
+                    ncfg.catalog.size());
+  } else if (!catalog_path.empty()) {
     // Catalogue events whose waves can arrive within the replayed data.
     ncfg.catalog = load_afad_catalog(
         catalog_path, std::max(t_first, pcfg.from) - 30, t_last - 30);
@@ -536,7 +664,8 @@ int main(int argc, char **argv) try {
   if (!scores_dir.empty())
     std::filesystem::create_directories(scores_dir);
   Bus bus;
-  StreamClock clock(start, speed);
+  // Live input runs on the wall clock, and releases records on arrival.
+  StreamClock clock(live ? wall_epoch() : start, live ? 1.0 : speed);
   std::vector<std::unique_ptr<Processor>> procs;
   // --stalta-on-stations: the per-station STA/LTA baseline, each station's own
   // trigger ratio.
@@ -565,9 +694,12 @@ int main(int argc, char **argv) try {
         *st, detector, picker, bp, cfg, bus, path, in_path, transformer.get()));
   }
   std::vector<std::jthread> threads;
+  if (live)
+    threads.emplace_back([&] { live_in->run(g_input_stop, g_stop); });
   for (std::size_t i = 0; i < stations.size(); ++i) {
-    threads.emplace_back(
-        [&, i] { run_ingest(*sources[i], *stations[i], clock, g_stop); });
+    if (!live)
+      threads.emplace_back(
+          [&, i] { run_ingest(*sources[i], *stations[i], clock, g_stop); });
     threads.emplace_back([&, i] { procs[i]->run(g_stop); });
   }
 
@@ -580,8 +712,10 @@ int main(int argc, char **argv) try {
   Network net(used, ncfg);
   std::unique_ptr<Recorder> recorder;
   if (!record_path.empty())
-    recorder = std::make_unique<Recorder>(record_path, used, t_first, t_last,
-                                          ncfg.min_stations);
+    recorder = live ? std::make_unique<Recorder>(record_path, used,
+                                                 ncfg.min_stations)
+                    : std::make_unique<Recorder>(record_path, used, t_first,
+                                                 t_last, ncfg.min_stations);
   std::map<std::string, double> watermark;
   for (auto &st : stations)
     watermark[st->code] = 0;
@@ -590,6 +724,7 @@ int main(int argc, char **argv) try {
     std::string station;
     std::uint64_t seq;
     Message m;
+    std::chrono::steady_clock::time_point received{}; // live input only
   };
   auto later = [](const Held &a, const Held &b) {
     return std::tie(a.t, a.station, a.seq) > std::tie(b.t, b.station, b.seq);
@@ -597,6 +732,20 @@ int main(int argc, char **argv) try {
   std::priority_queue<Held, std::vector<Held>, decltype(later)> held(later);
   std::map<std::string, std::uint64_t> sent;
 
+  auto process = [&](const Message &m) {
+    if (auto *d = std::get_if<Detection>(&m))
+      net.on(*d);
+    else if (auto *p = std::get_if<Pick>(&m))
+      net.on(*p);
+    else if (auto *o = std::get_if<StationGeometry>(&m))
+      net.on(*o);
+    else if (auto *q = std::get_if<PdEstimate>(&m))
+      net.on(*q);
+    else if (auto *t = std::get_if<PdTrace>(&m))
+      net.on(*t);
+    if (recorder)
+      recorder->write(m);
+  };
   auto release = [&] {
     const double safe = watermark.empty()
                             ? 1e18
@@ -604,24 +753,84 @@ int main(int argc, char **argv) try {
     while (!held.empty() && held.top().t < safe) {
       const Message m = held.top().m;
       held.pop();
-      if (auto *d = std::get_if<Detection>(&m))
-        net.on(*d);
-      else if (auto *p = std::get_if<Pick>(&m))
-        net.on(*p);
-      else if (auto *o = std::get_if<StationGeometry>(&m))
-        net.on(*o);
-      else if (auto *q = std::get_if<PdEstimate>(&m))
-        net.on(*q);
-      else if (auto *t = std::get_if<PdTrace>(&m))
-        net.on(*t);
-      if (recorder)
-        recorder->write(m);
+      process(m);
     }
   };
+
+  // Live input: a message waits for every station's promise as in a replay,
+  // but for --live-wait seconds at most. The stations that held it back that
+  // long are marked lagging and not waited for until they have caught up with
+  // what has been processed (a station that stops sending would otherwise
+  // hold every alarm back). What a lagging station sends meanwhile for
+  // earlier times is processed out of order, and counted: with none out of
+  // order, the network stage saw the messages in the replay's order, so a
+  // replay of the same records gives the same alarms.
+  const auto wait_limit = std::chrono::duration<double>(live_wait);
+  std::map<std::string, bool> lagging;
+  std::tuple<double, std::string, std::uint64_t> last_key{
+      -std::numeric_limits<double>::infinity(), "", 0};
+  std::uint64_t out_of_order = 0, waited_out = 0;
+  // Alarms as they are issued: id, stream time, wall-clock time.
+  std::set<int> issued_ids;
+  std::vector<std::tuple<int, double, double>> issued;
+  auto release_live = [&] {
+    const auto now = std::chrono::steady_clock::now();
+    while (!held.empty()) {
+      double safe = 1e18;
+      for (const auto &[code, w] : watermark)
+        if (!lagging[code])
+          safe = std::min(safe, w);
+      const Held &top = held.top();
+      if (top.t >= safe) {
+        if (now - top.received < wait_limit)
+          break;
+        for (const auto &[code, w] : watermark)
+          if (!lagging[code] && w <= top.t) {
+            lagging[code] = true;
+            ++waited_out;
+            Log::get().line("warn", "33",
+                            "{}: held a message back {:g} s ({}); not waited "
+                            "for until it catches up",
+                            code, live_wait,
+                            w > 0 ? "processed to " + hms(w)
+                                  : std::string("nothing processed yet"));
+          }
+        continue;
+      }
+      auto key = std::tie(top.t, top.station, top.seq);
+      if (key < last_key)
+        ++out_of_order;
+      else
+        last_key = key;
+      const Message m = top.m;
+      held.pop();
+      process(m);
+    }
+    for (auto &[code, lag] : lagging)
+      if (const auto w = watermark.find(code);
+          lag && w != watermark.end() && w->second > std::get<0>(last_key)) {
+        lag = false;
+        Log::get().line("live", "36", "{}: caught up, waited for again", code);
+      }
+    for (const auto &e : net.events())
+      if (e.declared && issued_ids.insert(e.id).second) {
+        const double wall = wall_epoch();
+        issued.emplace_back(e.id, e.declared_at, wall);
+        Log::get().line("ISSUED", "1;31",
+                        "#{:<3} {}  at {} UTC by the wall clock, {:.1f} s after "
+                        "the data",
+                        e.id, hms(e.declared_at), hms(wall),
+                        wall - e.declared_at);
+      }
+  };
+
   while (!watermark.empty()) {
     auto m = bus.receive(std::chrono::milliseconds(100));
-    if (!m)
+    if (!m) {
+      if (live) // the wait limit runs out without messages too
+        release_live();
       continue;
+    }
     if (auto *pr = std::get_if<Progress>(&*m)) {
       if (auto it = watermark.find(pr->station); it != watermark.end())
         it->second = std::max(it->second, pr->until);
@@ -629,12 +838,38 @@ int main(int argc, char **argv) try {
       watermark.erase(sd->station);
     } else {
       const std::string station = station_of(*m);
-      held.push(Held{declared_at(*m), station, sent[station]++, std::move(*m)});
+      held.push(Held{declared_at(*m), station, sent[station]++, std::move(*m),
+                     std::chrono::steady_clock::now()});
     }
-    release();
+    if (live)
+      release_live();
+    else
+      release();
   }
-  release();
+  if (live)
+    release_live();
+  else
+    release();
   threads.clear();
+
+  if (live) {
+    if (!live_in->error().empty())
+      throw std::runtime_error(live_in->error());
+    // The span received, as a replay of the same records would read it; the
+    // wall-clock span of the run if nothing arrived.
+    t_first = live_in->first_time();
+    t_last = live_in->last_time();
+    if (std::isnan(t_first)) {
+      t_last = wall_epoch();
+      t_first = t_last - clock.wall_seconds();
+    }
+    start = pcfg.from > 0 ? pcfg.from - 70.0 : t_first;
+    if (!catalog_path.empty())
+      net.set_catalog(load_afad_catalog(
+          catalog_path, std::max(t_first, pcfg.from) - 30, t_last - 30));
+    if (recorder)
+      recorder->write_span(t_first, t_last);
+  }
 
   // --assess: picks at the stations that did not trigger, from the replay
   // files, in the window each alarm's source predicts. Made here, after the
@@ -725,6 +960,9 @@ int main(int argc, char **argv) try {
     if (stale)
       log.line("warn", "33", "{}: {} late records discarded", stations[i]->code,
                stale);
+    if (const auto bad = stations[i]->undecodable.load())
+      log.line("warn", "33", "{}: {} records did not decode", stations[i]->code,
+               bad);
     log.plain(false,
               "  {:<5} {:>8} {:>9} {:>8} {:>6} {:>9}   {:>8.3f} ({:>5.3f}) "
               "{:>9.0f}",
@@ -764,6 +1002,18 @@ int main(int argc, char **argv) try {
               onset_picks, triggers);
   log.plain(false, "  {} windows in {:.1f} s: {:.0f}x real time per station",
             windows, wall, stream_seconds / wall);
+  if (live) {
+    live_in->report();
+    log.plain(false,
+              "  network stage: {} messages processed out of order; {} times "
+              "a station was not waited for (--live-wait {:g} s)",
+              out_of_order, waited_out, live_wait);
+    for (const auto &[id, at, wall_at] : issued)
+      log.plain(false,
+                "  alarm #{:<3} {} UTC issued at {} UTC by the wall clock, "
+                "{:.1f} s after the data",
+                id, hms(at), hms(wall_at), wall_at - at);
+  }
   return 0;
 } catch (const std::exception &e) {
   std::println(stderr, "ayzek: {}", e.what());

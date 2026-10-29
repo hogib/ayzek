@@ -10,6 +10,13 @@ Recorder::Recorder(const std::string &path,
                    const std::map<std::string, StationInfo> &stations,
                    double t_first, double t_last,
                    std::size_t min_stations)
+    : Recorder(path, stations, min_stations) {
+  write_span(t_first, t_last);
+}
+
+Recorder::Recorder(const std::string &path,
+                   const std::map<std::string, StationInfo> &stations,
+                   std::size_t min_stations)
     : out_(path) {
   if (!out_)
     throw std::runtime_error("cannot write " + path);
@@ -17,6 +24,9 @@ Recorder::Recorder(const std::string &path,
   out_ << std::format("# min_stations {}\n", min_stations);
   for (const auto &[code, s] : stations)
     out_ << std::format("S\t{}\t{}\t{}\n", code, s.lat, s.lon);
+}
+
+void Recorder::write_span(double t_first, double t_last) {
   out_ << std::format("T\t{}\t{}\n", t_first, t_last);
 }
 

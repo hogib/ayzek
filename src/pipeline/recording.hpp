@@ -27,7 +27,8 @@
 //      they are skipped)
 //   Q  station  trigger_window  p_time  tau  pd  pd_noise  declared_at
 // PdTrace messages (two per second per station) are not recorded, so a replay
-// of a recording estimates Pd without the bounds of silent stations.
+// of a recording estimates Pd without the bounds of silent stations. A live
+// run knows its span only at the end, and writes the T line last.
 
 #include "common.hpp"
 #include "network.hpp"
@@ -44,7 +45,12 @@ public:
   Recorder(const std::string &path,
            const std::map<std::string, StationInfo> &stations, double t_first,
            double t_last, std::size_t min_stations);
+  // Without the span, for live input: write_span() adds it at the end.
+  Recorder(const std::string &path,
+           const std::map<std::string, StationInfo> &stations,
+           std::size_t min_stations);
   void write(const Message &m);
+  void write_span(double t_first, double t_last);
 
 private:
   std::ofstream out_;
