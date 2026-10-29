@@ -388,7 +388,12 @@ int main() {
          put16(r, 48, 2000);
          put16(r, 50, 48);
        }},
-      {"Steim1 (10)", Error::UnsupportedEncoding,
+      {"Steim3 (19)", Error::UnsupportedEncoding,
+       [](Record &r, unsigned, std::uint32_t, std::uint32_t) {
+         put8(r, 52, 19);
+       }},
+      // Steim1 is decoded: Steim2 frames read as Steim1 fail its checks.
+      {"Steim2 data labelled Steim1 (10)", Error::TooManySamples,
        [](Record &r, unsigned, std::uint32_t, std::uint32_t) {
          put8(r, 52, 10);
        }},

@@ -1,9 +1,5 @@
 #include "ingest.hpp"
 
-#include "mseed.hpp"
-#include "reorder.hpp"
-#include "writer.hpp"
-
 #include <algorithm>
 #include <cstring>
 #include <fstream>
@@ -99,67 +95,91 @@ bool read_window(const ReplaySource &src, double t0, std::size_t n,
   return std::ranges::all_of(have, [](std::uint8_t x) { return x != 0; });
 }
 
+StationFeed::StationFeed(Station &st)
+    : st_(st), writer_{ComponentWriter(st.comp[Z]), ComponentWriter(st.comp[N]),
+                       ComponentWriter(st.comp[E])} {
+  for (auto &r : reorder_)
+    r = std::make_unique<Reorderer<8, mseed::kMaxDiffs>>(0);
+}
+
+std::expected<void, mseed::Error>
+StationFeed::offer(std::span<const std::byte> rec, const mseed::Header &h,
+                   std::size_t comp) {
+  auto n = mseed::decode(rec, h, buf_);
+  if (!n) {
+    st_.undecodable.fetch_add(1, std::memory_order_relaxed);
+    return std::unexpected(n.error());
+  }
+  const auto pos = static_cast<std::uint64_t>(h.start_ns) / 10'000'000;
+  auto &cs = st_.comp[comp];
+  auto &w = writer_[comp];
+
+  auto sink = [&](std::uint64_t p, std::span<const std::int32_t> s) {
+    if (cs.base.load(std::memory_order_relaxed) == kUnset)
+      cs.base.store(p, std::memory_order_release);
+    w.write(s);
+  };
+  auto gap = [&](std::uint64_t a, std::uint64_t b) {
+    cs.gaps.fetch_add(1, std::memory_order_relaxed);
+    cs.gap_samples.fetch_add(b - a, std::memory_order_relaxed);
+    w.write_gap(b - a);
+  };
+  reorder_[comp]->offer(pos, std::span<const std::int32_t>(buf_.data(), *n),
+                        sink, gap);
+  cs.stale.store(reorder_[comp]->stats().stale, std::memory_order_relaxed);
+  st_.records.fetch_add(1, std::memory_order_relaxed);
+  drain();
+  return {};
+}
+
+bool StationFeed::drain() {
+  bool empty = true;
+  for (auto &w : writer_)
+    empty = w.drain() && empty;
+  return empty;
+}
+
+std::size_t StationFeed::queued() const {
+  std::size_t n = 0;
+  for (const auto &w : writer_)
+    n += w.queued();
+  return n;
+}
+
+std::size_t StationFeed::queued(std::size_t comp) const {
+  return writer_[comp].queued();
+}
+
+std::uint64_t StationFeed::written() const {
+  std::uint64_t n = 0;
+  for (const auto &c : st_.comp)
+    n += c.ring.written();
+  return n;
+}
+
+// One millisecond of StationFeed::wait_draining: false to give up.
+bool StationFeed::wait_step(const std::atomic<bool> &stop, std::uint64_t &mark,
+                            int &idle_ms, std::string_view what) {
+  if (stop.load(std::memory_order_relaxed))
+    return false;
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  if (const auto now = written(); now != mark) {
+    mark = now;
+    idle_ms = 0;
+    return true;
+  }
+  if (++idle_ms >= 60'000) {
+    Log::get().line("warn", "33",
+                    "{}: {} for 60 s with no progress, {} samples held",
+                    st_.code, what, queued());
+    return false;
+  }
+  return true;
+}
+
 void run_ingest(const ReplaySource &src, Station &st, const StreamClock &clock,
                 const std::atomic<bool> &stop) {
-  // One reorderer per component with max_lateness 0: holes become gaps at once
-  // and late records are discarded as stale (docs/DESIGN.md).
-  std::array<std::unique_ptr<Reorderer<8, mseed::kMaxDiffs>>, 3> reorder;
-  for (auto &r : reorder)
-    r = std::make_unique<Reorderer<8, mseed::kMaxDiffs>>(0);
-  std::array<std::int32_t, mseed::kMaxDiffs> buf{};
-
-  // One writer per component. A write never waits: what does not fit is
-  // queued and retried by `drain`, so a component whose ring is full cannot
-  // stop the other two from being fed (writer.hpp).
-  std::array<ComponentWriter, 3> writer{ComponentWriter(st.comp[Z]),
-                                        ComponentWriter(st.comp[N]),
-                                        ComponentWriter(st.comp[E])};
-  auto drain_all = [&] {
-    bool empty = true;
-    for (auto &w : writer)
-      empty = w.drain() && empty;
-    return empty;
-  };
-  auto queued = [&] {
-    std::size_t n = 0;
-    for (const auto &w : writer)
-      n += w.queued();
-    return n;
-  };
-  auto written = [&] {
-    std::uint64_t n = 0;
-    for (const auto &c : st.comp)
-      n += c.ring.written();
-    return n;
-  };
-  // Waits while `held` is true, writing whatever the rings accept meanwhile.
-  // Gives up, returning false, after a minute in which not one sample reached
-  // a ring: a station whose third component never arrives has a processor
-  // that can never advance, and the run must end rather than hang. A long
-  // wait is not by itself a stall -- across a gap longer than the ring the
-  // other components are being written the whole time.
-  auto wait_draining = [&](auto held, std::string_view what) {
-    std::uint64_t mark = written();
-    for (int idle_ms = 0;;) {
-      drain_all();
-      if (!held())
-        return true;
-      if (stop.load(std::memory_order_relaxed))
-        return false;
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      if (const auto now = written(); now != mark) {
-        mark = now;
-        idle_ms = 0;
-        continue;
-      }
-      if (++idle_ms >= 60'000) {
-        Log::get().line("warn", "33",
-                        "{}: {} for 60 s with no progress, {} samples held",
-                        st.code, what, queued());
-        return false;
-      }
-    }
-  };
+  StationFeed feed(st);
   bool hold_source = true; // cleared for the rest of the run if it gives up
 
   for (const auto &rec : src.records()) {
@@ -167,51 +187,35 @@ void run_ingest(const ReplaySource &src, Station &st, const StreamClock &clock,
       break;
     while (rec.end_time > clock.now() &&
            !stop.load(std::memory_order_relaxed)) {
-      drain_all();
+      feed.drain();
       std::this_thread::sleep_for(std::chrono::milliseconds(2));
     }
     // Backpressure on the source rather than inside a write: the replay is
-    // held back while the processor is more than a ring's worth behind. Live
-    // data would be dropped here by the socket instead, which is the one
-    // place where dropping does not shift later samples in time. If the
-    // processor turns out not to be advancing at all, the rest of the replay
-    // is buffered instead, which costs memory but keeps every position right.
-    if (hold_source && queued() > kMaxQueuedSamples)
-      hold_source = wait_draining([&] { return queued() > kMaxQueuedSamples; },
-                                  "processor behind, holding the source");
+    // held back while the processor is more than a ring's worth behind. The
+    // live input drops the record at this point instead (live.cpp), which is
+    // the one place where dropping does not shift later samples in time. If
+    // the processor turns out not to be advancing at all, the rest of the
+    // replay is buffered instead, which costs memory but keeps every position
+    // right.
+    if (hold_source && feed.queued() > kMaxQueuedSamples)
+      hold_source = feed.wait_draining(
+          [&] { return feed.queued() > kMaxQueuedSamples; },
+          "processor behind, holding the source", stop);
 
-    auto h = mseed::parse_header(rec.bytes);
-    auto n = mseed::decode(rec.bytes, *h, buf);
-    if (!n)
+    // A record that does not decode is counted (Station::undecodable).
+    const auto h = mseed::parse_header(rec.bytes);
+    if (!feed.offer(rec.bytes, *h, rec.comp))
       continue;
-    const auto pos = static_cast<std::uint64_t>(h->start_ns) / 10'000'000;
-    auto &cs = st.comp[rec.comp];
-    auto &w = writer[rec.comp];
-
-    auto sink = [&](std::uint64_t p, std::span<const std::int32_t> s) {
-      if (cs.base.load(std::memory_order_relaxed) == kUnset)
-        cs.base.store(p, std::memory_order_release);
-      w.write(s);
-    };
-    auto gap = [&](std::uint64_t a, std::uint64_t b) {
-      cs.gaps.fetch_add(1, std::memory_order_relaxed);
-      cs.gap_samples.fetch_add(b - a, std::memory_order_relaxed);
-      w.write_gap(b - a);
-    };
-    reorder[rec.comp]->offer(pos, std::span<const std::int32_t>(buf.data(), *n),
-                             sink, gap);
-    cs.stale.store(reorder[rec.comp]->stats().stale, std::memory_order_relaxed);
-    st.records.fetch_add(1, std::memory_order_relaxed);
-    drain_all();
   }
   // The stream is not finished until everything held has been written, or the
   // processor would stop at a truncated one. If it cannot be written the tail
   // is given up, which loses the end of the replay but leaves the position of
   // every sample before it right.
-  if (!wait_draining([&] { return !drain_all(); }, "flushing the last samples") &&
-      queued() > 0)
+  if (!feed.wait_draining([&] { return !feed.drain(); },
+                          "flushing the last samples", stop) &&
+      feed.queued() > 0)
     Log::get().line("warn", "33", "{}: {} samples at the end not written",
-                    st.code, queued());
+                    st.code, feed.queued());
   st.ingest_done.store(true, std::memory_order_release);
 }
 

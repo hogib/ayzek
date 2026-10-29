@@ -40,6 +40,13 @@ zig spells CPU names with underscores.
   tests checked nothing there. clang's unused-variable warning exposed this.
   They use an aborting `CHECK` now, on every build.
 
+## Live input
+
+The static musl binary has the SeedLink client (`19-seedlink.md`): it needs
+POSIX sockets and `getaddrinfo`, both in musl. The live tests themselves
+(`seedlink_live`, `seedlink_reconnect`) are defined for native builds only:
+under qemu ayzek would not keep up with the mock server.
+
 ## Verification
 
 Every test runs on the aarch64 binary under `qemu-aarch64` with the NEON

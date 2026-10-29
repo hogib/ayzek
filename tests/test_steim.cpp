@@ -1,11 +1,14 @@
-// Unit tests for the Steim2 bit operations, integer record decoding and BTIME
-// conversion. Full decoding is validated against ObsPy by
-// tools/validate_mseed.py.
+// Unit tests for the Steim bit operations, Steim1 and integer record decoding,
+// the encodings the header parser accepts, and BTIME conversion. Full
+// decoding is validated against ObsPy by test_mseed (small files of every
+// encoding) and tools/validate_mseed.py (archive files).
 #include "mseed.hpp"
+#include "records.hpp"
 
 #include <array>
 #include <cstdlib>
 #include <print>
+#include <tuple>
 
 // Aborting check that, unlike assert(), stays active in release builds.
 #define CHECK(cond)                                                            \
@@ -99,6 +102,59 @@ int main() {
           decode(rec, h, big).error() == Error::TooManySamples);
   }
   std::println("  int16 / int32 records    ok");
+
+  // Steim1: one word of each code. X0 = 100, then differences 1 -2 127 (four
+  // 8-bit, the first of which refers to the previous record), -32768 300 (two
+  // 16-bit) and -2000000000 (one 32-bit).
+  {
+    std::array<std::byte, kRecordLength> rec{};
+    auto put = [&](std::size_t off, std::uint32_t v) {
+      for (std::size_t b = 0; b < 4; ++b)
+        rec[off + b] = std::byte((v >> (24 - 8 * b)) & 0xFF);
+    };
+    Header h;
+    h.encoding = kSteim1;
+    h.data_offset = 64;
+    h.num_samples = 7;
+    put(64, (0b01u << 24) | (0b10u << 22) | (0b11u << 20)); // codes of W3-W5
+    put(68, 100);                                           // X0
+    const std::int32_t xn = 100 + 1 - 2 + 127 - 32768 + 300 - 2'000'000'000;
+    put(72, static_cast<std::uint32_t>(xn));                // Xn
+    put(76, 0x0001FE7Fu);                                   // 0 1 -2 127
+    put(80, 0x8000012Cu);                                   // -32768 300
+    put(84, static_cast<std::uint32_t>(-2'000'000'000));
+    std::array<std::int32_t, 7> out{};
+    const auto n = decode(rec, h, out);
+    CHECK(n && *n == 7);
+    CHECK((out == std::array<std::int32_t, 7>{100, 101, 99, 226, -32542, -32242,
+                                              xn}));
+    put(72, 0); // wrong Xn
+    CHECK(!decode(rec, h, out) &&
+          decode(rec, h, out).error() == Error::IntegrityMismatch);
+    h.num_samples = 8; // more than the frames hold
+    CHECK(!decode(rec, h, out) &&
+          decode(rec, h, out).error() == Error::TooManySamples);
+  }
+  std::println("  steim1 codes             ok");
+
+  // Encodings and byte orders the header parser accepts: Steim frames are
+  // big-endian only.
+  {
+    testrec::Spec s;
+    for (const auto &[encoding, order, ok] :
+         {std::tuple{11, 1, true}, std::tuple{10, 1, true},
+          std::tuple{10, 0, false}, std::tuple{11, 0, false},
+          std::tuple{3, 0, true}, std::tuple{1, 1, true},
+          std::tuple{4, 1, false}, std::tuple{5, 1, false},
+          std::tuple{0, 1, false}}) {
+      s.encoding = static_cast<std::uint8_t>(encoding);
+      s.word_order = static_cast<std::uint8_t>(order);
+      const auto h = parse_header(testrec::header(s, 1));
+      CHECK(h.has_value() == ok);
+      CHECK(ok || h.error() == Error::UnsupportedEncoding);
+    }
+  }
+  std::println("  accepted encodings       ok");
 
   std::println("all steim tests passed");
 }

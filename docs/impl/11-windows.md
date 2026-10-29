@@ -33,6 +33,12 @@ Two calls, both in terminal and machine reporting:
 - `gethostname` in `ayzek_bench` needs winsock on Windows, which is not worth
   linking for a label; it reads `%COMPUTERNAME%` instead.
 
+One feature is left out instead: live SeedLink input (`19-seedlink.md`) needs
+POSIX sockets, which MinGW does not provide. `src/seedlink.cpp` compiles its
+socket code on other systems only, and `--seedlink` on Windows exits with
+"live SeedLink input is not available in this build". Everything else,
+including the client's protocol parsing and its unit test, builds for Windows.
+
 Nothing else was platform-specific. In particular:
 
 - **Every binary read already opens with `std::ios::binary`** — the weights

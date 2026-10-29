@@ -28,6 +28,7 @@ describe what was built.
 | [16 · Alarm assessment](impl/16-alarm-assessment.md) | `--assess`: S-P consistency and independent evidence to tell uncatalogued earthquakes from misfires |
 | [17 · Magnitude from peak P displacement](impl/17-pd-magnitude.md) | the Pd chain on raw counts, the censored Pd–M–R estimator calibrated in onset, its agreement with onset and its results on the replays |
 | [18 · FilterPicker](impl/18-filterpicker.md) | Lomax's FilterPicker5 ported from his C code, checked against it, in place of the detector |
+| [19 · Live input: SeedLink](impl/19-seedlink.md) | a SeedLink 3 client in place of the files: protocol subset, reconnection, rejected records, the archive, the network stage's ordering live |
 
 ## In one screen
 
@@ -91,6 +92,7 @@ tools/demo.sh all                    # 7 stations, full speed
 
 ```
 ayzek [options] STATION.mseed...
+ayzek [options] --seedlink HOST:PORT --streams NET.STA[,NET.STA...]
   --models DIR          weights directory (default: models)
   --speed X             replay speed; 1 = real time, 0 = as fast as possible
   --from TIME           start detecting at this UTC time
@@ -121,6 +123,13 @@ ayzek [options] STATION.mseed...
   --site NAME,LAT,LON   also report the S-wave warning time at this place (repeatable)
   --verbose             print every station detection, pick and Pd value
   --no-color
+live input, in place of the files (impl/19-seedlink.md):
+  --seedlink HOST:PORT  receive from this SeedLink server
+  --streams LIST        NET.STA[.LOC],...: each station's HHZ, HHN, HHE at 100 Hz
+  --archive DIR         append every record received to DIR/STATION.mseed
+  --duration S          stop after S seconds (default: at SIGINT or SIGTERM)
+  --live-wait S         longest a message waits for the other stations (default 10)
+  --seedlink-timeout S, --seedlink-keepalive S   (defaults 120, 60)
 ```
 
 ## Output
@@ -169,8 +178,9 @@ event and each false alarm.
 ## Layout
 
 ```
-src/            ring, mseed, reorder (stages 1–2); simd, nn, models, dsp, weights, stalta, filterpicker, transformer, pd_magnitude
-src/pipeline/   ingest, processor, network
+src/            ring, mseed, reorder (stages 1–2); seedlink (stage 7); simd, nn, models, dsp, weights, stalta, filterpicker,
+                transformer, pd_magnitude
+src/pipeline/   ingest, live, processor, network
 app/            the ayzek binary
 tests/          unit tests, PyTorch/scipy agreement, end-to-end demo check
 tools/          export_models.py, export_pd.py, export_stalta.py, make_demo_data.py, demo.sh, mseed_dump,
@@ -188,6 +198,6 @@ cross/          zig toolchain wrappers and the Raspberry Pi cross file
 | 4 windowing | done, gap-aware |
 | 5 kernels | done, NEON + scalar |
 | 6 detector | done, matches PyTorch |
-| 7 live SeedLink | not started; `ReplaySource` is the seam |
+| 7 live SeedLink | done: SeedLink 3 client, archive, tested against a mock server (19) |
 | 8 cascade | detector → picker → magnitude → location, done; the magnitude at the picked P runs only for declared events |
 | 9 location | done: grid search, P+S, uniform half-space, drops ill-fitting stations |

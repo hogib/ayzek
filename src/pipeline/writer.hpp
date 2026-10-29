@@ -35,8 +35,9 @@
 
 namespace ayzek::pipeline {
 
-// Upper bound on the samples ingest may hold back per station before it stops
-// reading from the source. Gaps are excluded, since they are counts.
+// Upper bound on the samples ingest may hold back: per station before a replay
+// stops reading from the source, per component before live input drops that
+// component's records (live.hpp). Gaps are excluded, since they are counts.
 inline constexpr std::size_t kMaxQueuedSamples = kRingCapacity;
 
 class ComponentWriter {
