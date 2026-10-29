@@ -39,8 +39,10 @@ DETECTORS = {
                      "--lta", "10", "--stalta-on", "6"],
     "filterpicker": ["--detector", "filterpicker"],
 }
-# Detected: the AFAD line of an event block. Missed: the list after the counts.
-DETECTED = re.compile(r"^  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm", re.M)
+# Detected: the AFAD line of an event block, with the pre-S line after it
+# (absent in reports of older builds). Missed: the list after the counts.
+DETECTED = re.compile(r"^  AFAD\s+(\w+) ([\d.]+) at (\S+) UTC: alarm[^\n]*\n"
+                      r"(?:  pre-S\s+(\d+) of (\d+) alarm detections)?", re.M)
 MISSED = re.compile(r"^    (\d\d:\d\d:\d\d\.\d\d) UTC  (\w+) ([\d.]+) ", re.M)
 CATALOGUE = re.compile(r"AFAD events within \d+ km\s+(\d+)")
 
@@ -51,14 +53,18 @@ def unshift(hms, shift):
 
 
 def outcomes(out, shift):
-    """{(origin, type, M): detected} for one report, at unshifted times."""
+    """{(origin, type, M): (detected, detected before S)} for one report, at
+    unshifted times. Detected before S: every detection the match used was
+    declared before the predicted S at its station (held-out protocol, section
+    7); "" when the report predates the pre-S line."""
     ev = {}
-    for kind, mag, hms in DETECTED.findall(out):
-        ev[(unshift(hms, shift), kind, mag)] = 1
+    for kind, mag, hms, before, used in DETECTED.findall(out):
+        pre_s = "" if not used else int(int(used) > 0 and before == used)
+        ev[(unshift(hms, shift), kind, mag)] = (1, pre_s)
     tail = out[out.find("Missed AFAD events"):] if "Missed AFAD events" in out else ""
     tail = tail[:tail.find("\n\n", 20)] if tail else ""
     for hms, kind, mag in MISSED.findall(tail):
-        ev[(unshift(hms, shift), kind, mag)] = 0
+        ev[(unshift(hms, shift), kind, mag)] = (0, 0)
     m = CATALOGUE.search(out)
     if m and int(m.group(1)) != len(ev):
         sys.exit(f"parsed {len(ev)} events, the report counts {m.group(1)}")
@@ -102,13 +108,16 @@ def main():
 
     with open(a.out, "w", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["dataset", "detector", "shift", "origin", "type", "magnitude", "detected"])
+        w.writerow(["dataset", "detector", "shift", "origin", "type", "magnitude", "detected",
+                    "detected_pre_s"])
         for shift in shifts:
-            for (origin, kind, mag), d in sorted(results[shift].items()):
-                w.writerow([name, a.label or a.detector, shift, origin, kind, mag, d])
+            for (origin, kind, mag), (d, pre_s) in sorted(results[shift].items()):
+                w.writerow([name, a.label or a.detector, shift, origin, kind, mag, d, pre_s])
     obs = results[0]
-    print(f"{name} {a.label or a.detector}: {sum(obs.values())} of {len(obs)} detected; "
-          + ", ".join(f"{s:+d}: {sum(results[s].values())}/{len(results[s])}" for s in shifts[1:]))
+    n = {s: sum(d for d, _ in results[s].values()) for s in shifts}
+    pre = sum(p for _, p in obs.values() if p != "")
+    print(f"{name} {a.label or a.detector}: {n[0]} of {len(obs)} detected, {pre} before S; "
+          + ", ".join(f"{s:+d}: {n[s]}/{len(results[s])}" for s in shifts[1:]))
 
 
 if __name__ == "__main__":

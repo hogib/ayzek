@@ -938,6 +938,24 @@ const CatalogEvent *Network::match(const Event &e) const {
   return best;
 }
 
+std::pair<int, int> Network::pre_s(const Event &e,
+                                   const CatalogEvent &c) const {
+  int before = 0, used = 0;
+  for (const auto &[code, d] : e.detections) {
+    auto it = stations_.find(code);
+    if (it == stations_.end() || d.declared_at > e.declared_at)
+      continue;
+    ++used;
+    const double s =
+        c.time +
+        std::hypot(distance_km(c.lat, c.lon, it->second.lat, it->second.lon),
+                   c.depth) /
+            cfg_.vs;
+    before += d.declared_at < s;
+  }
+  return {before, used};
+}
+
 std::vector<CatalogScore> Network::score() const {
   std::vector<CatalogScore> out;
   if (cfg_.catalog.empty() || stations_.empty())
@@ -1127,6 +1145,11 @@ void Network::report(double t_first, double t_last) const {
             distance_km(e->location->lat, e->location->lon, c->lat, c->lon),
             e->location->origin - c->time);
       log.plain(false, "{}", cmp);
+      const auto [before, used] = pre_s(*e, *c);
+      log.plain(false,
+                "  pre-S      {} of {} alarm detections declared before the "
+                "predicted S",
+                before, used);
       alarm_delays.push_back(e->declared_at - c->time);
       if (e->pd_magnitude)
         pd_errors.push_back(e->pd_magnitude->mean - c->magnitude);
@@ -1263,6 +1286,14 @@ void Network::report(double t_first, double t_last) const {
   log.plain(false, "    detected                           {:>4}  {:>4}",
             scores.size() - missed.size(),
             pct(scores.size() - missed.size(), scores.size()));
+  std::size_t detected_pre_s = 0;
+  for (const auto &sc : scores)
+    if (sc.detected) {
+      const auto [before, used] = pre_s(*sc.detected, *sc.event);
+      detected_pre_s += used > 0 && before == used;
+    }
+  log.plain(false, "    detected before S                  {:>4}  {:>4}",
+            detected_pre_s, pct(detected_pre_s, scores.size()));
   log.plain(false, "    missed                             {:>4}  {:>4}",
             missed.size(), pct(missed.size(), scores.size()));
 

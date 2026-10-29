@@ -53,8 +53,14 @@ struct NetworkConfig {
   // exceeds `max_rms`, and more than two stations remain, the station
   // contributing most to the misfit is left out; a solution still failing
   // either, or with a 68% radius over `geo_max_err_km`, is not reported.
-  double sigma_p = 0.5;
-  double geo_sd_scale = 1.0;
+  // sigma_p and geo_sd_scale were set on the development replays
+  // (15-geometry-location.md, Calibration): 68% of true distances lie within
+  // 2.1 of the head's sds, and with it 2.75 s puts the catalogue epicentre
+  // inside the stated 68% radius for 69% of 124 located events. sigma_p is
+  // far above the dt-dated P error (0.24 s) because the uniform half-space is
+  // about 2 s off at these distances.
+  double sigma_p = 2.75;
+  double geo_sd_scale = 2.1;
   double geo_max_dist_z = 1e9;
   double geo_max_err_km = 1e9;
   std::size_t min_stations = 2; // detections needed to declare an event
@@ -234,6 +240,12 @@ private:
   locate(const std::map<std::string, StationGeometry> &geo,
          std::string *worst) const;
   [[nodiscard]] const CatalogEvent *match(const Event &e) const;
+  // Detection before the S wave (held-out protocol, section 7): of the
+  // detections the match uses (stations that raised the alarm, declared by
+  // its time), how many were declared before c's S at their station,
+  // predicted in the uniform half-space of the P prediction; {before, used}.
+  [[nodiscard]] std::pair<int, int> pre_s(const Event &e,
+                                          const CatalogEvent &c) const;
   void report_location(Event &e, double now);
   void report_p_location(Event &e, double now);
   // Geometry locator with too few stations to locate: each station's

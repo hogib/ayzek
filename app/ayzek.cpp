@@ -119,8 +119,8 @@ const char *kUsage = R"(usage: ayzek [options] STATION.mseed...
                         (default: geometry when the transformer has the geometry
                         head, otherwise picks)
   --geo-sd-scale X      geometry: multiply every station's distance sd by X
-                        (default 1)
-  --geo-sigma-p S       geometry: P-time uncertainty of its misfit, s (default 0.5)
+                        (default 2.1)
+  --geo-sigma-p S       geometry: P-time uncertainty of its misfit, s (default 2.75)
   --geo-max-z Z         geometry: leave out, or else refuse, a station whose
                         distance is more than Z sds from the solution (default off)
   --geo-max-err-km KM   geometry: refuse a location whose 68% radius exceeds KM

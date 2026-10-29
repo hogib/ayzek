@@ -157,9 +157,17 @@ for STA/LTA at equal quiet alarms is the first secondary endpoint.
    --by stalta`), so that the comparison does not rest on two noisy stations;
 4. the neighbourhood of the learned detector's rule: the adjacent settings of
    its grid (threshold 0.75 and 0.85; 6 and 10 windows), reported beside it;
-5. detection before S: the share of matched detections whose triggering window
-   ended before the predicted S, and the primary comparison restricted to them
-   *[matcher tolerance to check before the freeze]*;
+5. detection before S: the share of the detections a match uses (the stations
+   that raised the alarm, declared by its time) that were declared before the
+   predicted S at their station, and the primary comparison restricted to
+   events detected before S, those whose every such detection was. S is
+   predicted from the catalogue hypocentre in the uniform half-space of the P
+   prediction (3.5 and 6 km/s). The match itself keeps its 6 s tolerance on
+   the predicted P, which the half-space's error at regional distances needs.
+   ayzek prints `pre-S  N of K alarm detections ...` after each matched event
+   and the count of events detected before S in its summary;
+   `tools/event_outcomes.py` writes the per-event outcome (`detected_pre_s`)
+   and `tools/significance.py --outcome detected_pre_s` the comparison;
 6. KO only: the primary comparison split by the 6 s detector's station split
    (training against test-split stations);
 7. magnitude (Pd): error and bias by band, class accuracy at the first estimate

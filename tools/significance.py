@@ -42,6 +42,7 @@ import json
 import math
 import random
 import re
+import sys
 from pathlib import Path
 
 B = 10000
@@ -106,13 +107,17 @@ def pct(v, q):
     return v[min(len(v) - 1, max(0, int(round(q * (len(v) - 1)))))]
 
 
-def load_outcomes(d):
-    """{(dataset, detector): {shift: {event: detected}}}"""
+def load_outcomes(d, column="detected"):
+    """{(dataset, detector): {shift: {event: outcome}}}, the outcome being
+    `column` of tools/event_outcomes.py's tables (detected, or detected_pre_s
+    for the comparison restricted to detection before the S wave)."""
     out = collections.defaultdict(lambda: collections.defaultdict(dict))
     for f in glob.glob(f"{d}/*.csv"):
         for r in csv.DictReader(open(f)):
             ev = (r["dataset"], r["origin"], r["type"], r["magnitude"])
-            out[r["detector"]][int(r["shift"])][ev] = int(r["detected"])
+            if r.get(column, "") == "":
+                sys.exit(f"{f}: no {column} column for {r['detector']} (a table from an older build?)")
+            out[r["detector"]][int(r["shift"])][ev] = int(r[column])
     return out
 
 
@@ -245,13 +250,16 @@ def main():
     ap.add_argument("--equivalence", nargs="*", default=[], metavar="OTHER=FRACTION",
                     help="equivalence margin, as a fraction of the group's events, "
                          "for the comparison with OTHER")
+    ap.add_argument("--outcome", choices=("detected", "detected_pre_s"), default="detected",
+                    help="the per-event outcome compared: detected, or detected before the "
+                         "S wave (held-out protocol, section 7)")
     ap.add_argument("--block-minutes", type=float, default=0,
                     help="bootstrap whole blocks of this many minutes of origin time "
                          "instead of single events (0: events)")
     a = ap.parse_args()
     rng = random.Random(a.seed)
 
-    det = load_outcomes(a.outcomes)
+    det = load_outcomes(a.outcomes, a.outcome)
     margins = {k: float(v) for k, v in (x.split("=", 1) for x in a.equivalence)}
     summary = {}
     groups = {g.split("=")[0]: set(g.split("=")[1].split(",")) for g in a.groups.split(";")}

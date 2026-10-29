@@ -37,7 +37,7 @@ stated uncertainty should shrink.
 
    ```
    J(x) = Σ (log max(D_i(x), 1) − log_dist_i)² / (2 sd_i²)
-        + Σ (r_i(x) − origin(x))² / (2 σ_p²)            σ_p = 0.5 s
+        + Σ (r_i(x) − origin(x))² / (2 σ_p²)            σ_p = 2.75 s
    ```
 
    on a grid (±3° at 0.05° around the station centroid, then ±0.1° at
@@ -109,7 +109,8 @@ check. `--verbose` prints every station estimate as a `geo` line.
 
 | flag | default | effect |
 |---|---|---|
-| `--geo-sd-scale X` | 1 | multiplies every station's distance sd |
+| `--geo-sd-scale X` | 2.1 | multiplies every station's distance sd |
+| `--geo-sigma-p S` | 2.75 | the P-time uncertainty σ_p of the misfit, s |
 | `--geo-max-z Z` | off | while a station's distance is more than Z (scaled) sds from the solution and more than three stations remain, the worst station is left out; a solution still failing is not reported |
 | `--geo-max-err-km KM` | off | a solution whose 68% radius exceeds KM is not reported |
 
@@ -137,10 +138,33 @@ The head's distance sd is overconfident on these sets (29–42% of true
 distances within one sd instead of 68%), which is what `--geo-sd-scale` is
 for once a model's calibration has been measured.
 
+## Calibration (2026-10-29, before the freeze)
+
+On the five development event replays (demo, marmara, sindirgi61, simav26,
+demo_ko; `tools/compare_detectors.py` runs kept in data/runs/tune_dev/compare):
+
+- **Distance sd.** For the last estimate of each station and catalogue event
+  (461), 43% of the true epicentral distances lie within one stated sd; 2.11
+  sds hold 68% (1.90 within 100 km, 0.95 at 100–200 km, 3.2 and 4.2 beyond
+  200 and 300 km, where the head was not trained). `--geo-sd-scale` is 2.1.
+- **P times.** The dt-dated P differs from the AIC-refined P by a median of
+  −0.09 s (robust sd 0.24 s, 431 arrivals), but against the uniform
+  half-space at the catalogue hypocentre, each event's origin removed, the
+  residuals have a robust sd of 2.0 s (407). σ_p was set by coverage, as the
+  P-time locator's `--p-sigma` was: at sd scale 2.1 the catalogue epicentre
+  lies inside the stated 68% radius for 27%, 45%, 63%, 66%, 69% and 72% of
+  the located events at σ_p 0.5, 1.35, 2.25, 2.5, 2.75 and 3 s
+  (`data/runs/tune_dev/run_geo_grid.sh`, `geo_grid_coverage.py`). σ_p is 2.75 s.
+- **Effect.** Of 133 catalogue-matched events, 124 are located instead of
+  129; the median epicentre error stays about 20 km (19.4 against 21.9);
+  the median stated radius is 34 km instead of 6. Coverage is uneven:
+  Simav 32 of 33, demo_ko 6 of 7, Marmara 24 of 42, Sındırgı 18 of 36, the
+  last two with stations beyond the head's training distances. With radii
+  mostly above `pd_max_err_km` (20 km), Pd usually takes each station's head
+  distance rather than the location.
+
 ## Open questions
 
-- σ_p = 0.5 s is a guess at the dt-dated P error; `compare_detectors.py`
-  measures that error and should set it.
 - The KO training set is regional: stations beyond the training distances
   get estimates the head has not learned, and their stated uncertainty is the
   only guard.
