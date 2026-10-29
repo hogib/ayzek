@@ -31,7 +31,7 @@ is fetched before then.
   selection of the settings); `tools/heldout_settings.json` (every frozen
   setting) and `tools/detector_station_split.csv` (the 6 s detector's station
   split, endpoint 6); and in the held-out repository `heldout select`,
-  `probe`, `pull` and `catalog`.
+  `probe`, `pull`, `catalog` and `verify` (section 9).
 
 ## 2. Development and test data
 
@@ -139,7 +139,7 @@ is fetched before then.
   sequences get none. It refuses a pool period without `--allow-test-period`,
   which is used only after the freeze. Its dry runs on 2022 (Greece, New
   Zealand) and 2026-07-01 to 2026-08-29 (KO), before the pools, are kept with
-  the protocol.
+  the protocol (their `selection.json`, as in section 9).
 
 ## 4. Per-station STA/LTA (secondary baseline)
 
@@ -306,14 +306,29 @@ reported both ways, labelled as a deviation. Nothing is re-tuned on test data.
 
 ## 9. Records
 
-The fetched sets (miniSEED, StationXML, catalogue excerpts, `dataset.json`) are
-published where the networks' licences allow, each under its own licence (CC BY
-4.0 for the NOA node's services, CC BY 3.0 NZ for GeoNet's) with the networks'
-citations. Every run's command, commit and output is kept. Nothing is published
-before the data centre has confirmed in writing that its licence covers the
-redistribution: for the Greek networks this confirmation from NOA
-(eida@noa.gr), requested on 2026-10-29, is still outstanding, and so is a check of EMSC's terms for the
-KO catalogue excerpts.
+The fetched waveforms are not redistributed. The data are open at their data
+centres (the NOA EIDA node for HL, HT, HA, HP and HC; GeoNet for NZ; KOERI for
+KO) and are cited by their network DOIs (doi:10.7914/SN/HL, /HT, /HA, /HP,
+/HC and /KO; doi:10.21420/G19Y-9D40 for GeoNet's waveforms).
+
+Published with the frozen release, and for each test once it is run:
+
+- the fetch tool (the held-out repository at its frozen commit);
+- every set's `dataset.json`, its request record: the services, stations,
+  channels and windows asked for and what arrived, the request failures, the
+  canary check, and the SHA-256 and size of every file the fetch wrote
+  (miniSEED, StationXML, station table, Pd gains, catalogue excerpt);
+- the selection (`selection.json`) and the set files it wrote;
+- the station tables (`stations.csv`, `pd_gain.csv`);
+- the catalogue requests (each request's query parameters and URL, as
+  `dataset.json` records them), not the catalogue excerpts;
+- every run's command, commit and output.
+
+Anyone can fetch the same data again with the request record and check it
+against the recorded hashes (`heldout verify`). A difference (data arriving
+late at the data centre, gaps filled, metadata updated) is reported, not
+hidden. An archive of the waveforms themselves, if one is wanted later, would
+first need each data centre's terms for redistribution confirmed.
 
 ## 10. Prospective tests (New Zealand and KO)
 
@@ -337,8 +352,8 @@ retrospective test of the same network or with any other network.
   first event is at least 4 weeks old, so that the catalogue's review is in,
   are identified from the network's catalogue (GeoNet's; EMSC's for KO) and
   fetched with the frozen tool, each with its catalogue excerpt at that time
-  and the canary check. A sequence is fetched once; later catalogue revisions
-  are not taken up.
+  and the canary check, and recorded as in section 9. A sequence is fetched
+  once; later catalogue revisions are not taken up.
 - **Quiet data**: after the span closes, 24 windows of 6 h drawn over it by
   the rule of section 3 with seed 44 (`heldout select nz --prospective`,
   `heldout select ko --prospective`), on the station sets of the network's
