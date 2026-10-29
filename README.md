@@ -53,7 +53,7 @@ detected, located within 10 km and given a magnitude between 3.9 and 5.9.
 The analysis tools (`tools/sweep_trigger.py`, `event_outcomes.py`,
 `significance.py`, `select_setting.py`, `quiet_sweep.py`,
 `stalta_station_ratios.py`, `quiet_without_stations.py`, `scorecard.py`'s
-parsers) have their own tests in `tools/tests/`, run in the tools' uv project:
+parsers, `run_heldout.py`'s option building and report parsing) have their own tests in `tools/tests/`, run in the tools' uv project:
 
 ```bash
 uv run --project tools --with pytest pytest tools/tests -q
