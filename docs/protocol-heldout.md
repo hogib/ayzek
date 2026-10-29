@@ -69,12 +69,26 @@ is fetched before then.
 ## 4. Per-station STA/LTA (secondary baseline)
 
 Each test station's own STA/LTA trigger ratio, from its own data before the
-pool *[period to confirm, e.g. 2017]*: the network-wide equal-unmatched setting
-(section 6) with the trigger ratio replaced by the lowest ratio of the grid
-(3, 4, 5, 6, 8, 10) at which the station's trigger rate on its own quiet data
-does not exceed the median per-station rate of the network-wide setting on the
-AFAD quiet windows (`--stalta-on-stations`). These pre-pool data are fetched
-before the freeze, for this tuning only.
+pool: four 6 h windows per network group, drawn with seed 20221231
+(`tools/make_tuning_sets.py` of the held-out repository; Greece and New Zealand
+in 2022, KO from 2026-07-01 to 2026-08-29), with every station of the group
+that has three 100 Hz HH channels and 90% coverage. The setting is the
+network-wide equal-unmatched one (section 6) with the trigger ratio replaced by
+the lowest ratio of the grid (3, 4, 5, 6, 8, 10) at which the station's trigger
+rate on its quiet data over the four windows does not exceed the median
+per-station rate of the network-wide setting on the AFAD quiet windows. A
+station above the target at every ratio gets 10; a test station without tuning
+data keeps the network-wide ratio.
+
+Quiet data, on the tuning windows and the AFAD quiet windows alike: the time
+outside [D/8 - 10 s, D/6 + 120 s] after the origin of every catalogued event
+visible at the station (epicentral distance D in km; visible within 50 km at
+any magnitude, 150 km from M2, 400 km from M3 and 1500 km from M4.5, as in
+`tools/compare_detectors.py`), after the first 30 min of each tuning window
+(the quiet windows' own lead-in is not scored). A rate is the station's
+detections in its quiet time per quiet hour. `tools/stalta_station_ratios.py`
+computes the target and the ratios (ayzek's `--stalta-on-stations`). These
+pre-pool data are fetched before the freeze, for this tuning only.
 
 ## 5. Scoring
 
