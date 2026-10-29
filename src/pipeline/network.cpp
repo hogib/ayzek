@@ -971,12 +971,13 @@ std::vector<CatalogScore> Network::score() const {
     const double dist = distance_km(clat, clon, c.lat, c.lon);
     if (dist > cfg_.catalog_radius_km)
       continue;
+    // The first alarm credited with it, in declaration (alarm number) order:
+    // events_ is in creation order, and an event started by an early trigger
+    // can be declared after one created later.
     const Event *hit = nullptr;
     for (const auto &e : events_)
-      if (e.declared && match(e) == &c) {
+      if (e.declared && (!hit || e.id < hit->id) && match(e) == &c)
         hit = &e;
-        break;
-      }
     out.push_back({&c, dist, hit});
   }
   return out;

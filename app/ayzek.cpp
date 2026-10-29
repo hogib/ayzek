@@ -581,7 +581,7 @@ int main(int argc, char **argv) try {
   std::unique_ptr<Recorder> recorder;
   if (!record_path.empty())
     recorder = std::make_unique<Recorder>(record_path, used, t_first, t_last,
-                                          ncfg.min_stations);
+                                          ncfg.min_stations, pcfg.from);
   std::map<std::string, double> watermark;
   for (auto &st : stations)
     watermark[st->code] = 0;

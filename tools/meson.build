@@ -6,6 +6,6 @@ executable('replay_check', 'replay_check.cpp',
   dependencies: [ayzek_dep],
   install: false)
 
-executable('network_subsets', 'network_subsets.cpp',
+network_subsets_exe = executable('network_subsets', 'network_subsets.cpp',
   dependencies: [ayzek_dep],
   install: false)
