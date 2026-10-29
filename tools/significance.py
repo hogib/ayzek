@@ -219,9 +219,15 @@ def quiet(hours, counts, rng):
     T = sum(hours.values())
     xa, xb = sum(a.values()), sum(b.values())
     # Conditional on the total, xa ~ Binomial(xa + xb, 1/2) under equal rates.
+    # A detector without an alarm leaves the ratio undefined: inf (or nan when
+    # neither raised one), as its bootstrap below already reports ra / 0, and
+    # the exact interval's upper bound inf; the exact test still holds (every
+    # alarm fell to one detector), and the JSON carries Infinity/NaN as
+    # Python's json module writes them.
     p = mcnemar(xa, xb)
     lo, hi = clopper_pearson(xa, xa + xb)
-    ratio_ci = (lo / (1 - lo), hi / (1 - hi))
+    ratio_ci = (lo / (1 - lo), hi / (1 - hi) if hi < 1 else float("inf"))
+    ratio = xa / xb if xb else (float("inf") if xa else float("nan"))
     names = sorted(hours)
     boot = []
     for _ in range(B):
@@ -232,7 +238,7 @@ def quiet(hours, counts, rng):
     return {
         "hours": T, la: xa, lb: xb,
         f"{la}_per_day": 24 * xa / T, f"{lb}_per_day": 24 * xb / T,
-        "ratio": xa / xb, "ratio_exact_ci": ratio_ci, "p_equal_rates": p,
+        "ratio": ratio, "ratio_exact_ci": ratio_ci, "p_equal_rates": p,
         f"{la}_per_day_boot_ci": (pct([x[0] for x in boot], 0.025), pct([x[0] for x in boot], 0.975)),
         f"{lb}_per_day_boot_ci": (pct([x[1] for x in boot], 0.025), pct([x[1] for x in boot], 0.975)),
         "ratio_boot_ci": (pct([x[2] for x in boot], 0.025), pct([x[2] for x in boot], 0.975)),

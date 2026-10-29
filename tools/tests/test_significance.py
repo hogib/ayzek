@@ -443,17 +443,61 @@ def test_quiet_by_hand():
     assert q["ratio_boot_ci"] == pytest.approx((0.5, 0.5))
 
 
-@pytest.mark.xfail(strict=True, raises=ZeroDivisionError, reason=(
-    "quiet() divides by 1 - hi of the Clopper-Pearson interval of xa among xa + xb "
-    "(significance.py:224), which is 1 when the second detector has no alarm (xb = 0), "
-    "and then by xb itself (\"ratio\": xa / xb, line 231): a detector without a single "
-    "alarm on the quiet windows, plausible on 24 x 5.5 h of held-out quiet data, stops "
-    "the comparison (secondary endpoint 3). Its own bootstrap already takes ra / 0 as inf."))
 def test_quiet_second_detector_without_alarms():
+    # stalta raises no alarm: conditional on the 3 alarms, all are learned's,
+    # p = P(X in {0, 3}) for X ~ Binomial(3, 1/2) = 2/8 = 0.25; the ratio of
+    # rates is undefined and reported as inf, the exact interval's upper bound
+    # inf and its lower bound lo/(1 - lo) with lo the Clopper-Pearson lower
+    # bound of 3 of 3 (scipy); per-day rates 24*3/11 and 0; the bootstrap's
+    # ratio is inf in every resample.
     q = sg.quiet({"w1": 5.5, "w2": 5.5}, {"learned": {"w1": 2, "w2": 1}, "stalta": {"w1": 0, "w2": 0}},
                  random.Random(1))
-    assert q["p_equal_rates"] == pytest.approx(stats.binomtest(3, 3, 0.5).pvalue)
+    assert q["p_equal_rates"] == pytest.approx(0.25) == pytest.approx(stats.binomtest(3, 3, 0.5).pvalue)
     assert q["ratio"] == math.inf
+    lo = stats.binomtest(3, 3).proportion_ci(method="exact").low
+    assert q["ratio_exact_ci"] == pytest.approx((lo / (1 - lo), math.inf))
+    assert (q["learned_per_day"], q["stalta_per_day"]) == (pytest.approx(24 * 3 / 11), 0.0)
+    assert q["ratio_boot_ci"] == (math.inf, math.inf)
+    assert q["stalta_per_day_boot_ci"] == (0.0, 0.0)
+
+
+def test_quiet_first_detector_without_alarms():
+    # learned raises none of the 4: p = 2/16 = 0.125, ratio 0, exact interval
+    # (0, hi/(1 - hi)) with hi the upper bound of 0 of 4.
+    q = sg.quiet({"w1": 5.5, "w2": 5.5}, {"learned": {"w1": 0, "w2": 0}, "stalta": {"w1": 3, "w2": 1}},
+                 random.Random(1))
+    assert q["p_equal_rates"] == pytest.approx(0.125)
+    hi = stats.binomtest(0, 4).proportion_ci(method="exact").high
+    assert q["ratio"] == 0.0 and q["ratio_exact_ci"] == pytest.approx((0.0, hi / (1 - hi)))
+
+
+def test_quiet_no_alarms_at_all():
+    # No alarm by either: p = 1 (no discordant count), ratio nan, interval
+    # (0, inf), nothing to bootstrap but zeros.
+    q = sg.quiet({"w1": 5.5}, {"learned": {"w1": 0}, "stalta": {"w1": 0}}, random.Random(1))
+    assert q["p_equal_rates"] == 1.0 and math.isnan(q["ratio"])
+    assert q["ratio_exact_ci"] == (0.0, math.inf)
+    assert q["learned_per_day_boot_ci"] == (0.0, 0.0)
+
+
+def test_main_quiet_without_alarms_reports_inf(tmp_path):
+    # Through main(): the printed ratio and the JSON stay well-formed (Python's
+    # json writes Infinity, which json.load reads back).
+    index, run = quiet_dirs(tmp_path, {"w1": "  Alarms raised                           3\n"})
+    other = tmp_path / "other"
+    other.mkdir()
+    (other / "w1.txt").write_text("  Alarms raised                           0\n")
+    outcomes = tmp_path / "outcomes"
+    outcomes.mkdir()
+    p = run_tool("significance", "--outcomes", outcomes, "--groups", "g=none", "--against", "stalta_eqfa",
+                 "--quiet", index, "--quiet-runs", f"learned={run}", f"stalta={other}",
+                 "--json", tmp_path / "s.json")
+    assert p.returncode == 0, p.stderr
+    assert "  ratio                        inf\n" in p.stdout
+    assert "  ratio_exact_ci               " in p.stdout and " to inf\n" in p.stdout
+    js = json.loads((tmp_path / "s.json").read_text())["summary"]
+    assert js["quiet: stalta ratio"] == math.inf and js["quiet: stalta p"] == 0.25
+    assert (js["quiet: learned alarms"], js["quiet: stalta alarms"]) == (3, 0)
 
 
 def quiet_dirs(tmp_path, reports):
