@@ -26,7 +26,7 @@
 //   (default 250)
 //   --min-stations N    detections required to declare an event (default: as
 //                       recorded, 2 in recordings without it)
-//   --geo-sd-scale X, --geo-max-z Z, --geo-max-err-km KM
+//   --geo-sd-scale X, --geo-sigma-p S, --geo-max-z Z, --geo-max-err-km KM
 //                       geometry locator settings, as for ayzek
 //   --merge             merge duplicate events (NetworkConfig::merge_duplicates);
 //                       --merge-min N, --merge-rms S, --merge-radius DEG set
@@ -162,6 +162,8 @@ int main(int argc, char **argv) try {
       base.assess = true;
     else if (a == "--geo-sd-scale")
       base.geo_sd_scale = std::stod(next());
+    else if (a == "--geo-sigma-p")
+      base.sigma_p = std::stod(next());
     else if (a == "--geo-max-z")
       base.geo_max_dist_z = std::stod(next());
     else if (a == "--geo-max-err-km")
