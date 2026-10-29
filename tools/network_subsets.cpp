@@ -5,7 +5,10 @@
 // For every subset of the recorded stations with a size in [min-k, max-k], the
 // network stage is run on that subset's messages only, and the result is
 // compared with the catalogue. Because station processing does not depend on
-// the other stations, this equals running ayzek on each subset.
+// the other stations, this equals running ayzek on each subset. As in ayzek,
+// alarms are matched against every catalogue event in the recording's span,
+// and the events scored are those within the radius (and --min-mag) of the
+// full network's centroid, the same for every subset.
 //
 // Output: one CSV row per subset. The main event is the largest catalogue
 // event within the evaluation radius; its columns give the alert delay, the
@@ -21,9 +24,11 @@
 //                       stations left out)
 //   --min-k N           smallest subset size (default 2)
 //   --max-k N           largest subset size (default: all stations)
-//   --min-mag M         only catalogue events with magnitude >= M (default 0)
+//   --min-mag M         score only catalogue events with magnitude >= M
+//                       (default: all, as ayzek); alarms still match smaller
+//                       ones
 //   --radius KM         evaluation radius around the full network's centroid
-//   (default 250)
+//   (default 250, as ayzek)
 //   --min-stations N    detections required to declare an event (default: as
 //                       recorded, 2 in recordings without it)
 //   --geo-sd-scale X, --geo-sigma-p S, --geo-max-z Z, --geo-max-err-km KM
@@ -46,6 +51,7 @@
 #include <algorithm>
 #include <bit>
 #include <cmath>
+#include <limits>
 #include <map>
 #include <print>
 #include <string>
@@ -109,7 +115,7 @@ int main(int argc, char **argv) try {
   bool log = false, quiet = false;
   std::optional<ayzek::PdModel> pd_model;
   std::size_t min_k = 2, max_k = rec.stations.size();
-  double min_mag = 0;
+  double min_mag = -std::numeric_limits<double>::infinity();
   NetworkConfig base;
   // A recording made with the geometry locator holds geometry estimates and
   // no picks; locate its events the same way.
@@ -174,8 +180,12 @@ int main(int argc, char **argv) try {
   if (catalog_path.empty() && !quiet)
     throw std::runtime_error("--catalog is required (or --quiet)");
 
-  // Catalogue events within the radius of the full network's centroid, so
-  // that every subset is scored on the same events.
+  // As ayzek: alarms are matched against every catalogue event in the span,
+  // and the events within the radius of the stations' centroid are scored
+  // (Network::score). The centroid is the full network's, computed as
+  // score() computes it, so that every subset is scored on the same events
+  // and the full set on ayzek's; each subset's network scores every event
+  // (radius 1e9), and scored() keeps those.
   double clat = 0, clon = 0;
   for (const auto &[_, s] : rec.stations) {
     clat += s.lat;
@@ -183,19 +193,30 @@ int main(int argc, char **argv) try {
   }
   clat /= static_cast<double>(rec.stations.size());
   clon /= static_cast<double>(rec.stations.size());
+  const double radius_km = base.catalog_radius_km;
   if (!catalog_path.empty())
-    for (auto &c :
-         load_afad_catalog(catalog_path, rec.t_first - 30, rec.t_last - 30))
-      if (c.magnitude >= min_mag &&
-          distance_km(clat, clon, c.lat, c.lon) <= base.catalog_radius_km)
-        base.catalog.push_back(c);
-  base.catalog_radius_km = 1e9; // selection done above
-  if (base.catalog.empty() && !quiet)
+    base.catalog =
+        load_afad_catalog(catalog_path, rec.t_first - 30, rec.t_last - 30);
+  base.catalog_radius_km = 1e9; // scored() applies the radius
+  auto in_scope = [&](const CatalogEvent &c) {
+    return c.magnitude >= min_mag &&
+           distance_km(clat, clon, c.lat, c.lon) <= radius_km;
+  };
+  auto scored = [&](const Network &net) {
+    auto s = net.score();
+    std::erase_if(s,
+                  [&](const CatalogScore &x) { return !in_scope(*x.event); });
+    return s;
+  };
+  const auto n_scored = std::ranges::count_if(base.catalog, in_scope);
+  if (n_scored == 0 && !quiet)
     throw std::runtime_error(
         "no catalogue events in the recording's span and radius");
-  const auto main_event =
-      std::ranges::max_element(base.catalog, {}, &CatalogEvent::magnitude);
-  const bool has_main = main_event != base.catalog.end();
+  const CatalogEvent *main_event = nullptr;
+  for (const auto &c : base.catalog)
+    if (in_scope(c) && (!main_event || c.magnitude > main_event->magnitude))
+      main_event = &c;
+  const bool has_main = main_event != nullptr;
 
   std::vector<std::string> codes;
   for (const auto &[code, _] : rec.stations)
@@ -206,7 +227,7 @@ int main(int argc, char **argv) try {
   std::println(stderr,
                "{} stations, {} catalogue events (main: {}{:.1f} at {}), "
                "subset sizes {}..{}",
-               n, base.catalog.size(), has_main ? main_event->type : "-",
+               n, n_scored, has_main ? main_event->type : "-",
                has_main ? main_event->magnitude : 0.0,
                has_main ? hms(main_event->time) : std::string("-"), min_k, max_k);
 
@@ -238,8 +259,9 @@ int main(int argc, char **argv) try {
         net.on(*q);
     }
 
+    const auto scores = scored(net);
     std::vector<double> alerts, loc_errors, mag_errors;
-    for (const auto &sc : net.score()) {
+    for (const auto &sc : scores) {
       ++row.catalogue;
       const auto &c = *sc.event;
       const Event *e = sc.detected;
@@ -275,15 +297,20 @@ int main(int argc, char **argv) try {
         row.main_location_error = loc_error;
       }
     }
-    row.unmatched = net.unmatched_count();
+    // Declared events credited with no scored catalogue event, as ayzek's
+    // false alarms (Network::unmatched_count with its radius).
+    auto credited = [&](const Event &e) {
+      return std::ranges::any_of(
+          scores, [&](const CatalogScore &s) { return s.detected == &e; });
+    };
+    for (const auto &e : net.events())
+      row.unmatched += e.declared && !credited(e);
     if (base.assess) {
-      const auto sc = net.score();
       for (const auto &e : net.events()) {
         if (!e.declared)
           continue;
         const auto v = net.assess(e, rec.t_first, rec.t_last).verdict;
-        const bool matched = std::ranges::any_of(
-            sc, [&](const CatalogScore &s) { return s.detected == &e; });
+        const bool matched = credited(e);
         if (v == Verdict::Earthquake || v == Verdict::Possible)
           ++(matched ? row.real_matched : row.real_unmatched);
         else if (v == Verdict::Misfire)

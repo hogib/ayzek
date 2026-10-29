@@ -30,6 +30,7 @@
 #include "pipeline/recording.hpp"
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
@@ -38,6 +39,7 @@
 #include <limits>
 #include <map>
 #include <numbers>
+#include <optional>
 #include <print>
 #include <string>
 #include <string_view>
@@ -629,49 +631,6 @@ void score_radius() {
       "  score: events within the radius of the stations' mean position");
 }
 
-// An alarm whose best fit is a catalogue event beyond catalog_radius_km. The
-// alarm is NORT and SOUT with P dates kT + 10: quake(kT) at the epicentre (0
-// km from the centroid) predicts kT + 7, 3 s off. A second event 260 km due
-// south of the centroid at the surface is 260 - 25.2 = 234.8 km from SOUT, P
-// after 234.8 / 6 = 39.133 s; with origin kT + 11 - 39.133 its P at SOUT is
-// at kT + 11, 1 s off, the better fit. ayzek's report keeps every catalogue
-// event in the replay's span (app/ayzek.cpp) and scores those within the
-// radius: the alarm is credited to the far event, which is not scored, so it
-// counts as false, and quake(kT) as missed. network_subsets keeps only the
-// events within the radius before scoring (tools/network_subsets.cpp:186):
-// there the alarm is credited to quake(kT). The two give different numbers
-// for the same alarms.
-void best_fit_beyond_radius() {
-  const CatalogEvent far{kT + 11.0 - (260.0 - kEpi) / 6.0,
-                         kLat0 - 260.0 / kKmPerDeg,
-                         kLon0,
-                         0.0,
-                         3.5,
-                         "ML"};
-  auto run = [&](std::vector<CatalogEvent> cat, double radius) {
-    NetworkConfig cfg = config(std::move(cat));
-    cfg.catalog_radius_km = radius;
-    Network net(stations(), cfg);
-    net.on(det("NORT", kT + 10, kT + 13));
-    net.on(det("SOUT", kT + 10, kT + 13.5));
-    const auto s = net.score();
-    CHECK(s.size() == 1 && s[0].event->time == kT);
-    return std::pair(s[0].detected != nullptr, net.unmatched_count());
-  };
-  // As ayzek: the whole catalogue, the radius in score().
-  const auto ayzek = run({quake(kT), far}, 250.0);
-  // As network_subsets: the catalogue cut to the radius, no radius after.
-  const auto subsets = run({quake(kT)}, 1e9);
-  CHECK(ayzek == std::pair(false, std::size_t{1}));
-  CHECK(subsets == std::pair(true, std::size_t{0}));
-  KNOWN_ISSUE(ayzek == subsets,
-              "an alarm that fits a catalogue event beyond catalog_radius_km "
-              "best is false in ayzek's report and the in-radius event it also "
-              "fits is missed, while network_subsets (catalogue cut to the "
-              "radius first) credits it: the two tools count the same alarms "
-              "differently (network.cpp:972, network_subsets.cpp:186)");
-}
-
 // Detection before S (protocol, section 7.5), the report's event block and
 // the summary. quake(kT) and quake(kT + 200) at the epicentre: S 12 s after
 // each origin at every station.
@@ -779,18 +738,93 @@ bool same(const Message &a, const Message &b) {
   return false;
 }
 
+// network_subsets' counts: catalogue events scored, of them declared, and
+// declared events without a scored catalogue event.
+using Tally = std::array<long, 3>;
+
 struct Run {
   std::string log; // the stage's lines and report
   std::vector<Event> events;
   std::vector<std::pair<double, int>>
       credited; // catalogue origin, alarm id (0: missed)
+  Tally tally{};
+  std::optional<Tally> subsets; // the replay: network_subsets' full set row
 };
 
 Run finish(Network &net, std::string log) {
-  Run r{std::move(log), net.events(), {}};
-  for (const auto &s : net.score())
+  Run r{std::move(log), net.events(), {}, {}, {}};
+  const auto scores = net.score();
+  for (const auto &s : scores)
     r.credited.emplace_back(s.event->time, s.detected ? s.detected->id : 0);
+  r.tally = {static_cast<long>(scores.size()),
+             static_cast<long>(std::ranges::count_if(
+                 scores, [](const CatalogScore &s) { return s.detected; })),
+             static_cast<long>(net.unmatched_count())};
   return r;
+}
+
+// tools/network_subsets, from argv[1] (tests/meson.build); without it its
+// checks are skipped.
+std::string g_network_subsets;
+
+// `cat` as an AFAD catalogue (Date,Longitude,Latitude,Depth,Rms,Type,
+// Magnitude,...), its origins whole seconds of 1970-01-01.
+void write_afad(const std::string &path, const std::vector<CatalogEvent> &cat) {
+  std::FILE *f = std::fopen(path.c_str(), "wb");
+  CHECK(f != nullptr);
+  std::println(f, "Date,Longitude,Latitude,Depth,Rms,Type,Magnitude,Location,"
+                  "EventID");
+  for (const auto &c : cat) {
+    const auto s = static_cast<long>(c.time);
+    CHECK(static_cast<double>(s) == c.time && s >= 0 && s < 86400);
+    std::println(f, "01/01/1970 {:02}:{:02}:{:02},{},{},{},0.1,{},{},test,1",
+                 s / 3600, s / 60 % 60, s % 60, c.lon, c.lat, c.depth, c.type,
+                 c.magnitude);
+  }
+  std::fclose(f);
+}
+
+// network_subsets on the recording at `path` with `cat`, the full set of its
+// `n` stations only: that row's catalogue, declared and unmatched columns.
+std::optional<Tally> subsets_full_set(const std::string &path,
+                                      const std::vector<CatalogEvent> &cat,
+                                      std::size_t n) {
+  if (g_network_subsets.empty())
+    return std::nullopt;
+  const auto csv = temp_path("catalog.csv"), out = temp_path("subsets.csv"),
+             err = temp_path("subsets.err");
+  write_afad(csv, cat);
+  const auto cmd = std::format(
+      "\"{}\" \"{}\" --catalog \"{}\" --min-k {} --max-k {} > \"{}\" 2> \"{}\"",
+      g_network_subsets, path, csv, n, n, out, err);
+  const int status = std::system(cmd.c_str());
+  std::string text;
+  {
+    std::FILE *f = std::fopen(out.c_str(), "rb");
+    CHECK(f != nullptr);
+    char buf[4096];
+    for (std::size_t k; (k = std::fread(buf, 1, sizeof buf, f)) > 0;)
+      text.append(buf, k);
+    std::fclose(f);
+  }
+  for (const auto &x : {csv, out, err})
+    std::filesystem::remove(x);
+  if (status != 0)
+    std::println(stderr, "network_subsets failed: {}", cmd);
+  CHECK(status == 0);
+  const auto ls = lines(text);
+  CHECK(ls.size() >= 2 && ls[0].starts_with("k,stations,catalogue,declared,"
+                                            "located,unmatched,"));
+  std::vector<std::string> f;
+  for (std::size_t a = 0;;) {
+    const auto b = ls[1].find(',', a);
+    f.push_back(ls[1].substr(a, b == std::string::npos ? b : b - a));
+    if (b == std::string::npos)
+      break;
+    a = b + 1;
+  }
+  CHECK(f.size() > 5 && f[0] == std::to_string(n));
+  return Tally{std::stol(f[2]), std::stol(f[3]), std::stol(f[5])};
 }
 
 bool same_events(const std::vector<Event> &a, const std::vector<Event> &b) {
@@ -828,9 +862,11 @@ bool same_events(const std::vector<Event> &a, const std::vector<Event> &b) {
 
 // Writes `msgs` through Recorder as the stage processes them (app/ayzek.cpp,
 // release()), reads the recording back, checks it holds what was written,
-// and replays it as network_subsets does: its stations, min_stations as
-// recorded, the geometry locator if it holds geometry estimates, the messages
-// of its stations only. Returns the direct run and the replay.
+// and replays it as network_subsets does for the full set: its stations,
+// min_stations as recorded, the geometry locator if it holds geometry
+// estimates, the messages of its stations only. Returns
+// the direct run and the replay, with network_subsets' own counts for the
+// full set on the recording and cfg's catalogue.
 std::pair<Run, Run>
 record_and_replay(const std::map<std::string, StationInfo> &st,
                   const NetworkConfig &cfg, const std::vector<Message> &msgs,
@@ -849,6 +885,7 @@ record_and_replay(const std::map<std::string, StationInfo> &st,
     });
   }
   const auto rec = Recording::load(path);
+  auto subsets = subsets_full_set(path, cfg.catalog, st.size());
   std::filesystem::remove(path);
   CHECK(rec.t_first == t_first && rec.t_last == t_last &&
         rec.min_stations == cfg.min_stations &&
@@ -879,7 +916,14 @@ record_and_replay(const std::map<std::string, StationInfo> &st,
         feed(replay, m);
     replay.report(rec.t_first, rec.t_last);
   });
-  return {finish(direct, log), finish(replay, replay_log)};
+  auto r = finish(replay, replay_log);
+  r.subsets = subsets;
+  return {finish(direct, log), std::move(r)};
+}
+
+// network_subsets' full set gives the direct run's counts (when it is run).
+bool subsets_agree(const Run &direct, const Run &replay) {
+  return !replay.subsets || *replay.subsets == direct.tally;
 }
 
 // A run with picks: event #1 (quake at the epicentre, 10 km deep, origin kT:
@@ -928,6 +972,7 @@ void recording_round_trip_picks() {
   CHECK(same_events(direct.events, replay.events));
   CHECK(direct.credited == replay.credited);
   CHECK(direct.log == replay.log);
+  CHECK((direct.tally == Tally{2, 1, 1}) && subsets_agree(direct, replay));
   std::println("  recording round trip (picks): {} lines, identical",
                lines(direct.log).size());
 }
@@ -960,8 +1005,34 @@ void recording_round_trip_geometry() {
   CHECK((direct.credited == std::vector<std::pair<double, int>>{{kT, 1}}));
   CHECK(same_events(direct.events, replay.events));
   CHECK(direct.log == replay.log);
+  CHECK((direct.tally == Tally{1, 1, 0}) && subsets_agree(direct, replay));
   std::println("  recording round trip (geometry): {} lines, identical",
                lines(direct.log).size());
+}
+
+// An alarm whose best fit is a catalogue event beyond catalog_radius_km. The
+// alarm is NORT and SOUT with P dates kT + 10: quake(kT) at the epicentre (0
+// km from the centroid) predicts kT + 7, 3 s off. A second event 260 km due
+// south of the centroid at the surface is 260 - 25.2 = 234.8 km from SOUT, P
+// after 234.8 / 6 = 39.133 s; with origin kT - 28 its P at SOUT is at
+// kT + 11.133, 1.133 s off, the better fit. ayzek keeps every catalogue event
+// in the replay's span (app/ayzek.cpp) and scores those within the radius:
+// the alarm is credited to the far event, which is not scored, so it counts
+// as false, and quake(kT) as missed: 1 event scored, 0 declared, 1 alarm
+// unmatched. network_subsets, replaying the recording, gives the same counts.
+void best_fit_beyond_radius() {
+  const CatalogEvent far{kT - 28.0, kLat0 - 260.0 / kKmPerDeg, kLon0, 0.0, 3.5,
+                         "ML"};
+  const std::vector<Message> msgs = {det("NORT", kT + 10, kT + 13),
+                                     det("SOUT", kT + 10, kT + 13.5)};
+  const auto [direct, replay] = record_and_replay(
+      stations(), config({quake(kT), far}), msgs, kT - 60, kT + 120);
+  CHECK((direct.credited == std::vector<std::pair<double, int>>{{kT, 0}}));
+  CHECK((direct.tally == Tally{1, 0, 1}));
+  CHECK(replay.credited == direct.credited && subsets_agree(direct, replay));
+  std::println("  an alarm fitting an event beyond the radius best: false, "
+               "in the run and in network_subsets{}",
+               replay.subsets ? "" : " (not run)");
 }
 
 // A station without coordinates (ayzek warns "no coordinates, excluded from
@@ -973,21 +1044,26 @@ void recording_round_trip_geometry() {
 void station_without_coordinates() {
   const std::vector<Message> msgs = {det("NORT", kT + kP, kT + 10),
                                      det("NOXY", kT + kP + 1.0, kT + 11)};
-  const auto [direct, replay] =
-      record_and_replay(stations(), config(), msgs, kT - 60, kT + 120);
+  const auto [direct, replay] = record_and_replay(
+      stations(), config({quake(kT)}), msgs, kT - 60, kT + 120);
   CHECK(direct.events.size() == 1 && direct.events[0].declared);
   KNOWN_ISSUE(
-      same_events(direct.events, replay.events),
+      same_events(direct.events, replay.events) &&
+          subsets_agree(direct, replay),
       "detections at a station without coordinates count towards an "
       "alarm in ayzek (network.cpp:66) and are recorded, but "
-      "network_subsets drops them (network_subsets.cpp:229): its replay "
+      "network_subsets drops them (network_subsets.cpp:250): its replay "
       "of the full station set misses that alarm");
 }
 
 } // namespace
 
-int main() {
+int main(int argc, char **argv) {
   Log::get().quiet = true;
+  if (argc > 1)
+    g_network_subsets = argv[1];
+  else
+    std::println("network_subsets not given (argv[1]): its checks are skipped");
   association();
   declaring();
   coda();
@@ -1000,10 +1076,10 @@ int main() {
   alarm_without_event();
   first_alarm_is_first_declared();
   score_radius();
-  best_fit_beyond_radius();
   detection_before_s();
   recording_round_trip_picks();
   recording_round_trip_geometry();
+  best_fit_beyond_radius();
   station_without_coordinates();
   std::println("network stage: association, matching and scoring as specified; "
                "{} known issue{} reported above",

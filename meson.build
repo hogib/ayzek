@@ -17,6 +17,6 @@ threads = dependency('threads')
 inc = include_directories('src')
 subdir('src')
 subdir('app')
+subdir('tools') # before tests: test_network runs network_subsets
 subdir('tests')
-subdir('tools')
 subdir('bench')

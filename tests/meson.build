@@ -1,7 +1,8 @@
 # Unit tests.
 foreach t : ['test_ring', 'test_steim', 'test_mseed_fuzz', 'test_reorder', 'test_writer', 'test_locate', 'test_trigger', 'test_assess', 'test_network']
   exe = executable(t, t + '.cpp', dependencies: [ayzek_dep])
-  test(t, exe)
+  # test_network checks tools/network_subsets against the network stage.
+  test(t, exe, args: t == 'test_network' ? [network_subsets_exe] : [])
 endforeach
 
 # Comparisons with reference outputs from tools/export_models.py,
