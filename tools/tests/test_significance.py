@@ -530,12 +530,19 @@ def test_quiet_counts(tmp_path):
     assert counts == {"learned": {"w1": 3, "w2": 0}}
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "quiet_counts (significance.py:212-213) counts a report without 'Alarms raised' "
-    "(a run that crashed or was cut short) as 0 alarms, so a broken quiet run passes "
-    "for a quiet detector; a24f610 made the sweep tools stop on exactly this."))
-def test_quiet_counts_report_without_summary_stops(tmp_path):
-    index, run = quiet_dirs(tmp_path, {"w1": "  Alarms raised                           3\n",
-                                       "w2": "ayzek    error: cannot open w2/KULA.mseed\n"})
-    with pytest.raises(SystemExit):
+@pytest.mark.parametrize("text", ["ayzek    error: cannot open w2/KULA.mseed\n", "",
+                                  "  Alarms compared with the AFAD catalogue\n"])
+def test_quiet_counts_report_without_summary_stops(tmp_path, text):
+    # A report without the "Alarms raised" line (a run that crashed or was cut
+    # short) stops with the file named, rather than counting as 0 alarms.
+    index, run = quiet_dirs(tmp_path, {"w1": "  Alarms raised                           3\n", "w2": text})
+    with pytest.raises(SystemExit) as e:
+        sg.quiet_counts(index, {"learned": run})
+    assert str(run / "w2.txt") in str(e.value) and "Alarms raised" in str(e.value)
+
+
+def test_quiet_counts_missing_report_stops(tmp_path):
+    index, run = quiet_dirs(tmp_path, {"w1": "  Alarms raised                           3\n"})
+    index.write_text("name,scored_hours\nw1,5.5\nw2,5.5\n")
+    with pytest.raises(FileNotFoundError):
         sg.quiet_counts(index, {"learned": run})

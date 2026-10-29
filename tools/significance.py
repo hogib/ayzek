@@ -217,8 +217,12 @@ def quiet_counts(index, runs):
     for label, d in runs.items():
         counts[label] = {}
         for name in hours:
-            m = re.search(r"Alarms raised\s+(\d+)", Path(f"{d}/{name}.txt").read_text())
-            counts[label][name] = int(m.group(1)) if m else 0
+            f = Path(f"{d}/{name}.txt")
+            m = re.search(r"Alarms raised\s+(\d+)", f.read_text())
+            if not m:
+                sys.exit(f"{f}: no 'Alarms raised' line, so not a complete ayzek report "
+                         "(a run that crashed or was cut short?)")
+            counts[label][name] = int(m.group(1))
     return hours, counts
 
 
