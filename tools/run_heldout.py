@@ -21,11 +21,18 @@ there is not measured for Pd. Stages, each skipped where its outputs exist
              and marked .done when complete, as the retuning did;
   runs       one full run per detector and set, magnitude on, recorded
              (--record), the quiet windows from 30 min after their start:
-             the reports feed the magnitude, latency and quiet endpoints;
+             the reports feed the magnitude, latency and quiet endpoints; the
+             learned detector's run on a sequence set also writes its window
+             probabilities (--scores) to OUT/scores/learned/SET, through
+             SET.tmp and marked .done when complete;
   outcomes   tools/event_outcomes.py per detector and sequence set, with the
              chance shifts: the per-event tables of the paired tests;
   neighbours tools/sweep_trigger.py over the learned detector's adjacent
              settings on the sequence sets (endpoint 4);
+             outcomes and neighbours replay the learned detector from its
+             probabilities (--scores-in, the same reports as running its
+             networks; docs/impl/05-pipeline.md, Evaluation), or run its
+             networks where no complete cache exists;
   analysis   tools/significance.py (primary and secondary comparisons,
              equivalence with causal PhaseNet, detection before S, quiet
              rates), tools/quiet_without_stations.py (the two noisiest
@@ -157,10 +164,16 @@ class Runner:
         return q / "quiet_index.csv"
 
     # ---- detector options -------------------------------------------------
+    def learned_cache(self, s):
+        """The learned detector's window probabilities on set s, written by its
+        run in stage_runs; None until complete."""
+        d = self.out / "scores" / "learned" / s
+        return d if (d / ".done").exists() else None
+
     def cache(self, label, s):
         v = self.detectors[label]
         if "model" not in v:
-            return None
+            return self.learned_cache(s) if v["detector"] == "learned" else None
         return Path(self.a.scores) / f"{v['model']}_{v['weights']}_{v['mode']}" / s
 
     def detector_args(self, label, s):
@@ -205,6 +218,15 @@ class Runner:
             return
         cmd = [self.a.binary, "--speed", "0", "--no-color", "--record", rec, *self.set_args(s),
                *self.detector_args(label, s)]
+        v = self.detectors[label]
+        scores = None
+        if (not quiet_from and v["detector"] == "learned" and "model" not in v
+                and self.cache(label, s) is None):
+            scores = self.out / "scores" / "learned" / s
+            tmp = scores.with_name(scores.name + ".tmp")
+            subprocess.run(["rm", "-rf", str(tmp)])
+            tmp.parent.mkdir(parents=True, exist_ok=True)
+            cmd += ["--scores", tmp]
         if quiet_from:
             cmd += ["--from", quiet_from]
         p = self.run([*cmd, *self.files(s)], check=False)
@@ -213,6 +235,10 @@ class Runner:
         mark = "Alarms raised" if quiet_from else "AFAD events within"
         if p.returncode or mark not in p.stdout:
             sys.exit(f"{label} {s}: ayzek exited {p.returncode} without a report\n{p.stderr[-1500:]}")
+        if scores is not None:
+            subprocess.run(["rm", "-rf", str(scores)])
+            tmp.rename(scores)
+            (scores / ".done").touch()
         rep.write_text(p.stdout)
         print(f"[runs] {label} {s}")
 
@@ -254,9 +280,10 @@ class Runner:
             out = d / f"sweep_{s}.csv"
             if out.exists():
                 continue
+            c = self.learned_cache(s)
             self.run([sys.executable, TOOLS / "sweep_trigger.py", "--binary", self.a.binary,
                       "--catalog", self.data / s / "catalog.csv",
-                      "--dataset", f"{s}::{','.join(self.files(s))}",
+                      "--dataset", f"{s}:{c or ''}:{','.join(self.files(s))}",
                       "--args", " ".join(str(x) for x in self.set_args(s)),
                       *itertools.chain.from_iterable(("--set", f"{k}={' '.join(v)}") for k, v in g["grid"].items()),
                       "--shifts", SHIFTS, "--jobs", str(self.a.jobs), "--out", out],
