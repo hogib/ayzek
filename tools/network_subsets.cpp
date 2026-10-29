@@ -15,7 +15,10 @@
 // marginal gain from adding each station is written to stderr.
 //
 // Options:
-//   --catalog CSV       AFAD catalogue (required)
+//   --catalog CSV       AFAD catalogue (required, except with --quiet)
+//   --quiet             a catalogue-quiet recording: no catalogue, and every
+//                       alarm counts as unmatched (the quiet-window rates with
+//                       stations left out)
 //   --min-k N           smallest subset size (default 2)
 //   --max-k N           largest subset size (default: all stations)
 //   --min-mag M         only catalogue events with magnitude >= M (default 0)
@@ -103,7 +106,7 @@ int main(int argc, char **argv) try {
   }
   const auto rec = Recording::load(argv[1]);
   std::string catalog_path;
-  bool log = false;
+  bool log = false, quiet = false;
   std::optional<ayzek::PdModel> pd_model;
   std::size_t min_k = 2, max_k = rec.stations.size();
   double min_mag = 0;
@@ -145,6 +148,8 @@ int main(int argc, char **argv) try {
       base.merge_radius_deg = std::stod(next());
     else if (a == "--min-pick-prob")
       base.min_pick_prob = std::stod(next());
+    else if (a == "--quiet")
+      quiet = true;
     else if (a == "--log")
       log = true;
     else if (a == "--pd") {
@@ -164,8 +169,8 @@ int main(int argc, char **argv) try {
     else
       throw std::runtime_error("unknown option " + a);
   }
-  if (catalog_path.empty())
-    throw std::runtime_error("--catalog is required");
+  if (catalog_path.empty() && !quiet)
+    throw std::runtime_error("--catalog is required (or --quiet)");
 
   // Catalogue events within the radius of the full network's centroid, so
   // that every subset is scored on the same events.
@@ -176,17 +181,19 @@ int main(int argc, char **argv) try {
   }
   clat /= static_cast<double>(rec.stations.size());
   clon /= static_cast<double>(rec.stations.size());
-  for (auto &c :
-       load_afad_catalog(catalog_path, rec.t_first - 30, rec.t_last - 30))
-    if (c.magnitude >= min_mag &&
-        distance_km(clat, clon, c.lat, c.lon) <= base.catalog_radius_km)
-      base.catalog.push_back(c);
+  if (!catalog_path.empty())
+    for (auto &c :
+         load_afad_catalog(catalog_path, rec.t_first - 30, rec.t_last - 30))
+      if (c.magnitude >= min_mag &&
+          distance_km(clat, clon, c.lat, c.lon) <= base.catalog_radius_km)
+        base.catalog.push_back(c);
   base.catalog_radius_km = 1e9; // selection done above
-  if (base.catalog.empty())
+  if (base.catalog.empty() && !quiet)
     throw std::runtime_error(
         "no catalogue events in the recording's span and radius");
   const auto main_event =
       std::ranges::max_element(base.catalog, {}, &CatalogEvent::magnitude);
+  const bool has_main = main_event != base.catalog.end();
 
   std::vector<std::string> codes;
   for (const auto &[code, _] : rec.stations)
@@ -197,8 +204,9 @@ int main(int argc, char **argv) try {
   std::println(stderr,
                "{} stations, {} catalogue events (main: {}{:.1f} at {}), "
                "subset sizes {}..{}",
-               n, base.catalog.size(), main_event->type, main_event->magnitude,
-               hms(main_event->time), min_k, max_k);
+               n, base.catalog.size(), has_main ? main_event->type : "-",
+               has_main ? main_event->magnitude : 0.0,
+               has_main ? hms(main_event->time) : std::string("-"), min_k, max_k);
 
   Log::get().quiet = !log;
   std::vector<Row> rows;
@@ -250,7 +258,7 @@ int main(int argc, char **argv) try {
       if (e->pd_magnitude)
         mag_errors.push_back(std::abs(e->pd_magnitude->mean - c.magnitude));
       // The network holds its own copy of the catalogue; compare by value.
-      if (c.time == main_event->time && c.lat == main_event->lat &&
+      if (has_main && c.time == main_event->time && c.lat == main_event->lat &&
           c.lon == main_event->lon) {
         row.main_declared = true;
         row.main_alert = alert;
