@@ -1,15 +1,21 @@
-# Release notes: the method freeze (draft)
+# Release notes: v1.0.0, the method freeze
 
-Draft written before the tag; the commit, tag and date are filled in at the
-freeze. The held-out protocol (`docs/protocol-heldout.md`, section 1) fixes the
+Written before the tag and completed at it (2026-10-30). The first non-beta
+release of ayzek. The held-out protocol (`docs/protocol-heldout.md`, section 1) fixes the
 method by this release: every default of ayzek as in the tagged commit, the
 models below by their SHA-256, the baselines' settings in
 `tools/heldout_settings.json` and the published models' weight versions below.
 
-- **Tag**: _at the freeze_
-- **Commit**: _at the freeze_
+- **Tag**: `v1.0.0`
+- **Commit**: the commit this tag points to (`git rev-parse v1.0.0`); the
+  release notes are its last change, so the commit cannot name itself.
 - **Binary used by the tests**: `build-linux/app/ayzek`, the static x86-64
-  build (zig/musl, `cross/x86_64-linux.ini`); its SHA-256 _at the freeze_.
+  build (zig/musl, `cross/x86_64-linux.ini`), attached to the release as
+  `ayzek-v1.0.0-linux-x86_64`; SHA-256
+  `a40e7d23a1dfca7a4a2baf38b4b93c11056241d34d61aa046d703279a1da6899`.
+- **Fetch tool**: the held-out repository (`heldout select`, `probe`, `pull`,
+  `catalog`, `verify`) at commit `440a2d9`, attached to the release as
+  `ayzek-heldout-440a2d9.tar.gz`.
 
 ## Models (`models/`)
 
@@ -27,8 +33,8 @@ models below by their SHA-256, the baselines' settings in
 | `stations.csv` | `fd47434ade1ac1d9b2f7b1d2c12ee57dff0cf00c3cab2203baa55a0aa3fa7ae2` |
 | `transformer.ayzw` | `d04cf8230a34b4381df1c0e21e54cdc503eb6c7750598acc146a87c0ffd940c7` |
 
-Taken on 2026-10-30 at commit 5ed97f8; to be checked again at the tag
-(`sha256sum models/*`).
+Taken on 2026-10-30 at commit 5ed97f8 and checked again at the tag
+(`sha256sum models/*`): unchanged.
 
 ## Published models (SeisBench 0.12.6)
 

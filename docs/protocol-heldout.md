@@ -1,9 +1,9 @@
-# Held-out tests: protocol (DRAFT)
+# Held-out tests: protocol
 
-Status: **draft, not frozen.** Values marked *[...]* are still open. The
-protocol is frozen when this file, the release it names and the hashes below
-are committed publicly and timestamped (Zenodo). No waveform from a test pool
-is fetched before then.
+Status: **frozen 2026-10-30** with release v1.0.0 (`docs/release-notes-freeze.md`
+names the commit, the binary's and the models' SHA-256). No waveform from a
+test pool was fetched before this commit was tagged and pushed; the Zenodo
+deposit of the release timestamps it.
 
 ## 1. What is frozen
 
@@ -21,7 +21,8 @@ is fetched before then.
   (`build-linux`, zig/musl). On every development replay, for the learned
   detector, STA/LTA, FilterPicker and the transformer, its reports equal the
   development build's apart from compute times and the order of
-  station-thread lines (checked 2026-10-29; repeated at the tag).
+  station-thread lines (checked 2026-10-29, and again on 2026-10-30 at the
+  tagged commit's code: 120/120 regression rows reproduced).
 - **Analysis code**, at the frozen commits: `tools/run_heldout.py` (the test
   end to end, from a selection to every endpoint, with its manifest) and the
   tools it runs, `tools/sweep_trigger.py`, `tools/event_outcomes.py`,
