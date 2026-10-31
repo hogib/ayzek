@@ -72,3 +72,19 @@ Every set of the three pools was fetched (probe, pull, catalogue) and passes
 The waveforms are not redistributed (protocol, section 9); each set's
 `dataset.json` in the held-out repository holds the request record and the
 SHA-256 of every file written.
+
+## The test runs
+
+`tools/run_heldout.py` with the release's static x86-64 binary
+(`ayzek-v1.0.0-linux-x86_64`, SHA-256 `a40e7d23...a6899`), `--jobs 6` (KO) or
+`--jobs 10`; outputs in `data/runs/heldout/<pool>/` (not tracked), each with its
+`manifest.json` and `commands.log`.
+
+| pool | machine | started (UTC) | ended (UTC) | notes |
+|---|---|---|---|---|
+| `ko_now` | this laptop (Ryzen 5 5600, RTX 3060 Ti) | 2026-10-31 10:55 | 14:00 | the analysis stage failed once: the static `build-linux/tools/network_subsets` predated its `--quiet` option (built 2026-10-26, not rebuilt at the freeze). Rebuilt from the tagged source with `ninja -C build-linux tools/network_subsets` (the ayzek binary's hash unchanged) and the analysis stage rerun at 14:01; no replay was repeated. The manifest records the rebuilt tool's hash. |
+| `nz_now` | this laptop | 14:00 | 20:22 | complete |
+| `greece_now` | mousev (Ryzen 5 5600H, RTX 3050 Laptop) | 19:52 | (running) | the same binary by SHA-256 and the rebuilt `network_subsets`; the published models' SeisBench scores come from a different GPU. Checked on `ko_now_seq002`: the learned detector's window scores and report are identical on both machines; of EQTransformer's 151,116 causal scores, 2 differ by 1e-6, the last printed digit (one value each at AKDG and NURH). |
+
+KO's station-split endpoint (protocol section 7, item 6) is empty: every station
+of its two sequences is a training-split station of the 6 s detector.
