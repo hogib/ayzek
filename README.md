@@ -1,43 +1,91 @@
 # ayzek
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23672495.svg)](https://doi.org/10.5281/zenodo.23672495)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 
-An earthquake early-warning (EEW) pipeline in C++23. It reads continuous
-three-component waveforms from several stations and, for each earthquake:
+ayzek is a real-time earthquake detection pipeline for early warning, written
+in C++23 with no machine-learning runtime. It reads continuous three-component
+waveforms from a set of stations, detects earthquakes at each station with a
+learned detector, declares an event when stations agree within the P travel
+time between them, and reports a first magnitude from the peak displacement of
+the P wave within seconds of the alarm. All inference is hand-written and
+verified against the PyTorch models it was exported from. The same source
+builds for x86-64 Linux, the Raspberry Pi 4 and 5 (static aarch64 binary with
+NEON kernels) and Windows.
 
-1. detects it at each station: a CNN–BiLSTM–attention detector (3-seed
-   ensemble) scoring 6 s windows, or the streaming onset transformer
-   (`--detector transformer`, one output per 0.1 s, `docs/impl/14-transformer.md`);
-   a recursive STA/LTA is available for comparison
-2. declares an event when stations agree within the P travel time between them
-3. estimates the magnitude from the peak displacement of the P wave and the
-   stations' distances, with the probability of each size class
-   (`docs/impl/17-pd-magnitude.md`); the learned magnitude regressor of
-   v0.1.0-beta.6 and earlier is retired (`docs/impl/07-magnitude.md`)
-4. locates the event by grid search: from the streaming transformer's
-   per-station distance (three stations or more) when it has the geometry head
-   (`docs/impl/15-geometry-location.md`), otherwise from P and S picks, and,
-   seconds after the alarm, from the detections' P times alone (three
-   stations or more), for the Pd magnitude's distances until the picks arrive
+The repository also holds the evaluation method: a replay protocol that scores
+detectors at their operating point with chance correction, paired tests and
+catalog-quiet data, and the held-out test protocol under which the method was
+frozen as release v1.0.0 and then tested on three networks it had not been
+tuned on. Every number in the accompanying paper is produced by a script in
+`tools/` and checked against `bench/claims.json`.
 
-All inference is hand-written (no ML runtime), with NEON kernels on aarch64.
-The target platform is a Raspberry Pi 4 or 5. The input is a replay of
-miniSEED files at real time or faster, or live data from a SeedLink server
-(`--seedlink`, `docs/impl/19-seedlink.md`).
+The name is that of the author's pet bird.
 
-Named after my pet bird.
+## Contents
 
-## Requirements
+- [What it does](#what-it-does)
+- [Status](#status)
+- [Building](#building)
+- [Running](#running)
+- [Evaluation](#evaluation)
+- [Results on the development data](#results-on-the-development-data)
+- [Platforms](#platforms)
+- [Data sources and licences](#data-sources-and-licences)
+- [Documentation and layout](#documentation-and-layout)
+- [Citing](#citing)
+- [License](#license)
 
-- Meson and Ninja, and a C++23 compiler and standard library with
-  `std::expected`, `std::print` and `std::mdspan`. Tested with Meson 1.12,
-  GCC 16.2, and Clang with libc++ through zig 0.16.
-- For the Raspberry Pi and Windows builds: [uv](https://docs.astral.sh/uv/)
-  (it fetches zig) and, to run the aarch64 tests on x86, `qemu-aarch64`.
-- Nothing else. The weights are in the repository, so no Python and no ML
-  runtime are needed to build or run.
+## What it does
 
-## Build and test
+For each station, ayzek ingests miniSEED records (from files replayed at any
+speed, or live from a SeedLink server), conditions the three components, and
+runs one of four detectors over a 0.5 s grid:
+
+| detector | what it is |
+|---|---|
+| `6s` (default) | a convolutional–recurrent network with self-attention, 142 059 parameters, three seeds averaged, scoring 6 s windows; its P time is anchored to a recursive STA/LTA onset within the window |
+| `transformer` | a streaming onset transformer with one output per 0.1 s and, with its geometry head, a per-station distance (`docs/impl/14-transformer.md`) |
+| `stalta` | a recursive STA/LTA trigger, numerically identical to ObsPy's |
+| `filterpicker` | a port of Lomax's FilterPicker5, giving identical picks |
+
+Station detections are associated when their P times differ by no more than
+the inter-station P travel time plus a slack, and an event is declared when two
+stations agree. The event is then located, first from the detections' P times
+alone and later from P and S picks (or from the transformer's distances), and
+its magnitude is estimated from Pd with the probability of each of three size
+classes (`docs/impl/17-pd-magnitude.md`). When a catalog is given, every alarm
+is scored against it, with chance matches corrected by shifting the catalog in
+time.
+
+Replays are deterministic: repeated and concurrent runs of the same data give
+byte-identical reports, and a recorded run can be replayed through the network
+stage for every subset of stations.
+
+## Status
+
+Release **v1.0.0** (30 October 2026) is the method freeze. The held-out
+protocol (`docs/protocol-heldout.md`) fixes, by that release, every default of
+the pipeline, the models by their SHA-256, the settings of every baseline
+detector it is compared with, and the rules that select the test data. The
+freeze is timestamped by the Zenodo deposit of the release, and no waveform
+from a test pool was fetched before it. The test pools are the Greek networks
+served by the National Observatory of Athens, New Zealand's GeoNet, and the
+KOERI network the detector was trained on, held out in time. The selections
+made after the freeze are in `docs/heldout-selections/`; the test runs and
+their results are reported in the paper, and the scripts that produce them are
+`tools/run_heldout.py` and the tools it calls.
+
+The tool that selects and fetches the test data lives in a separate repository
+and is attached to the release as `ayzek-heldout-440a2d9.tar.gz`.
+
+## Building
+
+Requirements: Meson, Ninja and a C++23 compiler and standard library with
+`std::expected`, `std::print` and `std::mdspan` (tested with Meson 1.12,
+GCC 16.2, and Clang with libc++ through zig 0.16). The model weights are in the
+repository, so neither Python nor an ML runtime is needed to build or run. The
+cross builds use [uv](https://docs.astral.sh/uv/) to fetch zig.
 
 ```bash
 meson setup build-release --buildtype=release
@@ -45,220 +93,38 @@ ninja -C build-release
 meson test -C build-release
 ```
 
-The tests that compare against PyTorch, scipy, torchaudio and ObsPy need the fixtures
-in `data/fixtures/` and are skipped if these are missing. The end-to-end test
-(`demo_m49`) replays the 2025-11-10 Sındırgı M4.9. It requires the event to be
+The agreement tests against PyTorch, SciPy, torchaudio and ObsPy read fixtures
+from `data/fixtures/` and are skipped when those are absent. The end-to-end
+test replays the 2025-11-10 Sındırgı M4.9 and requires the event to be
 detected, located within 10 km and given a magnitude between 3.9 and 5.9.
 
-The analysis tools (`tools/sweep_trigger.py`, `event_outcomes.py`,
-`significance.py`, `select_setting.py`, `quiet_sweep.py`,
-`stalta_station_ratios.py`, `quiet_without_stations.py`, `scorecard.py`'s
-parsers, `run_heldout.py`'s option building and report parsing) have their own tests in `tools/tests/`, run in the tools' uv project:
+The Python analysis tools have their own tests, which need neither a build nor
+data:
 
 ```bash
 uv run --project tools --with pytest pytest tools/tests -q
 ```
 
-They need neither a build nor data: expected values are worked by hand, taken
-from scipy, or read off small captured ayzek reports (`tools/tests/fixtures/`),
-and tools that drive a binary run against a stand-in. A test marked `xfail`
-records a known defect (its reason says which); it fails the run if the defect
-disappears without the marker being removed.
-
-Raspberry Pi (static aarch64 binary, `docs/impl/06-raspberry-pi.md`):
-
-```bash
-meson setup build-pi --cross-file cross/aarch64-pi.ini --buildtype=release
-ninja -C build-pi
-meson test -C build-pi --timeout-multiplier 10     # under qemu-aarch64
-```
-
-## Windows
-
-`ayzek.exe` is built on Linux with zig and needs no runtime DLLs beyond what
-Windows 10 and 11 already have (`docs/impl/11-windows.md`):
-
-```bash
-meson setup build-win --cross-file cross/x86_64-windows.ini --buildtype=release
-ninja -C build-win                       # -> build-win/app/ayzek.exe, 1.6 MB
-```
-
-To run it, put `ayzek.exe` in a folder with the `models` folder beside it, and
-the waveforms wherever you like:
-
-```
-C:\ayzek\
-    ayzek.exe
-    models\          the whole folder from this repository
-    data\demo\       one .mseed per station
-    demo.csv         optional AFAD catalogue export (tests\catalogs\demo.csv)
-```
-
-In PowerShell or Command Prompt, from `C:\ayzek`:
-
-```
-ayzek.exe --speed 10 --from 2025-11-10T18:20:00 data\demo\DEMI.mseed data\demo\MANT.mseed data\demo\BAND.mseed
-```
-
-- `--speed 10` replays at ten times real time; `--speed 0` runs as fast as the
-  machine allows, `--speed 1` in real time.
-- `--catalog demo.csv` adds the comparison with the AFAD catalogue. Without it,
-  alarms are still reported, just not scored.
-- `--models DIR` points at the weights if they are not in `.\models`.
-- Colour is disabled automatically when the output is redirected to a file.
-  The colours are ANSI escapes, which Windows Terminal renders and the legacy
-  console may print as `[32m` instead; `--no-color` turns them off.
-- Everything else is the same as on Linux, including the option table below,
-  except live input: `--seedlink` needs POSIX sockets, which the Windows build
-  does not have, and says so.
-
-**Not yet run on Windows.** The binaries are built and linked, and the
-numerical tests have not been executed on a Windows machine or under wine. If
-you run them, `meson test -C build-win` needs wine on Linux; on Windows the
-test executables in `build-win\tests\` can be run directly, and `test_models`,
-`test_magnitude`, `test_dsp` and `test_stalta` are the ones that would catch a
-floating-point difference.
-
-## Data and models
-
-`models/` is tracked: the exported weights (AYZW format), the band-pass
-coefficients and the station table, about 5 MB. A clone can run the pipeline
-without the PyTorch checkpoints they were exported from.
-
-`data/` is not tracked. The quickest way to get a dataset is the release: the
-KOERI sets attached to it unpack straight into `data/`.
-
-```bash
-# the 2025-11-10 Sındırgı Mw 4.9 on six KO stations, 4 MB
-mkdir -p data/demo_ko && curl -L https://github.com/hogib/ayzek/releases/download/v0.1.0-beta.1/ayzek-demo_ko.tar.gz | tar xz -C data/demo_ko
-build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 \
-    --catalog data/demo_ko/demo_ko.csv data/demo_ko/*.mseed
-```
-
-`tools/fetch_ko_data.py` rebuilds those sets from the KOERI FDSN service, and
-pulls new ones: `probe` reports which stations have a span, `quiet-scan` finds
-spans with no catalogue event near them, and `pull` downloads.
-
-The AFAD replays the results below were measured on are cut from archive chunks
-with `tools/make_demo_data.py`, one file per station.
-
-```bash
-python3 tools/make_demo_data.py --out data/demo \
-    --start 2025-11-10T18:05:00 --end 2025-11-10T18:35:00 \
-    ARCHIVE/{DEMI,MANT,BAND,KAND,KIRK}/*_2025-10-29.zip \
-    ARCHIVE/{ELBA,SEMS}/*_2025-10-21.zip
-```
-
-Archive chunks are named by their start date, so a given day is usually in a
-chunk that starts some days earlier.
-
-Retraining a model and exporting new weights is `docs/impl/02-weights.md`; the
-checkpoints come from the cascade_impl project.
-
-## Usage
+## Running
 
 ```
 ayzek [options] STATION.mseed...
 ```
 
-Each file holds one station's HH? channels. The station code is read from the
-records and its coordinates from `models/stations.csv`.
+Each file holds one station's HH channels at 100 Hz; the station code is read
+from the records and its coordinates from the station table. The quickest data
+to try is the public KOERI set attached to the releases (4 MB):
 
 ```bash
-CAT=tests/catalogs/demo_ko.csv   # AFAD catalogue excerpt; any AFAD export works
-
-# six KO stations at 10x real time, triggers from 18:20 on
-build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 --catalog $CAT \
-    data/demo_ko/*.mseed
-
-# as fast as possible, with S-wave warning times for two cities
-build-release/app/ayzek --speed 0 --catalog $CAT \
-    --site Istanbul,41.0082,28.9784 --site Bursa,40.1828,29.0667 data/demo_ko/*.mseed
-
-# the AFAD demo, for the numbers under Results
-tools/demo.sh          # 3 stations, 10x
-tools/demo.sh all      # 7 stations, full speed
+mkdir -p data/demo_ko
+curl -L https://github.com/hogib/ayzek/releases/download/v0.1.0-beta.6/ayzek-demo_ko.tar.gz \
+    | tar xz -C data/demo_ko
+build-release/app/ayzek --speed 10 --from 2025-11-10T18:20:00 \
+    --catalog data/demo_ko/demo_ko.csv data/demo_ko/*.mseed
 ```
 
-Live, from a SeedLink server instead of files, keeping every record received
-for a replay afterwards (`docs/impl/19-seedlink.md`):
-
-```
-ayzek [options] --seedlink HOST:PORT --streams NET.STA[.LOC][,NET.STA...]
-```
-
-```bash
-build-release/app/ayzek --seedlink geofon.gfz.de:18000 --streams GE.WLF \
-    --stations my_stations.csv --archive data/live/session1
-# later: the same records through the file path
-build-release/app/ayzek --speed 0 data/live/session1/*.mseed
-```
-
-Each station's HHZ, HHN and HHE at 100 Hz are taken; other channels and rates,
-and HH1/HH2 (live input does not rotate), are rejected and counted. Every
-station needs coordinates in the station table. The run ends at SIGINT or
-SIGTERM, or after `--duration`, with the usual report and a section on the
-input.
-
-### Options
-
-| option | default | meaning |
-|---|---|---|
-| `--models DIR` | `models` | weights directory |
-| `--stations FILE` | `MODELS/stations.csv` | station coordinates (`code,lat,lon[,...]`), for a replay of another network: the default table is keyed by station code alone and holds the TU and KO stations |
-| `--pd-gains FILE` | `MODELS/pd_gain.csv` | the replay's own Pd gains (`station,channel,start,end,sensitivity`); KO's station terms and median noise levels are then not used, so terms are zero and the noise-band exclusions do not apply (`docs/impl/17-pd-magnitude.md`) |
-| `--speed X` | 1 | replay speed; 1 = real time, 0 = as fast as possible |
-| `--from TIME` | start of data | no triggers before this UTC time; earlier data still runs through the detectors' and the Pd chain's filters |
-| `--threshold P` | 0.8 | trigger when `--trigger-windows` consecutive windows reach P |
-| `--trigger-windows N` | 8 | see `--threshold`; 8 windows add 3.5 s to a trigger |
-| `--instant-threshold P` | 0.9 | also trigger on a single window at or above P; a value > 1 disables this |
-| `--release P` | 0.3 | a trigger re-arms after two windows below P |
-| `--detector KIND` | `6s` | `6s` (also `model`): the 3-seed 6 s window detector. `transformer`: the streaming onset transformer, one output per 0.1 s, P dated by its own `dt` (`docs/impl/14-transformer.md`). `stalta`: a recursive STA/LTA. `filterpicker`: Lomax's FilterPicker5 on the vertical (`docs/impl/18-filterpicker.md`). Association and magnitude are shared; the transformer also places the picker on its own P and, with the geometry head, locates events itself (`--locate`) |
-| `--transformer FILE` | `MODELS/transformer.ayzw` | transformer weights; its `--threshold` and `--release` default to the model's validation operating point |
-| `--dt-reset BELOW,FROM` | the model's (`1,5` for the current one; `2,5` for models exported without one) | transformer: also trigger while p stays at or above the threshold when dt falls back to BELOW s or less (2 tokens in a row) after reaching FROM s: a new onset in the coda of the last event (`docs/impl/14-transformer.md`) |
-| `--no-dt-reset` | | transformer: rising edges only, the rule before `--dt-reset` |
-| `--geo-sd-scale X`, `--geo-sigma-p S`, `--geo-max-z Z`, `--geo-max-err-km KM` | 2.1, 2.75, off, off | geometry locator: widen every station's distance sd, the P-time uncertainty of its misfit, leave out or refuse stations whose distance disagrees with the solution, refuse a location with a 68% radius over KM (`docs/impl/15-geometry-location.md`) |
-| `--sta S`, `--lta S` | 1, 30 | STA/LTA averaging lengths in seconds |
-| `--stalta-on R`, `--stalta-off R` | 8, 1.5 | STA/LTA ratio that triggers, and below which a trigger re-arms |
-| `--stalta-on-stations FILE` | | per-station STA/LTA trigger ratios (`station,ratio`), the per-station baseline; stations not listed keep `--stalta-on` |
-| `--stalta-band LO,HI` | 2,20 | STA/LTA pass band in Hz (4th-order Butterworth high- and low-pass) |
-| `--stalta-3c` | | STA/LTA on the energy of all three components instead of the vertical |
-| `--fp-windows F,L,U` | 3,5,0.2 | FilterPicker filter window, long-term window and tUpEvent in seconds (Lomax et al. 2012 at 100 Hz; Earthworm's `pick_FP` uses 6,10,0.4) |
-| `--fp-thresholds T1,T2` | 10,10 | FilterPicker trigger threshold and the mean characteristic function over tUpEvent needed to accept a pick |
-| `--no-anchor` | | do not take the P time of a model trigger from the STA/LTA onset |
-| `--anchor-on R` | 3 | STA/LTA ratio taken as the onset when anchoring |
-| `--anchor-picker` | | also place the picker window from the anchored P; it makes the picker worse (`docs/impl/09-sta-lta.md`) |
-| `--no-onset-fp` | | 6 s detector: do not date the P-time location and Pd by the FilterPicker pick within 3 s of the trigger's P (`docs/impl/17-pd-magnitude.md`, section 2.4) |
-| `--no-p-locate`, `--p-sigma S` | , 1.35 | window detectors: no location from the detections' P times alone; its P-time uncertainty, which sets its 68% radius |
-| `--require-onset` | | a detector trigger also needs an STA/LTA onset; measured, and worse than not requiring one (`docs/impl/09-sta-lta.md`) |
-| `--step N` | 50 | samples between detector windows (0.5 s at 100 Hz) |
-| `--min-stations N` | 2; transformer 3 | station detections needed to declare an event; 3 halves the unmatched alarms in a dense network but costs warning time (`docs/impl/05-pipeline.md`); the transformer, which also fires in codas, needs 3 (`docs/impl/14-transformer.md`) |
-| `--slack S` | 3 | tolerance on the inter-station P travel time, seconds |
-| `--locate KIND` | | `geometry`: locate from the transformer's geometry head, from the trigger on; the picker is not run. `picks`: from P and S picks. Default: `geometry` when `--detector transformer` and the model has the head, else `picks` |
-| `--assess` | | diagnostic: judge every alarm earthquake, possible, misfire or unclassified from its S-P picks (runs the picker even with the geometry locator); `ASSESS` lines while running, a report section (`docs/impl/16-alarm-assessment.md`) |
-| `--assess-csv FILE` | | with `--assess`: one row per alarm, readable by `tools/plot_candidates.py` |
-| `--no-pick` | | no P/S picker, and so no location unless `--locate geometry` |
-| `--no-magnitude` | | no magnitude estimate, as `--no-pd-magnitude`; with `--from`, a detector that needs no earlier data (the transformer) also starts reading there |
-| `--no-pd-magnitude` | | no magnitude from peak P displacement. On by default, for every detector, when `models/pd_relation.csv` exists and the station has a gain in `models/pd_gain.csv` (`tools/export_pd.py`, `docs/impl/17-pd-magnitude.md`) |
-| `--catalog CSV` | | AFAD catalogue export; each alarm is compared with it |
-| `--site NAME,LAT,LON` | | also report the S-wave warning time at this place (repeatable) |
-| `--scores DIR` | | write every window's detector probability to `DIR/STATION.csv` |
-| `--scores-in DIR` | | use the probabilities of an earlier `--scores` run instead of running the detector |
-| `--record FILE` | | write all station outputs, for `tools/network_subsets` |
-| `--verbose` | | print every station detection, pick and Pd value |
-| `--no-color` | | |
-| `--seedlink HOST:PORT` | | live input from this SeedLink 3 server (port 18000 if omitted), in place of the files; not in the Windows build (`docs/impl/19-seedlink.md`) |
-| `--streams LIST` | | with `--seedlink`: the stations, `NET.STA` or `NET.STA.LOC` (`--` for the empty location), comma-separated; each needs coordinates in the station table, and its HHZ, HHN and HHE at 100 Hz are used |
-| `--archive DIR` | | with `--seedlink`: append every record received, as received, to `DIR/STATION.mseed`, which replays like any other file |
-| `--duration S` | until SIGINT or SIGTERM | with `--seedlink`: stop the input after S seconds; the first SIGINT or SIGTERM stops the input and the run ends with the report once what arrived is processed, a second one stops at once |
-| `--live-wait S` | 10 | with `--seedlink`: about how long a station's message waits for the other stations' data before the network stage takes it; a station that holds one back that long is not waited for until it catches up. With nothing out of order (the report counts it), a replay of the archive gives the live run's alarms |
-| `--seedlink-timeout S` | 120 | with `--seedlink`: reconnect after S seconds with nothing received; reconnection is retried after 1, 2, 4, ... up to 30 s, and every station resumes after its last packet |
-| `--seedlink-keepalive S` | 60 | with `--seedlink`: send `INFO ID` after S seconds with nothing received (0: never); IRIS asks for no more than one every 4 minutes on an idle connection |
-
-### Output
-
-While running, one line per alarm and per magnitude or location update
-(demo_ko):
+While running, ayzek prints one line per alarm and per magnitude or location
+update:
 
 ```
 ALARM    #3   18:21:09.00  earthquake detected by KULA, SIMA  (AFAD MW 4.9 at 18:20:51.00, 18.0 s ago)
@@ -267,156 +133,175 @@ PDMAG    #3   18:21:12.50  Pd magnitude M4.7 ± 0.2 (M<4 0%, 4-5.5 100%, M>=5.5 
 LOCATE   #3   18:22:04.50  located at 39.206N 28.137E, origin 18:20:52.66, rms 0.21 s from 5 stations
 ```
 
-At the end:
+The final report gives one block per alarm (stations, magnitude at the alarm
+and at the end, location, the matching catalog event, S-wave warning time at
+each station and at every `--site`), a summary of matched and unmatched alarms
+and of detected and missed catalog events by magnitude band, and per-station
+processing counts and timings. An alarm matches a catalog event when its
+epicentre lies within 30 km and its origin within 5 s, or when the event's
+predicted P arrival at a station that raised the alarm lies within 6 s of that
+station's detection. An unmatched alarm is not necessarily false: catalogs are
+incomplete for small events, especially in aftershock sequences.
 
-- **One block per alarm:** alarm time and stations, magnitude at the alarm and
-  final magnitude, location, comparison with the AFAD event, and the S-wave
-  warning time at each station and `--site` (S arrival minus alarm time;
-  positive means the alarm came first).
-- **Summary:** alarms that match an AFAD event and alarms that do not, AFAD
-  events detected and missed (in total and by magnitude band), alarm delay,
-  and lists of missed events and unmatched alarms.
-- **Station processing:** windows, triggers, picks and Pd values per
-  station, and the time per window, pick and estimate.
+The options most often needed:
 
-An alarm matches an AFAD event if its location agrees (epicentre within 30 km,
-origin within 5 s), or if the event's predicted P arrival at a station that
-raised the alarm is within 6 s of that station's detection. An unmatched alarm
-is not necessarily false: the catalogue is incomplete for small events,
-especially during aftershock sequences.
+| option | meaning |
+|---|---|
+| `--speed X` | replay speed: 1 real time, 10 ten times faster, 0 as fast as possible |
+| `--from TIME` | no triggers before this UTC time; earlier data still warms the filters |
+| `--catalog CSV` | score every alarm against this catalog (AFAD export format) |
+| `--detector KIND` | `6s`, `transformer`, `stalta` or `filterpicker` |
+| `--stations FILE`, `--pd-gains FILE` | the station table and Pd gains of another network |
+| `--site NAME,LAT,LON` | report the S-wave warning time at this place |
+| `--scores DIR`, `--scores-in DIR` | cache the detector's window probabilities, and replay from the cache |
+| `--record FILE` | record every station output for `tools/network_subsets` |
+| `--seedlink HOST:PORT --streams NET.STA,...` | live input instead of files (`docs/impl/19-seedlink.md`) |
 
-## Evaluation tools
+The full table, including every detector's trigger settings, the association
+and location parameters and the live-input options, is in
+[`docs/OPTIONS.md`](docs/OPTIONS.md).
+
+## Evaluation
+
+The replay protocol and the tools that implement it are described in the
+paper and in `docs/impl/05-pipeline.md`, `09-sta-lta.md`, `10-benchmarks.md`
+and `13-claims.md`. In brief: trigger settings are chosen on tuning data by
+rules stated in advance; a declared event is credited to the one catalog event
+it fits best; the chance level is measured by shifting the catalog by ±127,
+±263 and ±391 s and removed from the detection rate; detectors are compared on
+per-event outcomes by an exact McNemar test and a paired bootstrap; and false
+alarms are counted on windows with no cataloged event within 250 km of any
+station.
 
 | tool | purpose |
 |---|---|
-| `tools/sweep_trigger.py` | runs a grid of any ayzek options on several datasets and tabulates detections, unmatched alarms, alarm delay and, with `--shifts`, detections corrected for chance matches; uses cached probabilities for the model |
-| `tools/network_subsets` | runs the network stage for every subset of stations from one `--record` file; identical to running ayzek on each subset |
-| `tools/station_geometry.py` | coverage, alert time, blind zone and location error of station subsets over a grid of epicentres, without waveforms |
-| `tools/mseed_dump`, `tools/validate_mseed.py` | record-level inspection, and a decoding check against ObsPy |
-| `tools/make_mseed_fixtures.py` | the small files of every supported encoding, and ObsPy's reading of them, that `test_mseed` decodes |
-| `tools/seedlink_mock.py` | a SeedLink 3 server that serves miniSEED files at a chosen speed, with dropped connections, stalls and reordering on request, for the live-input tests |
-| `tools/replay_check`, `tools/gaps_vs_events.py` | gap statistics of the archive, and their relation to earthquake times |
-| `tools/gap_scan.py` | spans and gaps of any miniSEED files, from the record headers alone; flags gaps longer than the sample ring |
-| `tools/scan_encodings.py` | counts the miniSEED data encodings in archive chunks |
-| `tools/fetch_ko_data.py` | pulls continuous KOERI (KO) waveforms into the replay layout: `probe` which stations have a span, `quiet-scan` for spans with no catalogue event nearby, `pull` to download |
-| `bench/ayzek_bench` | time per stage and per layer, the stations that fit in real time; `meson test -C build-release --benchmark` (`docs/impl/10-benchmarks.md`) |
-| `tools/scorecard.py` | detection, unmatched and false alarms, magnitude and location on the fixed datasets, for judging a model change; `--compare A.json B.json` |
-| `tools/bench_compare.py` | two `ayzek_bench` results side by side, flags regressions |
+| `tools/sweep_trigger.py` | a grid of ayzek options over several datasets, with detections, unmatched alarms, delays and chance-corrected counts; uses cached probabilities |
+| `tools/select_setting.py` | applies the selection rules (equal unmatched alarms, equal detections, equal quiet alarms) to a sweep |
+| `tools/event_outcomes.py`, `tools/significance.py` | per-event outcome tables and the paired tests, equivalence test and depth-restricted repeats |
+| `tools/quiet_sweep.py`, `tools/quiet_without_stations.py` | alarm rates on quiet windows, with and without the noisiest stations |
+| `tools/stalta_station_ratios.py` | the per-station STA/LTA baseline |
+| `tools/seisbench_scores.py` | EQTransformer and PhaseNet (SeisBench 0.12.6) scored on ayzek's window grid, for `--scores-in` |
+| `tools/network_subsets` | the network stage for every subset of stations of one recorded run |
+| `tools/run_heldout.py` | a held-out test end to end, from a selection to every endpoint of the protocol, with a manifest |
+| `tools/reproduce_all.sh`, `tools/verify_claims.py` | every result of the paper, checked against `bench/claims.json` |
+| `tools/scorecard.py`, `bench/ayzek_bench` | detection, magnitude and location on the fixed datasets; time per stage and per layer |
 
-Trigger sweeps on one dataset:
+Smaller utilities (miniSEED inspection and validation, gap scans, a SeedLink
+test server, KOERI data fetching, map and figure scripts) are listed in
+`docs/IMPLEMENTATION.md`.
 
-```bash
-# model: store the detector probabilities once, then sweep the trigger rule
-build-release/app/ayzek --speed 0 --no-magnitude --catalog $CAT --scores data/runs/cache data/demo/*.mseed
-python3 tools/sweep_trigger.py --catalog $CAT --dataset 'demo:data/runs/cache:data/demo/*.mseed' \
-    --set 'threshold=0.9 0.85 0.8' --set 'trigger-windows=1 4 8' --set 'instant-threshold=2 0.9' \
-    --shifts 127,263,391 --out sweep.csv
+## Results on the development data
 
-# STA/LTA (no cache)
-python3 tools/sweep_trigger.py --catalog $CAT --args '--detector stalta' --dataset 'demo::data/demo/*.mseed' \
-    --set 'stalta-on=4 6 8' --set 'lta=10 30' --set 'stalta-3c=off on' --shifts 127,263,391 --out stalta.csv
-```
+Every setting of the pipeline was chosen on replays of the AFAD archive and the
+public KOERI sets; these are development results, not tests. With the default
+settings, scored against the AFAD catalog within 250 km of the stations:
 
-## Results
-
-Replays of AFAD recordings with the default settings, scored against the AFAD
-catalogue (events within 250 km):
-
-| replay | stations | catalogue events detected | alarms without a catalogue event | main event |
+| replay | stations | catalog events detected | unmatched alarms | main event |
 |---|---:|---|---|---|
-| Sındırgı, 2025-11-10, 30 min | 3 | 7 of 9 | 2 of 9 | Mw 4.9: alarm 18.0 s after origin with M4.3, final M4.6, located 5.3 km off |
-| Marmara Sea, 2025-04-23, 3 h | 8 | 44 of 57 | 24 of 68 | Mw 6.2: alarm 11.0 s after origin, M4.6 at +14 s, final M4.8, located 3.1 km off |
-| Sındırgı, 2025-08-10, 3 h | 6 | 39 of 66 | 7 of 46 | Mw 6.1: alarm 17.0 s after origin, M4.9 at +17.5 s, final M4.7, located 32.5 km off |
+| Sındırgı, 2025-11-10, 30 min | 3 | 7 of 9 | 2 | Mw 4.9: alarm 18.0 s after origin |
+| Marmara Sea, 2025-04-23, 3 h | 8 | 44 of 57 | 24 | Mw 6.2: alarm 11.0 s after origin, S wave at the nearest station 2.1 s later |
+| Sındırgı, 2025-08-10, 3 h | 6 | 39 of 66 | 7 | Mw 6.1: alarm 17.0 s after origin |
 
-- **Trigger settings.** Chosen on the first two replays. The third was not used
-  for the choice. There, the earlier rule (one window at p ≥ 0.9) detected 24
-  of 66 events with 2 alarms without a catalogue event
-  (`docs/impl/05-pipeline.md`).
-- **Alarm time.** Set by the P travel time to the second station, not by
-  computation.
-- **Magnitude.** The magnitudes in this table are the retired regressor's,
-  which saturated for large events (final M4.7 for the Mw 6.1, M4.8 for the
-  Mw 6.2; `docs/impl/07-magnitude.md`). The Pd magnitude that replaces it needs
-  the AFAD stations' gains, which `models/pd_gain.csv` does not hold yet; on
-  KO's marmara_ko it gives the Mw 6.2 M6.0 (`docs/impl/17-pd-magnitude.md`).
-- **Unmatched alarms.** Some are probably uncatalogued aftershocks. Of the 24
-  in the Marmara replay, 9 were located and 5 of those within 15 km of the
-  Mw 6.2.
-- **Against STA/LTA.** STA/LTA settings were chosen on the first two replays
-  to match the model's unmatched alarms. On the held-out replay that setting
-  detects 25 events against the model's 39, with 9 unmatched alarms against 7.
-  To detect as many events as the model, STA/LTA needs about three times the
-  unmatched alarms. It alarms 1–1.3 s earlier for the Mw 6.1 and 6.2, and
-  costs about 0.001 ms per update against 5 ms (`docs/impl/09-sta-lta.md`).
-- **False alarms.** Over 33.3 h of recordings with no catalogue event within
-  250 km of any station, the model raised 6 alarms, 4.3 a day. STA/LTA tuned to
-  match its unmatched alarms on the replays raised 113, 81.5 a day
-  (`docs/impl/10-benchmarks.md`).
-- **Speed.** Measured with `bench/ayzek_bench` on a Ryzen 5 5600, scalar
-  backend: 5.2 ms per detector window (three models, every 0.5 s per station,
-  about 1% of a core per station), 12 ms per picker run, 288 ms per magnitude
-  estimate, of which 91% is one attention layer. One core sustains 95 stations,
-  four cores 372. The aarch64 NEON build passes the same agreement tests under
-  qemu; timing on a Raspberry Pi has not been measured yet.
+- Against STA/LTA tuned to the same number of unmatched alarms on the tuning
+  replays, the learned detector detected 36.4 chance-corrected events of the
+  66 of the Sındırgı Mw 6.1 sequence against 21.7 (difference 14.7, 95 %
+  interval 5.9–23.7). To detect as many events as the learned detector,
+  STA/LTA needed about three times its unmatched alarms. STA/LTA alarms
+  1.0–1.3 s earlier on the two largest events and costs about 0.0005 ms per
+  update against 5.2 ms for the detector ensemble.
+- Over 102.8 h of recordings with no cataloged event within 250 km of any
+  station, the learned detector raised 16 alarms (3.74 a day) and the STA/LTA
+  setting above 323 (75.4 a day). Nine of the 16 came from one station's
+  periodic instrumental pulse.
+- Causal PhaseNet, run through the same pipeline with pre-trained weights,
+  matched the learned detector on both development sequences; causal
+  EQTransformer did not.
+- On the public KOERI sets: the Sındırgı Mw 4.9 is declared 18.0 s after
+  origin and receives M4.7 at +3.5 s and M4.8 at the end; the Marmara Mw 6.2
+  is declared 10.5 s after origin and receives M6.0; on 5.8 h of quiet data the
+  learned detector raised 1 alarm against 25 for STA/LTA. The Marmara set
+  overlaps the detector's training data and is a demonstration only.
+- Speed: on a Ryzen 5 5600, 5.2 ms per detector window (three models, one
+  window every 0.5 s per station), and one thread sustains 95 stations. On a
+  Raspberry Pi 4 a window costs 36.3 ms and four cores sustain 52 stations,
+  with the same alarms at the same times.
 
-### On the published datasets
+The complete development record, with the trigger grids, the selection of
+every baseline and the quiet-window classification, is in the paper's
+supplement and in `docs/impl/`.
 
-The results above are from AFAD recordings, which cannot be redistributed. The
-KOERI sets attached to the release are the reproducible equivalents, and
-`tools/scorecard.py` scores them:
+## Platforms
 
-| dataset | result |
-|---|---|
-| `demo_ko`, 6 stations, 30 min | Mw 4.9 declared 18.0 s after origin, 8 of 9 catalogue events detected, 2 unmatched alarms, magnitude error 0.35 |
-| `marmara_ko`, 8 stations, 1 h 45 min | Mw 6.2 declared **10.5 s** after origin, Mw 5.9 at +11.0 s, 28 of 37 detected; the span starts 49 min early so the noise baselines are warm |
-| `quiet_ko`, 6 stations, 6 h, no catalogue event within 250 km | **1 alarm, 4.1 a day**; STA/LTA on the same data raises 25, 103 a day |
+- **Linux x86-64**: the development build above. The tests of the held-out
+  protocol run the static build from `cross/x86_64-linux.ini` (zig and musl),
+  whose reports equal the development build's on every development replay.
+- **Raspberry Pi 4 and 5**: `meson setup build-pi --cross-file cross/aarch64-pi.ini
+  --buildtype=release`; the test suite runs under `qemu-aarch64` with
+  `--timeout-multiplier 10` (`docs/impl/06-raspberry-pi.md`).
+- **Windows 10 and 11**: `ayzek.exe` is cross-built on Linux with
+  `cross/x86_64-windows.ini` and needs no runtime DLLs. The build is linked and
+  attached to the releases, but the numerical tests have not yet been run on a
+  Windows machine; live SeedLink input is not available in this build
+  (`docs/impl/11-windows.md`, `docs/OPTIONS.md`).
 
-## Data sources
+## Data sources and licences
 
-Waveforms in the published datasets are from the **Kandilli Observatory and
-Earthquake Research Institute (KOERI), Boğaziçi University**, network KO, open
-data under citation:
+`models/` is tracked (exported weights in the AYZW format, filter coefficients,
+the station table and the Pd calibration, about 5 MB). `data/` is not tracked.
+
+The public datasets attached to the releases are KO network waveforms of the
+Kandilli Observatory and Earthquake Research Institute (KOERI), Boğaziçi
+University, open under citation:
 
 > Kandilli Observatory And Earthquake Research Institute (KOERI), Boğaziçi
 > University (1971). *Kandilli Observatory And Earthquake Research Institute
 > (KOERI)*. International Federation of Digital Seismograph Networks.
 > https://doi.org/10.7914/SN/KO
 
-Catalogue excerpts in `tests/catalogs/`, and the AFAD replays used for the
-results above, are from AFAD (Disaster and Emergency Management Presidency of
-Türkiye), https://deprem.afad.gov.tr/.
+The AFAD waveforms of the development replays are available from AFAD's data
+portal (https://tdvms.afad.gov.tr) on registration and cannot be
+redistributed; the catalog excerpts in `tests/catalogs/` are AFAD's
+(https://deprem.afad.gov.tr/). The test waveforms of the held-out protocol
+(the Greek networks HL, HT, HA, HP and HC through the NOA EIDA node, NZ through
+GeoNet, KO through KOERI) are not redistributed either; each set's request
+record and file hashes are published with the protocol, so that the same data
+can be fetched again and checked. `tools/fetch_ko_data.py` fetches KO
+waveforms into the replay layout; `tools/make_demo_data.py` cuts replays from
+AFAD archive chunks.
 
-## Documentation
+## Documentation and layout
 
-- `docs/DESIGN.md`: the architecture and the reasoning behind it
-- `docs/IMPLEMENTATION.md`: an overview of what was built, with an index of
-  `docs/impl/01`–`19` (SIMD kernels, weights format, conditioning, models,
-  pipeline, Raspberry Pi, magnitude, station selection, STA/LTA benchmark,
-  benchmarks and the scorecard, Windows build, environment, claims, the
-  streaming transformer, location from its geometry head, alarm assessment,
-  Pd magnitude, FilterPicker, live SeedLink input)
-
-## Layout
+- `docs/DESIGN.md`: the architecture and the reasoning behind it.
+- `docs/IMPLEMENTATION.md`: what was built, with an index of the notes in
+  `docs/impl/` (SIMD kernels, weights format, conditioning, models, pipeline,
+  Raspberry Pi, magnitude, station selection, STA/LTA, benchmarks and the
+  scorecard, Windows build, environment, claims, the streaming transformer,
+  location from its geometry head, alarm assessment, Pd magnitude,
+  FilterPicker, live SeedLink input).
+- `docs/protocol-heldout.md`: the frozen held-out test protocol;
+  `docs/release-notes-freeze.md`: what v1.0.0 fixes, with every hash;
+  `docs/heldout-selections/`: the test sets selected after the freeze.
+- `docs/OPTIONS.md`: every command-line option.
 
 ```
-src/            ring buffer, miniSEED decoding, reordering, SeedLink client, SIMD kernels, layers,
-                models, DSP, magnitude
-src/pipeline/   ingest (replay and live), per-station processor and the transformer's trigger,
-                network association, location (picks or geometry), alarm assessment, recording
+src/            ring buffer, miniSEED decoding, reordering, SeedLink client, SIMD kernels,
+                layers, models, DSP, magnitude
+src/pipeline/   ingest (replay and live), per-station processing, association, location,
+                alarm assessment, recording
 app/            the ayzek binary
-tests/          unit tests, agreement with PyTorch/scipy/torchaudio, end-to-end check
-tools/          model export, data preparation, evaluation, the scorecard, a SeedLink test server
-bench/          ayzek_bench, and reference results in bench/results/
-cross/          zig toolchain wrappers and the Raspberry Pi and Windows cross files
-docs/           design and implementation notes
+tests/          unit tests, agreement with PyTorch/SciPy/torchaudio/ObsPy, end-to-end check
+tools/          model export, data preparation, evaluation, the held-out runner
+bench/          ayzek_bench, claims.json and reference results
+cross/          zig toolchain wrappers and the Linux, Raspberry Pi and Windows cross files
+docs/           design, implementation notes, protocol and release notes
 ```
 
-## Citing ayzek
+## Citing
 
-If you use ayzek, its models or its results in your work, please cite it.
-Every release is archived on Zenodo; the DOI below always resolves to the
-latest one, and each release's page gives its own DOI, which is the one to cite
-for a specific version:
+Every release is archived on Zenodo. The DOI below resolves to the latest
+release; each release's Zenodo page gives its own DOI, which is the one to cite
+for a specific version (v1.0.0: 10.5281/zenodo.23806743). `CITATION.cff` holds
+the same metadata.
 
 > Bolat, H. O., Çimen, S., Bolat, B., & Yıldırım, T. ayzek: a self-contained
 > real-time earthquake detection and early-warning pipeline. Zenodo.
@@ -432,12 +317,12 @@ for a specific version:
 }
 ```
 
-`CITATION.cff` holds the same metadata (GitHub's "Cite this repository"). The
-paper describing ayzek will be added here once it is published.
+The paper describing ayzek and the held-out tests is under preparation and
+will be cited here once published.
 
 ## License
 
-GNU General Public License, version 3 or (at your option) any later version
-(GPL-3.0-or-later); the full text is in `LICENSE`. Releases up to and including
-v0.1.0-beta.3 were published under the Apache License 2.0 and remain available
-under it.
+GNU General Public License, version 3 or (at your option) any later version;
+the full text is in `LICENSE`. The FilterPicker port derives from Anthony
+Lomax's C code (GPL-2.0-or-later). Releases up to and including v0.1.0-beta.3
+were published under the Apache License 2.0 and remain available under it.

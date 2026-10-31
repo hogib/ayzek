@@ -143,7 +143,7 @@ PDMAG    #3   18:21:12.50  Pd magnitude M4.7 ± 0.2 (M<4 0%, 4-5.5 100%, M>=5.5 
 LOCATE   #3   18:22:04.50  located at 39.206N 28.137E, origin 18:20:52.66, rms 0.21 s from 5 stations
 ```
 
-(demo_ko; `README.md` lists every option.)
+(demo_ko; `docs/OPTIONS.md` lists every option.)
 
 At the end, a report with one block per alarm, a summary, and station
 processing statistics:
