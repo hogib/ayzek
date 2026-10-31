@@ -1,0 +1,13 @@
+  https://geonet-open-data.s3-ap-southeast-2.amazonaws.com/: URLError (<urlopen error [Errno 104] Connection reset by peer>); again in 5 s
+  event service broke off 2023-01-15 00:00 to 2023-01-22 00:00; halving
+  event service broke off 2023-04-23 00:00 to 2023-04-30 00:00; halving
+  event service broke off 2023-10-29 00:00 to 2023-11-05 00:00; halving
+  event service broke off 2023-11-26 00:00 to 2023-12-03 00:00; halving
+  event service broke off 2023-12-03 00:00 to 2023-12-10 00:00; halving
+  event service broke off 2024-04-14 00:00 to 2024-04-21 00:00; halving
+[select] 36 usable of 134 NZ stations within 1000 km, 2023-01-01 to 2026-10-30 (day files in the open-data bucket (upper bound))
+[select] 81990 catalogue events (206 requests; canary 51)
+[select] 29 qualifying sequences, 16 now; 13 selected, 154 scorable events (target 150 reached)
+[select] 24 quiet windows after 551 draws
+[select] 13 sequence sets and 24 quiet sets -> selections/nz_now/sets
+nz exit 0

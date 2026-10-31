@@ -1,0 +1,14 @@
+# heldout select nz now: sequence 13 of 29, first event 2024-04-02T05:39:44 MLv 4.524288618 (2024p249286)
+name = "nz_now_seq013"
+network = "NZ"
+start = "2024-04-02T05:29:44.898422"
+end = "2024-04-02T08:29:44.898422"
+centre = [-43.20124, 170.91107]
+radius_km = 150.0
+max_stations = 5
+min_coverage = 0.0
+stations = ["NZ.WVZ", "NZ.WHSZ", "NZ.RPZ", "NZ.FOZ", "NZ.CVZ"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

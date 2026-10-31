@@ -1,0 +1,105 @@
+=== attempt 1 2026-10-30T18:31:57Z
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: HTTPError (HTTP Error 502: Proxy Error); again in 5 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: HTTPError (HTTP Error 502: Proxy Error); again in 15 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 45 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: HTTPError (HTTP Error 502: Proxy Error); again in 5 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 15 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 120 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 45 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: HTTPError (HTTP Error 502: Proxy Error); again in 300 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 120 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: HTTPError (HTTP Error 502: Proxy Error); again in 300 s
+Traceback (most recent call last):
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/.venv/bin/heldout", line 10, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/cli.py", line 59, in main
+    return select.cmd_select(
+           ~~~~~~~~~~~~~~~~~^
+        a.group, config.parse_utc(a.start, "--start"), config.parse_utc(a.end, "--end"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        a.name, a.out, a.prospective, a.target, not a.no_quiet, a.allow_test_period)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/select.py", line 286, in cmd_select
+    rows, basis = fetch.probe_rows(period, c)
+                  ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/fetch.py", line 144, in probe_rows
+    basis = coverage(cfg, passing) if passing else "-"
+            ~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/fetch.py", line 84, in coverage
+    covs = list(ex.map(one, rows))
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py", line 625, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py", line 318, in _result_or_cancel
+    return fut.result(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py", line 460, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py", line 402, in __get_result
+    raise self._exception
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/fetch.py", line 81, in one
+    return availability.fdsn_coverage(info.availability, r["network"], r["station"],
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                      r["location"], r["channels"], cfg.start, cfg.end)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/availability.py", line 76, in fdsn_coverage
+    _, body = _get(f"{url}?{q}")
+              ~~~~^^^^^^^^^^^^^^
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/availability.py", line 29, in _get
+    return retry.call(once, what=url.split("?")[0])
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/retry.py", line 43, in call
+    return fn(*args, **kwargs)
+  File "/home/oguzb/Projects/Codings/ayzek/ayzek_heldout/heldout/availability.py", line 23, in once
+    with urllib.request.urlopen(url, timeout=300) as f:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/urllib/request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/urllib/request.py", line 489, in open
+    response = self._open(req, data)
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/urllib/request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/urllib/request.py", line 466, in _call_chain
+    result = func(*args)
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/urllib/request.py", line 1379, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        context=self._context)
+                        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/urllib/request.py", line 1335, in do_open
+    r = h.getresponse()
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/http/client.py", line 1478, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/http/client.py", line 343, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/http/client.py", line 304, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/socket.py", line 723, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/ssl.py", line 1327, in recv_into
+    return self.read(nbytes, buffer)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/oguzb/.local/share/uv/python/cpython-3.13.16-linux-x86_64-gnu/lib/python3.13/ssl.py", line 1161, in read
+    return self._sslobj.read(len, buffer)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+TimeoutError: The read operation timed out
+greece exit 1 (attempt 1)
+=== attempt 2 2026-10-30T19:42:58Z
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 5 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 15 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 5 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 45 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: HTTPError (HTTP Error 502: Proxy Error); again in 15 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: HTTPError (HTTP Error 502: Proxy Error); again in 120 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 300 s
+  https://eida.gein.noa.gr/fdsnws/availability/1/query: TimeoutError (The read operation timed out); again in 5 s

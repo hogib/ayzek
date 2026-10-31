@@ -1,0 +1,33 @@
+=== attempt 1 2026-10-30T22:33:42Z
+  HP.KSTR availability 2024-01-02..2025-01-02: TimeoutError (The read operation timed out); again in 5 s
+  HP.KSTR availability 2024-01-02..2025-01-02: TimeoutError (The read operation timed out); again in 15 s
+  HP.KSTR availability 2024-01-02..2025-01-02: TimeoutError (The read operation timed out); again in 45 s
+  HP.KSTR availability 2024-01-02..2025-01-02: TimeoutError (The read operation timed out); again in 120 s
+  HP.KSTR availability 2024-01-02..2025-01-02: TimeoutError (The read operation timed out); again in 300 s
+  HP.KSTR availability 2024-01-02..2025-01-02: TimeoutError (The read operation timed out); again in 300 s
+  HP.KSTR availability 2024-01-02..2025-01-02: TimeoutError (The read operation timed out); again in 300 s
+  HP.KSTR availability 2025-01-02..2026-01-03: TimeoutError (The read operation timed out); again in 5 s
+  HP.KSTR availability 2025-01-02..2026-01-03: TimeoutError (The read operation timed out); again in 15 s
+  HP.KSTR availability 2025-01-02..2026-01-03: TimeoutError (The read operation timed out); again in 45 s
+  HP.KSTR availability 2025-01-02..2026-01-03: TimeoutError (The read operation timed out); again in 120 s
+  HP.KSTR availability 2025-01-02..2026-01-03: TimeoutError (The read operation timed out); again in 300 s
+  HP.KSTR availability 2025-01-02..2026-01-03: TimeoutError (The read operation timed out); again in 300 s
+  event service: HTTPError (HTTP Error 502: Proxy Error); again in 5 s
+  event service: HTTPError (HTTP Error 503: Service Unavailable); again in 15 s
+  event service: HTTPError (HTTP Error 503: Service Unavailable); again in 45 s
+  event service: HTTPError (HTTP Error 503: Service Unavailable); again in 120 s
+  event service: HTTPError (HTTP Error 503: Service Unavailable); again in 300 s
+  event service: HTTPError (HTTP Error 502: Proxy Error); again in 5 s
+  event service: TimeoutError (The read operation timed out); again in 15 s
+  event service: HTTPError (HTTP Error 503: Service Unavailable); again in 45 s
+  event service broke off 2026-05-24 00:00 to 2026-05-31 00:00; halving
+  event service: HTTPError (HTTP Error 502: Proxy Error); again in 5 s
+  event service: HTTPError (HTTP Error 503: Service Unavailable); again in 15 s
+  event service: HTTPError (HTTP Error 503: Service Unavailable); again in 45 s
+  event service: TimeoutError (The read operation timed out); again in 5 s
+[select] 81 usable of 200 HL/HT/HA/HP/HC stations within 650 km, 2023-01-01 to 2026-10-30 (fdsnws/availability)
+[select] 90382 catalogue events (207 requests; canary 14)
+[select] 84 qualifying sequences, 42 now; 11 selected, 178 scorable events (target 150 reached)
+[select] 24 quiet windows after 2059 draws
+[select] 11 sequence sets and 24 quiet sets -> selections/greece_now/sets
+greece exit 0 (attempt 1)

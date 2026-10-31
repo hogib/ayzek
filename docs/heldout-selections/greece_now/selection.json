@@ -1,0 +1,4964 @@
+{
+ "group": "greece",
+ "name": "now",
+ "networks": [
+  "HL",
+  "HT",
+  "HA",
+  "HP",
+  "HC"
+ ],
+ "prospective": false,
+ "period": [
+  "2023-01-01T00:00:00",
+  "2026-10-30T12:55:36"
+ ],
+ "target": 150,
+ "rules": {
+  "min_magnitude": 4.5,
+  "min_stations": 5,
+  "station_radius_km": 150.0,
+  "stations": 8,
+  "lead_s": 600.0,
+  "span_s": 10800.0,
+  "gap_s": 10800.0,
+  "score_radius_km": 250.0,
+  "reserve_seed": 42,
+  "quiet_seed": 43,
+  "quiet_windows": 24,
+  "quiet_hours": 6.0,
+  "quiet_margin_s": 1800.0,
+  "quiet_min_coverage": 0.9,
+  "quiet_max_draws": 10000,
+  "relaxed": [
+   2.0,
+   100.0
+  ]
+ },
+ "stations": {
+  "basis": "fdsnws/availability",
+  "usable": [
+   {
+    "network": "HA",
+    "station": "THIV",
+    "lat": 38.29896,
+    "lon": 23.331963,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9893
+   },
+   {
+    "network": "HA",
+    "station": "VILL",
+    "lat": 38.1642,
+    "lon": 23.3122,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9941
+   },
+   {
+    "network": "HL",
+    "station": "LKR",
+    "lat": 38.64957,
+    "lon": 22.998812,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9432
+   },
+   {
+    "network": "HA",
+    "station": "MDRA",
+    "lat": 38.0606,
+    "lon": 23.4662,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9693
+   },
+   {
+    "network": "HA",
+    "station": "DOMV",
+    "lat": 38.2569,
+    "lon": 22.9795,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9898
+   },
+   {
+    "network": "HA",
+    "station": "MRTH",
+    "lat": 38.12253,
+    "lon": 23.94087,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.992
+   },
+   {
+    "network": "HL",
+    "station": "PTL",
+    "lat": 38.04945,
+    "lon": 23.864591,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9983
+   },
+   {
+    "network": "HL",
+    "station": "ATH",
+    "lat": 37.97384,
+    "lon": 23.71767,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9985
+   },
+   {
+    "network": "HP",
+    "station": "LTK",
+    "lat": 38.0228,
+    "lon": 22.9673,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9648
+   },
+   {
+    "network": "HA",
+    "station": "LOUT",
+    "lat": 37.9879,
+    "lon": 22.9743,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9889
+   },
+   {
+    "network": "HP",
+    "station": "DSF",
+    "lat": 38.4112,
+    "lon": 22.5271,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9893
+   },
+   {
+    "network": "HA",
+    "station": "ACOR",
+    "lat": 37.8902,
+    "lon": 22.8692,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9468
+   },
+   {
+    "network": "HA",
+    "station": "THAL",
+    "lat": 38.0357,
+    "lon": 22.6634,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9918
+   },
+   {
+    "network": "HL",
+    "station": "NEO",
+    "lat": 39.30567,
+    "lon": 23.22189,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9488
+   },
+   {
+    "network": "HA",
+    "station": "KARY",
+    "lat": 38.0321,
+    "lon": 24.437,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9904
+   },
+   {
+    "network": "HT",
+    "station": "XOR",
+    "lat": 39.36598,
+    "lon": 23.19178,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9071
+   },
+   {
+    "network": "HA",
+    "station": "EPID",
+    "lat": 37.6144,
+    "lon": 23.1189,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9986
+   },
+   {
+    "network": "HP",
+    "station": "GUR",
+    "lat": 37.9363,
+    "lon": 22.3423,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9222
+   },
+   {
+    "network": "HA",
+    "station": "KALE",
+    "lat": 38.3911,
+    "lon": 22.1398,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9886
+   },
+   {
+    "network": "HL",
+    "station": "KLV",
+    "lat": 38.0435,
+    "lon": 22.1504,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9405
+   },
+   {
+    "network": "HP",
+    "station": "ANX",
+    "lat": 38.5933,
+    "lon": 21.9209,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9573
+   },
+   {
+    "network": "HP",
+    "station": "EFP",
+    "lat": 38.4269,
+    "lon": 21.9058,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9818
+   },
+   {
+    "network": "HP",
+    "station": "VVK",
+    "lat": 38.4222,
+    "lon": 21.8116,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9441
+   },
+   {
+    "network": "HP",
+    "station": "UPR",
+    "lat": 38.2836,
+    "lon": 21.7864,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9906
+   },
+   {
+    "network": "HL",
+    "station": "EVR",
+    "lat": 38.91657,
+    "lon": 21.8105,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9335
+   },
+   {
+    "network": "HP",
+    "station": "VLX",
+    "lat": 37.3703,
+    "lon": 22.3793,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9244
+   },
+   {
+    "network": "HT",
+    "station": "PAIG",
+    "lat": 39.9363,
+    "lon": 23.6768,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9842
+   },
+   {
+    "network": "HP",
+    "station": "DRO",
+    "lat": 37.952,
+    "lon": 21.71,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9701
+   },
+   {
+    "network": "HP",
+    "station": "PVO",
+    "lat": 38.616,
+    "lon": 21.525,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9452
+   },
+   {
+    "network": "HL",
+    "station": "THL",
+    "lat": 39.56468,
+    "lon": 22.0144,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9641
+   },
+   {
+    "network": "HP",
+    "station": "PLEV",
+    "lat": 38.4124,
+    "lon": 21.4073,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9695
+   },
+   {
+    "network": "HL",
+    "station": "RLS",
+    "lat": 38.05586,
+    "lon": 21.46475,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9724
+   },
+   {
+    "network": "HP",
+    "station": "AXS",
+    "lat": 38.1962,
+    "lon": 21.3763,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9678
+   },
+   {
+    "network": "HP",
+    "station": "AMT",
+    "lat": 37.5324,
+    "lon": 21.7089,
+    "location": "00",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.91
+   },
+   {
+    "network": "HL",
+    "station": "ITM",
+    "lat": 37.17872,
+    "lon": 21.92522,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9874
+   },
+   {
+    "network": "HP",
+    "station": "PDO",
+    "lat": 38.5986,
+    "lon": 21.1833,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9388
+   },
+   {
+    "network": "HP",
+    "station": "AMPL",
+    "lat": 38.9224,
+    "lon": 21.2135,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.994
+   },
+   {
+    "network": "HL",
+    "station": "VLI",
+    "lat": 36.71803,
+    "lon": 22.94686,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.939
+   },
+   {
+    "network": "HT",
+    "station": "OUR",
+    "lat": 40.3325,
+    "lon": 23.9791,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9207
+   },
+   {
+    "network": "HL",
+    "station": "PLG",
+    "lat": 40.37328,
+    "lon": 23.44443,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9897
+   },
+   {
+    "network": "HL",
+    "station": "TETR",
+    "lat": 39.3445,
+    "lon": 21.274667,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9822
+   },
+   {
+    "network": "HT",
+    "station": "HORT",
+    "lat": 40.5978,
+    "lon": 23.0996,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9665
+   },
+   {
+    "network": "HL",
+    "station": "APE",
+    "lat": 37.07274,
+    "lon": 25.52301,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9766
+   },
+   {
+    "network": "HT",
+    "station": "THE",
+    "lat": 40.6319,
+    "lon": 22.9628,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.976
+   },
+   {
+    "network": "HT",
+    "station": "NYDR",
+    "lat": 38.7135,
+    "lon": 20.6983,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9622
+   },
+   {
+    "network": "HT",
+    "station": "EVGI",
+    "lat": 38.621,
+    "lon": 20.656,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9491
+   },
+   {
+    "network": "HT",
+    "station": "LKD2",
+    "lat": 38.78893,
+    "lon": 20.65779,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9159
+   },
+   {
+    "network": "HP",
+    "station": "LTHK",
+    "lat": 37.7095,
+    "lon": 20.8367,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9655
+   },
+   {
+    "network": "HT",
+    "station": "TSLK",
+    "lat": 38.8249,
+    "lon": 20.6554,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9635
+   },
+   {
+    "network": "HL",
+    "station": "PRK",
+    "lat": 39.24565,
+    "lon": 26.26499,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9756
+   },
+   {
+    "network": "HL",
+    "station": "ORTH",
+    "lat": 37.851123,
+    "lon": 20.696265,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9558
+   },
+   {
+    "network": "HP",
+    "station": "FSK",
+    "lat": 38.4593,
+    "lon": 20.5623,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9952
+   },
+   {
+    "network": "HL",
+    "station": "VLS",
+    "lat": 38.17683,
+    "lon": 20.5886,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9298
+   },
+   {
+    "network": "HT",
+    "station": "THAS",
+    "lat": 40.6064,
+    "lon": 24.7194,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9532
+   },
+   {
+    "network": "HT",
+    "station": "SOH",
+    "lat": 40.82061,
+    "lon": 23.35568,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9287
+   },
+   {
+    "network": "HT",
+    "station": "KOKK",
+    "lat": 40.8178,
+    "lon": 23.9992,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9168
+   },
+   {
+    "network": "HP",
+    "station": "KSTR",
+    "lat": 39.2492,
+    "lon": 20.576,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.987
+   },
+   {
+    "network": "HA",
+    "station": "ATHR",
+    "lat": 38.3172,
+    "lon": 20.4165,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9944
+   },
+   {
+    "network": "HA",
+    "station": "HAVD",
+    "lat": 38.2036,
+    "lon": 20.3848,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9778
+   },
+   {
+    "network": "HT",
+    "station": "KAVA",
+    "lat": 40.99666,
+    "lon": 24.513666,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.951
+   },
+   {
+    "network": "HL",
+    "station": "THERA",
+    "lat": 36.366992,
+    "lon": 25.475263,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9146
+   },
+   {
+    "network": "HT",
+    "station": "NEST",
+    "lat": 40.4147,
+    "lon": 21.0489,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9368
+   },
+   {
+    "network": "HT",
+    "station": "KNT",
+    "lat": 41.167,
+    "lon": 22.9005,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9431
+   },
+   {
+    "network": "HL",
+    "station": "SMG",
+    "lat": 37.70425,
+    "lon": 26.83772,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9346
+   },
+   {
+    "network": "HT",
+    "station": "FLNA",
+    "lat": 40.780935,
+    "lon": 21.386324,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9838
+   },
+   {
+    "network": "HL",
+    "station": "NVR",
+    "lat": 41.34846,
+    "lon": 23.86517,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9751
+   },
+   {
+    "network": "HL",
+    "station": "PRAS",
+    "lat": 41.35245,
+    "lon": 24.550021,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9016
+   },
+   {
+    "network": "HC",
+    "station": "CHAN",
+    "lat": 35.5193,
+    "lon": 24.0428,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9532
+   },
+   {
+    "network": "HL",
+    "station": "IMMV",
+    "lat": 35.4606,
+    "lon": 23.9811,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9188
+   },
+   {
+    "network": "HL",
+    "station": "RDO",
+    "lat": 41.14503,
+    "lon": 25.53553,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9165
+   },
+   {
+    "network": "HL",
+    "station": "KEK",
+    "lat": 39.7127,
+    "lon": 19.79623,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9941
+   },
+   {
+    "network": "HC",
+    "station": "IPPL",
+    "lat": 35.3486,
+    "lon": 24.4632,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9708
+   },
+   {
+    "network": "HC",
+    "station": "KNDR",
+    "lat": 35.2348,
+    "lon": 23.6248,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9228
+   },
+   {
+    "network": "HL",
+    "station": "NISR",
+    "lat": 36.6106,
+    "lon": 27.1309,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9358
+   },
+   {
+    "network": "HC",
+    "station": "KNSS",
+    "lat": 35.304187,
+    "lon": 25.18017,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9278
+   },
+   {
+    "network": "HL",
+    "station": "NISR2",
+    "lat": 36.57441,
+    "lon": 27.17666,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9624
+   },
+   {
+    "network": "HL",
+    "station": "SIVA",
+    "lat": 35.01777,
+    "lon": 24.81204,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9138
+   },
+   {
+    "network": "HC",
+    "station": "PFKS",
+    "lat": 35.0429,
+    "lon": 25.4733,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9633
+   },
+   {
+    "network": "HC",
+    "station": "STIA",
+    "lat": 35.2021,
+    "lon": 26.0909,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9478
+   },
+   {
+    "network": "HL",
+    "station": "ZKR",
+    "lat": 35.1147,
+    "lon": 26.21691,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9485
+   },
+   {
+    "network": "HL",
+    "station": "ARG",
+    "lat": 36.21356,
+    "lon": 28.12122,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9804
+   }
+  ],
+  "rejected": [
+   {
+    "network": "HL",
+    "station": "SAGMA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span; loc 00: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "PSAH",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "THI1",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "THVA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "MRKA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ERTR",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "THI2",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "AMPE",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "STFN",
+    "reason": "coverage 0.584 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "PARNI",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ATAL",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ALIO",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "KYMI",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "ELIKO",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "PRDM",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "ELAT",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ATHU",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ELEO",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "ACHL",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "PARNA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "VLY",
+    "reason": "coverage 0.818 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "ANTK",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "AOS2",
+    "reason": "coverage 0.657 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "AXAR",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "AIGN",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KRYO",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "SOUNI",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "ELIN",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "MET2",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "SKY",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "SKYRO",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "MET1",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "AGG",
+    "reason": "coverage 0.611 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "VARD",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HP",
+    "station": "SERG",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span; loc 00: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "KRND",
+    "reason": "coverage 0.748 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "LAKA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "ADRO",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "NESN",
+    "reason": "coverage 0.875 < 0.9"
+   },
+   {
+    "network": "HC",
+    "station": "THNO",
+    "reason": "coverage 0.759 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "SERI",
+    "reason": "coverage 0.886 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "TYRN",
+    "reason": "coverage 0.766 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "LALA",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "ZARAX",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "SPART",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "DILO",
+    "reason": "loc 00: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "LIT",
+    "reason": "coverage 0.866 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KURT",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "HMT1",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HC",
+    "station": "KTRS",
+    "reason": "coverage 0.188 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "LIA",
+    "reason": "coverage 0.867 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "MHLO",
+    "reason": "coverage 0.809 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "CLEM",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "SIGR",
+    "reason": "coverage 0.819 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "CHOS",
+    "reason": "coverage 0.859 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "MRTH",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HP",
+    "station": "PYL",
+    "reason": "coverage 0.900 < 0.9"
+   },
+   {
+    "network": "HP",
+    "station": "PRMD",
+    "reason": "coverage 0.882 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "RTZL",
+    "reason": "coverage 0.871 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "KPRO",
+    "reason": "coverage 0.844 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KYPS",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "TENAR",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "LES3",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "KZN",
+    "reason": "coverage 0.873 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "ITHC",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "AMPK",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "KTHA",
+    "reason": "coverage 0.736 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "IOSI",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HC",
+    "station": "KTHR",
+    "reason": "coverage 0.463 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "DRAG",
+    "reason": "coverage 0.646 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "PSDA",
+    "reason": "coverage 0.516 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "STRF",
+    "reason": "coverage 0.348 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "JAN",
+    "reason": "coverage 0.891 < 0.9"
+   },
+   {
+    "network": "HP",
+    "station": "MANGA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "ELEF",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "DMLN",
+    "reason": "coverage 0.831 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "PENT",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "SMTH",
+    "reason": "coverage 0.135 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "AMGA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "SAP3",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "CMBO",
+    "reason": "coverage 0.827 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "ANYD",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "THR5",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "THR3",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "SNT5",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HA",
+    "station": "SNT1",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "GRG",
+    "reason": "coverage 0.890 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "SRS",
+    "reason": "coverage 0.864 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "THT1",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "THR8",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "AKRO",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "CHRI",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "SANT",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "ANKY",
+    "reason": "coverage 0.747 < 0.9"
+   },
+   {
+    "network": "HT",
+    "station": "GVRL",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "IGT",
+    "reason": "coverage 0.681 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "ANAF",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "FNA",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HC",
+    "station": "RODP",
+    "reason": "coverage 0.557 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "GRAMV",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "ASTA",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "ALN",
+    "reason": "coverage 0.709 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "VAM",
+    "reason": "coverage 0.701 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "CHRYS",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HL",
+    "station": "KOSD",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "IDI",
+    "reason": "loc --: HH at 80 Hz, not 100 Hz"
+   },
+   {
+    "network": "HC",
+    "station": "KOSP",
+    "reason": "coverage 0.646 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "IACM",
+    "reason": "coverage 0.895 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "OTHN",
+    "reason": "coverage 0.790 < 0.9"
+   },
+   {
+    "network": "HA",
+    "station": "EMPO",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "HT",
+    "station": "NIS1",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KSTE",
+    "reason": "coverage 0.329 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "NPS",
+    "reason": "coverage 0.410 < 0.9"
+   },
+   {
+    "network": "HC",
+    "station": "TEFL",
+    "reason": "coverage 0.557 < 0.9"
+   },
+   {
+    "network": "HC",
+    "station": "IMOD",
+    "reason": "coverage 0.800 < 0.9"
+   },
+   {
+    "network": "HC",
+    "station": "GVDS",
+    "reason": "coverage 0.587 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "GVD",
+    "reason": "coverage 0.551 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KARP",
+    "reason": "coverage 0.504 < 0.9"
+   },
+   {
+    "network": "HL",
+    "station": "KSL",
+    "reason": "coverage 0.000 < 0.9"
+   }
+  ]
+ },
+ "catalogue": {
+  "agency": "NOA (National Observatory of Athens, Institute of Geodynamics)",
+  "requests": [
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-01-01T00%3A00%3A00&endtime=2023-01-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-01-08T00%3A00%3A00&endtime=2023-01-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-01-15T00%3A00%3A00&endtime=2023-01-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-01-22T00%3A00%3A00&endtime=2023-01-29T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-01-29T00%3A00%3A00&endtime=2023-02-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-02-05T00%3A00%3A00&endtime=2023-02-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-02-12T00%3A00%3A00&endtime=2023-02-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-02-19T00%3A00%3A00&endtime=2023-02-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-02-26T00%3A00%3A00&endtime=2023-03-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-03-05T00%3A00%3A00&endtime=2023-03-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-03-12T00%3A00%3A00&endtime=2023-03-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-03-19T00%3A00%3A00&endtime=2023-03-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-03-26T00%3A00%3A00&endtime=2023-04-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-04-02T00%3A00%3A00&endtime=2023-04-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-04-09T00%3A00%3A00&endtime=2023-04-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-04-16T00%3A00%3A00&endtime=2023-04-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-04-23T00%3A00%3A00&endtime=2023-04-30T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-04-30T00%3A00%3A00&endtime=2023-05-07T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-05-07T00%3A00%3A00&endtime=2023-05-14T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-05-14T00%3A00%3A00&endtime=2023-05-21T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-05-21T00%3A00%3A00&endtime=2023-05-28T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-05-28T00%3A00%3A00&endtime=2023-06-04T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-06-04T00%3A00%3A00&endtime=2023-06-11T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-06-11T00%3A00%3A00&endtime=2023-06-18T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-06-18T00%3A00%3A00&endtime=2023-06-25T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-06-25T00%3A00%3A00&endtime=2023-07-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-07-02T00%3A00%3A00&endtime=2023-07-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-07-09T00%3A00%3A00&endtime=2023-07-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-07-16T00%3A00%3A00&endtime=2023-07-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-07-23T00%3A00%3A00&endtime=2023-07-30T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-07-30T00%3A00%3A00&endtime=2023-08-06T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-08-06T00%3A00%3A00&endtime=2023-08-13T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-08-13T00%3A00%3A00&endtime=2023-08-20T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-08-20T00%3A00%3A00&endtime=2023-08-27T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-08-27T00%3A00%3A00&endtime=2023-09-03T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-09-03T00%3A00%3A00&endtime=2023-09-10T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-09-10T00%3A00%3A00&endtime=2023-09-17T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-09-17T00%3A00%3A00&endtime=2023-09-24T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-09-24T00%3A00%3A00&endtime=2023-10-01T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-10-01T00%3A00%3A00&endtime=2023-10-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-10-08T00%3A00%3A00&endtime=2023-10-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-10-15T00%3A00%3A00&endtime=2023-10-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-10-22T00%3A00%3A00&endtime=2023-10-29T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-10-29T00%3A00%3A00&endtime=2023-11-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-11-05T00%3A00%3A00&endtime=2023-11-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-11-12T00%3A00%3A00&endtime=2023-11-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-11-19T00%3A00%3A00&endtime=2023-11-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-11-26T00%3A00%3A00&endtime=2023-12-03T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-12-03T00%3A00%3A00&endtime=2023-12-10T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-12-10T00%3A00%3A00&endtime=2023-12-17T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-12-17T00%3A00%3A00&endtime=2023-12-24T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-12-24T00%3A00%3A00&endtime=2023-12-31T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2023-12-31T00%3A00%3A00&endtime=2024-01-07T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-01-07T00%3A00%3A00&endtime=2024-01-14T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-01-14T00%3A00%3A00&endtime=2024-01-21T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-01-21T00%3A00%3A00&endtime=2024-01-28T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-01-28T00%3A00%3A00&endtime=2024-02-04T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-02-04T00%3A00%3A00&endtime=2024-02-11T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-02-11T00%3A00%3A00&endtime=2024-02-18T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-02-18T00%3A00%3A00&endtime=2024-02-25T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-02-25T00%3A00%3A00&endtime=2024-03-03T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-03-03T00%3A00%3A00&endtime=2024-03-10T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-03-10T00%3A00%3A00&endtime=2024-03-17T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-03-17T00%3A00%3A00&endtime=2024-03-24T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-03-24T00%3A00%3A00&endtime=2024-03-31T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-03-31T00%3A00%3A00&endtime=2024-04-07T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-04-07T00%3A00%3A00&endtime=2024-04-14T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-04-14T00%3A00%3A00&endtime=2024-04-21T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-04-21T00%3A00%3A00&endtime=2024-04-28T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-04-28T00%3A00%3A00&endtime=2024-05-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-05-05T00%3A00%3A00&endtime=2024-05-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-05-12T00%3A00%3A00&endtime=2024-05-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-05-19T00%3A00%3A00&endtime=2024-05-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-05-26T00%3A00%3A00&endtime=2024-06-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-06-02T00%3A00%3A00&endtime=2024-06-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-06-09T00%3A00%3A00&endtime=2024-06-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-06-16T00%3A00%3A00&endtime=2024-06-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-06-23T00%3A00%3A00&endtime=2024-06-30T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-06-30T00%3A00%3A00&endtime=2024-07-07T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-07-07T00%3A00%3A00&endtime=2024-07-14T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-07-14T00%3A00%3A00&endtime=2024-07-21T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-07-21T00%3A00%3A00&endtime=2024-07-28T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-07-28T00%3A00%3A00&endtime=2024-08-04T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-08-04T00%3A00%3A00&endtime=2024-08-11T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-08-11T00%3A00%3A00&endtime=2024-08-18T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-08-18T00%3A00%3A00&endtime=2024-08-25T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-08-25T00%3A00%3A00&endtime=2024-09-01T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-09-01T00%3A00%3A00&endtime=2024-09-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-09-08T00%3A00%3A00&endtime=2024-09-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-09-15T00%3A00%3A00&endtime=2024-09-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-09-22T00%3A00%3A00&endtime=2024-09-29T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-09-29T00%3A00%3A00&endtime=2024-10-06T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-10-06T00%3A00%3A00&endtime=2024-10-13T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-10-13T00%3A00%3A00&endtime=2024-10-20T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-10-20T00%3A00%3A00&endtime=2024-10-27T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-10-27T00%3A00%3A00&endtime=2024-11-03T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-11-03T00%3A00%3A00&endtime=2024-11-10T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-11-10T00%3A00%3A00&endtime=2024-11-17T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-11-17T00%3A00%3A00&endtime=2024-11-24T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-11-24T00%3A00%3A00&endtime=2024-12-01T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-12-01T00%3A00%3A00&endtime=2024-12-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-12-08T00%3A00%3A00&endtime=2024-12-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-12-15T00%3A00%3A00&endtime=2024-12-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-12-22T00%3A00%3A00&endtime=2024-12-29T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2024-12-29T00%3A00%3A00&endtime=2025-01-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-01-05T00%3A00%3A00&endtime=2025-01-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-01-12T00%3A00%3A00&endtime=2025-01-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-01-19T00%3A00%3A00&endtime=2025-01-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-01-26T00%3A00%3A00&endtime=2025-01-29T12%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-01-29T12%3A00%3A00&endtime=2025-02-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-02-02T00%3A00%3A00&endtime=2025-02-02T21%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-02-02T21%3A00%3A00&endtime=2025-02-03T18%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-02-03T18%3A00%3A00&endtime=2025-02-05T12%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-02-05T12%3A00%3A00&endtime=2025-02-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-02-09T00%3A00%3A00&endtime=2025-02-12T12%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-02-12T12%3A00%3A00&endtime=2025-02-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-02-16T00%3A00%3A00&endtime=2025-02-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-02-23T00%3A00%3A00&endtime=2025-03-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-03-02T00%3A00%3A00&endtime=2025-03-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-03-09T00%3A00%3A00&endtime=2025-03-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-03-16T00%3A00%3A00&endtime=2025-03-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-03-23T00%3A00%3A00&endtime=2025-03-30T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-03-30T00%3A00%3A00&endtime=2025-04-06T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-04-06T00%3A00%3A00&endtime=2025-04-13T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-04-13T00%3A00%3A00&endtime=2025-04-20T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-04-20T00%3A00%3A00&endtime=2025-04-27T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-04-27T00%3A00%3A00&endtime=2025-05-04T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-05-04T00%3A00%3A00&endtime=2025-05-11T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-05-11T00%3A00%3A00&endtime=2025-05-18T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-05-18T00%3A00%3A00&endtime=2025-05-25T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-05-25T00%3A00%3A00&endtime=2025-06-01T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-06-01T00%3A00%3A00&endtime=2025-06-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-06-08T00%3A00%3A00&endtime=2025-06-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-06-15T00%3A00%3A00&endtime=2025-06-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-06-22T00%3A00%3A00&endtime=2025-06-29T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-06-29T00%3A00%3A00&endtime=2025-07-06T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-07-06T00%3A00%3A00&endtime=2025-07-13T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-07-13T00%3A00%3A00&endtime=2025-07-20T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-07-20T00%3A00%3A00&endtime=2025-07-27T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-07-27T00%3A00%3A00&endtime=2025-08-03T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-08-03T00%3A00%3A00&endtime=2025-08-10T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-08-10T00%3A00%3A00&endtime=2025-08-17T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-08-17T00%3A00%3A00&endtime=2025-08-24T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-08-24T00%3A00%3A00&endtime=2025-08-31T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-08-31T00%3A00%3A00&endtime=2025-09-07T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-09-07T00%3A00%3A00&endtime=2025-09-14T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-09-14T00%3A00%3A00&endtime=2025-09-21T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-09-21T00%3A00%3A00&endtime=2025-09-28T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-09-28T00%3A00%3A00&endtime=2025-10-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-10-05T00%3A00%3A00&endtime=2025-10-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-10-12T00%3A00%3A00&endtime=2025-10-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-10-19T00%3A00%3A00&endtime=2025-10-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-10-26T00%3A00%3A00&endtime=2025-11-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-11-02T00%3A00%3A00&endtime=2025-11-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-11-09T00%3A00%3A00&endtime=2025-11-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-11-16T00%3A00%3A00&endtime=2025-11-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-11-23T00%3A00%3A00&endtime=2025-11-30T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-11-30T00%3A00%3A00&endtime=2025-12-07T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-12-07T00%3A00%3A00&endtime=2025-12-14T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-12-14T00%3A00%3A00&endtime=2025-12-21T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-12-21T00%3A00%3A00&endtime=2025-12-28T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2025-12-28T00%3A00%3A00&endtime=2026-01-04T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-01-04T00%3A00%3A00&endtime=2026-01-11T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-01-11T00%3A00%3A00&endtime=2026-01-18T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-01-18T00%3A00%3A00&endtime=2026-01-25T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-01-25T00%3A00%3A00&endtime=2026-02-01T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-02-01T00%3A00%3A00&endtime=2026-02-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-02-08T00%3A00%3A00&endtime=2026-02-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-02-15T00%3A00%3A00&endtime=2026-02-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-02-22T00%3A00%3A00&endtime=2026-03-01T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-03-01T00%3A00%3A00&endtime=2026-03-08T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-03-08T00%3A00%3A00&endtime=2026-03-15T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-03-15T00%3A00%3A00&endtime=2026-03-22T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-03-22T00%3A00%3A00&endtime=2026-03-29T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-03-29T00%3A00%3A00&endtime=2026-04-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-04-05T00%3A00%3A00&endtime=2026-04-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-04-12T00%3A00%3A00&endtime=2026-04-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-04-19T00%3A00%3A00&endtime=2026-04-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-04-26T00%3A00%3A00&endtime=2026-05-03T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-05-03T00%3A00%3A00&endtime=2026-05-10T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-05-10T00%3A00%3A00&endtime=2026-05-17T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-05-17T00%3A00%3A00&endtime=2026-05-24T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-05-24T00%3A00%3A00&endtime=2026-05-27T12%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-05-27T12%3A00%3A00&endtime=2026-05-31T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-05-31T00%3A00%3A00&endtime=2026-06-07T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-06-07T00%3A00%3A00&endtime=2026-06-10T12%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-06-10T12%3A00%3A00&endtime=2026-06-14T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-06-14T00%3A00%3A00&endtime=2026-06-21T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-06-21T00%3A00%3A00&endtime=2026-06-28T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-06-28T00%3A00%3A00&endtime=2026-07-05T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-07-05T00%3A00%3A00&endtime=2026-07-12T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-07-12T00%3A00%3A00&endtime=2026-07-19T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-07-19T00%3A00%3A00&endtime=2026-07-26T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-07-26T00%3A00%3A00&endtime=2026-08-02T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-08-02T00%3A00%3A00&endtime=2026-08-09T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-08-09T00%3A00%3A00&endtime=2026-08-16T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-08-16T00%3A00%3A00&endtime=2026-08-23T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-08-23T00%3A00%3A00&endtime=2026-08-30T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-08-30T00%3A00%3A00&endtime=2026-09-06T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-09-06T00%3A00%3A00&endtime=2026-09-13T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-09-13T00%3A00%3A00&endtime=2026-09-20T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-09-20T00%3A00%3A00&endtime=2026-09-27T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-09-27T00%3A00%3A00&endtime=2026-10-04T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-10-04T00%3A00%3A00&endtime=2026-10-11T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-10-11T00%3A00%3A00&endtime=2026-10-18T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-10-18T00%3A00%3A00&endtime=2026-10-25T00%3A00%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc",
+   "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2026-10-25T00%3A00%3A00&endtime=2026-10-30T12%3A55%3A36&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc"
+  ],
+  "events": 90382,
+  "canary": {
+   "window": [
+    "2022-01-15T18:08:00",
+    "2022-01-16T01:08:00"
+   ],
+   "centre": [
+    38.5,
+    23.5
+   ],
+   "radius_km": 950.0,
+   "min_events": 5,
+   "events": 14,
+   "request": "https://eida.gein.noa.gr/fdsnws/event/1/query?starttime=2022-01-15T18%3A08%3A00&endtime=2022-01-16T01%3A08%3A00&latitude=38.5&longitude=23.5&maxradius=8.5435&orderby=time-asc"
+  }
+ },
+ "sequences": [
+  {
+   "index": 1,
+   "first": {
+    "time": "2023-02-18T17:32:57.668249",
+    "lat": 35.74996948,
+    "lon": 25.42922974,
+    "depth_km": 27.1436971,
+    "magnitude": 4.690533627,
+    "type": "MLh",
+    "id": "noa2023dlbjv"
+   },
+   "joined": [],
+   "start": "2023-02-18T17:22:57.668249",
+   "end": "2023-02-18T20:22:57.668249",
+   "usable_within_km": 10,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.THERA",
+    "HL.ZKR"
+   ],
+   "assign": "reserve",
+   "coin": 0.6394267984578837,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 2,
+   "first": {
+    "time": "2023-03-21T00:20:14.302973",
+    "lat": 38.96347046,
+    "lon": 21.20773315,
+    "depth_km": 17.78790283,
+    "magnitude": 4.559732367,
+    "type": "MLh",
+    "id": "noa2023fokfp"
+   },
+   "joined": [],
+   "start": "2023-03-21T00:10:14.302973",
+   "end": "2023-03-21T03:10:14.302973",
+   "usable_within_km": 29,
+   "stations": [
+    "HL.EVR",
+    "HL.TETR",
+    "HP.AMPL",
+    "HP.PDO",
+    "HP.PVO",
+    "HT.LKD2",
+    "HT.NYDR",
+    "HT.TSLK"
+   ],
+   "assign": "now",
+   "coin": 0.025010755222666936,
+   "scorable": 41,
+   "cumulative": 41,
+   "selected": true
+  },
+  {
+   "index": 3,
+   "first": {
+    "time": "2023-03-31T16:05:18.743981",
+    "lat": 37.26287842,
+    "lon": 24.03717041,
+    "depth_km": 122.8551839,
+    "magnitude": 4.828710688,
+    "type": "MLh",
+    "id": "noa2023ghwnw"
+   },
+   "joined": [],
+   "start": "2023-03-31T15:55:18.743981",
+   "end": "2023-03-31T18:55:18.743981",
+   "usable_within_km": 16,
+   "stations": [
+    "HA.EPID",
+    "HA.KARY",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.VILL",
+    "HL.ATH",
+    "HL.PTL",
+    "HL.VLI"
+   ],
+   "assign": "now",
+   "coin": 0.27502931836911926,
+   "scorable": 3,
+   "cumulative": 44,
+   "selected": true
+  },
+  {
+   "index": 4,
+   "first": {
+    "time": "2023-04-26T20:00:36.284152",
+    "lat": 36.31988525,
+    "lon": 26.39007568,
+    "depth_km": 108.36511229999999,
+    "magnitude": 5.170864704,
+    "type": "MLh",
+    "id": "noa2023idrqr"
+   },
+   "joined": [],
+   "start": "2023-04-26T19:50:36.284152",
+   "end": "2023-04-26T22:50:36.284152",
+   "usable_within_km": 6,
+   "stations": [
+    "HC.STIA",
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.22321073814882275,
+   "scorable": 2,
+   "cumulative": 46,
+   "selected": true
+  },
+  {
+   "index": 5,
+   "first": {
+    "time": "2023-05-18T18:58:52.140732",
+    "lat": 34.99557495,
+    "lon": 24.83779907,
+    "depth_km": 7.690490723,
+    "magnitude": 5.053485017,
+    "type": "MLh",
+    "id": "noa2023jruxf"
+   },
+   "joined": [],
+   "start": "2023-05-18T18:48:52.140732",
+   "end": "2023-05-18T21:48:52.140732",
+   "usable_within_km": 9,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.IMMV",
+    "HL.SIVA"
+   ],
+   "assign": "reserve",
+   "coin": 0.7364712141640124,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 6,
+   "first": {
+    "time": "2023-06-08T12:33:52.849964",
+    "lat": 38.58627319,
+    "lon": 22.86941528,
+    "depth_km": 6.549540202,
+    "magnitude": 4.756106259,
+    "type": "MLh",
+    "id": "noa2023ldrze"
+   },
+   "joined": [],
+   "start": "2023-06-08T12:23:52.849964",
+   "end": "2023-06-08T15:23:52.849964",
+   "usable_within_km": 33,
+   "stations": [
+    "HA.DOMV",
+    "HA.KALE",
+    "HA.THAL",
+    "HA.THIV",
+    "HA.VILL",
+    "HL.LKR",
+    "HP.DSF",
+    "HP.LTK"
+   ],
+   "assign": "reserve",
+   "coin": 0.6766994874229113,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 7,
+   "first": {
+    "time": "2023-08-13T07:49:31.833879",
+    "lat": 35.26016235,
+    "lon": 23.88565063,
+    "depth_km": 9.230773926,
+    "magnitude": 4.925131222,
+    "type": "MLh",
+    "id": "noa2023ptylz"
+   },
+   "joined": [],
+   "start": "2023-08-13T07:39:31.833879",
+   "end": "2023-08-13T10:39:31.833879",
+   "usable_within_km": 7,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HL.IMMV",
+    "HL.SIVA"
+   ],
+   "assign": "reserve",
+   "coin": 0.8921795677048454,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 8,
+   "first": {
+    "time": "2023-11-03T06:26:37.636797",
+    "lat": 38.73825073,
+    "lon": 23.58078003,
+    "depth_km": 10.62843831,
+    "magnitude": 5.137358894,
+    "type": "MLh",
+    "id": "noa2023vnrvc"
+   },
+   "joined": [],
+   "start": "2023-11-03T06:16:37.636797",
+   "end": "2023-11-03T09:16:37.636797",
+   "usable_within_km": 23,
+   "stations": [
+    "HA.DOMV",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.THIV",
+    "HA.VILL",
+    "HL.LKR",
+    "HL.NEO",
+    "HT.XOR"
+   ],
+   "assign": "now",
+   "coin": 0.08693883262941615,
+   "scorable": 17,
+   "cumulative": 63,
+   "selected": true
+  },
+  {
+   "index": 9,
+   "first": {
+    "time": "2024-01-16T05:20:51.821791",
+    "lat": 37.28439331,
+    "lon": 22.96554565,
+    "depth_km": 14.13686117,
+    "magnitude": 4.761552372,
+    "type": "MLh",
+    "id": "noa2024bbvhl"
+   },
+   "joined": [],
+   "start": "2024-01-16T05:10:51.821791",
+   "end": "2024-01-16T08:10:51.821791",
+   "usable_within_km": 21,
+   "stations": [
+    "HA.ACOR",
+    "HA.EPID",
+    "HA.LOUT",
+    "HA.THAL",
+    "HL.VLI",
+    "HP.GUR",
+    "HP.LTK",
+    "HP.VLX"
+   ],
+   "assign": "now",
+   "coin": 0.4219218196852704,
+   "scorable": 15,
+   "cumulative": 78,
+   "selected": true
+  },
+  {
+   "index": 10,
+   "first": {
+    "time": "2024-01-19T14:14:13.530806",
+    "lat": 38.57391357,
+    "lon": 24.36309814,
+    "depth_km": 13.78031413,
+    "magnitude": 4.767116061,
+    "type": "MLh",
+    "id": "noa2024bhzla"
+   },
+   "joined": [],
+   "start": "2024-01-19T14:04:13.530806",
+   "end": "2024-01-19T17:04:13.530806",
+   "usable_within_km": 13,
+   "stations": [
+    "HA.KARY",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.THIV",
+    "HA.VILL",
+    "HL.ATH",
+    "HL.LKR",
+    "HL.PTL"
+   ],
+   "assign": "now",
+   "coin": 0.029797219438070344,
+   "scorable": 21,
+   "cumulative": 99,
+   "selected": true
+  },
+  {
+   "index": 11,
+   "first": {
+    "time": "2024-03-29T07:12:48.705687",
+    "lat": 37.20977783,
+    "lon": 21.19354248,
+    "depth_km": 29.58247884,
+    "magnitude": 5.82015477,
+    "type": "MLh",
+    "id": "noa2024gfjkv"
+   },
+   "joined": [],
+   "start": "2024-03-29T07:02:48.705687",
+   "end": "2024-03-29T10:02:48.705687",
+   "usable_within_km": 18,
+   "stations": [
+    "HL.ITM",
+    "HL.ORTH",
+    "HL.RLS",
+    "HP.AMT",
+    "HP.AXS",
+    "HP.DRO",
+    "HP.LTHK",
+    "HP.VLX"
+   ],
+   "assign": "now",
+   "coin": 0.21863797480360336,
+   "scorable": 15,
+   "cumulative": 114,
+   "selected": true
+  },
+  {
+   "index": 12,
+   "first": {
+    "time": "2024-04-13T02:23:14.535396",
+    "lat": 38.95339966,
+    "lon": 23.36929321,
+    "depth_km": 14.30800374,
+    "magnitude": 4.535183799,
+    "type": "MLh",
+    "id": "noa2024hgkpj"
+   },
+   "joined": [],
+   "start": "2024-04-13T02:13:14.535396",
+   "end": "2024-04-13T05:13:14.535396",
+   "usable_within_km": 25,
+   "stations": [
+    "HA.DOMV",
+    "HA.MDRA",
+    "HA.THIV",
+    "HA.VILL",
+    "HL.LKR",
+    "HL.NEO",
+    "HP.DSF",
+    "HT.XOR"
+   ],
+   "assign": "reserve",
+   "coin": 0.5053552881033624,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 13,
+   "first": {
+    "time": "2024-07-02T19:34:32.623228",
+    "lat": 34.66278076,
+    "lon": 24.78790283,
+    "depth_km": 5.508422852,
+    "magnitude": 4.597457369,
+    "type": "MLh",
+    "id": "noa2024mxxrs"
+   },
+   "joined": [],
+   "start": "2024-07-02T19:24:32.623228",
+   "end": "2024-07-02T22:24:32.623228",
+   "usable_within_km": 9,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.IMMV",
+    "HL.SIVA"
+   ],
+   "assign": "now",
+   "coin": 0.026535969683863625,
+   "scorable": 5,
+   "cumulative": 119,
+   "selected": true
+  },
+  {
+   "index": 14,
+   "first": {
+    "time": "2024-07-06T17:34:29.746167",
+    "lat": 37.8465271,
+    "lon": 21.18026733,
+    "depth_km": 11.08481852,
+    "magnitude": 4.925109928,
+    "type": "MLh",
+    "id": "noa2024nfbtu"
+   },
+   "joined": [],
+   "start": "2024-07-06T17:24:29.746167",
+   "end": "2024-07-06T20:24:29.746167",
+   "usable_within_km": 31,
+   "stations": [
+    "HL.ORTH",
+    "HL.RLS",
+    "HL.VLS",
+    "HP.AMT",
+    "HP.AXS",
+    "HP.DRO",
+    "HP.LTHK",
+    "HP.PLEV"
+   ],
+   "assign": "now",
+   "coin": 0.1988376506866485,
+   "scorable": 24,
+   "cumulative": 143,
+   "selected": true
+  },
+  {
+   "index": 15,
+   "first": {
+    "time": "2024-07-07T14:41:04.238807",
+    "lat": 37.82546997,
+    "lon": 21.18301392,
+    "depth_km": 6.235778809,
+    "magnitude": 4.748689417,
+    "type": "MLh",
+    "id": "noa2024ngroo"
+   },
+   "joined": [],
+   "start": "2024-07-07T14:31:04.238807",
+   "end": "2024-07-07T17:31:04.238807",
+   "usable_within_km": 31,
+   "stations": [
+    "HL.ORTH",
+    "HL.RLS",
+    "HL.VLS",
+    "HP.AMT",
+    "HP.AXS",
+    "HP.DRO",
+    "HP.LTHK",
+    "HP.PLEV"
+   ],
+   "assign": "reserve",
+   "coin": 0.6498844377795232,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 16,
+   "first": {
+    "time": "2024-07-21T04:01:29.936429",
+    "lat": 34.88708496,
+    "lon": 23.18664551,
+    "depth_km": 21.68139648,
+    "magnitude": 5.259387182,
+    "type": "MLh",
+    "id": "noa2024oflqw"
+   },
+   "joined": [],
+   "start": "2024-07-21T03:51:29.936429",
+   "end": "2024-07-21T06:51:29.936429",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HL.IMMV",
+    "HL.SIVA"
+   ],
+   "assign": "reserve",
+   "coin": 0.5449414806032167,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 17,
+   "first": {
+    "time": "2024-07-26T16:02:27.501217",
+    "lat": 35.64056396,
+    "lon": 25.61737061,
+    "depth_km": 14.23669434,
+    "magnitude": 4.522468303,
+    "type": "MLh",
+    "id": "noa2024opmzz"
+   },
+   "joined": [],
+   "start": "2024-07-26T15:52:27.501217",
+   "end": "2024-07-26T18:52:27.501217",
+   "usable_within_km": 9,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.THERA",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.2204406220406967,
+   "scorable": 6,
+   "cumulative": 149,
+   "selected": true
+  },
+  {
+   "index": 18,
+   "first": {
+    "time": "2024-08-07T08:23:52.987989",
+    "lat": 34.82803345,
+    "lon": 24.90188599,
+    "depth_km": 5.814261881999999,
+    "magnitude": 4.83976794,
+    "type": "MLh",
+    "id": "noa2024pkwav"
+   },
+   "joined": [
+    {
+     "time": "2024-08-07T08:47:53.005473",
+     "lat": 34.75021362,
+     "lon": 24.90188599,
+     "depth_km": 5.014261882,
+     "magnitude": 4.544565709,
+     "type": "MLh",
+     "id": "noa2024pkwvi"
+    }
+   ],
+   "start": "2024-08-07T08:13:52.987989",
+   "end": "2024-08-07T11:13:52.987989",
+   "usable_within_km": 9,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.IMMV",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "reserve",
+   "coin": 0.5892656838759087,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 19,
+   "first": {
+    "time": "2024-08-28T16:29:55.044398",
+    "lat": 34.9017334,
+    "lon": 24.21936035,
+    "depth_km": 13.58064779,
+    "magnitude": 5.174883974,
+    "type": "MLh",
+    "id": "noa2024qxvvx"
+   },
+   "joined": [],
+   "start": "2024-08-28T16:19:55.044398",
+   "end": "2024-08-28T19:19:55.044398",
+   "usable_within_km": 7,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HL.IMMV",
+    "HL.SIVA"
+   ],
+   "assign": "reserve",
+   "coin": 0.8094304566778266,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 20,
+   "first": {
+    "time": "2024-09-22T09:50:23.586239",
+    "lat": 40.29006958,
+    "lon": 24.12918091,
+    "depth_km": 14.27947998,
+    "magnitude": 4.579195385,
+    "type": "MLh",
+    "id": "noa2024sramu"
+   },
+   "joined": [],
+   "start": "2024-09-22T09:40:23.586239",
+   "end": "2024-09-22T12:40:23.586239",
+   "usable_within_km": 14,
+   "stations": [
+    "HL.PLG",
+    "HT.HORT",
+    "HT.KAVA",
+    "HT.KOKK",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.SOH",
+    "HT.THAS"
+   ],
+   "assign": "now",
+   "coin": 0.006498759678061017,
+   "scorable": 29,
+   "cumulative": 178,
+   "selected": true
+  },
+  {
+   "index": 21,
+   "first": {
+    "time": "2024-10-19T07:08:30.525823",
+    "lat": 34.871521,
+    "lon": 26.31317139,
+    "depth_km": 8.075561523000001,
+    "magnitude": 4.835700262,
+    "type": "MLh",
+    "id": "noa2024uoeaf"
+   },
+   "joined": [],
+   "start": "2024-10-19T06:58:30.525823",
+   "end": "2024-10-19T09:58:30.525823",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "reserve",
+   "coin": 0.8058192518328079,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 22,
+   "first": {
+    "time": "2024-11-03T17:03:51.376113",
+    "lat": 40.13534546,
+    "lon": 23.24752808,
+    "depth_km": 15.04962158,
+    "magnitude": 5.194262391,
+    "type": "MLh",
+    "id": "noa2024vqijd"
+   },
+   "joined": [],
+   "start": "2024-11-03T16:53:51.376113",
+   "end": "2024-11-03T19:53:51.376113",
+   "usable_within_km": 14,
+   "stations": [
+    "HL.NEO",
+    "HL.PLG",
+    "HT.HORT",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.SOH",
+    "HT.THE",
+    "HT.XOR"
+   ],
+   "assign": "reserve",
+   "coin": 0.6981393949882269,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 23,
+   "first": {
+    "time": "2024-12-13T08:34:12.253946",
+    "lat": 40.27908325,
+    "lon": 24.12918091,
+    "depth_km": 13.65195719,
+    "magnitude": 4.588409927,
+    "type": "MLh",
+    "id": "noa2024ykubr"
+   },
+   "joined": [],
+   "start": "2024-12-13T08:24:12.253946",
+   "end": "2024-12-13T11:24:12.253946",
+   "usable_within_km": 14,
+   "stations": [
+    "HL.PLG",
+    "HT.HORT",
+    "HT.KAVA",
+    "HT.KOKK",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.SOH",
+    "HT.THAS"
+   ],
+   "assign": "now",
+   "coin": 0.3402505165179919,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 24,
+   "first": {
+    "time": "2024-12-21T16:29:51.532934",
+    "lat": 38.55789185,
+    "lon": 21.62155151,
+    "depth_km": 11.39857992,
+    "magnitude": 4.681654697,
+    "type": "MLh",
+    "id": "noa2024yzzwh"
+   },
+   "joined": [],
+   "start": "2024-12-21T16:19:51.532934",
+   "end": "2024-12-21T19:19:51.532934",
+   "usable_within_km": 37,
+   "stations": [
+    "HL.EVR",
+    "HP.ANX",
+    "HP.EFP",
+    "HP.PDO",
+    "HP.PLEV",
+    "HP.PVO",
+    "HP.UPR",
+    "HP.VVK"
+   ],
+   "assign": "now",
+   "coin": 0.15547949981178155,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 25,
+   "first": {
+    "time": "2024-12-22T19:09:56.939392",
+    "lat": 34.75708008,
+    "lon": 26.26098633,
+    "depth_km": 41.36279297,
+    "magnitude": 4.758541611,
+    "type": "MLh",
+    "id": "noa2024zcare"
+   },
+   "joined": [],
+   "start": "2024-12-22T18:59:56.939392",
+   "end": "2024-12-22T21:59:56.939392",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "reserve",
+   "coin": 0.9572130722067812,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 26,
+   "first": {
+    "time": "2025-01-06T09:47:56.897126",
+    "lat": 37.39059448,
+    "lon": 21.67098999,
+    "depth_km": 15.53452555,
+    "magnitude": 4.551279066,
+    "type": "MLh",
+    "id": "noa2025ajwzc"
+   },
+   "joined": [],
+   "start": "2025-01-06T09:37:56.897126",
+   "end": "2025-01-06T12:37:56.897126",
+   "usable_within_km": 28,
+   "stations": [
+    "HL.ITM",
+    "HL.KLV",
+    "HL.RLS",
+    "HP.AMT",
+    "HP.DRO",
+    "HP.GUR",
+    "HP.LTHK",
+    "HP.VLX"
+   ],
+   "assign": "now",
+   "coin": 0.33659454511262676,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 27,
+   "first": {
+    "time": "2025-02-03T08:01:02.461707",
+    "lat": 38.94882202,
+    "lon": 24.20974731,
+    "depth_km": 14.39357503,
+    "magnitude": 4.505164172,
+    "type": "MLh",
+    "id": "noa2025cixvb"
+   },
+   "joined": [],
+   "start": "2025-02-03T07:51:02.461707",
+   "end": "2025-02-03T10:51:02.461707",
+   "usable_within_km": 13,
+   "stations": [
+    "HA.KARY",
+    "HA.MRTH",
+    "HA.THIV",
+    "HL.ATH",
+    "HL.LKR",
+    "HL.NEO",
+    "HL.PTL",
+    "HT.XOR"
+   ],
+   "assign": "now",
+   "coin": 0.09274584338014791,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 28,
+   "first": {
+    "time": "2025-02-04T12:36:50.788860",
+    "lat": 36.57852173,
+    "lon": 25.64804077,
+    "depth_km": 14.87139079,
+    "magnitude": 4.708168494,
+    "type": "MLh",
+    "id": "noa2025clckg"
+   },
+   "joined": [],
+   "start": "2025-02-04T12:26:50.788860",
+   "end": "2025-02-04T15:26:50.788860",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA"
+   ],
+   "assign": "now",
+   "coin": 0.09671637683346401,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 29,
+   "first": {
+    "time": "2025-02-06T05:51:47.000259",
+    "lat": 36.57943726,
+    "lon": 25.66085815,
+    "depth_km": 13.15963135,
+    "magnitude": 4.574592363,
+    "type": "MLh",
+    "id": "noa2025cogce"
+   },
+   "joined": [],
+   "start": "2025-02-06T05:41:47.000259",
+   "end": "2025-02-06T08:41:47.000259",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.8474943663474598,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 30,
+   "first": {
+    "time": "2025-02-06T18:16:44.819105",
+    "lat": 36.57669067,
+    "lon": 25.66452026,
+    "depth_km": 14.76438395,
+    "magnitude": 4.57460013,
+    "type": "MLh",
+    "id": "noa2025cperh"
+   },
+   "joined": [],
+   "start": "2025-02-06T18:06:44.819105",
+   "end": "2025-02-06T21:06:44.819105",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.6037260313668911,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 31,
+   "first": {
+    "time": "2025-02-07T07:16:14.819378",
+    "lat": 36.57943726,
+    "lon": 25.63613892,
+    "depth_km": 11.96905518,
+    "magnitude": 4.826485142,
+    "type": "MLh",
+    "id": "noa2025cqejz"
+   },
+   "joined": [],
+   "start": "2025-02-07T07:06:14.819378",
+   "end": "2025-02-07T10:06:14.819378",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.8071282732743802,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 32,
+   "first": {
+    "time": "2025-02-08T08:36:04.145663",
+    "lat": 36.57669067,
+    "lon": 25.68374634,
+    "depth_km": 12.68214925,
+    "magnitude": 4.559796586,
+    "type": "MLh",
+    "id": "noa2025cscnv"
+   },
+   "joined": [
+    {
+     "time": "2025-02-08T09:00:40.858368",
+     "lat": 36.57531738,
+     "lon": 25.68786621,
+     "depth_km": 14.60750326,
+     "magnitude": 4.932425614,
+     "type": "MLh",
+     "id": "noa2025csdix"
+    },
+    {
+     "time": "2025-02-08T09:24:04.221322",
+     "lat": 36.56936646,
+     "lon": 25.65353394,
+     "depth_km": 14.621765139999999,
+     "magnitude": 4.557731782,
+     "type": "MLh",
+     "id": "noa2025csecz"
+    }
+   ],
+   "start": "2025-02-08T08:26:04.145663",
+   "end": "2025-02-08T11:26:04.145663",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.7297317866938179,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 33,
+   "first": {
+    "time": "2025-02-10T11:23:17.529199",
+    "lat": 36.68746948,
+    "lon": 25.81192017,
+    "depth_km": 17.67380778,
+    "magnitude": 4.939682012,
+    "type": "MLh",
+    "id": "noa2025cvzbp"
+   },
+   "joined": [],
+   "start": "2025-02-10T11:13:17.529199",
+   "end": "2025-02-10T14:13:17.529199",
+   "usable_within_km": 5,
+   "stations": [
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.SMG",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.5362280914547007,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 34,
+   "first": {
+    "time": "2025-02-10T20:16:28.905318",
+    "lat": 36.68380737,
+    "lon": 25.78170776,
+    "depth_km": 11.826436359999999,
+    "magnitude": 5.269814123,
+    "type": "MLh",
+    "id": "noa2025cwqqj"
+   },
+   "joined": [],
+   "start": "2025-02-10T20:06:28.905318",
+   "end": "2025-02-10T23:06:28.905318",
+   "usable_within_km": 5,
+   "stations": [
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.SMG",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.9731157639793706,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 35,
+   "first": {
+    "time": "2025-02-11T05:58:44.749419",
+    "lat": 36.68380737,
+    "lon": 25.81558228,
+    "depth_km": 14.79290771,
+    "magnitude": 4.757291987,
+    "type": "MLh",
+    "id": "noa2025cxjwx"
+   },
+   "joined": [
+    {
+     "time": "2025-02-11T06:00:29.280707",
+     "lat": 36.6947937,
+     "lon": 25.80459595,
+     "depth_km": 13.16705322,
+     "magnitude": 4.534111805,
+     "type": "MLh",
+     "id": "noa2025cxjyj"
+    },
+    {
+     "time": "2025-02-11T06:39:57.574357",
+     "lat": 36.69250488,
+     "lon": 25.84899902,
+     "depth_km": 14.4934082,
+     "magnitude": 4.636701133,
+     "type": "MLh",
+     "id": "noa2025cxlgg"
+    },
+    {
+     "time": "2025-02-11T07:17:18.899633",
+     "lat": 36.66366577,
+     "lon": 25.76339722,
+     "depth_km": 15.81976318,
+     "magnitude": 4.846579744,
+     "type": "MLh",
+     "id": "noa2025cxmmh"
+    }
+   ],
+   "start": "2025-02-11T05:48:44.749419",
+   "end": "2025-02-11T08:48:44.749419",
+   "usable_within_km": 5,
+   "stations": [
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.SMG",
+    "HL.THERA"
+   ],
+   "assign": "now",
+   "coin": 0.3785343772083535,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 36,
+   "first": {
+    "time": "2025-02-11T11:43:54.163079",
+    "lat": 36.67831421,
+    "lon": 25.75881958,
+    "depth_km": 11.31300863,
+    "magnitude": 4.765914033,
+    "type": "MLh",
+    "id": "noa2025cxvgp"
+   },
+   "joined": [],
+   "start": "2025-02-11T11:33:54.163079",
+   "end": "2025-02-11T14:33:54.163079",
+   "usable_within_km": 5,
+   "stations": [
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.SMG",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.552040631273227,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 37,
+   "first": {
+    "time": "2025-02-12T02:14:20.210822",
+    "lat": 36.59957886,
+    "lon": 25.64346313,
+    "depth_km": 14.30800374,
+    "magnitude": 4.552665211,
+    "type": "MLh",
+    "id": "noa2025cyxzs"
+   },
+   "joined": [],
+   "start": "2025-02-12T02:04:20.210822",
+   "end": "2025-02-12T05:04:20.210822",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.8294046642529949,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 38,
+   "first": {
+    "time": "2025-02-12T08:29:50.734816",
+    "lat": 36.587677,
+    "lon": 25.63430786,
+    "depth_km": 16.21909587,
+    "magnitude": 4.858006057,
+    "type": "MLh",
+    "id": "noa2025czkjr"
+   },
+   "joined": [
+    {
+     "time": "2025-02-12T09:15:07.424173",
+     "lat": 36.5977478,
+     "lon": 25.64254761,
+     "depth_km": 8.774393717,
+     "magnitude": 4.695759939,
+     "type": "MLh",
+     "id": "noa2025czlws"
+    },
+    {
+     "time": "2025-02-12T09:20:41.536493",
+     "lat": 36.57943726,
+     "lon": 25.69015503,
+     "depth_km": 12.71067301,
+     "magnitude": 4.566068349,
+     "type": "MLh",
+     "id": "noa2025czmbj"
+    }
+   ],
+   "start": "2025-02-12T08:19:50.734816",
+   "end": "2025-02-12T11:19:50.734816",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.6185197523642461,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 39,
+   "first": {
+    "time": "2025-02-15T16:11:48.988308",
+    "lat": 40.29464722,
+    "lon": 24.11087036,
+    "depth_km": 12.0261027,
+    "magnitude": 4.710077899,
+    "type": "MLh",
+    "id": "noa2025dfmef"
+   },
+   "joined": [],
+   "start": "2025-02-15T16:01:48.988308",
+   "end": "2025-02-15T19:01:48.988308",
+   "usable_within_km": 14,
+   "stations": [
+    "HL.PLG",
+    "HT.HORT",
+    "HT.KAVA",
+    "HT.KOKK",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.SOH",
+    "HT.THAS"
+   ],
+   "assign": "reserve",
+   "coin": 0.8617069003107772,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 40,
+   "first": {
+    "time": "2025-02-18T04:46:52.587974",
+    "lat": 36.63803101,
+    "lon": 25.84121704,
+    "depth_km": 12.99591064,
+    "magnitude": 4.982186104,
+    "type": "MLh",
+    "id": "noa2025dkccq"
+   },
+   "joined": [],
+   "start": "2025-02-18T04:36:52.587974",
+   "end": "2025-02-18T07:36:52.587974",
+   "usable_within_km": 5,
+   "stations": [
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.SMG",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.577352145256762,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 41,
+   "first": {
+    "time": "2025-02-18T16:54:34.324678",
+    "lat": 38.00949097,
+    "lon": 21.10519409,
+    "depth_km": 14.05128988,
+    "magnitude": 4.983943926,
+    "type": "MLh",
+    "id": "noa2025dlacx"
+   },
+   "joined": [],
+   "start": "2025-02-18T16:44:34.324678",
+   "end": "2025-02-18T19:44:34.324678",
+   "usable_within_km": 32,
+   "stations": [
+    "HL.ORTH",
+    "HL.RLS",
+    "HL.VLS",
+    "HP.AXS",
+    "HP.DRO",
+    "HP.LTHK",
+    "HP.PDO",
+    "HP.PLEV"
+   ],
+   "assign": "reserve",
+   "coin": 0.7045718362149235,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 42,
+   "first": {
+    "time": "2025-03-09T00:13:09.083706",
+    "lat": 37.49679565,
+    "lon": 21.76071167,
+    "depth_km": 19.98423258,
+    "magnitude": 4.739364654,
+    "type": "MLh",
+    "id": "noa2025eslvi"
+   },
+   "joined": [],
+   "start": "2025-03-09T00:03:09.083706",
+   "end": "2025-03-09T03:03:09.083706",
+   "usable_within_km": 30,
+   "stations": [
+    "HL.ITM",
+    "HL.KLV",
+    "HL.RLS",
+    "HP.AMT",
+    "HP.DRO",
+    "HP.GUR",
+    "HP.LTHK",
+    "HP.VLX"
+   ],
+   "assign": "now",
+   "coin": 0.045824383655662215,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 43,
+   "first": {
+    "time": "2025-03-14T15:40:05.279428",
+    "lat": 34.30847168,
+    "lon": 25.2557373,
+    "depth_km": 32.52042643,
+    "magnitude": 4.840444517,
+    "type": "MLh",
+    "id": "noa2025fctzh"
+   },
+   "joined": [],
+   "start": "2025-03-14T15:30:05.279428",
+   "end": "2025-03-14T18:30:05.279428",
+   "usable_within_km": 6,
+   "stations": [
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.22789827565154686,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 44,
+   "first": {
+    "time": "2025-04-06T18:44:15.347194",
+    "lat": 38.09646606,
+    "lon": 21.96762085,
+    "depth_km": 19.099995930000002,
+    "magnitude": 4.566098274,
+    "type": "MLh",
+    "id": "noa2025gtawe"
+   },
+   "joined": [],
+   "start": "2025-04-06T18:34:15.347194",
+   "end": "2025-04-06T21:34:15.347194",
+   "usable_within_km": 39,
+   "stations": [
+    "HA.KALE",
+    "HL.KLV",
+    "HL.RLS",
+    "HP.DRO",
+    "HP.EFP",
+    "HP.GUR",
+    "HP.UPR",
+    "HP.VVK"
+   ],
+   "assign": "now",
+   "coin": 0.28938796360210717,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 45,
+   "first": {
+    "time": "2025-05-12T23:30:10.629853",
+    "lat": 36.70669556,
+    "lon": 25.7093811,
+    "depth_km": 7.719014486,
+    "magnitude": 4.623492178,
+    "type": "MLh",
+    "id": "noa2025jhetx"
+   },
+   "joined": [],
+   "start": "2025-05-12T23:20:10.629853",
+   "end": "2025-05-13T02:20:10.629853",
+   "usable_within_km": 5,
+   "stations": [
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.SMG",
+    "HL.THERA"
+   ],
+   "assign": "now",
+   "coin": 0.0797919769236275,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 46,
+   "first": {
+    "time": "2025-05-19T00:23:31.893152",
+    "lat": 38.74008179,
+    "lon": 23.54507446,
+    "depth_km": 13.623433429999999,
+    "magnitude": 4.504295366,
+    "type": "MLh",
+    "id": "noa2025jsfps"
+   },
+   "joined": [],
+   "start": "2025-05-19T00:13:31.893152",
+   "end": "2025-05-19T03:13:31.893152",
+   "usable_within_km": 23,
+   "stations": [
+    "HA.DOMV",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.THIV",
+    "HA.VILL",
+    "HL.LKR",
+    "HL.NEO",
+    "HT.XOR"
+   ],
+   "assign": "now",
+   "coin": 0.23279088636103018,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 47,
+   "first": {
+    "time": "2025-05-22T03:19:37.243303",
+    "lat": 35.70098877,
+    "lon": 25.90667725,
+    "depth_km": 60.33109538,
+    "magnitude": 6.131323527,
+    "type": "MLh",
+    "id": "noa2025jxxyv"
+   },
+   "joined": [],
+   "start": "2025-05-22T03:09:37.243303",
+   "end": "2025-05-22T06:09:37.243303",
+   "usable_within_km": 9,
+   "stations": [
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.NISR",
+    "HL.SIVA",
+    "HL.THERA",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.10100142940972912,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 48,
+   "first": {
+    "time": "2025-05-27T00:06:32.027538",
+    "lat": 38.29055786,
+    "lon": 22.48764038,
+    "depth_km": 13.509338379999999,
+    "magnitude": 4.769873197,
+    "type": "MLh",
+    "id": "noa2025kgvds"
+   },
+   "joined": [],
+   "start": "2025-05-26T23:56:32.027538",
+   "end": "2025-05-27T02:56:32.027538",
+   "usable_within_km": 35,
+   "stations": [
+    "HA.DOMV",
+    "HA.KALE",
+    "HA.THAL",
+    "HL.KLV",
+    "HP.DSF",
+    "HP.EFP",
+    "HP.GUR",
+    "HP.LTK"
+   ],
+   "assign": "now",
+   "coin": 0.2779736031100921,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 49,
+   "first": {
+    "time": "2025-06-03T11:26:30.914222",
+    "lat": 34.85137939,
+    "lon": 25.85357666,
+    "depth_km": 9.159464518,
+    "magnitude": 5.316597107,
+    "type": "MLh",
+    "id": "noa2025kumer"
+   },
+   "joined": [],
+   "start": "2025-06-03T11:16:30.914222",
+   "end": "2025-06-03T14:16:30.914222",
+   "usable_within_km": 6,
+   "stations": [
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "reserve",
+   "coin": 0.6356844442644002,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 50,
+   "first": {
+    "time": "2025-06-05T05:18:37.328957",
+    "lat": 40.11886597,
+    "lon": 24.89639282,
+    "depth_km": 14.39357503,
+    "magnitude": 4.627485122,
+    "type": "MLh",
+    "id": "noa2025kxrbt"
+   },
+   "joined": [],
+   "start": "2025-06-05T05:08:37.328957",
+   "end": "2025-06-05T08:08:37.328957",
+   "usable_within_km": 8,
+   "stations": [
+    "HL.PLG",
+    "HL.PRAS",
+    "HL.RDO",
+    "HT.KAVA",
+    "HT.KOKK",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.THAS"
+   ],
+   "assign": "now",
+   "coin": 0.36483217897008424,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 51,
+   "first": {
+    "time": "2025-06-07T12:46:19.439427",
+    "lat": 40.2772522,
+    "lon": 24.14749146,
+    "depth_km": 11.96905518,
+    "magnitude": 5.287100552,
+    "type": "MLh",
+    "id": "noa2025lbwwn"
+   },
+   "joined": [],
+   "start": "2025-06-07T12:36:19.439427",
+   "end": "2025-06-07T15:36:19.439427",
+   "usable_within_km": 14,
+   "stations": [
+    "HL.PLG",
+    "HT.HORT",
+    "HT.KAVA",
+    "HT.KOKK",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.SOH",
+    "HT.THAS"
+   ],
+   "assign": "now",
+   "coin": 0.37018096711688264,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 52,
+   "first": {
+    "time": "2025-06-20T13:53:42.155078",
+    "lat": 34.83673096,
+    "lon": 23.36700439,
+    "depth_km": 27.41467285,
+    "magnitude": 4.519762675,
+    "type": "MLh",
+    "id": "noa2025lzstu"
+   },
+   "joined": [],
+   "start": "2025-06-20T13:43:42.155078",
+   "end": "2025-06-20T16:43:42.155078",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HL.IMMV",
+    "HL.SIVA"
+   ],
+   "assign": "now",
+   "coin": 0.2095070307714877,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 53,
+   "first": {
+    "time": "2025-06-20T16:18:56.025731",
+    "lat": 36.67739868,
+    "lon": 25.74234009,
+    "depth_km": 14.59324137,
+    "magnitude": 4.557018085,
+    "type": "MLh",
+    "id": "noa2025lzxoj"
+   },
+   "joined": [],
+   "start": "2025-06-20T16:08:56.025731",
+   "end": "2025-06-20T19:08:56.025731",
+   "usable_within_km": 5,
+   "stations": [
+    "HL.APE",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.SMG",
+    "HL.THERA"
+   ],
+   "assign": "now",
+   "coin": 0.26697782204911336,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 54,
+   "first": {
+    "time": "2025-06-21T13:25:52.295952",
+    "lat": 37.98568726,
+    "lon": 20.20706177,
+    "depth_km": 25.86012777,
+    "magnitude": 4.62325738,
+    "type": "MLh",
+    "id": "noa2025mbnjg"
+   },
+   "joined": [],
+   "start": "2025-06-21T13:15:52.295952",
+   "end": "2025-06-21T16:15:52.295952",
+   "usable_within_km": 21,
+   "stations": [
+    "HA.ATHR",
+    "HA.HAVD",
+    "HL.ORTH",
+    "HL.VLS",
+    "HP.FSK",
+    "HP.LTHK",
+    "HT.EVGI",
+    "HT.NYDR"
+   ],
+   "assign": "reserve",
+   "coin": 0.936654587712494,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 55,
+   "first": {
+    "time": "2025-07-11T16:24:03.244054",
+    "lat": 37.12738037,
+    "lon": 20.37139893,
+    "depth_km": 12.46822103,
+    "magnitude": 4.956035588,
+    "type": "MLh",
+    "id": "noa2025nmhna"
+   },
+   "joined": [],
+   "start": "2025-07-11T16:14:03.244054",
+   "end": "2025-07-11T19:14:03.244054",
+   "usable_within_km": 11,
+   "stations": [
+    "HA.ATHR",
+    "HA.HAVD",
+    "HL.ITM",
+    "HL.ORTH",
+    "HL.RLS",
+    "HL.VLS",
+    "HP.AMT",
+    "HP.LTHK"
+   ],
+   "assign": "reserve",
+   "coin": 0.6480353852465935,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 56,
+   "first": {
+    "time": "2025-07-23T13:26:55.229893",
+    "lat": 35.80169678,
+    "lon": 23.49884033,
+    "depth_km": 60.844523110000004,
+    "magnitude": 5.051845503,
+    "type": "MLh",
+    "id": "noa2025ohzve"
+   },
+   "joined": [],
+   "start": "2025-07-23T13:16:55.229893",
+   "end": "2025-07-23T16:16:55.229893",
+   "usable_within_km": 6,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HL.IMMV",
+    "HL.SIVA",
+    "HL.VLI"
+   ],
+   "assign": "reserve",
+   "coin": 0.6091310056669882,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 57,
+   "first": {
+    "time": "2025-08-07T09:49:01.225199",
+    "lat": 37.09487915,
+    "lon": 21.8989563,
+    "depth_km": 18.84328206,
+    "magnitude": 4.712658079,
+    "type": "MLh",
+    "id": "noa2025pjdif"
+   },
+   "joined": [],
+   "start": "2025-08-07T09:39:01.225199",
+   "end": "2025-08-07T12:39:01.225199",
+   "usable_within_km": 20,
+   "stations": [
+    "HL.ITM",
+    "HL.KLV",
+    "HL.RLS",
+    "HL.VLI",
+    "HP.AMT",
+    "HP.DRO",
+    "HP.GUR",
+    "HP.VLX"
+   ],
+   "assign": "now",
+   "coin": 0.171138648198097,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 58,
+   "first": {
+    "time": "2025-08-13T17:39:14.698839",
+    "lat": 36.32537842,
+    "lon": 26.90093994,
+    "depth_km": 121.2008057,
+    "magnitude": 4.631064115,
+    "type": "MLh",
+    "id": "noa2025purxy"
+   },
+   "joined": [],
+   "start": "2025-08-13T17:29:14.698839",
+   "end": "2025-08-13T20:29:14.698839",
+   "usable_within_km": 7,
+   "stations": [
+    "HC.STIA",
+    "HL.APE",
+    "HL.ARG",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.THERA",
+    "HL.ZKR"
+   ],
+   "assign": "reserve",
+   "coin": 0.7291267979503492,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 59,
+   "first": {
+    "time": "2025-09-08T21:27:56.771186",
+    "lat": 38.19992065,
+    "lon": 24.15390015,
+    "depth_km": 13.566385899999998,
+    "magnitude": 5.213713061,
+    "type": "MLh",
+    "id": "noa2025rqmvb"
+   },
+   "joined": [],
+   "start": "2025-09-08T21:17:56.771186",
+   "end": "2025-09-09T00:17:56.771186",
+   "usable_within_km": 16,
+   "stations": [
+    "HA.DOMV",
+    "HA.KARY",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.THIV",
+    "HA.VILL",
+    "HL.ATH",
+    "HL.PTL"
+   ],
+   "assign": "now",
+   "coin": 0.1634024937619284,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 60,
+   "first": {
+    "time": "2025-09-22T01:20:00.168233",
+    "lat": 40.27267456,
+    "lon": 24.13650513,
+    "depth_km": 8.375061035,
+    "magnitude": 4.751094105,
+    "type": "MLh",
+    "id": "noa2025soodp"
+   },
+   "joined": [],
+   "start": "2025-09-22T01:10:00.168233",
+   "end": "2025-09-22T04:10:00.168233",
+   "usable_within_km": 14,
+   "stations": [
+    "HL.PLG",
+    "HT.HORT",
+    "HT.KAVA",
+    "HT.KOKK",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.SOH",
+    "HT.THAS"
+   ],
+   "assign": "now",
+   "coin": 0.3794554417576478,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 61,
+   "first": {
+    "time": "2025-11-17T21:04:09.993758",
+    "lat": 38.99002075,
+    "lon": 24.21890259,
+    "depth_km": 15.90533447,
+    "magnitude": 4.55635269,
+    "type": "MLh",
+    "id": "noa2025wojyt"
+   },
+   "joined": [],
+   "start": "2025-11-17T20:54:09.993758",
+   "end": "2025-11-17T23:54:09.993758",
+   "usable_within_km": 12,
+   "stations": [
+    "HA.KARY",
+    "HA.MRTH",
+    "HA.THIV",
+    "HL.LKR",
+    "HL.NEO",
+    "HL.PTL",
+    "HT.PAIG",
+    "HT.XOR"
+   ],
+   "assign": "reserve",
+   "coin": 0.9895233506365952,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 62,
+   "first": {
+    "time": "2025-11-27T00:08:53.344065",
+    "lat": 35.53985596,
+    "lon": 24.83917236,
+    "depth_km": 59.47538249,
+    "magnitude": 4.777630647,
+    "type": "MLh",
+    "id": "noa2025xfbri"
+   },
+   "joined": [],
+   "start": "2025-11-26T23:58:53.344065",
+   "end": "2025-11-27T02:58:53.344065",
+   "usable_within_km": 10,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HL.IMMV",
+    "HL.SIVA",
+    "HL.THERA"
+   ],
+   "assign": "reserve",
+   "coin": 0.6399997598540929,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 63,
+   "first": {
+    "time": "2025-12-06T20:48:09.094294",
+    "lat": 38.02597046,
+    "lon": 22.01980591,
+    "depth_km": 19.299662270000002,
+    "magnitude": 4.643269541,
+    "type": "MLh",
+    "id": "noa2025xxcen"
+   },
+   "joined": [],
+   "start": "2025-12-06T20:38:09.094294",
+   "end": "2025-12-06T23:38:09.094294",
+   "usable_within_km": 40,
+   "stations": [
+    "HA.KALE",
+    "HL.KLV",
+    "HL.RLS",
+    "HP.DRO",
+    "HP.EFP",
+    "HP.GUR",
+    "HP.UPR",
+    "HP.VVK"
+   ],
+   "assign": "reserve",
+   "coin": 0.5569497437746462,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 64,
+   "first": {
+    "time": "2025-12-15T23:41:41.830720",
+    "lat": 37.28668213,
+    "lon": 19.86053467,
+    "depth_km": 6.25004069,
+    "magnitude": 5.192912675,
+    "type": "MLh",
+    "id": "noa2025yntns"
+   },
+   "joined": [],
+   "start": "2025-12-15T23:31:41.830720",
+   "end": "2025-12-16T02:31:41.830720",
+   "usable_within_km": 6,
+   "stations": [
+    "HA.ATHR",
+    "HA.HAVD",
+    "HL.ORTH",
+    "HL.VLS",
+    "HP.FSK",
+    "HP.LTHK"
+   ],
+   "assign": "reserve",
+   "coin": 0.6846142509898746,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 65,
+   "first": {
+    "time": "2026-01-27T17:53:29.830656",
+    "lat": 37.27523804,
+    "lon": 20.01296997,
+    "depth_km": 5.214261882,
+    "magnitude": 4.658084658,
+    "type": "MLh",
+    "id": "noa2026bwwtz"
+   },
+   "joined": [],
+   "start": "2026-01-27T17:43:29.830656",
+   "end": "2026-01-27T20:43:29.830656",
+   "usable_within_km": 6,
+   "stations": [
+    "HA.ATHR",
+    "HA.HAVD",
+    "HL.ORTH",
+    "HL.VLS",
+    "HP.FSK",
+    "HP.LTHK"
+   ],
+   "assign": "reserve",
+   "coin": 0.8428519201898096,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 66,
+   "first": {
+    "time": "2026-03-08T03:32:31.016041",
+    "lat": 39.68582153,
+    "lon": 20.64743042,
+    "depth_km": 9.74420166,
+    "magnitude": 5.333405488,
+    "type": "MLh",
+    "id": "noa2026eqwxa"
+   },
+   "joined": [
+    {
+     "time": "2026-03-08T03:36:28.184176",
+     "lat": 39.63821411,
+     "lon": 20.63644409,
+     "depth_km": 7.776062012000001,
+     "magnitude": 4.676502388,
+     "type": "MLh",
+     "id": "noa2026eqxam"
+    }
+   ],
+   "start": "2026-03-08T03:22:31.016041",
+   "end": "2026-03-08T06:22:31.016041",
+   "usable_within_km": 15,
+   "stations": [
+    "HL.KEK",
+    "HL.TETR",
+    "HP.AMPL",
+    "HP.KSTR",
+    "HT.LKD2",
+    "HT.NEST",
+    "HT.NYDR",
+    "HT.TSLK"
+   ],
+   "assign": "reserve",
+   "coin": 0.7759999115462448,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 67,
+   "first": {
+    "time": "2026-03-12T10:14:16.530023",
+    "lat": 39.22393799,
+    "lon": 21.55426025,
+    "depth_km": 11.61250814,
+    "magnitude": 4.761755848,
+    "type": "MLh",
+    "id": "noa2026eysfc"
+   },
+   "joined": [],
+   "start": "2026-03-12T10:04:16.530023",
+   "end": "2026-03-12T13:04:16.530023",
+   "usable_within_km": 29,
+   "stations": [
+    "HL.EVR",
+    "HL.TETR",
+    "HL.THL",
+    "HP.AMPL",
+    "HP.ANX",
+    "HP.KSTR",
+    "HP.PDO",
+    "HP.PVO"
+   ],
+   "assign": "now",
+   "coin": 0.22904807196410437,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 68,
+   "first": {
+    "time": "2026-03-20T09:05:31.018922",
+    "lat": 39.56726074,
+    "lon": 20.62316895,
+    "depth_km": 20.54044596,
+    "magnitude": 4.558909424,
+    "type": "MLh",
+    "id": "noa2026fngaw"
+   },
+   "joined": [
+    {
+     "time": "2026-03-20T09:40:44.475046",
+     "lat": 39.58236694,
+     "lon": 20.63095093,
+     "depth_km": 17.8164266,
+     "magnitude": 4.555484662,
+     "type": "MLh",
+     "id": "noa2026fnhfb"
+    }
+   ],
+   "start": "2026-03-20T08:55:31.018922",
+   "end": "2026-03-20T11:55:31.018922",
+   "usable_within_km": 17,
+   "stations": [
+    "HL.KEK",
+    "HL.TETR",
+    "HP.AMPL",
+    "HP.KSTR",
+    "HT.LKD2",
+    "HT.NEST",
+    "HT.NYDR",
+    "HT.TSLK"
+   ],
+   "assign": "now",
+   "coin": 0.03210024390403776,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 69,
+   "first": {
+    "time": "2026-03-25T19:08:24.108499",
+    "lat": 40.29281616,
+    "lon": 24.12918091,
+    "depth_km": 10.17205811,
+    "magnitude": 4.870584556,
+    "type": "MLh",
+    "id": "noa2026fxdmu"
+   },
+   "joined": [],
+   "start": "2026-03-25T18:58:24.108499",
+   "end": "2026-03-25T21:58:24.108499",
+   "usable_within_km": 14,
+   "stations": [
+    "HL.PLG",
+    "HT.HORT",
+    "HT.KAVA",
+    "HT.KOKK",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.SOH",
+    "HT.THAS"
+   ],
+   "assign": "now",
+   "coin": 0.3154530480590819,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 70,
+   "first": {
+    "time": "2026-04-19T07:04:39.418869",
+    "lat": 34.93011475,
+    "lon": 25.965271,
+    "depth_km": 5.679565429999999,
+    "magnitude": 4.586727856,
+    "type": "MLh",
+    "id": "noa2026hpxln"
+   },
+   "joined": [],
+   "start": "2026-04-19T06:54:39.418869",
+   "end": "2026-04-19T09:54:39.418869",
+   "usable_within_km": 6,
+   "stations": [
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.26774087597570273,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 71,
+   "first": {
+    "time": "2026-04-24T03:18:51.868380",
+    "lat": 34.84588623,
+    "lon": 25.95611572,
+    "depth_km": 9.672892253,
+    "magnitude": 5.65557066,
+    "type": "MLh",
+    "id": "noa2026hytoo"
+   },
+   "joined": [],
+   "start": "2026-04-24T03:08:51.868380",
+   "end": "2026-04-24T06:08:51.868380",
+   "usable_within_km": 6,
+   "stations": [
+    "HC.IPPL",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.21098284358632646,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 72,
+   "first": {
+    "time": "2026-04-24T08:58:16.467671",
+    "lat": 34.85412598,
+    "lon": 26.1126709,
+    "depth_km": 5.708089193,
+    "magnitude": 4.974506188,
+    "type": "MLh",
+    "id": "noa2026hzets"
+   },
+   "joined": [],
+   "start": "2026-04-24T08:48:16.467671",
+   "end": "2026-04-24T11:48:16.467671",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "reserve",
+   "coin": 0.9429097143350544,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 73,
+   "first": {
+    "time": "2026-04-25T19:49:55.173153",
+    "lat": 34.83123779,
+    "lon": 26.02386475,
+    "depth_km": 8.817179362000001,
+    "magnitude": 4.775815391,
+    "type": "MLh",
+    "id": "noa2026ibvuc"
+   },
+   "joined": [],
+   "start": "2026-04-25T19:39:55.173153",
+   "end": "2026-04-25T22:39:55.173153",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.KNSS",
+    "HC.PFKS",
+    "HC.STIA",
+    "HL.SIVA",
+    "HL.ZKR"
+   ],
+   "assign": "reserve",
+   "coin": 0.8763676264726689,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 74,
+   "first": {
+    "time": "2026-04-28T11:12:22.499726",
+    "lat": 39.17953491,
+    "lon": 23.41690063,
+    "depth_km": 11.96905518,
+    "magnitude": 4.655880562,
+    "type": "MLh",
+    "id": "noa2026igrgd"
+   },
+   "joined": [
+    {
+     "time": "2026-04-28T13:07:45.701977",
+     "lat": 39.17129517,
+     "lon": 23.40042114,
+     "depth_km": 13.19557699,
+     "magnitude": 4.886379838,
+     "type": "MLh",
+     "id": "noa2026igvba"
+    }
+   ],
+   "start": "2026-04-28T11:02:22.499726",
+   "end": "2026-04-28T14:02:22.499726",
+   "usable_within_km": 21,
+   "stations": [
+    "HA.DOMV",
+    "HA.THIV",
+    "HA.VILL",
+    "HL.LKR",
+    "HL.NEO",
+    "HP.DSF",
+    "HT.PAIG",
+    "HT.XOR"
+   ],
+   "assign": "now",
+   "coin": 0.3146778807984779,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 75,
+   "first": {
+    "time": "2026-06-07T09:58:44.714323",
+    "lat": 38.69064331,
+    "lon": 23.44070435,
+    "depth_km": 14.1083374,
+    "magnitude": 4.758523339,
+    "type": "MLh",
+    "id": "noa2026lbrit"
+   },
+   "joined": [
+    {
+     "time": "2026-06-07T10:02:47.795155",
+     "lat": 38.70254517,
+     "lon": 23.44802856,
+     "depth_km": 13.138529459999999,
+     "magnitude": 5.236985338,
+     "type": "MLh",
+     "id": "noa2026lbrmf"
+    }
+   ],
+   "start": "2026-06-07T09:48:44.714323",
+   "end": "2026-06-07T12:48:44.714323",
+   "usable_within_km": 25,
+   "stations": [
+    "HA.DOMV",
+    "HA.MDRA",
+    "HA.MRTH",
+    "HA.THIV",
+    "HA.VILL",
+    "HL.LKR",
+    "HL.NEO",
+    "HT.XOR"
+   ],
+   "assign": "reserve",
+   "coin": 0.65543866529488,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 76,
+   "first": {
+    "time": "2026-06-14T18:17:26.837064",
+    "lat": 36.67556763,
+    "lon": 21.67831421,
+    "depth_km": 9.145202637,
+    "magnitude": 5.069767869,
+    "type": "MLh",
+    "id": "noa2026lpcjz"
+   },
+   "joined": [],
+   "start": "2026-06-14T18:07:26.837064",
+   "end": "2026-06-14T21:07:26.837064",
+   "usable_within_km": 6,
+   "stations": [
+    "HL.ITM",
+    "HL.VLI",
+    "HP.AMT",
+    "HP.DRO",
+    "HP.LTHK",
+    "HP.VLX"
+   ],
+   "assign": "now",
+   "coin": 0.39563190106066426,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 77,
+   "first": {
+    "time": "2026-06-20T09:31:12.070006",
+    "lat": 34.86968994,
+    "lon": 24.14337158,
+    "depth_km": 14.122599280000001,
+    "magnitude": 4.566027641,
+    "type": "MLh",
+    "id": "noa2026lzkcp"
+   },
+   "joined": [
+    {
+     "time": "2026-06-20T09:37:28.247250",
+     "lat": 34.85412598,
+     "lon": 24.14978027,
+     "depth_km": 15.292073570000001,
+     "magnitude": 5.317669603,
+     "type": "MLh",
+     "id": "noa2026lzkhy"
+    }
+   ],
+   "start": "2026-06-20T09:21:12.070006",
+   "end": "2026-06-20T12:21:12.070006",
+   "usable_within_km": 7,
+   "stations": [
+    "HC.CHAN",
+    "HC.IPPL",
+    "HC.KNDR",
+    "HC.KNSS",
+    "HC.PFKS",
+    "HL.IMMV",
+    "HL.SIVA"
+   ],
+   "assign": "reserve",
+   "coin": 0.9145475897405435,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 78,
+   "first": {
+    "time": "2026-06-24T08:25:57.088075",
+    "lat": 35.440979,
+    "lon": 27.20489502,
+    "depth_km": 15.94812012,
+    "magnitude": 4.964252709,
+    "type": "MLh",
+    "id": "noa2026mgpzz"
+   },
+   "joined": [],
+   "start": "2026-06-24T08:15:57.088075",
+   "end": "2026-06-24T11:15:57.088075",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.STIA",
+    "HL.ARG",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.4588518525873988,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 79,
+   "first": {
+    "time": "2026-07-02T11:06:21.935319",
+    "lat": 35.39703369,
+    "lon": 27.30194092,
+    "depth_km": 12.354125980000001,
+    "magnitude": 5.196942017,
+    "type": "MLh",
+    "id": "noa2026mvlkj"
+   },
+   "joined": [],
+   "start": "2026-07-02T10:56:21.935319",
+   "end": "2026-07-02T13:56:21.935319",
+   "usable_within_km": 5,
+   "stations": [
+    "HC.STIA",
+    "HL.ARG",
+    "HL.NISR",
+    "HL.NISR2",
+    "HL.ZKR"
+   ],
+   "assign": "now",
+   "coin": 0.26488016649805246,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 80,
+   "first": {
+    "time": "2026-07-28T20:10:30.035922",
+    "lat": 39.71878052,
+    "lon": 20.79391479,
+    "depth_km": 8.318013509,
+    "magnitude": 4.515040294,
+    "type": "MLh",
+    "id": "noa2026orqsd"
+   },
+   "joined": [],
+   "start": "2026-07-28T20:00:30.035922",
+   "end": "2026-07-28T23:00:30.035922",
+   "usable_within_km": 15,
+   "stations": [
+    "HL.KEK",
+    "HL.TETR",
+    "HL.THL",
+    "HP.AMPL",
+    "HP.KSTR",
+    "HT.LKD2",
+    "HT.NEST",
+    "HT.TSLK"
+   ],
+   "assign": "now",
+   "coin": 0.24662750769398345,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 81,
+   "first": {
+    "time": "2026-08-28T23:55:59.461148",
+    "lat": 37.42584229,
+    "lon": 22.75909424,
+    "depth_km": 74.07954915,
+    "magnitude": 4.541507947,
+    "type": "MLh",
+    "id": "noa2026qwpaz"
+   },
+   "joined": [],
+   "start": "2026-08-28T23:45:59.461148",
+   "end": "2026-08-29T02:45:59.461148",
+   "usable_within_km": 28,
+   "stations": [
+    "HA.ACOR",
+    "HA.EPID",
+    "HA.LOUT",
+    "HA.THAL",
+    "HL.ITM",
+    "HP.GUR",
+    "HP.LTK",
+    "HP.VLX"
+   ],
+   "assign": "reserve",
+   "coin": 0.5613681341631508,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 82,
+   "first": {
+    "time": "2026-09-12T17:51:43.488051",
+    "lat": 38.06350708,
+    "lon": 20.12374878,
+    "depth_km": 26.00274658,
+    "magnitude": 4.906220357,
+    "type": "MLh",
+    "id": "noa2026rxnsy"
+   },
+   "joined": [],
+   "start": "2026-09-12T17:41:43.488051",
+   "end": "2026-09-12T20:41:43.488051",
+   "usable_within_km": 19,
+   "stations": [
+    "HA.ATHR",
+    "HA.HAVD",
+    "HL.ORTH",
+    "HL.VLS",
+    "HP.FSK",
+    "HP.LTHK",
+    "HT.EVGI",
+    "HT.NYDR"
+   ],
+   "assign": "now",
+   "coin": 0.26274160852293527,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 83,
+   "first": {
+    "time": "2026-10-25T05:15:44.731173",
+    "lat": 37.65151978,
+    "lon": 21.12075806,
+    "depth_km": 19.0429484,
+    "magnitude": 4.5430812,
+    "type": "MLh",
+    "id": "noa2026uxdwf"
+   },
+   "joined": [],
+   "start": "2026-10-25T05:05:44.731173",
+   "end": "2026-10-25T08:05:44.731173",
+   "usable_within_km": 29,
+   "stations": [
+    "HL.ORTH",
+    "HL.RLS",
+    "HL.VLS",
+    "HP.AMT",
+    "HP.AXS",
+    "HP.DRO",
+    "HP.LTHK",
+    "HP.PLEV"
+   ],
+   "assign": "reserve",
+   "coin": 0.5845859902235405,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 84,
+   "first": {
+    "time": "2026-10-30T10:45:02.498830",
+    "lat": 39.68215942,
+    "lon": 24.25918579,
+    "depth_km": 14.47914632,
+    "magnitude": 4.612204825,
+    "type": "MLh",
+    "id": "noa2026vgshl"
+   },
+   "joined": [],
+   "start": "2026-10-30T10:35:02.498830",
+   "end": "2026-10-30T13:35:02.498830",
+   "usable_within_km": 10,
+   "stations": [
+    "HL.NEO",
+    "HL.PLG",
+    "HT.HORT",
+    "HT.KOKK",
+    "HT.OUR",
+    "HT.PAIG",
+    "HT.THAS",
+    "HT.XOR"
+   ],
+   "assign": "reserve",
+   "coin": 0.897822883602477,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  }
+ ],
+ "target_reached": true,
+ "quiet": {
+  "passes": [
+   {
+    "relaxed": false,
+    "draws": 2059,
+    "accepted": 24,
+    "rejected": {
+     "catalogue event": 2008,
+     "overlap": 2,
+     "coverage": 25
+    }
+   }
+  ],
+  "windows": [
+   {
+    "start": "2025-08-25T04:50:00",
+    "end": "2025-08-25T10:50:00",
+    "sequence": 13,
+    "draw": 37,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2025-09-04T09:14:00",
+    "end": "2025-09-04T15:14:00",
+    "sequence": 17,
+    "draw": 296,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.SIVA",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2023-09-08T19:18:00",
+    "end": "2023-09-09T01:18:00",
+    "sequence": 17,
+    "draw": 337,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.SIVA",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2024-04-04T04:17:00",
+    "end": "2024-04-04T10:17:00",
+    "sequence": 17,
+    "draw": 362,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.SIVA",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2023-12-02T03:56:00",
+    "end": "2023-12-02T09:56:00",
+    "sequence": 13,
+    "draw": 380,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2024-08-01T01:34:00",
+    "end": "2024-08-01T07:34:00",
+    "sequence": 13,
+    "draw": 471,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2025-10-03T12:36:00",
+    "end": "2025-10-03T18:36:00",
+    "sequence": 17,
+    "draw": 489,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.SIVA",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2023-12-08T13:29:00",
+    "end": "2023-12-08T19:29:00",
+    "sequence": 13,
+    "draw": 541,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2026-04-01T10:39:00",
+    "end": "2026-04-01T16:39:00",
+    "sequence": 4,
+    "draw": 557,
+    "stations": [
+     "HC.STIA",
+     "HL.APE",
+     "HL.NISR",
+     "HL.NISR2",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2025-09-19T08:09:00",
+    "end": "2025-09-19T14:09:00",
+    "sequence": 17,
+    "draw": 584,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.SIVA",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2023-02-09T09:45:00",
+    "end": "2023-02-09T15:45:00",
+    "sequence": 2,
+    "draw": 624,
+    "stations": [
+     "HL.EVR",
+     "HL.TETR",
+     "HP.AMPL",
+     "HP.PDO",
+     "HP.PVO",
+     "HT.LKD2",
+     "HT.NYDR",
+     "HT.TSLK"
+    ]
+   },
+   {
+    "start": "2024-05-03T13:26:00",
+    "end": "2024-05-03T19:26:00",
+    "sequence": 13,
+    "draw": 671,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2026-04-03T09:54:00",
+    "end": "2026-04-03T15:54:00",
+    "sequence": 13,
+    "draw": 818,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2025-11-19T03:20:00",
+    "end": "2025-11-19T09:20:00",
+    "sequence": 13,
+    "draw": 937,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2023-02-05T16:34:00",
+    "end": "2023-02-05T22:34:00",
+    "sequence": 9,
+    "draw": 1062,
+    "stations": [
+     "HA.ACOR",
+     "HA.EPID",
+     "HA.LOUT",
+     "HA.THAL",
+     "HL.VLI",
+     "HP.GUR",
+     "HP.LTK",
+     "HP.VLX"
+    ]
+   },
+   {
+    "start": "2024-01-31T21:36:00",
+    "end": "2024-02-01T03:36:00",
+    "sequence": 13,
+    "draw": 1374,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2023-12-09T14:06:00",
+    "end": "2023-12-09T20:06:00",
+    "sequence": 4,
+    "draw": 1494,
+    "stations": [
+     "HC.STIA",
+     "HL.APE",
+     "HL.NISR",
+     "HL.NISR2",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2026-02-13T06:01:00",
+    "end": "2026-02-13T12:01:00",
+    "sequence": 13,
+    "draw": 1532,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2023-09-28T02:35:00",
+    "end": "2023-09-28T08:35:00",
+    "sequence": 13,
+    "draw": 1600,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNDR",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.IMMV",
+     "HL.SIVA"
+    ]
+   },
+   {
+    "start": "2026-05-15T07:36:00",
+    "end": "2026-05-15T13:36:00",
+    "sequence": 10,
+    "draw": 1601,
+    "stations": [
+     "HA.KARY",
+     "HA.MDRA",
+     "HA.MRTH",
+     "HA.THIV",
+     "HA.VILL",
+     "HL.ATH",
+     "HL.LKR",
+     "HL.PTL"
+    ]
+   },
+   {
+    "start": "2025-03-17T05:17:00",
+    "end": "2025-03-17T11:17:00",
+    "sequence": 20,
+    "draw": 1627,
+    "stations": [
+     "HL.PLG",
+     "HT.HORT",
+     "HT.KAVA",
+     "HT.KOKK",
+     "HT.OUR",
+     "HT.PAIG",
+     "HT.SOH",
+     "HT.THAS"
+    ]
+   },
+   {
+    "start": "2024-05-28T06:48:00",
+    "end": "2024-05-28T12:48:00",
+    "sequence": 17,
+    "draw": 1737,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.SIVA",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2026-04-02T15:17:00",
+    "end": "2026-04-02T21:17:00",
+    "sequence": 17,
+    "draw": 1787,
+    "stations": [
+     "HC.CHAN",
+     "HC.IPPL",
+     "HC.KNSS",
+     "HC.PFKS",
+     "HC.STIA",
+     "HL.SIVA",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   },
+   {
+    "start": "2024-04-30T21:17:00",
+    "end": "2024-05-01T03:17:00",
+    "sequence": 4,
+    "draw": 2059,
+    "stations": [
+     "HC.STIA",
+     "HL.APE",
+     "HL.NISR",
+     "HL.NISR2",
+     "HL.THERA",
+     "HL.ZKR"
+    ]
+   }
+  ]
+ },
+ "selected_utc": "2026-10-31T06:42:51+00:00",
+ "tool": {
+  "name": "ayzek-heldout",
+  "git_commit": "6fda3e246e53"
+ }
+}

@@ -76,3 +76,11 @@ development data (`tools/regression_dev.py`):
   test data exists.
 - Live SeedLink input (`docs/impl/19-seedlink.md`), with Steim1 decoding.
   Replays are unchanged by it.
+
+## After the tag
+
+The held-out selections were run on 2026-10-30/31 and their data fetched
+(`docs/heldout-selections/`, with the counts). The fetch tool moved from
+`440a2d9` to `6fda3e2` during the Greek selection, in how it talks to NOA's
+services only; `docs/heldout-selections/README.md` records which selection
+and fetch ran at which commit, and why.

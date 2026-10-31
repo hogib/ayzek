@@ -1,0 +1,14 @@
+# heldout select greece now: sequence 8 of 84, first event 2023-11-03T06:26:37 MLh 5.137358894 (noa2023vnrvc)
+name = "greece_now_seq008"
+network = ["HL", "HT", "HA", "HP", "HC"]
+start = "2023-11-03T06:16:37.636797"
+end = "2023-11-03T09:16:37.636797"
+centre = [38.73825, 23.58078]
+radius_km = 150.0
+max_stations = 8
+min_coverage = 0.0
+stations = ["HL.LKR", "HA.THIV", "HA.VILL", "HL.NEO", "HA.DOMV", "HA.MRTH", "HA.MDRA", "HT.XOR"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

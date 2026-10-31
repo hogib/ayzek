@@ -1,0 +1,14 @@
+# heldout select ko now: quiet window 10 of 14 (draw 2717), on the stations of sequence 2
+name = "ko_now_quiet10"
+network = "KO"
+start = "2026-10-20T16:25:00"
+end = "2026-10-20T22:25:00"
+centre = [37.94507, 38.70696]
+radius_km = 172.3
+max_stations = 7
+min_coverage = 0.0
+stations = ["KO.MLTY", "KO.SVRC", "KO.DYBB", "KO.AKDG", "KO.MAZI", "KO.NURH", "KO.GAZ"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

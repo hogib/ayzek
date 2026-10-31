@@ -1,0 +1,14 @@
+# heldout select greece now: quiet window 8 of 24 (draw 541), on the stations of sequence 13
+name = "greece_now_quiet08"
+network = ["HL", "HT", "HA", "HP", "HC"]
+start = "2023-12-08T13:29:00"
+end = "2023-12-08T19:29:00"
+centre = [35.26628, 24.70854]
+radius_km = 135.8
+max_stations = 8
+min_coverage = 0.0
+stations = ["HL.SIVA", "HC.PFKS", "HC.KNSS", "HC.IPPL", "HL.IMMV", "HC.CHAN", "HC.KNDR", "HC.STIA"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

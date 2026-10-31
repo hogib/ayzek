@@ -1,0 +1,14 @@
+# heldout select greece now: sequence 20 of 84, first event 2024-09-22T09:50:23 MLh 4.579195385 (noa2024sramu)
+name = "greece_now_seq020"
+network = ["HL", "HT", "HA", "HP", "HC"]
+start = "2024-09-22T09:40:23.586239"
+end = "2024-09-22T12:40:23.586239"
+centre = [40.29007, 24.12918]
+radius_km = 150.0
+max_stations = 8
+min_coverage = 0.0
+stations = ["HT.OUR", "HT.PAIG", "HL.PLG", "HT.KOKK", "HT.THAS", "HT.KAVA", "HT.SOH", "HT.HORT"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

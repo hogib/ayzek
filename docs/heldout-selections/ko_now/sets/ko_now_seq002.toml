@@ -1,0 +1,14 @@
+# heldout select ko now: sequence 2 of 3, first event 2026-09-24T07:40:58 mw 5.3 (20260924_0000086)
+name = "ko_now_seq002"
+network = "KO"
+start = "2026-09-24T07:30:58.050000"
+end = "2026-09-24T10:30:58.050000"
+centre = [37.42050, 38.86780]
+radius_km = 150.0
+max_stations = 7
+min_coverage = 0.0
+stations = ["KO.MLTY", "KO.SVRC", "KO.DYBB", "KO.AKDG", "KO.MAZI", "KO.NURH", "KO.GAZ"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

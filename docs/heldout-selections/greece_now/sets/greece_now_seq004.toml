@@ -1,0 +1,14 @@
+# heldout select greece now: sequence 4 of 84, first event 2023-04-26T20:00:36 MLh 5.170864704 (noa2023idrqr)
+name = "greece_now_seq004"
+network = ["HL", "HT", "HA", "HP", "HC"]
+start = "2023-04-26T19:50:36.284152"
+end = "2023-04-26T22:50:36.284152"
+centre = [36.31989, 26.39008]
+radius_km = 150.0
+max_stations = 6
+min_coverage = 0.0
+stations = ["HL.NISR", "HL.NISR2", "HL.THERA", "HL.APE", "HC.STIA", "HL.ZKR"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

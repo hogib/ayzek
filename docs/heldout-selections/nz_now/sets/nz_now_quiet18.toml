@@ -1,0 +1,14 @@
+# heldout select nz now: quiet window 18 of 24 (draw 433), on the stations of sequence 2
+name = "nz_now_quiet18"
+network = "NZ"
+start = "2023-07-11T21:47:00"
+end = "2023-07-12T03:47:00"
+centre = [-38.08849, 175.70739]
+radius_km = 159.4
+max_stations = 7
+min_coverage = 0.0
+stations = ["NZ.MKAZ", "NZ.TLZ", "NZ.KUZ", "NZ.HIZ", "NZ.KPRZ", "NZ.RATZ", "NZ.URZ"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

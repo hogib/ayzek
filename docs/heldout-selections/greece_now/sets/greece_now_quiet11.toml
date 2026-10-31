@@ -1,0 +1,14 @@
+# heldout select greece now: quiet window 11 of 24 (draw 624), on the stations of sequence 2
+name = "greece_now_quiet11"
+network = ["HL", "HT", "HA", "HP", "HC"]
+start = "2023-02-09T09:45:00"
+end = "2023-02-09T15:45:00"
+centre = [38.84067, 21.12731]
+radius_km = 69.7
+max_stations = 8
+min_coverage = 0.0
+stations = ["HP.AMPL", "HP.PDO", "HL.TETR", "HP.PVO", "HT.TSLK", "HT.LKD2", "HT.NYDR", "HL.EVR"]
+
+[catalog]
+lead_days = 1.0
+radius_km = 400.0

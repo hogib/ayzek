@@ -1,0 +1,6 @@
+[select] 123 usable of 155 KO stations within 1100 km, 2026-08-30 to 2026-10-30 (fdsnws/availability)
+[select] 5693 catalogue events (9 requests; canary 69)
+[select] 3 qualifying sequences, 2 now; 2 selected, 36 scorable events (under the target 240)
+[select] 14 quiet windows after 10000 draws; 10000 draws (relaxed)
+[select] 2 sequence sets and 14 quiet sets -> selections/ko_now/sets
+ko exit 0

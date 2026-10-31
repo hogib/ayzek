@@ -1,0 +1,2174 @@
+{
+ "group": "ko",
+ "name": "now",
+ "networks": [
+  "KO"
+ ],
+ "prospective": false,
+ "period": [
+  "2026-08-30T00:00:00",
+  "2026-10-30T12:55:36"
+ ],
+ "target": 240,
+ "rules": {
+  "min_magnitude": 4.5,
+  "min_stations": 5,
+  "station_radius_km": 150.0,
+  "stations": 8,
+  "lead_s": 600.0,
+  "span_s": 10800.0,
+  "gap_s": 10800.0,
+  "score_radius_km": 250.0,
+  "reserve_seed": 42,
+  "quiet_seed": 43,
+  "quiet_windows": 24,
+  "quiet_hours": 6.0,
+  "quiet_margin_s": 1800.0,
+  "quiet_min_coverage": 0.9,
+  "quiet_max_draws": 10000,
+  "relaxed": [
+   2.0,
+   100.0
+  ]
+ },
+ "stations": {
+  "basis": "fdsnws/availability",
+  "usable": [
+   {
+    "network": "KO",
+    "station": "BNN",
+    "lat": 38.8521,
+    "lon": 35.8472,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9673
+   },
+   {
+    "network": "KO",
+    "station": "YOZ",
+    "lat": 39.6376,
+    "lon": 35.3152,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9671
+   },
+   {
+    "network": "KO",
+    "station": "GULA",
+    "lat": 38.3444,
+    "lon": 34.236,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9577
+   },
+   {
+    "network": "KO",
+    "station": "YAYX",
+    "lat": 38.9387,
+    "lon": 33.8115,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9613
+   },
+   {
+    "network": "KO",
+    "station": "KAMT",
+    "lat": 39.3689,
+    "lon": 33.7087,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9662
+   },
+   {
+    "network": "KO",
+    "station": "SERE",
+    "lat": 38.9463,
+    "lon": 33.564,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9427
+   },
+   {
+    "network": "KO",
+    "station": "CORM",
+    "lat": 40.1785,
+    "lon": 34.6302,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9672
+   },
+   {
+    "network": "KO",
+    "station": "SARI",
+    "lat": 38.4072,
+    "lon": 36.4181,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9551
+   },
+   {
+    "network": "KO",
+    "station": "SULT",
+    "lat": 38.1988,
+    "lon": 33.5157,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9664
+   },
+   {
+    "network": "KO",
+    "station": "KULU",
+    "lat": 39.0343,
+    "lon": 33.0023,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9673
+   },
+   {
+    "network": "KO",
+    "station": "YESY",
+    "lat": 37.7825,
+    "lon": 33.7431,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9668
+   },
+   {
+    "network": "KO",
+    "station": "CAYL",
+    "lat": 40.3745,
+    "lon": 36.159,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9636
+   },
+   {
+    "network": "KO",
+    "station": "CHBY",
+    "lat": 38.5823,
+    "lon": 32.8902,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9672
+   },
+   {
+    "network": "KO",
+    "station": "KARA",
+    "lat": 37.2607,
+    "lon": 35.0547,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9673
+   },
+   {
+    "network": "KO",
+    "station": "TOKT",
+    "lat": 40.3173,
+    "lon": 36.5443,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9668
+   },
+   {
+    "network": "KO",
+    "station": "SVSK",
+    "lat": 39.9157,
+    "lon": 36.9925,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.959
+   },
+   {
+    "network": "KO",
+    "station": "CANT",
+    "lat": 40.6062,
+    "lon": 33.6193,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9367
+   },
+   {
+    "network": "KO",
+    "station": "LOD",
+    "lat": 39.8884,
+    "lon": 32.7634,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9669
+   },
+   {
+    "network": "KO",
+    "station": "DARE",
+    "lat": 38.5712,
+    "lon": 37.4832,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "OSMA",
+    "lat": 40.9939,
+    "lon": 34.7605,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9669
+   },
+   {
+    "network": "KO",
+    "station": "CEYT",
+    "lat": 37.0105,
+    "lon": 35.7478,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9673
+   },
+   {
+    "network": "KO",
+    "station": "MERS",
+    "lat": 36.8678,
+    "lon": 34.522,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9654
+   },
+   {
+    "network": "KO",
+    "station": "NURH",
+    "lat": 37.9693,
+    "lon": 37.4363,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9677
+   },
+   {
+    "network": "KO",
+    "station": "LADK",
+    "lat": 38.1999,
+    "lon": 32.3648,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9305
+   },
+   {
+    "network": "KO",
+    "station": "KVT",
+    "lat": 41.0807,
+    "lon": 36.0463,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9655
+   },
+   {
+    "network": "KO",
+    "station": "RSDY",
+    "lat": 40.3971,
+    "lon": 37.3273,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9342
+   },
+   {
+    "network": "KO",
+    "station": "POLA",
+    "lat": 39.7005,
+    "lon": 32.1677,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9675
+   },
+   {
+    "network": "KO",
+    "station": "KONT",
+    "lat": 37.957,
+    "lon": 32.3563,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9506
+   },
+   {
+    "network": "KO",
+    "station": "YALI",
+    "lat": 40.7676,
+    "lon": 32.9822,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9643
+   },
+   {
+    "network": "KO",
+    "station": "AKDG",
+    "lat": 38.3618,
+    "lon": 37.9703,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "KIZT",
+    "lat": 38.8808,
+    "lon": 31.883,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9678
+   },
+   {
+    "network": "KO",
+    "station": "DIVR",
+    "lat": 39.3562,
+    "lon": 38.1237,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9489
+   },
+   {
+    "network": "KO",
+    "station": "GAZ",
+    "lat": 37.1721,
+    "lon": 37.2096,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9523
+   },
+   {
+    "network": "KO",
+    "station": "ARGN",
+    "lat": 38.7763,
+    "lon": 38.2639,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9675
+   },
+   {
+    "network": "KO",
+    "station": "DIKM",
+    "lat": 41.6497,
+    "lon": 35.2578,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9667
+   },
+   {
+    "network": "KO",
+    "station": "SVRH",
+    "lat": 39.447,
+    "lon": 31.523,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9658
+   },
+   {
+    "network": "KO",
+    "station": "MLTY",
+    "lat": 38.3223,
+    "lon": 38.4407,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9677
+   },
+   {
+    "network": "KO",
+    "station": "TAHT",
+    "lat": 36.3755,
+    "lon": 36.1855,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9311
+   },
+   {
+    "network": "KO",
+    "station": "HDMB",
+    "lat": 36.9638,
+    "lon": 32.4857,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9669
+   },
+   {
+    "network": "KO",
+    "station": "IKL",
+    "lat": 36.2366,
+    "lon": 33.6845,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9652
+   },
+   {
+    "network": "KO",
+    "station": "RUZG",
+    "lat": 40.7242,
+    "lon": 31.7936,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "SNOP",
+    "lat": 42.0195,
+    "lon": 35.2069,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9654
+   },
+   {
+    "network": "KO",
+    "station": "BLVD",
+    "lat": 38.7946,
+    "lon": 31.095,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9673
+   },
+   {
+    "network": "KO",
+    "station": "BZK",
+    "lat": 41.96,
+    "lon": 34.0035,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9667
+   },
+   {
+    "network": "KO",
+    "station": "KMAH",
+    "lat": 39.6082,
+    "lon": 39.0301,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9606
+   },
+   {
+    "network": "KO",
+    "station": "SDAG",
+    "lat": 38.4396,
+    "lon": 30.9175,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9443
+   },
+   {
+    "network": "KO",
+    "station": "MDUB",
+    "lat": 40.4712,
+    "lon": 31.1976,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9669
+   },
+   {
+    "network": "KO",
+    "station": "KURC",
+    "lat": 41.8456,
+    "lon": 32.743,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9661
+   },
+   {
+    "network": "KO",
+    "station": "SINE",
+    "lat": 39.1636,
+    "lon": 39.3871,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9625
+   },
+   {
+    "network": "KO",
+    "station": "SVRC",
+    "lat": 38.3775,
+    "lon": 39.306,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9362
+   },
+   {
+    "network": "KO",
+    "station": "SUTC",
+    "lat": 37.4765,
+    "lon": 30.9997,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9655
+   },
+   {
+    "network": "KO",
+    "station": "SHUT",
+    "lat": 38.553,
+    "lon": 30.551,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9667
+   },
+   {
+    "network": "KO",
+    "station": "UVEZ",
+    "lat": 40.904,
+    "lon": 30.9032,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9669
+   },
+   {
+    "network": "KO",
+    "station": "ERZN",
+    "lat": 39.5867,
+    "lon": 39.722,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9673
+   },
+   {
+    "network": "KO",
+    "station": "MAGT",
+    "lat": 35.1696,
+    "lon": 33.8714,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9651
+   },
+   {
+    "network": "KO",
+    "station": "SAUV",
+    "lat": 40.7401,
+    "lon": 30.3271,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "HSY",
+    "lat": 35.2916,
+    "lon": 33.0974,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9524
+   },
+   {
+    "network": "KO",
+    "station": "ANTB",
+    "lat": 36.8998,
+    "lon": 30.6538,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9679
+   },
+   {
+    "network": "KO",
+    "station": "DYBB",
+    "lat": 37.9532,
+    "lon": 40.1393,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9661
+   },
+   {
+    "network": "KO",
+    "station": "KTUT",
+    "lat": 40.987,
+    "lon": 39.7667,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9679
+   },
+   {
+    "network": "KO",
+    "station": "LEF",
+    "lat": 35.1118,
+    "lon": 32.8433,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9305
+   },
+   {
+    "network": "KO",
+    "station": "ADVT",
+    "lat": 40.4332,
+    "lon": 29.7383,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9676
+   },
+   {
+    "network": "KO",
+    "station": "TVSB",
+    "lat": 39.4497,
+    "lon": 29.4615,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9505
+   },
+   {
+    "network": "KO",
+    "station": "YEDI",
+    "lat": 39.4377,
+    "lon": 40.5443,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.967
+   },
+   {
+    "network": "KO",
+    "station": "BAKL",
+    "lat": 37.9793,
+    "lon": 29.6135,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "GEDZ",
+    "lat": 39.0445,
+    "lon": 29.4105,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9651
+   },
+   {
+    "network": "KO",
+    "station": "BNGB",
+    "lat": 38.9913,
+    "lon": 40.6792,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9656
+   },
+   {
+    "network": "KO",
+    "station": "HRTX",
+    "lat": 40.8009,
+    "lon": 29.6729,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9537
+   },
+   {
+    "network": "KO",
+    "station": "MAZI",
+    "lat": 37.4593,
+    "lon": 40.4465,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.942
+   },
+   {
+    "network": "KO",
+    "station": "ELL",
+    "lat": 36.7483,
+    "lon": 29.9085,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9664
+   },
+   {
+    "network": "KO",
+    "station": "SILT",
+    "lat": 41.153,
+    "lon": 29.643,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9553
+   },
+   {
+    "network": "KO",
+    "station": "SIMA",
+    "lat": 39.0833,
+    "lon": 28.9825,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9678
+   },
+   {
+    "network": "KO",
+    "station": "GEML",
+    "lat": 40.4646,
+    "lon": 29.2116,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9619
+   },
+   {
+    "network": "KO",
+    "station": "SERH",
+    "lat": 37.582,
+    "lon": 29.2588,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9667
+   },
+   {
+    "network": "KO",
+    "station": "APMY",
+    "lat": 37.4717,
+    "lon": 29.3018,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "MDNY",
+    "lat": 40.3709,
+    "lon": 28.8846,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9602
+   },
+   {
+    "network": "KO",
+    "station": "BABD",
+    "lat": 37.802,
+    "lon": 28.8531,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9673
+   },
+   {
+    "network": "KO",
+    "station": "KULA",
+    "lat": 38.5145,
+    "lon": 28.6607,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9667
+   },
+   {
+    "network": "KO",
+    "station": "ISK",
+    "lat": 41.0615,
+    "lon": 29.0592,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.968
+   },
+   {
+    "network": "KO",
+    "station": "KAVV",
+    "lat": 41.0638,
+    "lon": 29.06,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.935
+   },
+   {
+    "network": "KO",
+    "station": "VRTB",
+    "lat": 39.1603,
+    "lon": 41.4558,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9666
+   },
+   {
+    "network": "KO",
+    "station": "KLYT",
+    "lat": 41.253,
+    "lon": 29.042,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9676
+   },
+   {
+    "network": "KO",
+    "station": "FETY",
+    "lat": 36.6353,
+    "lon": 29.0835,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9629
+   },
+   {
+    "network": "KO",
+    "station": "BGKT",
+    "lat": 41.181,
+    "lon": 28.773,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9667
+   },
+   {
+    "network": "KO",
+    "station": "KOPR",
+    "lat": 39.9917,
+    "lon": 41.8535,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9671
+   },
+   {
+    "network": "KO",
+    "station": "GURO",
+    "lat": 38.5509,
+    "lon": 42.0322,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9423
+   },
+   {
+    "network": "KO",
+    "station": "YER",
+    "lat": 37.1336,
+    "lon": 28.284,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9609
+   },
+   {
+    "network": "KO",
+    "station": "BCA",
+    "lat": 41.445,
+    "lon": 41.6223,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9637
+   },
+   {
+    "network": "KO",
+    "station": "SLVT",
+    "lat": 41.2288,
+    "lon": 28.2098,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9385
+   },
+   {
+    "network": "KO",
+    "station": "EDC",
+    "lat": 40.3465,
+    "lon": 27.8618,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9647
+   },
+   {
+    "network": "KO",
+    "station": "AYDB",
+    "lat": 37.9467,
+    "lon": 27.8908,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "CTYL",
+    "lat": 41.476,
+    "lon": 28.2897,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9254
+   },
+   {
+    "network": "KO",
+    "station": "BOTS",
+    "lat": 40.9902,
+    "lon": 27.981,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9607
+   },
+   {
+    "network": "KO",
+    "station": "NMR9",
+    "lat": 40.6196,
+    "lon": 27.702,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9666
+   },
+   {
+    "network": "KO",
+    "station": "SENK",
+    "lat": 40.5614,
+    "lon": 42.3505,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9629
+   },
+   {
+    "network": "KO",
+    "station": "MLSB",
+    "lat": 37.2953,
+    "lon": 27.7767,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9668
+   },
+   {
+    "network": "KO",
+    "station": "NMR8",
+    "lat": 40.612,
+    "lon": 27.5347,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9658
+   },
+   {
+    "network": "KO",
+    "station": "TKR",
+    "lat": 40.9893,
+    "lon": 27.5351,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9664
+   },
+   {
+    "network": "KO",
+    "station": "KRBG",
+    "lat": 40.3932,
+    "lon": 27.2977,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9484
+   },
+   {
+    "network": "KO",
+    "station": "NMR5",
+    "lat": 40.7954,
+    "lon": 27.366,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9671
+   },
+   {
+    "network": "KO",
+    "station": "NMR2",
+    "lat": 40.7172,
+    "lon": 27.3123,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9669
+   },
+   {
+    "network": "KO",
+    "station": "YAYO",
+    "lat": 39.6113,
+    "lon": 27.0726,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "NMR3",
+    "lat": 40.7432,
+    "lon": 27.2944,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9645
+   },
+   {
+    "network": "KO",
+    "station": "NMR4",
+    "lat": 40.788,
+    "lon": 27.3006,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9661
+   },
+   {
+    "network": "KO",
+    "station": "NMR6",
+    "lat": 40.704,
+    "lon": 27.2653,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9639
+   },
+   {
+    "network": "KO",
+    "station": "NMR7",
+    "lat": 40.728,
+    "lon": 27.2353,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9644
+   },
+   {
+    "network": "KO",
+    "station": "AGRB",
+    "lat": 39.5755,
+    "lon": 42.992,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9613
+   },
+   {
+    "network": "KO",
+    "station": "BLCB",
+    "lat": 38.3853,
+    "lon": 27.042,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9503
+   },
+   {
+    "network": "KO",
+    "station": "AKDM",
+    "lat": 38.3285,
+    "lon": 42.98,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9563
+   },
+   {
+    "network": "KO",
+    "station": "PHSR",
+    "lat": 41.6308,
+    "lon": 27.5238,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9668
+   },
+   {
+    "network": "KO",
+    "station": "DAT",
+    "lat": 36.7308,
+    "lon": 27.5767,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9677
+   },
+   {
+    "network": "KO",
+    "station": "DKL",
+    "lat": 39.0713,
+    "lon": 26.9053,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9656
+   },
+   {
+    "network": "KO",
+    "station": "BODT",
+    "lat": 37.0622,
+    "lon": 27.3103,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9674
+   },
+   {
+    "network": "KO",
+    "station": "AYVL",
+    "lat": 39.2907,
+    "lon": 26.69,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9673
+   },
+   {
+    "network": "KO",
+    "station": "LAP",
+    "lat": 40.3703,
+    "lon": 26.7593,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9667
+   },
+   {
+    "network": "KO",
+    "station": "GELI",
+    "lat": 40.398,
+    "lon": 26.4742,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9585
+   },
+   {
+    "network": "KO",
+    "station": "ERIK",
+    "lat": 40.6708,
+    "lon": 26.5132,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9663
+   },
+   {
+    "network": "KO",
+    "station": "EZN",
+    "lat": 39.8255,
+    "lon": 26.3246,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9148
+   },
+   {
+    "network": "KO",
+    "station": "EDRB",
+    "lat": 41.8469,
+    "lon": 26.7437,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9656
+   },
+   {
+    "network": "KO",
+    "station": "CUKT",
+    "lat": 37.2473,
+    "lon": 43.6077,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9637
+   },
+   {
+    "network": "KO",
+    "station": "ENEZ",
+    "lat": 40.7362,
+    "lon": 26.153,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9222
+   },
+   {
+    "network": "KO",
+    "station": "GADA",
+    "lat": 40.1908,
+    "lon": 25.8987,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9467
+   },
+   {
+    "network": "KO",
+    "station": "TASB",
+    "lat": 39.9838,
+    "lon": 44.2384,
+    "location": "",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.967
+   }
+  ],
+  "rejected": [
+   {
+    "network": "KO",
+    "station": "AFSR",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "KOZT",
+    "reason": "coverage 0.863 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "KMRS",
+    "reason": "coverage 0.636 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "GERE",
+    "reason": "coverage 0.202 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "KBAN",
+    "reason": "coverage 0.449 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "PERB",
+    "reason": "coverage 0.347 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "LMOS",
+    "reason": "coverage 0.642 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "BOLI",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "URFA",
+    "reason": "coverage 0.018 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "EREN",
+    "reason": "coverage 0.818 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "KDZE",
+    "reason": "coverage 0.138 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "GULT",
+    "reason": "loc --: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "KO",
+    "station": "LFK",
+    "reason": "coverage 0.757 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "CAVI",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "BAYT",
+    "reason": "coverage 0.517 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "LICE",
+    "reason": "coverage 0.704 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "YLV",
+    "reason": "coverage 0.813 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "KARO",
+    "reason": "coverage 0.710 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "CHOM",
+    "reason": "coverage 0.025 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "SVAN",
+    "reason": "coverage 0.792 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "ARMT",
+    "reason": "coverage 0.115 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "KCTX",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "CTKS",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "DALY",
+    "reason": "coverage 0.810 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "MLAZ",
+    "reason": "coverage 0.625 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "MRMT",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "SIRT",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "GAZK",
+    "reason": "coverage 0.398 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "RKY",
+    "reason": "coverage 0.000 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "KARS",
+    "reason": "coverage 0.793 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "VANB",
+    "reason": "coverage 0.488 < 0.9"
+   },
+   {
+    "network": "KO",
+    "station": "CLDR",
+    "reason": "coverage 0.825 < 0.9"
+   }
+  ]
+ },
+ "catalogue": {
+  "agency": "EMSC (European-Mediterranean Seismological Centre)",
+  "requests": [
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-08-30T00%3A00%3A00&endtime=2026-09-06T00%3A00%3A00&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc",
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-09-06T00%3A00%3A00&endtime=2026-09-13T00%3A00%3A00&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc",
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-09-13T00%3A00%3A00&endtime=2026-09-20T00%3A00%3A00&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc",
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-09-20T00%3A00%3A00&endtime=2026-09-27T00%3A00%3A00&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc",
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-09-27T00%3A00%3A00&endtime=2026-10-04T00%3A00%3A00&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc",
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-10-04T00%3A00%3A00&endtime=2026-10-11T00%3A00%3A00&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc",
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-10-11T00%3A00%3A00&endtime=2026-10-18T00%3A00%3A00&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc",
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-10-18T00%3A00%3A00&endtime=2026-10-25T00%3A00%3A00&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc",
+   "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2026-10-25T00%3A00%3A00&endtime=2026-10-30T12%3A55%3A36&latitude=39&longitude=35&maxradius=12.5905&orderby=time-asc"
+  ],
+  "events": 5693,
+  "canary": {
+   "window": [
+    "2025-08-10T16:00:00",
+    "2025-08-10T19:00:00"
+   ],
+   "centre": [
+    39.2,
+    28.2
+   ],
+   "radius_km": 150.0,
+   "min_events": 30,
+   "events": 69,
+   "request": "https://www.seismicportal.eu/fdsnws/event/1/query?starttime=2025-08-10T16%3A00%3A00&endtime=2025-08-10T19%3A00%3A00&latitude=39.2&longitude=28.2&maxradius=1.3490&orderby=time-asc"
+  }
+ },
+ "sequences": [
+  {
+   "index": 1,
+   "first": {
+    "time": "2026-09-21T01:02:03.800000",
+    "lat": 37.8307,
+    "lon": 36.206,
+    "depth_km": 7.0,
+    "magnitude": 4.9,
+    "type": "mw",
+    "id": "20260921_0000009"
+   },
+   "joined": [],
+   "start": "2026-09-21T00:52:03.800000",
+   "end": "2026-09-21T03:52:03.800000",
+   "usable_within_km": 7,
+   "stations": [
+    "KO.BNN",
+    "KO.CEYT",
+    "KO.DARE",
+    "KO.GAZ",
+    "KO.KARA",
+    "KO.NURH",
+    "KO.SARI"
+   ],
+   "assign": "reserve",
+   "coin": 0.6394267984578837,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 2,
+   "first": {
+    "time": "2026-09-24T07:40:58.050000",
+    "lat": 37.4205,
+    "lon": 38.8678,
+    "depth_km": 7.0,
+    "magnitude": 5.3,
+    "type": "mw",
+    "id": "20260924_0000086"
+   },
+   "joined": [],
+   "start": "2026-09-24T07:30:58.050000",
+   "end": "2026-09-24T10:30:58.050000",
+   "usable_within_km": 7,
+   "stations": [
+    "KO.AKDG",
+    "KO.DYBB",
+    "KO.GAZ",
+    "KO.MAZI",
+    "KO.MLTY",
+    "KO.NURH",
+    "KO.SVRC"
+   ],
+   "assign": "now",
+   "coin": 0.025010755222666936,
+   "scorable": 7,
+   "cumulative": 7,
+   "selected": true
+  },
+  {
+   "index": 3,
+   "first": {
+    "time": "2026-10-04T11:19:25.790000",
+    "lat": 37.7487,
+    "lon": 36.091,
+    "depth_km": 8.0,
+    "magnitude": 4.7,
+    "type": "mb",
+    "id": "20261004_0000144"
+   },
+   "joined": [
+    {
+     "time": "2026-10-04T11:36:26.580000",
+     "lat": 37.7607,
+     "lon": 36.105,
+     "depth_km": 8.7,
+     "magnitude": 4.6,
+     "type": "mb",
+     "id": "20261004_0000153"
+    },
+    {
+     "time": "2026-10-04T11:43:23.390000",
+     "lat": 37.7417,
+     "lon": 36.1008,
+     "depth_km": 7.0,
+     "magnitude": 5.0,
+     "type": "mb",
+     "id": "20261004_0000156"
+    }
+   ],
+   "start": "2026-10-04T11:09:25.790000",
+   "end": "2026-10-04T14:09:25.790000",
+   "usable_within_km": 6,
+   "stations": [
+    "KO.BNN",
+    "KO.CEYT",
+    "KO.GAZ",
+    "KO.KARA",
+    "KO.NURH",
+    "KO.SARI"
+   ],
+   "assign": "now",
+   "coin": 0.27502931836911926,
+   "scorable": 29,
+   "cumulative": 36,
+   "selected": true
+  }
+ ],
+ "target_reached": false,
+ "quiet": {
+  "passes": [
+   {
+    "relaxed": false,
+    "draws": 10000,
+    "accepted": 6,
+    "rejected": {
+     "catalogue event": 9899,
+     "overlap": 94,
+     "coverage": 1
+    }
+   },
+   {
+    "relaxed": true,
+    "draws": 10000,
+    "accepted": 14,
+    "rejected": {
+     "catalogue event": 9814,
+     "overlap": 134,
+     "coverage": 38
+    }
+   }
+  ],
+  "windows": [
+   {
+    "start": "2026-10-15T19:31:00",
+    "end": "2026-10-16T01:31:00",
+    "sequence": 3,
+    "draw": 6,
+    "stations": [
+     "KO.BNN",
+     "KO.CEYT",
+     "KO.GAZ",
+     "KO.KARA",
+     "KO.NURH",
+     "KO.SARI"
+    ]
+   },
+   {
+    "start": "2026-09-29T23:15:00",
+    "end": "2026-09-30T05:15:00",
+    "sequence": 3,
+    "draw": 49,
+    "stations": [
+     "KO.BNN",
+     "KO.CEYT",
+     "KO.GAZ",
+     "KO.KARA",
+     "KO.NURH",
+     "KO.SARI"
+    ]
+   },
+   {
+    "start": "2026-09-26T05:44:00",
+    "end": "2026-09-26T11:44:00",
+    "sequence": 3,
+    "draw": 93,
+    "stations": [
+     "KO.BNN",
+     "KO.CEYT",
+     "KO.GAZ",
+     "KO.KARA",
+     "KO.NURH",
+     "KO.SARI"
+    ]
+   },
+   {
+    "start": "2026-10-17T00:04:00",
+    "end": "2026-10-17T06:04:00",
+    "sequence": 2,
+    "draw": 121,
+    "stations": [
+     "KO.AKDG",
+     "KO.DYBB",
+     "KO.GAZ",
+     "KO.MAZI",
+     "KO.MLTY",
+     "KO.NURH",
+     "KO.SVRC"
+    ]
+   },
+   {
+    "start": "2026-10-23T02:58:00",
+    "end": "2026-10-23T08:58:00",
+    "sequence": 2,
+    "draw": 430,
+    "stations": [
+     "KO.AKDG",
+     "KO.DYBB",
+     "KO.GAZ",
+     "KO.MAZI",
+     "KO.MLTY",
+     "KO.NURH",
+     "KO.SVRC"
+    ]
+   },
+   {
+    "start": "2026-10-18T10:50:00",
+    "end": "2026-10-18T16:50:00",
+    "sequence": 3,
+    "draw": 617,
+    "stations": [
+     "KO.BNN",
+     "KO.CEYT",
+     "KO.GAZ",
+     "KO.KARA",
+     "KO.NURH",
+     "KO.SARI"
+    ]
+   },
+   {
+    "start": "2026-09-24T00:32:00",
+    "end": "2026-09-24T06:32:00",
+    "sequence": 2,
+    "draw": 786,
+    "stations": [
+     "KO.AKDG",
+     "KO.DYBB",
+     "KO.GAZ",
+     "KO.MAZI",
+     "KO.MLTY",
+     "KO.NURH",
+     "KO.SVRC"
+    ]
+   },
+   {
+    "start": "2026-10-16T17:18:00",
+    "end": "2026-10-16T23:18:00",
+    "sequence": 3,
+    "draw": 1484,
+    "stations": [
+     "KO.BNN",
+     "KO.CEYT",
+     "KO.GAZ",
+     "KO.KARA",
+     "KO.NURH",
+     "KO.SARI"
+    ]
+   },
+   {
+    "start": "2026-09-15T00:09:00",
+    "end": "2026-09-15T06:09:00",
+    "sequence": 2,
+    "draw": 1577,
+    "stations": [
+     "KO.AKDG",
+     "KO.DYBB",
+     "KO.GAZ",
+     "KO.MAZI",
+     "KO.MLTY",
+     "KO.NURH",
+     "KO.SVRC"
+    ]
+   },
+   {
+    "start": "2026-10-20T16:25:00",
+    "end": "2026-10-20T22:25:00",
+    "sequence": 2,
+    "draw": 2717,
+    "stations": [
+     "KO.AKDG",
+     "KO.DYBB",
+     "KO.GAZ",
+     "KO.MAZI",
+     "KO.MLTY",
+     "KO.NURH",
+     "KO.SVRC"
+    ]
+   },
+   {
+    "start": "2026-10-16T05:21:00",
+    "end": "2026-10-16T11:21:00",
+    "sequence": 2,
+    "draw": 4223,
+    "stations": [
+     "KO.AKDG",
+     "KO.DYBB",
+     "KO.GAZ",
+     "KO.MAZI",
+     "KO.MLTY",
+     "KO.NURH",
+     "KO.SVRC"
+    ]
+   },
+   {
+    "start": "2026-10-28T14:30:00",
+    "end": "2026-10-28T20:30:00",
+    "sequence": 3,
+    "draw": 4968,
+    "stations": [
+     "KO.BNN",
+     "KO.CEYT",
+     "KO.GAZ",
+     "KO.KARA",
+     "KO.NURH",
+     "KO.SARI"
+    ]
+   },
+   {
+    "start": "2026-10-12T10:23:00",
+    "end": "2026-10-12T16:23:00",
+    "sequence": 2,
+    "draw": 6474,
+    "stations": [
+     "KO.AKDG",
+     "KO.DYBB",
+     "KO.GAZ",
+     "KO.MAZI",
+     "KO.MLTY",
+     "KO.NURH",
+     "KO.SVRC"
+    ]
+   },
+   {
+    "start": "2026-09-05T00:47:00",
+    "end": "2026-09-05T06:47:00",
+    "sequence": 3,
+    "draw": 9102,
+    "stations": [
+     "KO.BNN",
+     "KO.CEYT",
+     "KO.GAZ",
+     "KO.KARA",
+     "KO.NURH",
+     "KO.SARI"
+    ]
+   }
+  ]
+ },
+ "selected_utc": "2026-10-30T13:05:40+00:00",
+ "tool": {
+  "name": "ayzek-heldout",
+  "git_commit": "440a2d946939"
+ }
+}

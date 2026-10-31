@@ -1,0 +1,2425 @@
+{
+ "group": "nz",
+ "name": "now",
+ "networks": [
+  "NZ"
+ ],
+ "prospective": false,
+ "period": [
+  "2023-01-01T00:00:00",
+  "2026-10-30T12:55:36"
+ ],
+ "target": 150,
+ "rules": {
+  "min_magnitude": 4.5,
+  "min_stations": 5,
+  "station_radius_km": 150.0,
+  "stations": 8,
+  "lead_s": 600.0,
+  "span_s": 10800.0,
+  "gap_s": 10800.0,
+  "score_radius_km": 250.0,
+  "reserve_seed": 42,
+  "quiet_seed": 43,
+  "quiet_windows": 24,
+  "quiet_hours": 6.0,
+  "quiet_margin_s": 1800.0,
+  "quiet_min_coverage": 0.9,
+  "quiet_max_draws": 10000,
+  "relaxed": [
+   2.0,
+   100.0
+  ]
+ },
+ "stations": {
+  "basis": "day files in the open-data bucket (upper bound)",
+  "usable": [
+   {
+    "network": "NZ",
+    "station": "QRZ",
+    "lat": -40.825521618,
+    "lon": 172.529147829,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "MRZ",
+    "lat": -40.66054537,
+    "lon": 175.578526763,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "KHZ",
+    "lat": -42.41598,
+    "lon": 173.53897,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "BFZ",
+    "lat": -40.679647283,
+    "lon": 176.246245098,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "TSZ",
+    "lat": -40.058553101,
+    "lon": 175.961123866,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "DSZ",
+    "lat": -41.744960821,
+    "lon": 171.804614445,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "VRZ",
+    "lat": -39.12434088,
+    "lon": 174.758452563,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "RATZ",
+    "lat": -38.866498038,
+    "lon": 175.772175968,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "HIZ",
+    "lat": -38.51292897,
+    "lon": 174.855686101,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "KPRZ",
+    "lat": -38.801994,
+    "lon": 175.792935,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "BKZ",
+    "lat": -39.165665643,
+    "lon": 176.492543736,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9968
+   },
+   {
+    "network": "NZ",
+    "station": "TLZ",
+    "lat": -38.3294,
+    "lon": 175.538,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "WVZ",
+    "lat": -43.074350291,
+    "lon": 170.73675416,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "RPZ",
+    "lat": -43.714607582,
+    "lon": 171.053864882,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HH1",
+     "HH2"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "WHSZ",
+    "lat": -43.29065,
+    "lon": 170.40645,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9975
+   },
+   {
+    "network": "NZ",
+    "station": "URZ",
+    "lat": -38.259249093,
+    "lon": 177.110894471,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HH1",
+     "HH2"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "MWZ",
+    "lat": -38.334001396,
+    "lon": 177.527779304,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "MKAZ",
+    "lat": -37.10413,
+    "lon": 175.16117,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "FOZ",
+    "lat": -43.532099313,
+    "lon": 169.815479827,
+    "location": "11",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9968
+   },
+   {
+    "network": "NZ",
+    "station": "CVZ",
+    "lat": -44.38318,
+    "lon": 171.00616,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "PUZ",
+    "lat": -38.071547867,
+    "lon": 178.257209049,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "KUZ",
+    "lat": -36.745228533,
+    "lon": 175.720872942,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "ODZ",
+    "lat": -45.043982113,
+    "lon": 170.644622213,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "AWKZ",
+    "lat": -35.907775,
+    "lon": 173.906494,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "PKAZ",
+    "lat": -35.775727,
+    "lon": 174.213053,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "WKZ",
+    "lat": -44.827021353,
+    "lon": 169.017561979,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "PTAZ",
+    "lat": -35.708875,
+    "lon": 174.497174,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "OTNZ",
+    "lat": -35.5902,
+    "lon": 173.8251,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "PAKZ",
+    "lat": -35.53466,
+    "lon": 174.130228,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.961
+   },
+   {
+    "network": "NZ",
+    "station": "JBLZ",
+    "lat": -35.533871,
+    "lon": 174.391294,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9989
+   },
+   {
+    "network": "NZ",
+    "station": "MNTZ",
+    "lat": -35.419509,
+    "lon": 173.708486,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9989
+   },
+   {
+    "network": "NZ",
+    "station": "HTPZ",
+    "lat": -35.365712,
+    "lon": 174.012961,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "TUZ",
+    "lat": -45.953974846,
+    "lon": 169.631143307,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "MLZ",
+    "lat": -45.366543525,
+    "lon": 168.118406813,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   },
+   {
+    "network": "NZ",
+    "station": "APZ",
+    "lat": -46.83180552,
+    "lon": 167.988825498,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9896
+   },
+   {
+    "network": "NZ",
+    "station": "CTZ",
+    "lat": -43.73549,
+    "lon": -176.61719,
+    "location": "10",
+    "channels": [
+     "HHZ",
+     "HHN",
+     "HHE"
+    ],
+    "coverage_min": 0.9982
+   }
+  ],
+  "rejected": [
+   {
+    "network": "NZ",
+    "station": "NNZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WEL",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WLCZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span; loc 11: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "BSWZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WMVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "THZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WRRZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "OHWZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WAZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MWOZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span; loc 11: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "PREZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "UPKZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "KHEZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span; loc 11: HHZ/HHN/HHE epochs do not cover the span; loc 12: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "NEZ",
+    "reason": "loc 11: HHZ/HH1/HH2 epochs do not cover the span; loc 12: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MRTZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WLRZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MTVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "FEGZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "TRVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MOVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "GVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MAVZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span; loc 11: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WHVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "FWVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "COVZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span; loc 11: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "NGZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "LTZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "TWVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "OTVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WTVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "ETVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "KRVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "TMVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "NTVZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "HPRZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "PXZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MNMZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "KWHZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "INZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "HATZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WATZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "OAHZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "PKTZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "OXZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WHTZ",
+    "reason": "loc 13: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "ARHZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MQZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span; loc 13: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "IFMZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "DBHZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "HNCZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "SMRZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "UTU",
+    "reason": "loc 13: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "RTZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "OMRZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "ERWZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "KNZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "KARZ",
+    "reason": "loc 11: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "TOZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "LIRZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "PNUZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "TGRZ",
+    "reason": "loc 11: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "OPRZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "FRNZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "TKGZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span; loc 11: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "KBAZ",
+    "reason": "loc 12: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "HORZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "ORRZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WTAZ",
+    "reason": "loc 12: HHZ/HHN/HHE epochs do not cover the span; loc 13: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "TWGZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "KRBZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WIZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WSRZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MBAZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span; loc 11: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WIAZ",
+    "reason": "loc 11: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "SLTZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "HAZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "LBZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "AKFZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "PKGZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "ABAZ",
+    "reason": "loc 11: HHZ/HHN/HHE epochs do not cover the span; loc 12: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MKTZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "KPFZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "HSPZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MXZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "LRRZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "GRZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "JCZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WCZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "RDHZ",
+    "reason": "loc 10: HHZ/HH1/HH2 epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "EAZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "OPZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "TTTZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "MSZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "OUZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "SYZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "WHZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "DCZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   },
+   {
+    "network": "NZ",
+    "station": "PYZ",
+    "reason": "loc 10: HHZ/HHN/HHE epochs do not cover the span"
+   }
+  ]
+ },
+ "catalogue": {
+  "agency": "GeoNet (Earth Sciences New Zealand)",
+  "requests": [
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-01-01T00%3A00%3A00&endtime=2023-01-08T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-01-08T00%3A00%3A00&endtime=2023-01-15T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-01-15T00%3A00%3A00&endtime=2023-01-18T12%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-01-18T12%3A00%3A00&endtime=2023-01-22T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-01-22T00%3A00%3A00&endtime=2023-01-29T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-01-29T00%3A00%3A00&endtime=2023-02-05T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-02-05T00%3A00%3A00&endtime=2023-02-12T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-02-12T00%3A00%3A00&endtime=2023-02-19T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-02-19T00%3A00%3A00&endtime=2023-02-26T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-02-26T00%3A00%3A00&endtime=2023-03-05T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-03-05T00%3A00%3A00&endtime=2023-03-12T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-03-12T00%3A00%3A00&endtime=2023-03-19T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-03-19T00%3A00%3A00&endtime=2023-03-26T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-03-26T00%3A00%3A00&endtime=2023-04-02T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-04-02T00%3A00%3A00&endtime=2023-04-09T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-04-09T00%3A00%3A00&endtime=2023-04-16T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-04-16T00%3A00%3A00&endtime=2023-04-23T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-04-23T00%3A00%3A00&endtime=2023-04-26T12%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-04-26T12%3A00%3A00&endtime=2023-04-30T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-04-30T00%3A00%3A00&endtime=2023-05-07T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-05-07T00%3A00%3A00&endtime=2023-05-14T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-05-14T00%3A00%3A00&endtime=2023-05-21T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-05-21T00%3A00%3A00&endtime=2023-05-28T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-05-28T00%3A00%3A00&endtime=2023-06-04T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-06-04T00%3A00%3A00&endtime=2023-06-11T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-06-11T00%3A00%3A00&endtime=2023-06-18T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-06-18T00%3A00%3A00&endtime=2023-06-25T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-06-25T00%3A00%3A00&endtime=2023-07-02T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-07-02T00%3A00%3A00&endtime=2023-07-09T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-07-09T00%3A00%3A00&endtime=2023-07-16T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-07-16T00%3A00%3A00&endtime=2023-07-23T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-07-23T00%3A00%3A00&endtime=2023-07-30T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-07-30T00%3A00%3A00&endtime=2023-08-06T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-08-06T00%3A00%3A00&endtime=2023-08-13T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-08-13T00%3A00%3A00&endtime=2023-08-20T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-08-20T00%3A00%3A00&endtime=2023-08-27T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-08-27T00%3A00%3A00&endtime=2023-09-03T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-09-03T00%3A00%3A00&endtime=2023-09-10T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-09-10T00%3A00%3A00&endtime=2023-09-17T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-09-17T00%3A00%3A00&endtime=2023-09-24T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-09-24T00%3A00%3A00&endtime=2023-10-01T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-10-01T00%3A00%3A00&endtime=2023-10-08T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-10-08T00%3A00%3A00&endtime=2023-10-15T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-10-15T00%3A00%3A00&endtime=2023-10-22T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-10-22T00%3A00%3A00&endtime=2023-10-29T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-10-29T00%3A00%3A00&endtime=2023-11-01T12%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-11-01T12%3A00%3A00&endtime=2023-11-05T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-11-05T00%3A00%3A00&endtime=2023-11-12T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-11-12T00%3A00%3A00&endtime=2023-11-19T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-11-19T00%3A00%3A00&endtime=2023-11-26T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-11-26T00%3A00%3A00&endtime=2023-11-29T12%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-11-29T12%3A00%3A00&endtime=2023-12-03T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-12-03T00%3A00%3A00&endtime=2023-12-06T12%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-12-06T12%3A00%3A00&endtime=2023-12-10T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-12-10T00%3A00%3A00&endtime=2023-12-17T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-12-17T00%3A00%3A00&endtime=2023-12-24T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-12-24T00%3A00%3A00&endtime=2023-12-31T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2023-12-31T00%3A00%3A00&endtime=2024-01-07T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-01-07T00%3A00%3A00&endtime=2024-01-14T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-01-14T00%3A00%3A00&endtime=2024-01-21T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-01-21T00%3A00%3A00&endtime=2024-01-28T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-01-28T00%3A00%3A00&endtime=2024-02-04T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-02-04T00%3A00%3A00&endtime=2024-02-11T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-02-11T00%3A00%3A00&endtime=2024-02-18T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-02-18T00%3A00%3A00&endtime=2024-02-25T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-02-25T00%3A00%3A00&endtime=2024-03-03T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-03-03T00%3A00%3A00&endtime=2024-03-10T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-03-10T00%3A00%3A00&endtime=2024-03-17T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-03-17T00%3A00%3A00&endtime=2024-03-24T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-03-24T00%3A00%3A00&endtime=2024-03-31T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-03-31T00%3A00%3A00&endtime=2024-04-07T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-04-07T00%3A00%3A00&endtime=2024-04-14T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-04-14T00%3A00%3A00&endtime=2024-04-17T12%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-04-17T12%3A00%3A00&endtime=2024-04-21T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-04-21T00%3A00%3A00&endtime=2024-04-28T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-04-28T00%3A00%3A00&endtime=2024-05-05T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-05-05T00%3A00%3A00&endtime=2024-05-12T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-05-12T00%3A00%3A00&endtime=2024-05-19T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-05-19T00%3A00%3A00&endtime=2024-05-26T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-05-26T00%3A00%3A00&endtime=2024-06-02T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-06-02T00%3A00%3A00&endtime=2024-06-09T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-06-09T00%3A00%3A00&endtime=2024-06-16T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-06-16T00%3A00%3A00&endtime=2024-06-23T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-06-23T00%3A00%3A00&endtime=2024-06-30T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-06-30T00%3A00%3A00&endtime=2024-07-07T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-07-07T00%3A00%3A00&endtime=2024-07-14T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-07-14T00%3A00%3A00&endtime=2024-07-21T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-07-21T00%3A00%3A00&endtime=2024-07-28T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-07-28T00%3A00%3A00&endtime=2024-08-04T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-08-04T00%3A00%3A00&endtime=2024-08-11T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-08-11T00%3A00%3A00&endtime=2024-08-18T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-08-18T00%3A00%3A00&endtime=2024-08-25T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-08-25T00%3A00%3A00&endtime=2024-09-01T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-09-01T00%3A00%3A00&endtime=2024-09-08T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-09-08T00%3A00%3A00&endtime=2024-09-15T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-09-15T00%3A00%3A00&endtime=2024-09-22T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-09-22T00%3A00%3A00&endtime=2024-09-29T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-09-29T00%3A00%3A00&endtime=2024-10-06T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-10-06T00%3A00%3A00&endtime=2024-10-13T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-10-13T00%3A00%3A00&endtime=2024-10-20T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-10-20T00%3A00%3A00&endtime=2024-10-27T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-10-27T00%3A00%3A00&endtime=2024-11-03T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-11-03T00%3A00%3A00&endtime=2024-11-10T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-11-10T00%3A00%3A00&endtime=2024-11-17T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-11-17T00%3A00%3A00&endtime=2024-11-24T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-11-24T00%3A00%3A00&endtime=2024-12-01T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-12-01T00%3A00%3A00&endtime=2024-12-08T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-12-08T00%3A00%3A00&endtime=2024-12-15T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-12-15T00%3A00%3A00&endtime=2024-12-22T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-12-22T00%3A00%3A00&endtime=2024-12-29T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2024-12-29T00%3A00%3A00&endtime=2025-01-05T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-01-05T00%3A00%3A00&endtime=2025-01-12T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-01-12T00%3A00%3A00&endtime=2025-01-19T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-01-19T00%3A00%3A00&endtime=2025-01-26T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-01-26T00%3A00%3A00&endtime=2025-02-02T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-02-02T00%3A00%3A00&endtime=2025-02-09T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-02-09T00%3A00%3A00&endtime=2025-02-16T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-02-16T00%3A00%3A00&endtime=2025-02-23T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-02-23T00%3A00%3A00&endtime=2025-03-02T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-03-02T00%3A00%3A00&endtime=2025-03-09T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-03-09T00%3A00%3A00&endtime=2025-03-16T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-03-16T00%3A00%3A00&endtime=2025-03-23T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-03-23T00%3A00%3A00&endtime=2025-03-30T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-03-30T00%3A00%3A00&endtime=2025-04-06T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-04-06T00%3A00%3A00&endtime=2025-04-13T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-04-13T00%3A00%3A00&endtime=2025-04-20T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-04-20T00%3A00%3A00&endtime=2025-04-27T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-04-27T00%3A00%3A00&endtime=2025-05-04T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-05-04T00%3A00%3A00&endtime=2025-05-11T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-05-11T00%3A00%3A00&endtime=2025-05-18T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-05-18T00%3A00%3A00&endtime=2025-05-25T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-05-25T00%3A00%3A00&endtime=2025-06-01T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-06-01T00%3A00%3A00&endtime=2025-06-08T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-06-08T00%3A00%3A00&endtime=2025-06-15T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-06-15T00%3A00%3A00&endtime=2025-06-22T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-06-22T00%3A00%3A00&endtime=2025-06-29T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-06-29T00%3A00%3A00&endtime=2025-07-06T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-07-06T00%3A00%3A00&endtime=2025-07-13T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-07-13T00%3A00%3A00&endtime=2025-07-20T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-07-20T00%3A00%3A00&endtime=2025-07-27T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-07-27T00%3A00%3A00&endtime=2025-08-03T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-08-03T00%3A00%3A00&endtime=2025-08-10T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-08-10T00%3A00%3A00&endtime=2025-08-17T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-08-17T00%3A00%3A00&endtime=2025-08-24T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-08-24T00%3A00%3A00&endtime=2025-08-31T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-08-31T00%3A00%3A00&endtime=2025-09-07T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-09-07T00%3A00%3A00&endtime=2025-09-14T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-09-14T00%3A00%3A00&endtime=2025-09-21T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-09-21T00%3A00%3A00&endtime=2025-09-28T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-09-28T00%3A00%3A00&endtime=2025-10-05T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-10-05T00%3A00%3A00&endtime=2025-10-12T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-10-12T00%3A00%3A00&endtime=2025-10-19T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-10-19T00%3A00%3A00&endtime=2025-10-26T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-10-26T00%3A00%3A00&endtime=2025-11-02T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-11-02T00%3A00%3A00&endtime=2025-11-09T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-11-09T00%3A00%3A00&endtime=2025-11-16T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-11-16T00%3A00%3A00&endtime=2025-11-23T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-11-23T00%3A00%3A00&endtime=2025-11-30T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-11-30T00%3A00%3A00&endtime=2025-12-07T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-12-07T00%3A00%3A00&endtime=2025-12-14T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-12-14T00%3A00%3A00&endtime=2025-12-21T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-12-21T00%3A00%3A00&endtime=2025-12-28T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2025-12-28T00%3A00%3A00&endtime=2026-01-04T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-01-04T00%3A00%3A00&endtime=2026-01-11T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-01-11T00%3A00%3A00&endtime=2026-01-18T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-01-18T00%3A00%3A00&endtime=2026-01-25T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-01-25T00%3A00%3A00&endtime=2026-02-01T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-02-01T00%3A00%3A00&endtime=2026-02-08T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-02-08T00%3A00%3A00&endtime=2026-02-15T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-02-15T00%3A00%3A00&endtime=2026-02-22T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-02-22T00%3A00%3A00&endtime=2026-03-01T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-03-01T00%3A00%3A00&endtime=2026-03-08T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-03-08T00%3A00%3A00&endtime=2026-03-15T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-03-15T00%3A00%3A00&endtime=2026-03-22T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-03-22T00%3A00%3A00&endtime=2026-03-29T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-03-29T00%3A00%3A00&endtime=2026-04-05T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-04-05T00%3A00%3A00&endtime=2026-04-12T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-04-12T00%3A00%3A00&endtime=2026-04-19T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-04-19T00%3A00%3A00&endtime=2026-04-26T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-04-26T00%3A00%3A00&endtime=2026-05-03T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-05-03T00%3A00%3A00&endtime=2026-05-10T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-05-10T00%3A00%3A00&endtime=2026-05-17T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-05-17T00%3A00%3A00&endtime=2026-05-24T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-05-24T00%3A00%3A00&endtime=2026-05-31T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-05-31T00%3A00%3A00&endtime=2026-06-07T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-06-07T00%3A00%3A00&endtime=2026-06-14T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-06-14T00%3A00%3A00&endtime=2026-06-21T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-06-21T00%3A00%3A00&endtime=2026-06-28T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-06-28T00%3A00%3A00&endtime=2026-07-05T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-07-05T00%3A00%3A00&endtime=2026-07-12T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-07-12T00%3A00%3A00&endtime=2026-07-19T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-07-19T00%3A00%3A00&endtime=2026-07-26T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-07-26T00%3A00%3A00&endtime=2026-08-02T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-08-02T00%3A00%3A00&endtime=2026-08-09T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-08-09T00%3A00%3A00&endtime=2026-08-16T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-08-16T00%3A00%3A00&endtime=2026-08-23T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-08-23T00%3A00%3A00&endtime=2026-08-30T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-08-30T00%3A00%3A00&endtime=2026-09-06T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-09-06T00%3A00%3A00&endtime=2026-09-13T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-09-13T00%3A00%3A00&endtime=2026-09-20T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-09-20T00%3A00%3A00&endtime=2026-09-27T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-09-27T00%3A00%3A00&endtime=2026-10-04T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-10-04T00%3A00%3A00&endtime=2026-10-11T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-10-11T00%3A00%3A00&endtime=2026-10-18T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-10-18T00%3A00%3A00&endtime=2026-10-25T00%3A00%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc",
+   "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2026-10-25T00%3A00%3A00&endtime=2026-10-30T12%3A55%3A36&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc"
+  ],
+  "events": 81990,
+  "canary": {
+   "window": [
+    "2022-01-27T05:19:00",
+    "2022-01-27T12:19:00"
+   ],
+   "centre": [
+    -41.0,
+    174.0
+   ],
+   "radius_km": 1300.0,
+   "min_events": 20,
+   "events": 51,
+   "request": "https://service.geonet.org.nz/fdsnws/event/1/query?starttime=2022-01-27T05%3A19%3A00&endtime=2022-01-27T12%3A19%3A00&latitude=-41&longitude=174&maxradius=11.6912&orderby=time-asc"
+  }
+ },
+ "sequences": [
+  {
+   "index": 1,
+   "first": {
+    "time": "2023-01-03T16:39:21.821557",
+    "lat": -37.59829712,
+    "lon": 175.6892548,
+    "depth_km": 6.732970715,
+    "magnitude": 5.109284389,
+    "type": "MLv",
+    "id": "2023p007281"
+   },
+   "joined": [],
+   "start": "2023-01-03T16:29:21.821557",
+   "end": "2023-01-03T19:29:21.821557",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.KUZ",
+    "NZ.MKAZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.6394267984578837,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 2,
+   "first": {
+    "time": "2023-02-02T13:02:43.493940",
+    "lat": -37.58729935,
+    "lon": 175.7054138,
+    "depth_km": 5.955107212,
+    "magnitude": 4.795154627,
+    "type": "MLv",
+    "id": "2023p087955"
+   },
+   "joined": [],
+   "start": "2023-02-02T12:52:43.493940",
+   "end": "2023-02-02T15:52:43.493940",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.KUZ",
+    "NZ.MKAZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "now",
+   "coin": 0.025010755222666936,
+   "scorable": 11,
+   "cumulative": 11,
+   "selected": true
+  },
+  {
+   "index": 3,
+   "first": {
+    "time": "2023-02-03T23:14:22.138560",
+    "lat": -38.83316803,
+    "lon": 175.9182587,
+    "depth_km": 86.1728363,
+    "magnitude": 4.976720252,
+    "type": "MLv",
+    "id": "2023p091805"
+   },
+   "joined": [],
+   "start": "2023-02-03T23:04:22.138560",
+   "end": "2023-02-04T02:04:22.138560",
+   "usable_within_km": 8,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.TSZ",
+    "NZ.URZ",
+    "NZ.VRZ"
+   ],
+   "assign": "now",
+   "coin": 0.27502931836911926,
+   "scorable": 3,
+   "cumulative": 14,
+   "selected": true
+  },
+  {
+   "index": 4,
+   "first": {
+    "time": "2023-03-17T15:31:06.273385",
+    "lat": -38.06930542,
+    "lon": 176.6967316,
+    "depth_km": 2.665169954,
+    "magnitude": 4.661661125,
+    "type": "MLv",
+    "id": "2023p204450"
+   },
+   "joined": [
+    {
+     "time": "2023-03-17T15:46:01.655362",
+     "lat": -38.06438065,
+     "lon": 176.6934509,
+     "depth_km": 4.716814995,
+     "magnitude": 4.926049046,
+     "type": "MLv",
+     "id": "2023p204478"
+    }
+   ],
+   "start": "2023-03-17T15:21:06.273385",
+   "end": "2023-03-17T18:21:06.273385",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.KPRZ",
+    "NZ.MWZ",
+    "NZ.PUZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "now",
+   "coin": 0.22321073814882275,
+   "scorable": 92,
+   "cumulative": 106,
+   "selected": true
+  },
+  {
+   "index": 5,
+   "first": {
+    "time": "2023-03-17T19:58:07.209212",
+    "lat": -38.05813217,
+    "lon": 176.709198,
+    "depth_km": 4.78091383,
+    "magnitude": 4.815444277,
+    "type": "MLv",
+    "id": "2023p204951"
+   },
+   "joined": [],
+   "start": "2023-03-17T19:48:07.209212",
+   "end": "2023-03-17T22:48:07.209212",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.KPRZ",
+    "NZ.MWZ",
+    "NZ.PUZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.7364712141640124,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 6,
+   "first": {
+    "time": "2023-05-16T20:39:16.907136",
+    "lat": -42.5863266,
+    "lon": 171.8169708,
+    "depth_km": 5.0,
+    "magnitude": 4.534175304,
+    "type": "MLv",
+    "id": "2023p367190"
+   },
+   "joined": [],
+   "start": "2023-05-16T20:29:16.907136",
+   "end": "2023-05-16T23:29:16.907136",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.DSZ",
+    "NZ.KHZ",
+    "NZ.RPZ",
+    "NZ.WHSZ",
+    "NZ.WVZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.6766994874229113,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 7,
+   "first": {
+    "time": "2023-09-19T21:14:49.067260",
+    "lat": -43.69734573,
+    "lon": 171.0763245,
+    "depth_km": 11.69156933,
+    "magnitude": 5.973363132,
+    "type": "Mw(mB)",
+    "id": "2023p707798"
+   },
+   "joined": [],
+   "start": "2023-09-19T21:04:49.067260",
+   "end": "2023-09-20T00:04:49.067260",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.CVZ",
+    "NZ.FOZ",
+    "NZ.RPZ",
+    "NZ.WHSZ",
+    "NZ.WVZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.8921795677048454,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 8,
+   "first": {
+    "time": "2023-10-15T03:15:20.448623",
+    "lat": -38.89800262,
+    "lon": 174.9884949,
+    "depth_km": 201.7718201,
+    "magnitude": 4.589435728,
+    "type": "MLv",
+    "id": "2023p776042"
+   },
+   "joined": [],
+   "start": "2023-10-15T03:05:20.448623",
+   "end": "2023-10-15T06:05:20.448623",
+   "usable_within_km": 6,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.VRZ"
+   ],
+   "assign": "now",
+   "coin": 0.08693883262941615,
+   "scorable": 2,
+   "cumulative": 108,
+   "selected": true
+  },
+  {
+   "index": 9,
+   "first": {
+    "time": "2023-10-23T09:09:04.193071",
+    "lat": -42.73765182,
+    "lon": 171.7832947,
+    "depth_km": 5.0,
+    "magnitude": 5.141187882,
+    "type": "M",
+    "id": "2023p798327"
+   },
+   "joined": [],
+   "start": "2023-10-23T08:59:04.193071",
+   "end": "2023-10-23T11:59:04.193071",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.DSZ",
+    "NZ.KHZ",
+    "NZ.RPZ",
+    "NZ.WHSZ",
+    "NZ.WVZ"
+   ],
+   "assign": "now",
+   "coin": 0.4219218196852704,
+   "scorable": 3,
+   "cumulative": 111,
+   "selected": true
+  },
+  {
+   "index": 10,
+   "first": {
+    "time": "2024-02-18T04:09:10.984830",
+    "lat": -37.87085724,
+    "lon": 176.3692322,
+    "depth_km": 175.2164612,
+    "magnitude": 4.831247654,
+    "type": "MLv",
+    "id": "2024p130197"
+   },
+   "joined": [],
+   "start": "2024-02-18T03:59:10.984830",
+   "end": "2024-02-18T06:59:10.984830",
+   "usable_within_km": 8,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.KPRZ",
+    "NZ.KUZ",
+    "NZ.MKAZ",
+    "NZ.MWZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "now",
+   "coin": 0.029797219438070344,
+   "scorable": 5,
+   "cumulative": 116,
+   "selected": true
+  },
+  {
+   "index": 11,
+   "first": {
+    "time": "2024-02-26T08:21:12.820527",
+    "lat": -43.52474594,
+    "lon": 171.2770996,
+    "depth_km": 5.0,
+    "magnitude": 5.093902415,
+    "type": "MLv",
+    "id": "2024p152292"
+   },
+   "joined": [],
+   "start": "2024-02-26T08:11:12.820527",
+   "end": "2024-02-26T11:11:12.820527",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.CVZ",
+    "NZ.FOZ",
+    "NZ.RPZ",
+    "NZ.WHSZ",
+    "NZ.WVZ"
+   ],
+   "assign": "now",
+   "coin": 0.21863797480360336,
+   "scorable": 7,
+   "cumulative": 123,
+   "selected": true
+  },
+  {
+   "index": 12,
+   "first": {
+    "time": "2024-03-02T11:31:21.787577",
+    "lat": -37.80701828,
+    "lon": 176.5069733,
+    "depth_km": 159.63758850000002,
+    "magnitude": 4.744332562,
+    "type": "MLv",
+    "id": "2024p166162"
+   },
+   "joined": [],
+   "start": "2024-03-02T11:21:21.787577",
+   "end": "2024-03-02T14:21:21.787577",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.KPRZ",
+    "NZ.KUZ",
+    "NZ.MKAZ",
+    "NZ.MWZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.5053552881033624,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 13,
+   "first": {
+    "time": "2024-04-02T05:39:44.898422",
+    "lat": -43.20124435,
+    "lon": 170.9110718,
+    "depth_km": 5.0,
+    "magnitude": 4.524288618,
+    "type": "MLv",
+    "id": "2024p249286"
+   },
+   "joined": [],
+   "start": "2024-04-02T05:29:44.898422",
+   "end": "2024-04-02T08:29:44.898422",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.CVZ",
+    "NZ.FOZ",
+    "NZ.RPZ",
+    "NZ.WHSZ",
+    "NZ.WVZ"
+   ],
+   "assign": "now",
+   "coin": 0.026535969683863625,
+   "scorable": 4,
+   "cumulative": 127,
+   "selected": true
+  },
+  {
+   "index": 14,
+   "first": {
+    "time": "2024-04-22T21:57:41.123527",
+    "lat": -39.04441071,
+    "lon": 176.359375,
+    "depth_km": 38.83918762,
+    "magnitude": 4.573983535,
+    "type": "MLv",
+    "id": "2024p305175"
+   },
+   "joined": [],
+   "start": "2024-04-22T21:47:41.123527",
+   "end": "2024-04-23T00:47:41.123527",
+   "usable_within_km": 9,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.KPRZ",
+    "NZ.MWZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.TSZ",
+    "NZ.URZ",
+    "NZ.VRZ"
+   ],
+   "assign": "now",
+   "coin": 0.1988376506866485,
+   "scorable": 9,
+   "cumulative": 136,
+   "selected": true
+  },
+  {
+   "index": 15,
+   "first": {
+    "time": "2024-06-05T14:19:45.626015",
+    "lat": -38.15227127,
+    "lon": 176.0281525,
+    "depth_km": 170.44430540000002,
+    "magnitude": 5.10753211,
+    "type": "M",
+    "id": "2024p423234"
+   },
+   "joined": [],
+   "start": "2024-06-05T14:09:45.626015",
+   "end": "2024-06-05T17:09:45.626015",
+   "usable_within_km": 8,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.MKAZ",
+    "NZ.MWZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.6498844377795232,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 16,
+   "first": {
+    "time": "2024-10-16T21:05:19.890425",
+    "lat": -37.8904914855957,
+    "lon": 176.26194763183594,
+    "depth_km": 168.03608703613298,
+    "magnitude": 4.763392668174931,
+    "type": "MLv",
+    "id": "2024p783455"
+   },
+   "joined": [],
+   "start": "2024-10-16T20:55:19.890425",
+   "end": "2024-10-16T23:55:19.890425",
+   "usable_within_km": 9,
+   "stations": [
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.KUZ",
+    "NZ.MKAZ",
+    "NZ.MWZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.5449414806032167,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 17,
+   "first": {
+    "time": "2024-11-26T14:46:49.360744",
+    "lat": -39.051815032958984,
+    "lon": 174.90390014648438,
+    "depth_km": 198.0634765625,
+    "magnitude": 4.874057902493581,
+    "type": "MLv",
+    "id": "2024p893554"
+   },
+   "joined": [],
+   "start": "2024-11-26T14:36:49.360744",
+   "end": "2024-11-26T17:36:49.360744",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.TSZ",
+    "NZ.VRZ"
+   ],
+   "assign": "now",
+   "coin": 0.2204406220406967,
+   "scorable": 4,
+   "cumulative": 140,
+   "selected": true
+  },
+  {
+   "index": 18,
+   "first": {
+    "time": "2024-12-17T15:44:05.445389",
+    "lat": -37.47303009033203,
+    "lon": 176.63121032714844,
+    "depth_km": 189.343566894531,
+    "magnitude": 4.953501536949794,
+    "type": "MLv",
+    "id": "2024p950420"
+   },
+   "joined": [],
+   "start": "2024-12-17T15:34:05.445389",
+   "end": "2024-12-17T18:34:05.445389",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.KUZ",
+    "NZ.MKAZ",
+    "NZ.MWZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.5892656838759087,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 19,
+   "first": {
+    "time": "2025-04-06T10:57:08.515320",
+    "lat": -38.157684326171875,
+    "lon": 176.54234313964844,
+    "depth_km": 125.83588409423801,
+    "magnitude": 4.822504236087003,
+    "type": "MLv",
+    "id": "2025p257989"
+   },
+   "joined": [],
+   "start": "2025-04-06T10:47:08.515320",
+   "end": "2025-04-06T13:47:08.515320",
+   "usable_within_km": 6,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.KPRZ",
+    "NZ.MWZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.8094304566778266,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 20,
+   "first": {
+    "time": "2025-07-18T11:00:56.816107",
+    "lat": -38.63022994995117,
+    "lon": 177.2305450439453,
+    "depth_km": 32.549961090087905,
+    "magnitude": 4.567752882760795,
+    "type": "MLv",
+    "id": "2025p536375"
+   },
+   "joined": [],
+   "start": "2025-07-18T10:50:56.816107",
+   "end": "2025-07-18T13:50:56.816107",
+   "usable_within_km": 6,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.KPRZ",
+    "NZ.MWZ",
+    "NZ.PUZ",
+    "NZ.RATZ",
+    "NZ.URZ"
+   ],
+   "assign": "now",
+   "coin": 0.006498759678061017,
+   "scorable": 4,
+   "cumulative": 144,
+   "selected": true
+  },
+  {
+   "index": 21,
+   "first": {
+    "time": "2025-08-13T05:53:11.576686",
+    "lat": -39.843265533447266,
+    "lon": 176.85423278808594,
+    "depth_km": 30.4028339385986,
+    "magnitude": 4.914205357564192,
+    "type": "MLv",
+    "id": "2025p606068"
+   },
+   "joined": [],
+   "start": "2025-08-13T05:43:11.576686",
+   "end": "2025-08-13T08:43:11.576686",
+   "usable_within_km": 6,
+   "stations": [
+    "NZ.BFZ",
+    "NZ.BKZ",
+    "NZ.KPRZ",
+    "NZ.MRZ",
+    "NZ.RATZ",
+    "NZ.TSZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.8058192518328079,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 22,
+   "first": {
+    "time": "2025-10-21T16:42:12.568733",
+    "lat": -37.68242263793945,
+    "lon": 176.32470703125,
+    "depth_km": 275.834014892578,
+    "magnitude": 4.689560669528123,
+    "type": "MLv",
+    "id": "2025p793772"
+   },
+   "joined": [],
+   "start": "2025-10-21T16:32:12.568733",
+   "end": "2025-10-21T19:32:12.568733",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.KPRZ",
+    "NZ.KUZ",
+    "NZ.MKAZ",
+    "NZ.MWZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.6981393949882269,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 23,
+   "first": {
+    "time": "2025-11-01T00:47:37.285251",
+    "lat": -42.610774993896484,
+    "lon": 171.9510040283203,
+    "depth_km": 5.0,
+    "magnitude": 4.848553182348155,
+    "type": "MLv",
+    "id": "2025p821711"
+   },
+   "joined": [],
+   "start": "2025-11-01T00:37:37.285251",
+   "end": "2025-11-01T03:37:37.285251",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.DSZ",
+    "NZ.KHZ",
+    "NZ.RPZ",
+    "NZ.WHSZ",
+    "NZ.WVZ"
+   ],
+   "assign": "now",
+   "coin": 0.3402505165179919,
+   "scorable": 5,
+   "cumulative": 149,
+   "selected": true
+  },
+  {
+   "index": 24,
+   "first": {
+    "time": "2025-11-10T18:51:35.565377",
+    "lat": -38.87104797363281,
+    "lon": 175.1555633544922,
+    "depth_km": 211.37141418457,
+    "magnitude": 4.602408954587339,
+    "type": "MLv",
+    "id": "2025p848069"
+   },
+   "joined": [],
+   "start": "2025-11-10T18:41:35.565377",
+   "end": "2025-11-10T21:41:35.565377",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.TSZ",
+    "NZ.VRZ"
+   ],
+   "assign": "now",
+   "coin": 0.15547949981178155,
+   "scorable": 5,
+   "cumulative": 154,
+   "selected": true
+  },
+  {
+   "index": 25,
+   "first": {
+    "time": "2026-01-08T10:20:17.483946",
+    "lat": -37.7598991394043,
+    "lon": 176.31825256347656,
+    "depth_km": 193.84623718261702,
+    "magnitude": 4.562940979613021,
+    "type": "MLv",
+    "id": "2026p020083"
+   },
+   "joined": [],
+   "start": "2026-01-08T10:10:17.483946",
+   "end": "2026-01-08T13:10:17.483946",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.KPRZ",
+    "NZ.KUZ",
+    "NZ.MKAZ",
+    "NZ.MWZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.URZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.9572130722067812,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 26,
+   "first": {
+    "time": "2026-06-08T13:19:05.502069",
+    "lat": -43.14418029785156,
+    "lon": 170.94314575195312,
+    "depth_km": 5.0,
+    "magnitude": 4.879286631883359,
+    "type": "M",
+    "id": "2026p428526"
+   },
+   "joined": [],
+   "start": "2026-06-08T13:09:05.502069",
+   "end": "2026-06-08T16:09:05.502069",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.CVZ",
+    "NZ.FOZ",
+    "NZ.RPZ",
+    "NZ.WHSZ",
+    "NZ.WVZ"
+   ],
+   "assign": "now",
+   "coin": 0.33659454511262676,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 27,
+   "first": {
+    "time": "2026-07-24T16:51:36.825651",
+    "lat": -38.965606689453125,
+    "lon": 175.23715209960938,
+    "depth_km": 9.29991817474365,
+    "magnitude": 5.946982425854987,
+    "type": "M",
+    "id": "2026p553250"
+   },
+   "joined": [],
+   "start": "2026-07-24T16:41:36.825651",
+   "end": "2026-07-24T19:41:36.825651",
+   "usable_within_km": 7,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.TSZ",
+    "NZ.VRZ"
+   ],
+   "assign": "now",
+   "coin": 0.09274584338014791,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 28,
+   "first": {
+    "time": "2026-10-02T13:57:16.821409",
+    "lat": -39.150394439697266,
+    "lon": 174.38092041015625,
+    "depth_km": 14.234468460083,
+    "magnitude": 5.227122786583538,
+    "type": "M",
+    "id": "2026p742111"
+   },
+   "joined": [],
+   "start": "2026-10-02T13:47:16.821409",
+   "end": "2026-10-02T16:47:16.821409",
+   "usable_within_km": 5,
+   "stations": [
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.VRZ"
+   ],
+   "assign": "now",
+   "coin": 0.09671637683346401,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  },
+  {
+   "index": 29,
+   "first": {
+    "time": "2026-10-15T05:25:34.163170",
+    "lat": -38.62278747558594,
+    "lon": 175.45150756835938,
+    "depth_km": 268.652465820312,
+    "magnitude": 5.658060024388448,
+    "type": "M",
+    "id": "2026p776286"
+   },
+   "joined": [],
+   "start": "2026-10-15T05:15:34.163170",
+   "end": "2026-10-15T08:15:34.163170",
+   "usable_within_km": 6,
+   "stations": [
+    "NZ.BKZ",
+    "NZ.HIZ",
+    "NZ.KPRZ",
+    "NZ.RATZ",
+    "NZ.TLZ",
+    "NZ.VRZ"
+   ],
+   "assign": "reserve",
+   "coin": 0.8474943663474598,
+   "scorable": null,
+   "cumulative": null,
+   "selected": false
+  }
+ ],
+ "target_reached": true,
+ "quiet": {
+  "passes": [
+   {
+    "relaxed": false,
+    "draws": 551,
+    "accepted": 24,
+    "rejected": {
+     "catalogue event": 527,
+     "overlap": 0,
+     "coverage": 0
+    }
+   }
+  ],
+  "windows": [
+   {
+    "start": "2026-10-16T14:44:00",
+    "end": "2026-10-16T20:44:00",
+    "sequence": 11,
+    "draw": 13,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2025-06-25T12:32:00",
+    "end": "2025-06-25T18:32:00",
+    "sequence": 11,
+    "draw": 117,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2025-11-20T03:12:00",
+    "end": "2025-11-20T09:12:00",
+    "sequence": 11,
+    "draw": 147,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2025-10-13T22:11:00",
+    "end": "2025-10-14T04:11:00",
+    "sequence": 13,
+    "draw": 176,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2024-03-14T22:08:00",
+    "end": "2024-03-15T04:08:00",
+    "sequence": 11,
+    "draw": 182,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2024-01-16T01:09:00",
+    "end": "2024-01-16T07:09:00",
+    "sequence": 13,
+    "draw": 195,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2023-04-23T19:27:00",
+    "end": "2023-04-24T01:27:00",
+    "sequence": 13,
+    "draw": 272,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2025-03-19T18:49:00",
+    "end": "2025-03-20T00:49:00",
+    "sequence": 11,
+    "draw": 292,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2024-06-03T03:08:00",
+    "end": "2024-06-03T09:08:00",
+    "sequence": 13,
+    "draw": 307,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2025-11-16T13:24:00",
+    "end": "2025-11-16T19:24:00",
+    "sequence": 9,
+    "draw": 328,
+    "stations": [
+     "NZ.DSZ",
+     "NZ.KHZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2025-06-30T11:50:00",
+    "end": "2025-06-30T17:50:00",
+    "sequence": 11,
+    "draw": 330,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2026-02-11T08:59:00",
+    "end": "2026-02-11T14:59:00",
+    "sequence": 11,
+    "draw": 342,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2025-06-30T17:54:00",
+    "end": "2025-06-30T23:54:00",
+    "sequence": 13,
+    "draw": 392,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2023-01-20T02:29:00",
+    "end": "2023-01-20T08:29:00",
+    "sequence": 11,
+    "draw": 407,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2023-12-02T03:56:00",
+    "end": "2023-12-02T09:56:00",
+    "sequence": 13,
+    "draw": 416,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2023-06-30T17:16:00",
+    "end": "2023-06-30T23:16:00",
+    "sequence": 11,
+    "draw": 422,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2023-01-15T18:52:00",
+    "end": "2023-01-16T00:52:00",
+    "sequence": 11,
+    "draw": 426,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2023-07-11T21:47:00",
+    "end": "2023-07-12T03:47:00",
+    "sequence": 2,
+    "draw": 433,
+    "stations": [
+     "NZ.HIZ",
+     "NZ.KPRZ",
+     "NZ.KUZ",
+     "NZ.MKAZ",
+     "NZ.RATZ",
+     "NZ.TLZ",
+     "NZ.URZ"
+    ]
+   },
+   {
+    "start": "2025-12-22T05:52:00",
+    "end": "2025-12-22T11:52:00",
+    "sequence": 13,
+    "draw": 446,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2026-06-26T14:16:00",
+    "end": "2026-06-26T20:16:00",
+    "sequence": 11,
+    "draw": 491,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2026-01-17T07:56:00",
+    "end": "2026-01-17T13:56:00",
+    "sequence": 13,
+    "draw": 502,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2024-08-01T01:34:00",
+    "end": "2024-08-01T07:34:00",
+    "sequence": 13,
+    "draw": 515,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2023-01-19T06:22:00",
+    "end": "2023-01-19T12:22:00",
+    "sequence": 13,
+    "draw": 527,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   },
+   {
+    "start": "2024-07-31T14:02:00",
+    "end": "2024-07-31T20:02:00",
+    "sequence": 11,
+    "draw": 551,
+    "stations": [
+     "NZ.CVZ",
+     "NZ.FOZ",
+     "NZ.RPZ",
+     "NZ.WHSZ",
+     "NZ.WVZ"
+    ]
+   }
+  ]
+ },
+ "selected_utc": "2026-10-30T23:04:00+00:00",
+ "tool": {
+  "name": "ayzek-heldout",
+  "git_commit": "6fda3e246e53"
+ }
+}
