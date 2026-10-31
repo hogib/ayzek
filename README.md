@@ -76,8 +76,10 @@ made after the freeze are in `docs/heldout-selections/`; the test runs and
 their results are reported in the paper, and the scripts that produce them are
 `tools/run_heldout.py` and the tools it calls.
 
-The tool that selects and fetches the test data lives in a separate repository
-and is attached to the release as `ayzek-heldout-440a2d9.tar.gz`.
+The tool that selects and fetches the test data lives in a separate repository,
+[hogib/ayzek-heldout](https://github.com/hogib/ayzek-heldout); the release
+carries it at the freeze commit as `ayzek-heldout-440a2d9.tar.gz`, and the
+repository holds the three later commits that changed its request handling.
 
 ## Building
 

@@ -20,7 +20,8 @@ catalogue is EMSC's, dense in small events; `selection.json`, `quiet`).
 
 ## The fetch tool's commits
 
-The release names the fetch tool at commit `440a2d9`. The selections ran as
+The fetch tool is public at https://github.com/hogib/ayzek-heldout (every
+commit below is on its `main`). The release names it at commit `440a2d9`. The selections ran as
 follows (the tool stamps its commit when it writes, from the repository's
 HEAD at that moment, so a stamp can postdate the code that ran):
 
