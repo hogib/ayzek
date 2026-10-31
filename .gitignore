@@ -13,3 +13,4 @@ docs/paper/*
 tools/.venv/
 
 scores*/
+logs/
