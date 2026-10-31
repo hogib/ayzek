@@ -56,3 +56,18 @@ HEAD at that moment, so a stamp can postdate the code that ran):
 The rules and seeds are the protocol's; the pool end is the UTC time of the
 protocol's public commit (section 10). The stopping rule's counts are in
 `selection.json` (`scorable`, `cumulative`).
+
+## The fetch
+
+Every set of the three pools was fetched (probe, pull, catalogue) and passes
+`heldout verify`; no request failed after the retries.
+
+| pool | sets | on disk | fetched at | notes |
+|---|---|---|---|---|
+| `ko_now` | 2 sequences + 14 quiet | 0.9 GB | `440a2d9` | every listed station arrived for its full span |
+| `nz_now` | 13 sequences + 24 quiet | 1.1 GB | `6fda3e2` | every listed station arrived for its full span |
+| `greece_now` | 11 sequences + 24 quiet | 1.9 GB | `6fda3e2` | HL.ZKR (`seq004`) and HT.KOKK (`seq020`) had no data in their 3 h window (coverage 0 in the probe, nothing in the pull); those replays run on 5 and 7 stations, as their `dataset.json` records |
+
+The waveforms are not redistributed (protocol, section 9); each set's
+`dataset.json` in the held-out repository holds the request record and the
+SHA-256 of every file written.
