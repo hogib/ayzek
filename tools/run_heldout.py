@@ -93,7 +93,9 @@ EVENT = re.compile(
     r"(?:  (?:location|distance|P loc\.) .*\n)*"
     r"  AFAD\s+(\w+) (-?[\d.]+) at (\S+) UTC: alarm ([-\d.]+) s after origin(.*)\n"
     r"(?:  pre-S\s+(\d+) of (\d+) alarm detections.*\n)?", re.M)
-WARNING = re.compile(r"^\s+(\S+)\s+(\d+) km\s+\S+ UTC \(predicted\)\s+([+-][\d.]+) s\s+(before|after) S", re.M)
+# A row of a report's warning table: station, distance, S arrival picked or
+# predicted (the report prints the pick where the picker has one), lead, side.
+WARNING = re.compile(r"^\s+(\S+)\s+(\d+) km\s+\S+ UTC \((picked|predicted)\)\s+([+-][\d.]+) s\s+(before|after) S", re.M)
 
 
 def sha256(path):
@@ -372,10 +374,10 @@ class Runner:
                     a = re.search(r"^  AFAD\s+(\w+) (-?[\d.]+) at (\S+) UTC", block, re.M)
                     if not a:
                         continue
-                    for st, dist, lead, side in WARNING.findall(block):
+                    for st, dist, source, lead, side in WARNING.findall(block):
                         leads.append({"detector": label, "set": s, "origin": a.group(3), "type": a.group(1),
                                       "magnitude": a.group(2), "station": st, "distance_km": dist,
-                                      "lead_s": lead, "side": side})
+                                      "lead_s": lead, "side": side, "s_source": source})
         with open(an / "magnitude_latency.csv", "w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=list(rows[0]) if rows else ["detector"])
             w.writeheader()

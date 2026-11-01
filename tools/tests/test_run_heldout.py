@@ -213,13 +213,14 @@ def test_event_regex_on_the_old_report():
     assert [m.group(9) for m in ms][2] == "18:20:51.00"
 
 
-def test_warning_regex_counts_the_predicted_arrivals():
-    # 18 "(predicted)" lines in the new report (grep -c), one of them after S:
-    # SIMA 74 km -1.2 s for the 18:23:21 ML 3.1 event (fixture line 127).
+def test_warning_regex_counts_picked_and_predicted_arrivals():
+    # 18 "(predicted)" and 30 "(picked)" lines in the new report (grep -c); a
+    # station with a picked S is the one nearest the source, so dropping those
+    # rows (as the release's regex did) loses the nearest station's warning.
     found = rh.WARNING.findall(fixture_text("report_new_learned_demo_ko.txt"))
-    assert len(found) == 18
-    assert [f for f in found if f[3] == "after"] == [("SIMA", "74", "-1.2", "after")]
-    assert found[0] == ("TVSB", "110", "+14.9", "before")
+    assert len(found) == 48
+    assert sum(f[2] == "picked" for f in found) == 30
+    assert ("SIMA", "74", "predicted", "-1.2", "after") in found
 
 
 # --- magnitude and latency table ------------------------------------------------------------------------
@@ -251,9 +252,11 @@ def test_magnitude_and_latency_from_the_fixture(tmp_path):
     assert all(x["pd_first"] == "" and x["pd_first_after_alarm_s"] == "" for x in rows if x["magnitude"] != "4.9")
 
     leads = list(csv.DictReader(open(an / "warning_leads.csv")))
-    assert len(leads) == 2 * 2 * 18
-    assert {(x["station"], x["lead_s"], x["side"]) for x in leads if x["magnitude"] == "3.1"} == {
-        ("SIMA", "-1.2", "after"), ("YAYO", "+6.4", "before"), ("DKL", "+8.9", "before"), ("KCTX", "+9.8", "before")}
+    assert len(leads) == 2 * 2 * 48
+    assert {(x["station"], x["lead_s"], x["side"], x["s_source"]) for x in leads if x["magnitude"] == "3.1"} == {
+        ("SIMA", "-1.2", "after", "predicted"), ("YAYO", "+6.4", "before", "predicted"),
+        ("DKL", "+8.9", "before", "predicted"), ("KCTX", "+9.8", "before", "predicted"),
+        ("KULA", "+21.0", "before", "picked"), ("TVSB", "+32.0", "before", "picked")}
 
     # The Pd summary: per detector, 7 ML events below M4 (none with a Pd
     # magnitude: the report gives Pd only for the M4.9) and the MW 4.9 in the
