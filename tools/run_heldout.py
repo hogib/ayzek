@@ -40,7 +40,11 @@ there is not measured for Pd. Stages, each skipped where its outputs exist
              equivalence with causal PhaseNet, detection before S, quiet
              rates), tools/quiet_without_stations.py (the two noisiest
              stations left out), the magnitude and latency tables from the
-             reports, and the station-split comparison when --station-split
+             reports with the warning-time summary (per detector, the events
+             with a station still ahead of S at the alarm and the median
+             warning at the nearest such station; where two such stations are
+             at the same printed distance, the smaller warning),
+             and the station-split comparison when --station-split
              names the 6 s detector's split (KO): tools/detector_station_split.csv,
              station,split from the detector's training manifest
              (dataset_specdual_6s_catalog/manifest.csv, 183 station keys; KRBG
@@ -54,7 +58,8 @@ there is not measured for Pd. Stages, each skipped where its outputs exist
              of the same name with _depth40. manifest.json lists both sets of
              files under "endpoint_files".
 
-This script adds no statistic: every number comes from the tools named above,
+Apart from the magnitude and warning-time summaries, which it builds from the
+reports, this script adds no statistic: every number comes from the tools named above,
 run with the commands written to OUT/commands.log. OUT/manifest.json records
 the binary's SHA-256, the settings, the selection, the tools' commit and the
 versions. A setting marked TBD in the settings file stops the run before it
@@ -68,6 +73,7 @@ import itertools
 import json
 import re
 import shutil
+import statistics
 import subprocess
 import sys
 from collections import defaultdict
@@ -96,6 +102,27 @@ EVENT = re.compile(
 # A row of a report's warning table: station, distance, S arrival picked or
 # predicted (the report prints the pick where the picker has one), lead, side.
 WARNING = re.compile(r"^\s+(\S+)\s+(\d+) km\s+\S+ UTC \((picked|predicted)\)\s+([+-][\d.]+) s\s+(before|after) S", re.M)
+
+
+def warning_summary(leads):
+    """Per detector, from the rows of warning_leads.csv: the detected events with
+    a warning row, those with a station still ahead of S at the alarm, and the
+    median warning at the nearest such station (protocol endpoint x). The
+    reports print distances in whole kilometres: where two stations ahead of S
+    are at the same printed distance, the smaller warning is taken."""
+    events = defaultdict(list)
+    for r in leads:
+        events[(r["detector"], r["set"], r["origin"], r["type"], r["magnitude"])].append(r)
+    by_detector = defaultdict(lambda: {"events": 0, "leads": []})
+    for (detector, *_), rows in events.items():
+        d = by_detector[detector]
+        d["events"] += 1
+        ahead = [(int(r["distance_km"]), float(r["lead_s"])) for r in rows if r["side"] == "before"]
+        if ahead:
+            d["leads"].append(min(ahead)[1])    # nearest; at equal distance the smaller lead
+    return [{"detector": detector, "events": d["events"], "events_ahead": len(d["leads"]),
+             "median_lead_s": f"{statistics.median(d['leads']):.2f}" if d["leads"] else ""}
+            for detector, d in by_detector.items()]
 
 
 def sha256(path):
@@ -350,7 +377,8 @@ class Runner:
     def magnitude_and_latency(self, an):
         """Per matched event and detector: Pd first and final against the catalogue
         magnitude (with its type and depth), alarm delay, pre-S; and per large
-        event the stations' warning leads."""
+        event the stations' warning leads, with their summary per detector
+        (warning_summary)."""
         rows, leads = [], []
         for label in self.detectors:
             for s in self.sequences:
@@ -386,6 +414,10 @@ class Runner:
             w = csv.DictWriter(fh, fieldnames=list(leads[0]) if leads else ["detector"])
             w.writeheader()
             w.writerows(leads)
+        with open(an / "warning_summary.csv", "w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=["detector", "events", "events_ahead", "median_lead_s"])
+            w.writeheader()
+            w.writerows(warning_summary(leads))
         # Summary of the Pd endpoint (7.7): error by band and class, events no
         # deeper than 40 km apart from deeper ones, by catalogue magnitude type.
         bands = [(-10, 4), (4, 5.5), (5.5, 20)]

@@ -223,6 +223,30 @@ def test_warning_regex_counts_picked_and_predicted_arrivals():
     assert ("SIMA", "74", "predicted", "-1.2", "after") in found
 
 
+def test_warning_summary_takes_the_nearest_station_ahead_and_the_smaller_lead_on_a_tie():
+    # By hand. Event 00:29: X and Y are both printed at 44 km and ahead of S
+    # (+7.5 and +5.8 s), Z is nearer but already behind S; the nearest station
+    # ahead is a tie, so the smaller lead counts, 5.8. Event 00:40: X at 10 km
+    # (+3.0) is nearer than Y at 20 km (+9.0), whatever the row order: 3.0.
+    # Event 00:50: no station ahead of S. Median of 5.8 and 3.0: 4.4. The second
+    # detector has one event, 2.0 s ahead; the third has none ahead of S.
+    def row(detector, origin, station, km, lead, side):
+        return {"detector": detector, "set": "s1", "origin": origin, "type": "ML", "magnitude": "2.1",
+                "station": station, "distance_km": km, "lead_s": lead, "side": side, "s_source": "picked"}
+    leads = [row("learned", "00:29:00.00", "X", "44", "+7.5", "before"),
+             row("learned", "00:29:00.00", "Y", "44", "+5.8", "before"),
+             row("learned", "00:29:00.00", "Z", "30", "-1.0", "after"),
+             row("learned", "00:40:00.00", "Y", "20", "+9.0", "before"),
+             row("learned", "00:40:00.00", "X", "10", "+3.0", "before"),
+             row("learned", "00:50:00.00", "X", "10", "-0.5", "after"),
+             row("stalta_eqfa", "00:29:00.00", "X", "50", "+2.0", "before"),
+             row("fp_eqfa", "00:29:00.00", "X", "50", "-2.0", "after")]
+    assert rh.warning_summary(leads) == [
+        {"detector": "learned", "events": 3, "events_ahead": 2, "median_lead_s": "4.40"},
+        {"detector": "stalta_eqfa", "events": 1, "events_ahead": 1, "median_lead_s": "2.00"},
+        {"detector": "fp_eqfa", "events": 1, "events_ahead": 0, "median_lead_s": ""}]
+
+
 # --- magnitude and latency table ------------------------------------------------------------------------
 
 def test_magnitude_and_latency_from_the_fixture(tmp_path):
@@ -317,6 +341,9 @@ def test_magnitude_and_latency_negative_magnitude_and_depth(tmp_path):
         ("-0.3", "-1.2", "-0.3", "-0.2", "-1.5")] * 2
     leads = list(csv.DictReader(open(an / "warning_leads.csv")))
     assert [(x["magnitude"], x["station"], x["lead_s"]) for x in leads] == [("-0.3", "PC", "+13.5")] * 2
+    # One station per event, still ahead of S by 13.5 s, in each of the two sets.
+    assert list(csv.DictReader(open(an / "warning_summary.csv"))) == [
+        {"detector": "learned", "events": "2", "events_ahead": "2", "median_lead_s": "13.50"}]
     # Pd errors: first -0.3 - (-0.3) = 0.00, final -0.2 - (-0.3) = +0.10.
     line = (an / "magnitude_summary.txt").read_text().splitlines()[1].split()
     assert line == ["learned", "<=40km", "ML", "-10-4", "2", "2", "+0.00", "0.00", "+0.10", "0.10", "2/2", "2/2"]
