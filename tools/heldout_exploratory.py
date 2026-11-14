@@ -8,9 +8,10 @@ Nothing here is an endpoint of docs/protocol-heldout.md: every figure was
 thought of after the tests were run and read, and is exploratory. The tool
 reads the outputs of tools/run_heldout.py (RUN/outcomes, RUN/runs, RUN/quiet,
 RUN/analysis/magnitude_latency.csv) and the selection (SELECTION/selection.json:
-station coordinates, and each quiet window's `sequence`, the sequence whose
-station set the window was drawn on); it runs nothing and writes only the
-report to stdout and, with --json, the same figures to a file.
+station coordinates, each selected sequence's `first` event, and each quiet
+window's `sequence`, the sequence whose station set the window was drawn on);
+it runs nothing and writes only the report to stdout and, with --json, the
+same figures to a file (with --mainshocks, item 9's table to a CSV file).
 
 --detectors names the labels (default learned, stalta_eqfa,
 phasenet_causal_eqfa); the first two are the pair of the paired figures.
@@ -59,6 +60,40 @@ phasenet_causal_eqfa); the first two are the pair of the paired figures.
    alarm can follow two events that lie close together). Whether a listed
    event is missing from the network's catalogue is for the caller to
    establish; the tool counts what it is given.
+9. The sequence-initiating events: per selected sequence the selection's
+   `first` event (origin, magnitude and type, depth, epicentre, all the
+   selection's) with the epicentral distance of the nearest and the second
+   nearest station (haversine on the selection's coordinates, over the
+   stations that ran: those of the first detector's "Station processing"
+   table), and per detector:
+   - the scored event: the event of the outcome table (shift 0) of the same
+     type whose one-decimal magnitude is within 0.051 of the selection's and
+     whose origin is within 1 s of it (the set's catalogue gives whole
+     seconds); the nearest in time if several;
+   - status, the outcome table's: `detected` or `missed` (its `detected`),
+     `not scored` when the table has no such event; and its `detected_pre_s`;
+   - from the report's event block whose "AFAD" line names the scored event
+     (the earliest alarm if several): alarm time, the delay after origin as
+     printed (against the catalogue's whole-second origin) and against the
+     selection's origin, the declaring stations (the "alarm" line up to
+     "; later"), the "pre-S" line's "n of m", the Pd estimate (first, seconds
+     after the alarm, 0 when "at the alarm", and final), the rows of the
+     warning table, those "before S", and the warning at the nearest station
+     before S (at equal printed distance the smaller warning, as
+     tools/run_heldout.py's warning_summary) with its S arrival picked or
+     predicted;
+   - note, by rule: the scored events earlier in the set (how many, and the
+     last one); the further events the selection joined to the sequence;
+     every other alarm of the report from --alarm-window B,A (30,60) seconds
+     before to after the selection's origin, with the event its block's
+     "AFAD" line credits it to (or none) and its final Pd estimate; any
+     disagreement between the outcome table and the report.
+   Then per detector over the network: scored, detected, detected before S
+   (outcome table), with a Pd estimate at the alarm (and at any time), with a
+   station before S at the alarm, and the medians of the printed alarm delay
+   and of the warning at the nearest station before S over the detected
+   events that have one. A missed event has no block, so no delay, estimate
+   or warning: an alarm credited to another event is in the note only.
 
 Standard library only.
 """
@@ -90,6 +125,53 @@ PD_FINAL = re.compile(
     r"^  Pd magn\.\s+M-?[\d.]+ (?:at the alarm|[\d.]+ s after the alarm), M(-?[\d.]+) ",
     re.M,
 )
+# The lines of an event block, as tools/run_heldout.py's EVENT and WARNING read them.
+BLOCK_ALARM = re.compile(r"^  alarm\s+(\S+) UTC by ([^;\n]+)", re.M)
+BLOCK_PD = re.compile(
+    r"^  Pd magn\.\s+M(-?[\d.]+) (?:at the alarm|([\d.]+) s after the alarm), M(-?[\d.]+) ",
+    re.M,
+)
+BLOCK_AFAD = re.compile(
+    r"^  AFAD\s+(\w+) (-?[\d.]+) at (\S+) UTC: alarm ([-\d.]+) s after origin", re.M
+)
+BLOCK_PRE_S = re.compile(r"^  pre-S\s+(\d+) of (\d+) alarm detections", re.M)
+WARNING = re.compile(
+    r"^\s+(\S+)\s+(\d+) km\s+\S+ UTC \((picked|predicted)\)\s+([+-][\d.]+) s\s+(before|after) S",
+    re.M,
+)
+MAINSHOCK_FIELDS = [
+    "set",
+    "origin",
+    "magnitude",
+    "type",
+    "depth_km",
+    "lat",
+    "lon",
+    "nearest_station",
+    "nearest_km",
+    "second_station",
+    "second_km",
+    "scored_as",
+    "detector",
+    "status",
+    "detected_pre_s",
+    "alarm",
+    "alarm_time",
+    "alarm_delay_s",
+    "alarm_after_selection_origin_s",
+    "declaring",
+    "pre_s",
+    "pd_first",
+    "pd_first_after_alarm_s",
+    "pd_final",
+    "warning_stations",
+    "stations_ahead",
+    "nearest_ahead_station",
+    "nearest_ahead_km",
+    "nearest_ahead_warning_s",
+    "nearest_ahead_s_source",
+    "note",
+]
 UNMATCHED = re.compile(r"\s+\S+ UTC\s+#(\d+)\s")
 STATION_ROW = re.compile(r"  (\S+)\s+\d+\s+\d+\s+\d+")
 
@@ -133,9 +215,10 @@ def paired_latency(rows, a, b):
     return out
 
 
-def load_outcomes(d, labels, sets):
+def load_outcomes(d, labels, sets, column="detected"):
     """{detector: {shift: {event: detected}}} from OUTCOMES/LABEL_SET.csv, the
-    event (dataset, origin, type, magnitude) as tools/significance.py keys it."""
+    event (dataset, origin, type, magnitude) as tools/significance.py keys it.
+    `column` names another 0/1 column (detected_pre_s); an empty cell is None."""
     out = {label: collections.defaultdict(dict) for label in labels}
     for label in labels:
         for s in sets:
@@ -144,7 +227,9 @@ def load_outcomes(d, labels, sets):
                 sys.exit(f"{f}: no outcome table")
             for r in csv.DictReader(open(f)):
                 ev = (r["dataset"], r["origin"], r["type"], r["magnitude"])
-                out[label][int(r["shift"])][ev] = int(r["detected"])
+                out[label][int(r["shift"])][ev] = (
+                    int(r[column]) if r[column] != "" else None
+                )
     return out
 
 
@@ -376,7 +461,268 @@ def followed_events(events, alarms, within):
     }
 
 
-def analyse(run, selection, labels, quiet_sets=(), large=4.0, other=None):
+def seconds_after(t, origin):
+    """t minus origin in seconds, both times of day, taken within half a day
+    either way (a set is a replay of three hours)."""
+    return (day_seconds(t) - day_seconds(origin) + 43200) % 86400 - 43200
+
+
+def parse_events(text):
+    """An ayzek report's event blocks {number: {time, declaring, pd_first,
+    pd_first_after_alarm_s, pd_final, afad, delay, pre_s, warning}}: `afad` is
+    the (type, magnitude, origin) of the block's "AFAD" line or None,
+    `pre_s` (before, used) or None, `warning` the warning table's rows
+    (station, km, picked or predicted, warning in seconds, before or after)."""
+    out = {}
+    for block in re.split(r"^Event #", text, flags=re.M)[1:]:
+        block = block.split("\n\n")[0]
+        alarm = BLOCK_ALARM.search(block)
+        if not alarm:
+            continue
+        pd, afad, pre = (x.search(block) for x in (BLOCK_PD, BLOCK_AFAD, BLOCK_PRE_S))
+        out[int(re.match(r"\d+", block).group())] = {
+            "time": alarm.group(1),
+            "declaring": [x.strip() for x in alarm.group(2).split(",")],
+            "pd_first": float(pd.group(1)) if pd else None,
+            "pd_first_after_alarm_s": float(pd.group(2) or 0) if pd else None,
+            "pd_final": float(pd.group(3)) if pd else None,
+            "afad": afad.groups()[:3] if afad else None,
+            "delay": float(afad.group(4)) if afad else None,
+            "pre_s": (int(pre.group(1)), int(pre.group(2))) if pre else None,
+            "warning": [
+                (st, int(km), source, float(lead), side)
+                for st, km, source, lead, side in WARNING.findall(block)
+            ],
+        }
+    return out
+
+
+def scored_mainshock(first, events):
+    """The event (dataset, origin, type, magnitude) of an outcome table that is
+    the selection's `first`: the same type, the one-decimal magnitude within
+    0.051, the origin within 1 s; the nearest in time, None without one."""
+    hms = first["time"].split("T")[1]
+    near = [
+        (abs(seconds_after(e[1], hms)), e)
+        for e in events
+        if e[2].upper() == first["type"].upper()
+        and abs(float(e[3]) - first["magnitude"]) < 0.051
+        and abs(seconds_after(e[1], hms)) <= 1.0
+    ]
+    return min(near)[1] if near else None
+
+
+def station_distances(first, coords, stations):
+    """[(km, station)] of the stations from the event's epicentre, nearest first."""
+    return sorted(
+        (haversine_km(first["lat"], first["lon"], *coords[s]), s) for s in stations
+    )
+
+
+def earlier_events_note(first, key, events, joined):
+    """The scored events of the set before the mainshock, and the events the
+    selection joined to its sequence, as a note ("" when there are none)."""
+    hms = first["time"].split("T")[1]
+    notes = []
+    before = sorted(
+        (-seconds_after(e[1], hms), e)
+        for e in events
+        if e != key and seconds_after(e[1], hms) < 0
+    )
+    if before:
+        gap, e = before[0]
+        notes.append(
+            f"{len(before)} scored event{'s' * (len(before) > 1)} earlier in the set, "
+            f"the last {e[2]} {e[3]} at {e[1]} ({gap:.1f} s before)"
+        )
+    if joined:
+        notes.append(
+            f"the selection joined {len(joined)} later event{'s' * (len(joined) > 1)}: "
+            + ", ".join(
+                f"{j['type']} {j['magnitude']:.1f} at {j['time'].split('T')[1][:11]}"
+                for j in joined
+            )
+        )
+    return notes
+
+
+def mainshock_detector(first, key, detected, pre_s, events, window):
+    """One detector's row for a sequence-initiating event: `key` its scored
+    event or None, `detected` and `pre_s` the outcome table's, `events` the
+    report's blocks (parse_events), `window` the seconds before and after the
+    selection's origin within which other alarms are noted."""
+    hms = first["time"].split("T")[1]
+    row = {
+        "status": (
+            "not scored" if key is None else "detected" if detected else "missed"
+        ),
+        "detected_pre_s": None if key is None else pre_s,
+    }
+    own = sorted(
+        (seconds_after(b["time"], hms), n)
+        for n, b in events.items()
+        if key is not None and b["afad"] == (key[2], key[3], key[1])
+    )
+    notes = []
+    taken = None
+    if own:
+        taken = own[0][1]
+        b = events[taken]
+        ahead = [(km, lead, st, src) for st, km, src, lead, side in b["warning"] if side == "before"]
+        row.update(
+            alarm=taken,
+            alarm_time=b["time"],
+            alarm_delay_s=b["delay"],
+            alarm_after_selection_origin_s=round(own[0][0], 2),
+            declaring=b["declaring"],
+            pre_s=f"{b['pre_s'][0]} of {b['pre_s'][1]}" if b["pre_s"] else None,
+            pd_first=b["pd_first"],
+            pd_first_after_alarm_s=b["pd_first_after_alarm_s"],
+            pd_final=b["pd_final"],
+            warning_stations=len(b["warning"]),
+            stations_ahead=len(ahead),
+        )
+        if ahead:
+            km, lead, st, src = min(ahead)  # nearest; at equal distance the smaller
+            row.update(
+                nearest_ahead_station=st,
+                nearest_ahead_km=km,
+                nearest_ahead_warning_s=lead,
+                nearest_ahead_s_source=src,
+            )
+        if len(own) > 1:
+            notes.append(
+                f"{len(own)} alarms credited to it ("
+                + ", ".join(f"#{n}" for _, n in own)
+                + "), the earliest taken"
+            )
+    if key is not None and bool(detected) != bool(own):
+        notes.append(
+            f"outcome table {'detected' if detected else 'missed'}, the report has "
+            f"{'an' if own else 'no'} event block credited to it"
+        )
+    for n, b in sorted(events.items()):
+        d = seconds_after(b["time"], hms)
+        if n == taken or not -window[0] <= d <= window[1]:
+            continue
+        notes.append(
+            f"alarm #{n} at {b['time']} ({d:+.1f} s) by {', '.join(b['declaring'])} "
+            + (
+                "credited to it too"
+                if key is not None and (d, n) in own
+                else (
+                    f"credited to {b['afad'][0]} {b['afad'][1]} at {b['afad'][2]}"
+                    if b["afad"]
+                    else "credited to no catalogue event"
+                )
+            )
+            + (f", Pd final M{b['pd_final']:.1f}" if b["pd_final"] is not None else "")
+        )
+    row["note"] = notes
+    return row
+
+
+def mainshock_summary(rows):
+    """Over one detector's rows (mainshock_detector): the counts and medians
+    of the network summary."""
+    det = [r for r in rows if r["status"] == "detected"]
+    delays = [r["alarm_delay_s"] for r in det if r.get("alarm_delay_s") is not None]
+    leads = [
+        r["nearest_ahead_warning_s"]
+        for r in det
+        if r.get("nearest_ahead_warning_s") is not None
+    ]
+    return {
+        "mainshocks": len(rows),
+        "scored": sum(r["status"] != "not scored" for r in rows),
+        "detected": len(det),
+        "detected_pre_s": sum(bool(r["detected_pre_s"]) for r in det),
+        "pd_at_alarm": sum(r.get("pd_first_after_alarm_s") == 0 for r in det),
+        "pd_any": sum(r.get("pd_final") is not None for r in det),
+        "station_ahead": len(leads),
+        "median_alarm_delay_s": quantile(delays, 0.5) if delays else None,
+        "median_nearest_ahead_warning_s": quantile(leads, 0.5) if leads else None,
+    }
+
+
+def mainshocks(sel, tag, run, labels, coords, det, pre, stations, window):
+    """Item 9: the selection's sequence-initiating events with each detector's
+    row and the network summary. `det` and `pre` are load_outcomes' tables of
+    `detected` and `detected_pre_s`, `stations` {set: the stations that ran}."""
+    events = []
+    for q in sel["sequences"]:
+        if not q["selected"]:
+            continue
+        s, first = f"{tag}_seq{q['index']:03d}", q["first"]
+        scored = [e for e in det[labels[0]][0] if e[0] == s]
+        key = scored_mainshock(first, scored)
+        dist = station_distances(first, coords, stations[s])
+        common = earlier_events_note(first, key, scored, q.get("joined", []))
+        if key is None:
+            common.insert(0, "no such event in the outcome table")
+        ev = {
+            "set": s,
+            "origin": first["time"],
+            "magnitude": first["magnitude"],
+            "type": first["type"],
+            "depth_km": first["depth_km"],
+            "lat": first["lat"],
+            "lon": first["lon"],
+            "nearest": [{"station": x, "km": km} for km, x in dist[:2]],
+            "scored_as": f"{key[1]} {key[2]} {key[3]}" if key else None,
+            "note": common,
+            "detectors": {},
+        }
+        for label in labels:
+            text = (run / "runs" / label / f"{s}.txt").read_text()
+            ev["detectors"][label] = mainshock_detector(
+                first,
+                key,
+                det[label][0].get(key),
+                pre[label][0].get(key),
+                parse_events(text),
+                window,
+            )
+        events.append(ev)
+    return {
+        "alarm_window_s": list(window),
+        "events": events,
+        "summary": {
+            label: mainshock_summary([ev["detectors"][label] for ev in events])
+            for label in labels
+        },
+    }
+
+
+def mainshock_rows(m):
+    """Item 9 as flat rows, one per event and detector (MAINSHOCK_FIELDS)."""
+    rows = []
+    for ev in m["events"]:
+        near = ev["nearest"] + [{"station": None, "km": None}] * 2
+        for label, d in ev["detectors"].items():
+            row = {
+                **{k: ev[k] for k in ("set", "origin", "type", "lat", "lon", "scored_as")},
+                "magnitude": f"{ev['magnitude']:.2f}",
+                "depth_km": f"{ev['depth_km']:.1f}",
+                "nearest_station": near[0]["station"],
+                "nearest_km": near[0]["km"],
+                "second_station": near[1]["station"],
+                "second_km": near[1]["km"],
+                "detector": label,
+                **d,
+                "declaring": " ".join(d.get("declaring", [])),
+                "note": "; ".join(ev["note"] + d["note"]),
+            }
+            for k in ("nearest_km", "second_km"):
+                if row[k] is not None:
+                    row[k] = f"{row[k]:.1f}"
+            rows.append({k: "" if row.get(k) is None else row[k] for k in MAINSHOCK_FIELDS})
+    return rows
+
+
+def analyse(
+    run, selection, labels, quiet_sets=(), large=4.0, other=None, window=(30.0, 60.0)
+):
     run = Path(run)
     sel = json.loads((Path(selection) / "selection.json").read_text())
     tag = f"{sel['group']}_{sel['name']}"
@@ -466,6 +812,18 @@ def analyse(run, selection, labels, quiet_sets=(), large=4.0, other=None):
     }
 
     res["magnitude_bands"] = magnitude_bands(det, [a, b])
+
+    res["mainshocks"] = mainshocks(
+        sel,
+        tag,
+        run,
+        labels,
+        coords,
+        det,
+        load_outcomes(run / "outcomes", labels, sequences, "detected_pre_s"),
+        {s: rep["stations"] for s, kind, rep in reports[a] if kind == "sequence"},
+        window,
+    )
 
     res["alarm_magnitudes"] = {}
     for label in labels:
@@ -624,6 +982,67 @@ def report(res, large):
                 f"   {label:22s} {m['followed']} of {m['events']} / {m['distinct_alarms']}"
             )
 
+    m = res["mainshocks"]
+    fmt = lambda v, f: "none" if v is None else format(v, f)
+    print(
+        "\n9. Sequence-initiating events (the selection's first event of each sequence): "
+        "origin, magnitude, depth, epicentre, the two nearest stations (epicentral km, "
+        "selection coordinates); per detector the outcome table's status and the "
+        "report's block; notes on other alarms from "
+        f"{m['alarm_window_s'][0]:g} s before to {m['alarm_window_s'][1]:g} s after the origin"
+    )
+    for ev in m["events"]:
+        print(
+            f"   {short(ev['set']):7s} {ev['origin'].replace('T', ' ')[:23]}  "
+            f"{ev['type']} {ev['magnitude']:.2f}  {ev['depth_km']:.1f} km  "
+            f"{ev['lat']:.3f} {ev['lon']:.3f}  "
+            + ", ".join(f"{x['station']} {x['km']:.1f}" for x in ev["nearest"])
+            + f"  scored as {ev['scored_as'] or 'nothing'}"
+        )
+        for label, d in ev["detectors"].items():
+            line = f"      {label:22s} {d['status']:10s}"
+            if "alarm" in d:
+                pd = (
+                    "no Pd"
+                    if d["pd_final"] is None
+                    else f"Pd M{d['pd_first']:.1f} "
+                    + (
+                        "at the alarm"
+                        if d["pd_first_after_alarm_s"] == 0
+                        else f"{d['pd_first_after_alarm_s']:g} s after"
+                    )
+                    + f", final M{d['pd_final']:.1f}"
+                )
+                ahead = (
+                    f"nearest {d['nearest_ahead_station']} {d['nearest_ahead_km']} km "
+                    f"{d['nearest_ahead_warning_s']:+.1f} s ({d['nearest_ahead_s_source']})"
+                    if "nearest_ahead_station" in d
+                    else "none ahead"
+                )
+                line += (
+                    f" alarm {d['alarm_delay_s']:.1f} s after origin by {', '.join(d['declaring'])}; "
+                    f"pre-S {d['pre_s'] or 'not printed'} (outcome table {fmt(d['detected_pre_s'], 'd')}); {pd}; "
+                    f"before S {d['stations_ahead']} of {d['warning_stations']} stations, {ahead}"
+                )
+            print(line)
+            for note in d["note"]:
+                print(f"         {note}")
+        for note in ev["note"]:
+            print(f"      note: {note}")
+    print(
+        "   network: mainshocks / scored / detected / detected before S / Pd at the alarm "
+        "(any Pd) / a station before S; median alarm delay; median warning at the nearest "
+        "station before S"
+    )
+    for label in labels:
+        s = m["summary"][label]
+        print(
+            f"   {label:22s} {s['mainshocks']} / {s['scored']} / {s['detected']} / "
+            f"{s['detected_pre_s']} / {s['pd_at_alarm']} ({s['pd_any']}) / {s['station_ahead']}; "
+            f"{fmt(s['median_alarm_delay_s'], '.2f')} s; "
+            f"{fmt(s['median_nearest_ahead_warning_s'], '.2f')} s"
+        )
+
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -670,6 +1089,17 @@ def main():
         default=60.0,
         help="an unmatched alarm this long after an event follows it",
     )
+    ap.add_argument(
+        "--alarm-window",
+        default="30,60",
+        metavar="B,A",
+        help="item 9 notes the other alarms from B seconds before to A after a mainshock's origin",
+    )
+    ap.add_argument(
+        "--mainshocks",
+        metavar="FILE",
+        help="also write item 9's table here (CSV, one row per event and detector)",
+    )
     ap.add_argument("--json", help="also write the figures here")
     a = ap.parse_args()
     if bool(a.other_events) != (a.other_set is not None):
@@ -694,8 +1124,14 @@ def main():
         [int(x) for x in a.quiet_sets.split(",") if x],
         a.large,
         other,
+        tuple(float(x) for x in a.alarm_window.split(",")),
     )
     report(res, a.large)
+    if a.mainshocks:
+        with open(a.mainshocks, "w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=MAINSHOCK_FIELDS)
+            w.writeheader()
+            w.writerows(mainshock_rows(res["mainshocks"]))
     if a.json:
         Path(a.json).write_text(json.dumps(res, indent=1, ensure_ascii=False) + "\n")
 
