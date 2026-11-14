@@ -1,0 +1,387 @@
+{
+ "version": "v1.0.0-11-ga17e647",
+ "date": "2026-11-14T17:20:34Z",
+ "models": "/home/oguzb/Projects/Codings/ayzek/ayzek_code/models",
+ "args": "",
+ "datasets": {
+  "demo_ko": {
+   "role": "public",
+   "stations": 6,
+   "alarms": 10,
+   "matched": 8,
+   "unmatched": 2,
+   "catalogue": 9,
+   "detected": 8,
+   "alarm_delay_median_s": 17.8,
+   "bands": {
+    "M < 2": "2/3",
+    "M 2-3": "3/3",
+    "M 3-4": "2/2",
+    "M 4-5": "1/1"
+   },
+   "pd_magnitude_mae": 0.12,
+   "pd_magnitude_bias": -0.12,
+   "pd_magnitude_events": 1,
+   "before_s": "47/48",
+   "warning_median_s": 15.0,
+   "events": [
+    {
+     "afad_type": "ML",
+     "afad_M": 1.4,
+     "origin": "18:07:17.00",
+     "alarm_delay_s": 16.5,
+     "epicentre_km": 2.7,
+     "stations": "KULA, SIMA + KCTX, YAYO"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 1.9,
+     "origin": "18:16:19.00",
+     "alarm_delay_s": 17.5,
+     "epicentre_km": 2.3,
+     "stations": "KULA, SIMA + KCTX, TVSB, YAYO"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 4.9,
+     "origin": "18:20:51.00",
+     "alarm_delay_s": 18.0,
+     "epicentre_km": 3.7,
+     "stations": "KULA, SIMA + DKL, KCTX, TVSB, YAYO",
+     "Pd_alarm": 4.7,
+     "Pd_final": 4.8,
+     "Pd_error": -0.1
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.1,
+     "origin": "18:23:21.00",
+     "alarm_delay_s": 22.5,
+     "epicentre_km": 158.2,
+     "stations": "KCTX, KULA + TVSB"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.6,
+     "origin": "18:25:51.00",
+     "alarm_delay_s": 18.0,
+     "epicentre_km": 3.5,
+     "stations": "KULA, SIMA + DKL, KCTX, TVSB, YAYO"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.4,
+     "origin": "18:29:11.00",
+     "alarm_delay_s": 6.0,
+     "epicentre_km": 5.2,
+     "stations": "KULA, YAYO + KCTX, TVSB"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "18:30:02.00",
+     "alarm_delay_s": 18.0,
+     "epicentre_km": 3.7,
+     "stations": "KULA, SIMA + KCTX, TVSB, YAYO"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.4,
+     "origin": "18:32:40.00",
+     "alarm_delay_s": 12.5,
+     "epicentre_km": null,
+     "stations": "KCTX, SIMA + KULA, YAYO"
+    }
+   ],
+   "assessed": {},
+   "dropped_warnings": 0
+  },
+  "quiet_ko": {
+   "role": "public noise",
+   "stations": 6,
+   "alarms": 1,
+   "matched": 0,
+   "unmatched": 1,
+   "catalogue": 0,
+   "detected": 0,
+   "alarm_delay_median_s": null,
+   "bands": {},
+   "before_s": null,
+   "warning_median_s": null,
+   "events": [],
+   "assessed": {},
+   "hours": 5.833333333333333,
+   "false_per_day": 4.114285714285715,
+   "dropped_warnings": 0
+  },
+  "marmara_ko": {
+   "role": "public",
+   "stations": 8,
+   "alarms": 51,
+   "matched": 28,
+   "unmatched": 23,
+   "catalogue": 37,
+   "detected": 28,
+   "alarm_delay_median_s": 11.5,
+   "bands": {
+    "M 2-3": "11/18",
+    "M 3-4": "12/13",
+    "M 4-5": "3/4",
+    "M 5+": "2/2"
+   },
+   "pd_magnitude_mae": 0.34,
+   "pd_magnitude_bias": 0.16,
+   "pd_magnitude_events": 3,
+   "before_s": "186/224",
+   "warning_median_s": 6.5,
+   "events": [
+    {
+     "afad_type": "ML",
+     "afad_M": 3.9,
+     "origin": "09:13:05.00",
+     "alarm_delay_s": 10.0,
+     "epicentre_km": 6.1,
+     "stations": "BOTS, SLVT + ARMT, BGKT, CTKS, EDC, TKR",
+     "Pd_alarm": 3.6,
+     "Pd_final": 3.8,
+     "Pd_error": -0.1
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 6.2,
+     "origin": "09:49:10.00",
+     "alarm_delay_s": 10.5,
+     "epicentre_km": 10.9,
+     "stations": "BOTS, SLVT + ARMT, BGKT, CTKS, EDC, TKR",
+     "Pd_alarm": 6.0,
+     "Pd_final": 6.0,
+     "Pd_error": -0.2
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 5.9,
+     "origin": "09:51:19.00",
+     "alarm_delay_s": 11.0,
+     "epicentre_km": 3.8,
+     "stations": "BGKT, BOTS + ARMT, CTKS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 4.5,
+     "origin": "09:52:19.00",
+     "alarm_delay_s": 16.5,
+     "epicentre_km": 6.2,
+     "stations": "ARMT, BGKT + CTKS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.3,
+     "origin": "09:55:03.00",
+     "alarm_delay_s": 14.0,
+     "epicentre_km": 5.3,
+     "stations": "BGKT, SLVT + CTKS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.8,
+     "origin": "09:55:49.00",
+     "alarm_delay_s": 12.5,
+     "epicentre_km": null,
+     "stations": "BGKT, BOTS + CTKS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.6,
+     "origin": "09:59:29.00",
+     "alarm_delay_s": 11.0,
+     "epicentre_km": 4.3,
+     "stations": "BGKT, BOTS, CTKS, SLVT + ARMT, EDC, TKR"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 4.8,
+     "origin": "10:01:02.00",
+     "alarm_delay_s": 10.0,
+     "epicentre_km": 3.8,
+     "stations": "BOTS, SLVT + ARMT, BGKT, CTKS, EDC, MRMT, TKR"
+    },
+    {
+     "afad_type": "MW",
+     "afad_M": 4.5,
+     "origin": "10:02:10.00",
+     "alarm_delay_s": 10.0,
+     "epicentre_km": 229.1,
+     "stations": "ARMT, BGKT, BOTS, SLVT + CTKS, EDC, MRMT, TKR"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.0,
+     "origin": "10:05:43.00",
+     "alarm_delay_s": 12.5,
+     "epicentre_km": null,
+     "stations": "ARMT, BGKT + CTKS, SLVT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.4,
+     "origin": "10:07:01.00",
+     "alarm_delay_s": 10.0,
+     "epicentre_km": 263.0,
+     "stations": "ARMT, BOTS + EDC, TKR"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.2,
+     "origin": "10:07:30.00",
+     "alarm_delay_s": 18.0,
+     "epicentre_km": null,
+     "stations": "BGKT, CTKS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "10:13:56.00",
+     "alarm_delay_s": 9.5,
+     "epicentre_km": 33.5,
+     "stations": "BOTS, CTKS + ARMT, BGKT, SLVT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.4,
+     "origin": "10:15:19.00",
+     "alarm_delay_s": 14.0,
+     "epicentre_km": null,
+     "stations": "ARMT, BOTS"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.4,
+     "origin": "10:16:23.00",
+     "alarm_delay_s": 16.0,
+     "epicentre_km": 9.2,
+     "stations": "ARMT, EDC"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.1,
+     "origin": "10:18:51.00",
+     "alarm_delay_s": 12.5,
+     "epicentre_km": 10.6,
+     "stations": "BGKT, BOTS, SLVT + ARMT, CTKS, EDC"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.0,
+     "origin": "10:20:26.00",
+     "alarm_delay_s": 13.0,
+     "epicentre_km": 3.7,
+     "stations": "ARMT, BGKT, SLVT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.2,
+     "origin": "10:22:31.00",
+     "alarm_delay_s": 11.0,
+     "epicentre_km": 91.5,
+     "stations": "BGKT, SLVT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.0,
+     "origin": "10:26:05.00",
+     "alarm_delay_s": -1.0,
+     "epicentre_km": 4.9,
+     "stations": "ARMT, BGKT + BOTS, CTKS, EDC, SLVT, TKR"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "10:26:33.00",
+     "alarm_delay_s": 12.5,
+     "epicentre_km": 4.8,
+     "stations": "ARMT, BGKT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "10:28:18.00",
+     "alarm_delay_s": 9.5,
+     "epicentre_km": 175.2,
+     "stations": "ARMT, BOTS, CTKS + EDC, MRMT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.5,
+     "origin": "10:29:33.00",
+     "alarm_delay_s": 13.5,
+     "epicentre_km": null,
+     "stations": "BGKT, CTKS + BOTS, EDC, SLVT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.1,
+     "origin": "10:31:56.00",
+     "alarm_delay_s": 11.5,
+     "epicentre_km": null,
+     "stations": "BGKT, BOTS + ARMT, CTKS, SLVT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.5,
+     "origin": "10:32:15.00",
+     "alarm_delay_s": 16.0,
+     "epicentre_km": null,
+     "stations": "EDC, TKR"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.1,
+     "origin": "10:33:14.00",
+     "alarm_delay_s": 11.5,
+     "epicentre_km": 2.7,
+     "stations": "BOTS, CTKS + ARMT, BGKT, EDC, SLVT, TKR"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.7,
+     "origin": "10:39:02.00",
+     "alarm_delay_s": 8.5,
+     "epicentre_km": 310.2,
+     "stations": "BOTS, CTKS + ARMT, EDC, SLVT"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 3.2,
+     "origin": "10:41:19.00",
+     "alarm_delay_s": 9.5,
+     "epicentre_km": 2.5,
+     "stations": "BGKT, BOTS + ARMT, CTKS, EDC, SLVT, TKR"
+    },
+    {
+     "afad_type": "ML",
+     "afad_M": 2.2,
+     "origin": "10:43:53.00",
+     "alarm_delay_s": 11.5,
+     "epicentre_km": 85.5,
+     "stations": "BGKT, SLVT + ARMT, CTKS, EDC",
+     "Pd_alarm": 3.1,
+     "Pd_final": 3.0,
+     "Pd_error": 0.8
+    }
+   ],
+   "assessed": {},
+   "dropped_warnings": 0
+  }
+ },
+ "skipped": {},
+ "summary": {
+  "detected (public)": "36/46",
+  "unmatched alarms (public)": 25,
+  "false alarms per day (public noise)": 4.11,
+  "hours (public noise)": 5.8,
+  "Pd magnitude MAE, all matched": 0.3,
+  "Pd magnitude MAE, AFAD M>=4": 0.15,
+  "Pd magnitude bias, AFAD M>=4": -0.15,
+  "epicentre error median km": 5.2
+ }
+}

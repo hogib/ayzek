@@ -1,0 +1,27 @@
+{
+  "host": "testpi4",
+  "cpu": "Raspberry Pi 4 Model B Rev 1.5",
+  "cores": 4,
+  "backend": "neon",
+  "optimized": true,
+  "compiler": "Clang 22.1.8",
+  "version": "v1.0.0-10-gf05436a-dirty",
+  "models": "models",
+  "date": "2026-11-14T14:01:14Z",
+  "min_time_s": 2,
+  "quick": false,
+  "results": [
+  ],
+  "capacity": [
+    {"threads": 1, "windows_per_s": 27.527, "stations": 13.7635},
+    {"threads": 2, "windows_per_s": 55.0851, "stations": 27.5426},
+    {"threads": 3, "windows_per_s": 81.3504, "stations": 40.6752},
+    {"threads": 4, "windows_per_s": 107.401, "stations": 53.7003}
+  ],
+  "capacity_transformer": [
+    {"threads": 1, "windows_per_s": 232.121, "stations": 116.061},
+    {"threads": 2, "windows_per_s": 355.391, "stations": 177.696},
+    {"threads": 3, "windows_per_s": 399.126, "stations": 199.563},
+    {"threads": 4, "windows_per_s": 394.322, "stations": 197.161}
+  ]
+}

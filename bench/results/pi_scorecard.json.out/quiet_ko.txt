@@ -1,0 +1,47 @@
+ayzek    6 stations, neon backend, 3-seed 6 s detector + STA/LTA anchor + picker + Pd magnitude, replay 2024-01-03 11:25:02.07 to 17:25:00.01 UTC at full speed
+ayzek    catalogue: 11 events in the replay span
+ALARM    #1   16:38:48.50  earthquake detected by KULA, TVSB
+PLOC     #1   16:39:05.50  P times locate it at 39.217N 29.343E +-24 km, origin 16:38:27.67, rms 0.03 s from 3 stations
+
+------------------------------------------------------------------------------
+REPORT  6 stations, 2024-01-03 11:33:50.00 to 17:25:00.01 UTC
+------------------------------------------------------------------------------
+
+Event #1: detected earthquake (no magnitude), not located
+  alarm      16:38:48.50 UTC by KULA, TVSB; later YAYO
+  P loc.     39.217N 29.343E +-24 km from 3 stations, first 17.0 s after the alarm
+  AFAD       no matching catalogue event
+
+------------------------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------------------------
+  Alarms raised                           1
+  single-station detections, no alarm     2
+
+  Alarms compared with the AFAD catalogue
+    correct  (match an AFAD event)        0    0%
+    false    (no AFAD event)              1  100%
+
+  AFAD events within 250 km                0
+    detected                              0     -
+    detected before S                     0     -
+    missed                                0     -
+
+  By magnitude      AFAD events   detected   missed
+
+  False alarms (no AFAD event; small uncatalogued earthquakes are possible)
+    16:38:48.50 UTC  #1  no magnitude, not located
+------------------------------------------------------------------------------
+
+Station processing (neon backend)
+         windows  with gap triggers  picks Pd values    ms/window (p99)   ms/pick
+  DKL      43034        13        0      0         0     90.394 (176.084)         0
+  GEDZ     43061        12        0      0         0     90.974 (175.194)         0
+  KULA     43147         4        2      2        14     90.071 (172.963)        91
+  SIMA     43105         8        0      0         0     90.043 (172.992)         0
+  TVSB     42943        22        3      3        21     90.127 (173.427)       215
+  YAYO     42144       103        1      1         7     91.428 (174.690)       186
+  Pd: 42 values sent
+  P time from an STA/LTA onset for 4 of 6 triggers (2 from the window start)
+  onset from a FilterPicker pick for 4 of 6 triggers (P-time location and Pd)
+  257434 windows in 3935.8 s: 5x real time per station
