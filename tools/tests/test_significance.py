@@ -1,6 +1,6 @@
 """tools/significance.py: exact McNemar, Clopper-Pearson, the paired bootstrap
-of chance-corrected differences (event and block), the equivalence verdict,
---outcome, and the quiet-window comparison.
+of chance-corrected differences (event, block and whole sequences), the
+equivalence verdict, --outcome, and the quiet-window comparison.
 
 Expected values: scipy.stats (binomtest, its exact proportion interval,
 binom quantiles, special.betainc) as independent implementations; hand
@@ -11,6 +11,7 @@ import csv
 import json
 import math
 import random
+import re
 
 import pytest
 from scipy import special, stats
@@ -624,3 +625,95 @@ def test_main_max_depth_by_hand(tmp_path):
     p, s = run_main(tmp_path)
     assert (s["g: learned corrected"], s["g: other corrected"], s["g: other difference"]) == (12.8, 12.8, 0.0)
     assert "depth: max km" not in s and "learned vs other: 20 events" in p.stdout
+
+
+# --- --resample-sequences (exploratory) ----------------------------------------------------------
+
+def sequence_case():
+    """Three replays. s1: 4 events, learned detects 3 with one of its 8 shifted
+    events detected (c = 1/8), corrected 4 (3/4 - 1/8) / (7/8) = 20/7; the
+    other detects 1, c = 0: difference 13/7. s2: 3 events, both detect the same
+    2: difference 0. s3: 2 events, learned 2, the other 1: difference 1."""
+    e1, e2, e3 = events("s1", 4), events("s2", 3, start=100), events("s3", 2, start=200)
+    none = {**outcomes(e1, set()), **outcomes(e2, set()), **outcomes(e3, set())}
+    return {"learned": {0: {**outcomes(e1, {0, 1, 2}), **outcomes(e2, {0, 1}), **outcomes(e3, {0, 1})},
+                        127: {**none, e1[0]: 1}, -127: dict(none)},
+            "other": {0: {**outcomes(e1, {0}), **outcomes(e2, {0, 1}), **outcomes(e3, {0})},
+                      127: dict(none), -127: dict(none)}}
+
+
+def test_sequence_resampling_by_hand():
+    # A resample is the sum of three draws from the replays' differences
+    # {13/7, 0, 1}, each replay with its own chance correction. Of the 27
+    # equally likely draws one sums to 0 (P = 0.037 > 0.025) and three to 1
+    # (cumulative 0.148 > 0.05); one sums to 39/7 (0.037 > 0.025) and three to
+    # 33/7. So the 95% interval is (0, 39/7), the 90% one (1, 33/7), and
+    # P(diff <= 0) = 1/27, each at least 6 standard errors (B = 10000) from
+    # the neighbouring value.
+    det = sequence_case()
+    r = sg.compare(det, "learned", "other", {"s1", "s2", "s3"}, random.Random(20261022), sequences=True)
+    assert r["difference"] == pytest.approx(13 / 7 + 1)
+    assert (r["a_corrected"], r["b_corrected"]) == (pytest.approx(20 / 7 + 4), 4.0)
+    assert r["diff_ci"] == pytest.approx((0, 39 / 7))
+    assert r["diff_ci90"] == pytest.approx((1, 33 / 7))
+    assert r["p_boot_le0"] == pytest.approx(1 / 27, abs=0.01)
+    # The same seed gives the same interval; the counts do not depend on it.
+    again = sg.compare(det, "learned", "other", {"s1", "s2", "s3"}, random.Random(20261022), sequences=True)
+    assert again == r
+
+
+def test_sequence_resampling_of_one_sequence_is_degenerate():
+    # One replay: every resample is that replay, so the interval is the point
+    # estimate (1, the case of test_one_extra_detection_bootstrap_is_binomial),
+    # where the event bootstrap gives (0, 3).
+    e = events("s1", 20)
+    sh = {127: outcomes(e, set()), -127: outcomes(e, set())}
+    det = {"learned": {0: outcomes(e, range(11)), **sh},
+           "other": {0: outcomes(e, range(10)), **{s: dict(v) for s, v in sh.items()}}}
+    r = sg.compare(det, "learned", "other", {"s1"}, random.Random(1), sequences=True)
+    assert r["diff_ci"] == (1.0, 1.0) and r["p_boot_le0"] == 0.0
+    assert sg.compare(det, "learned", "other", {"s1"}, random.Random(1))["diff_ci"] == pytest.approx((0, 3))
+
+
+def sequence_tables(d):
+    det = sequence_case()
+    for name in ("learned", "other"):
+        write_table(d / f"{name}.csv", name, [(e[0], s, e[1], v, v) for s, ev in det[name].items()
+                                              for e, v in ev.items()])
+
+
+def test_main_resample_sequences(tmp_path):
+    sequence_tables(tmp_path)
+    p = run_tool("significance", "--outcomes", tmp_path, "--against", "other", "--groups", "g=s1,s2,s3",
+                 "--json", tmp_path / "out.json", "--resample-sequences")
+    assert p.returncode == 0, p.stderr
+    s = json.loads((tmp_path / "out.json").read_text())["summary"]
+    # As test_sequence_resampling_by_hand: 20/7 + 4 = 6.86 vs 4, interval (0, 39/7 = 5.57).
+    assert s == {"g: other resampled": "sequences", "g: learned corrected": 6.9, "g: other detected": 4,
+                 "g: other corrected": 4.0, "g: other difference": 2.9, "g: other difference low": 0.0,
+                 "g: other difference high": 5.6, "g: other mcnemar p": 0.25}
+    assert "difference +2.9 (95% bootstrap over sequences +0.0 to +5.6, P(diff <= 0) = 0.0" in p.stdout
+
+
+def test_resample_sequences_refuses_blocks(tmp_path):
+    sequence_tables(tmp_path)
+    p = run_tool("significance", "--outcomes", tmp_path, "--against", "other", "--groups", "g=s1,s2,s3",
+                 "--resample-sequences", "--block-minutes", "5")
+    assert p.returncode != 0 and "one resampling unit" in p.stderr
+
+
+def test_default_output_without_the_option(tmp_path):
+    # Without --resample-sequences the printed report and the JSON are those of
+    # before the option: every line written out here (the case of
+    # test_main_summary; Clopper-Pearson limits from scipy; P(diff <= 0) is
+    # P(X = 0) = 0.3585 of Binomial(20, 1/20), its digits left open).
+    extra_detection_tables(tmp_path)
+    p, s = run_main(tmp_path)
+    cp = [stats.beta.ppf(0.025, k, 20 - k + 1) for k in (11, 10)], [stats.beta.ppf(0.975, k + 1, 20 - k) for k in (11, 10)]
+    want = ("\n== g\nlearned vs other: 20 events\n"
+            f"  detected            11 vs 10  (95% CP {cp[0][0]:.2f}-{cp[1][0]:.2f} vs {cp[0][1]:.2f}-{cp[1][1]:.2f})\n"
+            "  chance-corrected    11.0 vs 10.0, difference +1.0 (95% bootstrap +0.0 to +3.0, P(diff <= 0) = 0.3NNN)\n"
+            "  discordant          learned only 1, other only 0, exact McNemar p = 1\n")
+    assert re.sub(r"= 0\.3\d\d\d\)", "= 0.3NNN)", p.stdout) == want
+    assert list(s) == ["g: learned corrected", "g: other detected", "g: other corrected", "g: other difference",
+                       "g: other difference low", "g: other difference high", "g: other mcnemar p"]

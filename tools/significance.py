@@ -37,7 +37,14 @@ The quiet-window comparison has no events and is not restricted.
 
 --block-minutes resamples blocks of origin time rather than single events,
 which keeps together events whose detectability is shared (noise state, the
-stations up, overlapping codas). --quiet-runs compares every run after the first
+stations up, overlapping codas). --resample-sequences (exploratory, outside
+the held-out protocol) resamples whole replays instead: each draw takes as
+many replays as the group has, with replacement, every drawn replay with all
+its events and its own chance correction (its corrected count as observed),
+so the interval of the difference carries the variation between sequences
+rather than between the events within them. The printed line then says
+"95% bootstrap over sequences" and the JSON has "GROUP: OTHER resampled":
+"sequences"; without the option the output is unchanged. --quiet-runs compares every run after the first
 with the first. --json writes
 the figures under "summary" for tools/reproduce_report.py: "GROUP: OTHER
 corrected" and so on for the events, "quiet: LABEL per day" and "quiet: OTHER
@@ -209,7 +216,7 @@ def resample(events, rng, block):
     return out
 
 
-def compare(det, a, b, datasets, rng, block=0):
+def compare(det, a, b, datasets, rng, block=0, sequences=False):
     def subset(d):
         return {s: {e: v for e, v in ev.items() if e[0] in datasets} for s, ev in det[d].items()}
     A, Bd = subset(a), subset(b)
@@ -223,7 +230,15 @@ def compare(det, a, b, datasets, rng, block=0):
     nb = sum(A[0][e] and not Bd[0][e] for e in obs_ev)
     nc = sum(Bd[0][e] and not A[0][e] for e in obs_ev)
     diffs = []
-    for _ in range(B):
+    if sequences:
+        # Resample whole replays; each keeps its events and its chance correction.
+        per = []
+        for ds in sorted(by_ds(obs_ev)):
+            to = [e for e in obs_ev if e[0] == ds]
+            ts = {s: [e for e in shift_ev[s] if e[0] == ds] for s in shifts}
+            per.append(corrected(A[0], shA, to, ts)[0] - corrected(Bd[0], shB, to, ts)[0])
+        diffs = [sum(rng.choice(per) for _ in per) for _ in range(B)]
+    for _ in range(0 if sequences else B):
         # Resample within each replay, so every replay keeps its size.
         to = resample(obs_ev, rng, block)
         ts = {s: resample(shift_ev[s], rng, block) for s in shifts}
@@ -310,7 +325,12 @@ def main():
     ap.add_argument("--block-minutes", type=float, default=0,
                     help="bootstrap whole blocks of this many minutes of origin time "
                          "instead of single events (0: events)")
+    ap.add_argument("--resample-sequences", action="store_true",
+                    help="bootstrap whole replays (sequences), each with its own chance "
+                         "correction, instead of the events within them (exploratory)")
     a = ap.parse_args()
+    if a.resample_sequences and a.block_minutes:
+        sys.exit("--resample-sequences and --block-minutes: one resampling unit at a time")
     rng = random.Random(a.seed)
 
     counts = {}
@@ -334,8 +354,10 @@ def main():
             if not any(e[0] in ds for e in det[other][0]):
                 print(f"learned vs {other}: no outcomes for {sorted(ds)}")
                 continue
-            r = compare(det, "learned", other, ds, rng, 60 * a.block_minutes)
+            r = compare(det, "learned", other, ds, rng, 60 * a.block_minutes, a.resample_sequences)
             k = f"{label}: {other}"
+            if a.resample_sequences:
+                summary[f"{k} resampled"] = "sequences"
             summary.update({f"{label}: learned corrected": round(r["a_corrected"], 1),
                             f"{k} detected": r["b_detected"],
                             f"{k} corrected": round(r["b_corrected"], 1),
@@ -347,7 +369,7 @@ def main():
             print(f"  detected            {r['a_detected']} vs {r['b_detected']}  "
                   f"(95% CP {r['a_cp'][0]:.2f}-{r['a_cp'][1]:.2f} vs {r['b_cp'][0]:.2f}-{r['b_cp'][1]:.2f})")
             print(f"  chance-corrected    {r['a_corrected']:.1f} vs {r['b_corrected']:.1f}, "
-                  f"difference {r['difference']:+.1f} (95% bootstrap {r['diff_ci'][0]:+.1f} to {r['diff_ci'][1]:+.1f}, "
+                  f"difference {r['difference']:+.1f} (95% bootstrap {'over sequences ' if a.resample_sequences else ''}{r['diff_ci'][0]:+.1f} to {r['diff_ci'][1]:+.1f}, "
                   f"P(diff <= 0) = {r['p_boot_le0']:.4f})")
             print(f"  discordant          learned only {r['a_only']}, {other} only {r['b_only']}, "
                   f"exact McNemar p = {r['mcnemar_p']:.2g}")
