@@ -1094,3 +1094,250 @@ def test_mainshock_table_end_to_end(tmp_path):
         "1 scored event earlier in the set, the last ML 1.9 at 00:00:05.00 (60.3 s before); "
         "outcome table detected, the report has no event block credited to it"
     )
+
+
+# --- items 10 and 11: detection by distance, station geometry -------------------------------------
+
+# Epicentres on the equator, by longitude. Set 1 (AAA at 0.0, BBB at 0.3, CCC
+# one degree north of AAA), in degrees to the nearest and the second-nearest:
+#   00:00:05 ML 1.9 at 0.1: AAA 0.1, BBB 0.2
+#   00:01:05 ML 2.0 at 0.3: BBB 0.0, AAA 0.3
+#   00:02:05 ML 4.0 at 0.9: BBB 0.6, AAA 0.9 (CCC over a degree away)
+#   00:03:05 ML 3.9 at -0.5: AAA 0.5, BBB 0.8
+# Set 3 (BBB at 0.3, DDD at 0.5, CCC):
+#   00:00:05 ML 2.0 at 0.4: BBB and DDD 0.1 each
+#   00:01:05 ML 2.0 at 1.0: DDD 0.5, BBB 0.7
+# One degree is 111.19 km, so 0.2 degrees is below 25 km, 0.3 in 25-50,
+# 0.5 to 0.8 in 50-100 and 0.9 (100.07 km) at or above 100.
+CATALOGUES = {
+    "xx_now_seq001": [
+        # The day before, the first event's time of day but another type and
+        # another magnitude: neither fits.
+        ("05/07/2024 00:00:05", 7.0, "MW", 1.94),
+        ("05/07/2024 00:00:05", 7.0, "ML", 2.6),
+        ("06/07/2024 00:00:05", 0.1, "ML", 1.94),
+        ("06/07/2024 00:01:05", 0.3, "ml", 2.04),
+        ("06/07/2024 00:02:05", 0.9, "ML", 3.96),
+        ("06/07/2024 00:03:05", -0.5, "ML", 3.9),
+    ],
+    "xx_now_seq003": [
+        ("06/07/2024 00:00:05", 0.4, "ML", 2.0),
+        ("06/07/2024 00:01:05", 1.0, "ML", 2.05),
+    ],
+}
+
+
+def write_catalogues(d, catalogues=CATALOGUES):
+    """DIR/SET/catalog.csv in the layout of a set's catalogue excerpt, from
+    (date and time, longitude, type, magnitude) on the equator."""
+    for s, rows in catalogues.items():
+        (d / s).mkdir(parents=True, exist_ok=True)
+        with open(d / s / "catalog.csv", "w", newline="") as fh:
+            w = csv.writer(fh)
+            w.writerow(
+                "Date,Longitude,Latitude,Depth,Rms,Type,Magnitude,Location,EventID".split(",")
+            )
+            for i, (when, lon, kind, m) in enumerate(rows):
+                w.writerow([when, lon, 0.0, 10, 0.2, kind, m, "Somewhere, far", f"id{i}"])
+    return d
+
+
+def distance(km, second, name="e"):
+    return {"event": ("s1", name, "ML", "2.0"), "nearest_km": km, "second_km": second}
+
+
+def test_distance_band_edges():
+    # The lower edge belongs to the band: 25.0 is 25-50, 50.0 is 50-100, 100.0
+    # is >=100; 24.999, 49.999 and 99.999 stay below; 0 is <25.
+    second = [0.0, 24.999, 25.0, 49.999, 50.0, 99.999, 100.0, 431.0]
+    ds = [distance(0.0, km, f"e{i}") for i, km in enumerate(second)]
+    hit = {"a": [1, 1, 1, 0, 1, 1, 0, 1], "b": [0, 1, 0, 0, 0, 1, 0, 0]}
+    det = {
+        label: {0: {d["event"]: h for d, h in zip(ds, hits)}}
+        for label, hits in hit.items()
+    }
+    assert he.distance_bands(ds, det, ["a", "b"], "second_km") == [
+        {"band": "<25", "scored": 2, "a": 2, "b": 1},
+        {"band": "25-50", "scored": 2, "a": 1, "b": 0},
+        {"band": "50-100", "scored": 2, "a": 2, "b": 1},
+        {"band": ">=100", "scored": 2, "a": 1, "b": 0},
+    ]
+    # By the nearest station all eight are at 0 km.
+    assert [r["scored"] for r in he.distance_bands(ds, det, ["a"], "nearest_km")] == [
+        8,
+        0,
+        0,
+        0,
+    ]
+
+
+def test_geometry_summary_by_hand():
+    # Nearest 1, 2, 3, 4 (positions 0.75, 1.5, 2.25: 1.75, 2.5, 3.25); second
+    # 10, 20, 40, 80 (17.5, 30, 50).
+    ds = [distance(k, s) for k, s in ((4, 10), (1, 80), (3, 20), (2, 40))]
+    g = he.geometry_summary(ds, {"s1": ["AAA", "BBB", "CCC"], "s2": ["AAA", "BBB"]})
+    assert g == {
+        "events": 4,
+        "nearest_km": {"median": 2.5, "q1": 1.75, "q3": 3.25, "min": 1, "max": 4},
+        "second_km": {"median": 30.0, "q1": 17.5, "q3": 50.0, "min": 10, "max": 80},
+        "stations": {"s1": 3, "s2": 2},
+    }
+    empty = he.geometry_summary([], {})
+    assert (empty["events"], empty["nearest_km"], empty["second_km"]) == (0, None, None)
+
+
+def test_catalogue_entry_joins_as_item_9(tmp_path):
+    rows = he.read_catalogue(
+        write_catalogues(tmp_path) / "xx_now_seq001" / "catalog.csv"
+    )
+    assert len(rows) == 6
+    # Type without regard to case, 2.04 for the table's 2.0, the day ignored.
+    e = he.catalogue_entry(("xx_now_seq001", "00:01:05.00", "ML", "2.0"), rows, "cat")
+    assert (e["lat"], e["lon"], e["when"]) == (0.0, 0.3, "06/07/2024 00:01:05")
+    # One second off still joins, two do not; nor does 3.96 for 3.9 or another type.
+    assert (
+        he.catalogue_entry(("s", "00:01:06.00", "ML", "2.0"), rows, "cat")["lon"] == 0.3
+    )
+    for event in (
+        ("s", "00:01:07.00", "ML", "2.0"),
+        ("s", "00:02:05.00", "ML", "3.9"),
+        ("s", "00:02:05.00", "MD", "4.0"),
+    ):
+        with pytest.raises(SystemExit) as stop:
+            he.catalogue_entry(event, rows, "cat")
+        assert str(stop.value) == f"cat: no entry for the scored event {' '.join(event)}"
+
+
+def test_catalogue_entry_stops_on_two_fitting_entries(tmp_path):
+    # The same time of day, type and one-decimal magnitude on two days.
+    d = write_catalogues(
+        tmp_path,
+        {
+            "s1": [
+                ("05/07/2024 00:01:05", 0.1, "ML", 2.04),
+                ("06/07/2024 00:01:05", 0.3, "ML", 1.96),
+            ]
+        },
+    )
+    rows = he.read_catalogue(d / "s1" / "catalog.csv")
+    with pytest.raises(SystemExit) as stop:
+        he.catalogue_entry(("s1", "00:01:05.00", "ML", "2.0"), rows, "cat")
+    assert str(stop.value) == (
+        "cat: 2 entries fit the scored event s1 00:01:05.00 ML 2.0 "
+        "(05/07/2024 00:01:05 ML 2.04; 06/07/2024 00:01:05 ML 1.96), ambiguous"
+    )
+
+
+def exploratory(run, sel, *more):
+    return run_tool(
+        "heldout_exploratory",
+        "--run",
+        run,
+        "--selection",
+        sel,
+        "--detectors",
+        "learned,stalta_eqfa",
+        *more,
+    )
+
+
+SKIPPED = "\n10, 11. Detection by distance and station geometry: skipped, no --data\n"
+
+
+def test_distance_items_end_to_end(tmp_path):
+    # Detected (make_network), learned and STA/LTA: set 1 1 1 1 0 and 1 1 0 0,
+    # set 3 1 0 and 0 1. With the distances of CATALOGUES, second-nearest:
+    #   <25    set 1's first (1, 1) and set 3's first (1, 0): 2 scored, 2 and 1
+    #   25-50  set 1's second (1, 1)
+    #   50-100 set 1's fourth (0, 0) and set 3's second (0, 1)
+    #   >=100  set 1's third (1, 0)
+    # nearest: <25 set 1's first two and set 3's first (3 scored, 3 and 2),
+    # 50-100 the other three (1 and 1).
+    run, sel = make_network(tmp_path)
+    data = write_catalogues(tmp_path / "data")
+    before = sorted(p for p in tmp_path.rglob("*"))
+    out = tmp_path / "out.json"
+    p = exploratory(run, sel, "--data", data, "--json", out)
+    assert p.returncode == 0, p.stderr
+    assert sorted(p for p in tmp_path.rglob("*")) == sorted(before + [out])  # only the JSON
+    r = json.loads(out.read_text())
+    bands = lambda key: [
+        (b["band"], b["scored"], b["learned"], b["stalta_eqfa"])
+        for b in r["distance_bands"][key]
+    ]
+    assert bands("second_nearest") == [
+        ("<25", 2, 2, 1),
+        ("25-50", 1, 1, 1),
+        ("50-100", 2, 0, 1),
+        (">=100", 1, 1, 0),
+    ]
+    assert bands("nearest") == [
+        ("<25", 3, 3, 2),
+        ("25-50", 0, 0, 0),
+        ("50-100", 3, 1, 1),
+        (">=100", 0, 0, 0),
+    ]
+    # The bands hold every scored event, and item 3's detected.
+    for key in ("second_nearest", "nearest"):
+        for i, label in ((1, None), (2, "learned"), (3, "stalta_eqfa")):
+            assert sum(b[i] for b in bands(key)) == (
+                r["network_chance"][label]["detected"] if label else 6
+            )
+    # 11: nearest 0, 0.1, 0.1, 0.5, 0.5, 0.6 degrees (positions 1.25, 2.5,
+    # 3.75: 0.1, 0.3, 0.5); second 0.1, 0.2, 0.3, 0.7, 0.8, 0.9 (0.225, 0.5, 0.775).
+    g = r["station_geometry"]
+    assert g["events"] == 6
+    assert g["stations"] == {"xx_now_seq001": 3, "xx_now_seq003": 3}
+    for key, expected in (
+        ("nearest_km", {"median": 0.3, "q1": 0.1, "q3": 0.5, "min": 0.0, "max": 0.6}),
+        ("second_km", {"median": 0.5, "q1": 0.225, "q3": 0.775, "min": 0.1, "max": 0.9}),
+    ):
+        assert g[key] == {k: pytest.approx(v * DEG_KM, abs=1e-9) for k, v in expected.items()}
+    assert "   <25        2     2     1\n" in p.stdout
+    assert "   >=100      1     1     0\n" in p.stdout
+    assert (
+        f"   second-nearest  {0.5 * DEG_KM:.1f} ({0.225 * DEG_KM:.1f} to {0.775 * DEG_KM:.1f}), "
+        f"{0.1 * DEG_KM:.1f} to {0.9 * DEG_KM:.1f}\n" in p.stdout
+    )
+    assert p.stdout.endswith("   stations that ran per set: seq001 3, seq003 3\n")
+
+
+def test_without_data_items_1_to_9_are_unchanged(tmp_path):
+    run, sel = make_network(tmp_path)
+    data = write_catalogues(tmp_path / "data")
+    plain, full = tmp_path / "plain.json", tmp_path / "full.json"
+    p = exploratory(run, sel, "--json", plain)
+    q = exploratory(run, sel, "--json", full, "--data", data)
+    assert p.returncode == 0 and q.returncode == 0, p.stderr + q.stderr
+    # Without --data: one line in place of the two items, nothing in the JSON.
+    assert p.stdout.endswith(SKIPPED) and p.stdout.count("skipped") == 1
+    assert "distance_bands" not in plain.read_text()
+    assert "station_geometry" not in plain.read_text()
+    # Items 1 to 9: the same bytes of text, the same JSON once the two items are taken out.
+    head = p.stdout[: -len(SKIPPED)]
+    assert "\n9. Sequence-initiating events" in head
+    assert q.stdout.startswith(head + "\n10. Detection by epicentral distance")
+    r = json.loads(full.read_text())
+    assert list(r)[-2:] == ["distance_bands", "station_geometry"]
+    del r["distance_bands"], r["station_geometry"]
+    assert json.dumps(r, indent=1, ensure_ascii=False) + "\n" == plain.read_text()
+
+
+def test_scored_event_missing_from_the_catalogue_stops(tmp_path):
+    # Set 3's second event (ML 2.0 at 00:01:05) has no entry: the tool names it.
+    run, sel = make_network(tmp_path)
+    cats = {**CATALOGUES, "xx_now_seq003": CATALOGUES["xx_now_seq003"][:1]}
+    data = write_catalogues(tmp_path / "data", cats)
+    p = exploratory(run, sel, "--data", data)
+    assert p.returncode != 0
+    assert p.stderr.strip() == (
+        f"{data / 'xx_now_seq003' / 'catalog.csv'}: no entry for the scored event "
+        "xx_now_seq003 00:01:05.00 ML 2.0"
+    )
+    # Two entries that fit stop it too, and so does a set without an excerpt.
+    twice = {**CATALOGUES, "xx_now_seq003": CATALOGUES["xx_now_seq003"] * 2}
+    p = exploratory(run, sel, "--data", write_catalogues(tmp_path / "twice", twice))
+    assert p.returncode != 0 and "2 entries fit the scored event xx_now_seq003 00:00:05.00 ML 2.0" in p.stderr
+    (data / "xx_now_seq001" / "catalog.csv").unlink()
+    p = exploratory(run, sel, "--data", data)
+    assert p.returncode != 0 and "no catalogue excerpt" in p.stderr

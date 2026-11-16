@@ -94,6 +94,26 @@ phasenet_causal_eqfa); the first two are the pair of the paired figures.
    and of the warning at the nearest station before S over the detected
    events that have one. A missed event has no block, so no delay, estimate
    or warning: an alarm credited to another event is in the note only.
+10. With --data DIR: detection by distance. Every scored event (the events of
+    the outcome tables at shift 0, as items 2 and 6 take them) is looked up in
+    its set's catalogue excerpt DIR/SET/catalog.csv (columns `Date`,
+    `Longitude`, `Latitude`, `Type`, `Magnitude`) for its epicentre: the entry
+    of the same type whose magnitude is within 0.051 of the table's
+    one-decimal magnitude and whose time of day is within 1 s of the table's
+    origin, as item 9 joins. The tool stops, naming the event, when no entry
+    or more than one entry fits; it does not choose. Then the epicentral
+    distance of the nearest and of the second-nearest station of the set
+    (haversine on the selection's coordinates, over the stations that ran:
+    those of the first detector's "Station processing" table; the tool stops
+    on a set with fewer than two), and per band of the second-nearest distance
+    (<25, 25-50, 50-100, >=100 km; lower edge included) the scored events and
+    per detector those detected; the same per band of the nearest distance.
+    An alarm needs two stations, hence the second-nearest.
+11. With --data DIR: station geometry of the same scored events: the median,
+    the interquartile range (linear interpolation between order statistics),
+    the minimum and the maximum of the nearest and of the second-nearest
+    station distance, and per sequence set the number of stations that ran.
+    Without --data items 10 and 11 are skipped, with a line saying so.
 
 Standard library only.
 """
@@ -115,6 +135,12 @@ BANDS = [
     ("2-3", 2.0, 3.0),
     ("3-4", 3.0, 4.0),
     (">=4", 4.0, math.inf),
+]
+DISTANCE_BANDS = [
+    ("<25", -math.inf, 25.0),
+    ("25-50", 25.0, 50.0),
+    ("50-100", 50.0, 100.0),
+    (">=100", 100.0, math.inf),
 ]
 ALARM = re.compile(
     r"^ALARM\s+#(\d+)\s+(\S+)\s+earthquake detected by ([^(\n]+?)\s*(?:\(AFAD.*\))?$",
@@ -720,8 +746,124 @@ def mainshock_rows(m):
     return rows
 
 
+def read_catalogue(path):
+    """The entries of a set's catalogue excerpt: time of day, type, magnitude,
+    epicentre and the row as its date and time (for messages)."""
+    path = Path(path)
+    if not path.exists():
+        sys.exit(f"{path}: no catalogue excerpt")
+    with open(path, encoding="utf-8", newline="") as fh:
+        return [
+            {
+                "when": r["Date"],
+                "time": r["Date"].split()[1],
+                "type": r["Type"],
+                "magnitude": float(r["Magnitude"]),
+                "lat": float(r["Latitude"]),
+                "lon": float(r["Longitude"]),
+            }
+            for r in csv.DictReader(fh)
+        ]
+
+
+def catalogue_entry(event, rows, source):
+    """The catalogue entry of a scored event (dataset, origin, type,
+    magnitude): the same type, the magnitude within 0.051 of the one-decimal
+    magnitude, the time of day within 1 s of the origin (scored_mainshock's
+    conditions). Stops when none or more than one fits."""
+    fit = [
+        r
+        for r in rows
+        if r["type"].upper() == event[2].upper()
+        and abs(r["magnitude"] - float(event[3])) < 0.051
+        and abs(seconds_after(r["time"], event[1])) <= 1.0
+    ]
+    name = f"scored event {event[0]} {event[1]} {event[2]} {event[3]}"
+    if not fit:
+        sys.exit(f"{source}: no entry for the {name}")
+    if len(fit) > 1:
+        sys.exit(
+            f"{source}: {len(fit)} entries fit the {name} ("
+            + "; ".join(f"{r['when']} {r['type']} {r['magnitude']:g}" for r in fit)
+            + "), ambiguous"
+        )
+    return fit[0]
+
+
+def event_distances(events, data, coords, stations):
+    """Item 10's join: per scored event (dataset, origin, type, magnitude) its
+    catalogue epicentre and the distance of the nearest and the second-nearest
+    station of its set. `data` holds SET/catalog.csv, `stations` is {set: the
+    stations that ran}."""
+    out, catalogues = [], {}
+    for e in events:
+        s = e[0]
+        source = Path(data) / s / "catalog.csv"
+        if s not in catalogues:
+            catalogues[s] = read_catalogue(source)
+            if len(stations[s]) < 2:
+                sys.exit(f"{s}: fewer than two stations ran, no second-nearest station")
+        entry = catalogue_entry(e, catalogues[s], source)
+        dist = station_distances(entry, coords, stations[s])
+        out.append(
+            {
+                "event": e,
+                "lat": entry["lat"],
+                "lon": entry["lon"],
+                "nearest_km": dist[0][0],
+                "second_km": dist[1][0],
+            }
+        )
+    return out
+
+
+def distance_bands(distances, det, labels, key):
+    """Per band of `key` (nearest_km or second_km): scored events and, per
+    detector, those detected (shift 0)."""
+    out = []
+    for name, lo, hi in DISTANCE_BANDS:
+        ev = [d["event"] for d in distances if lo <= d[key] < hi]
+        out.append(
+            {
+                "band": name,
+                "scored": len(ev),
+                **{label: sum(det[label][0][e] for e in ev) for label in labels},
+            }
+        )
+    return out
+
+
+def geometry_summary(distances, stations):
+    """Item 11: over the scored events the median, quartiles, minimum and
+    maximum of the nearest and the second-nearest station distance (None
+    without events), and the number of stations that ran per set."""
+    out = {"events": len(distances)}
+    for key in ("nearest_km", "second_km"):
+        v = [d[key] for d in distances]
+        out[key] = (
+            {
+                "median": quantile(v, 0.5),
+                "q1": quantile(v, 0.25),
+                "q3": quantile(v, 0.75),
+                "min": min(v),
+                "max": max(v),
+            }
+            if v
+            else None
+        )
+    out["stations"] = {s: len(x) for s, x in stations.items()}
+    return out
+
+
 def analyse(
-    run, selection, labels, quiet_sets=(), large=4.0, other=None, window=(30.0, 60.0)
+    run,
+    selection,
+    labels,
+    quiet_sets=(),
+    large=4.0,
+    other=None,
+    window=(30.0, 60.0),
+    data=None,
 ):
     run = Path(run)
     sel = json.loads((Path(selection) / "selection.json").read_text())
@@ -859,6 +1001,15 @@ def analyse(
             res["other_events"]["detectors"][label] = followed_events(
                 events, alarms, other["within"]
             )
+
+    if data is not None:
+        ran = {s: rep["stations"] for s, kind, rep in reports[a] if kind == "sequence"}
+        distances = event_distances(list(det[a][0]), data, coords, ran)
+        res["distance_bands"] = {
+            "second_nearest": distance_bands(distances, det, labels, "second_km"),
+            "nearest": distance_bands(distances, det, labels, "nearest_km"),
+        }
+        res["station_geometry"] = geometry_summary(distances, ran)
     return res
 
 
@@ -1043,6 +1194,42 @@ def report(res, large):
             f"{fmt(s['median_nearest_ahead_warning_s'], '.2f')} s"
         )
 
+    if "distance_bands" not in res:
+        print("\n10, 11. Detection by distance and station geometry: skipped, no --data")
+        return
+    print(
+        "\n10. Detection by epicentral distance (catalogue epicentres, the stations that "
+        "ran): scored, detected by " + ", ".join(labels)
+    )
+    for key, name in (("second_nearest", "second-nearest"), ("nearest", "nearest")):
+        print(f"   by the distance of the {name} station, km")
+        for r in res["distance_bands"][key]:
+            print(
+                f"   {r['band']:7s} {r['scored']:4d}  "
+                + "  ".join(f"{r[label]:4d}" for label in labels)
+            )
+
+    g = res["station_geometry"]
+    print(
+        f"\n11. Station geometry of the {g['events']} scored events: epicentral km, "
+        "median (interquartile range), minimum to maximum"
+    )
+    for key, name in (("nearest_km", "nearest"), ("second_km", "second-nearest")):
+        q = g[key]
+        print(
+            f"   {name:15s} "
+            + (
+                f"{q['median']:.1f} ({q['q1']:.1f} to {q['q3']:.1f}), "
+                f"{q['min']:.1f} to {q['max']:.1f}"
+                if q
+                else "no events"
+            )
+        )
+    print(
+        "   stations that ran per set: "
+        + ", ".join(f"{short(s)} {n}" for s, n in g["stations"].items())
+    )
+
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -1100,6 +1287,11 @@ def main():
         metavar="FILE",
         help="also write item 9's table here (CSV, one row per event and detector)",
     )
+    ap.add_argument(
+        "--data",
+        metavar="DIR",
+        help="the directory of the sets' data (DIR/SET/catalog.csv), for items 10 and 11",
+    )
     ap.add_argument("--json", help="also write the figures here")
     a = ap.parse_args()
     if bool(a.other_events) != (a.other_set is not None):
@@ -1125,6 +1317,7 @@ def main():
         a.large,
         other,
         tuple(float(x) for x in a.alarm_window.split(",")),
+        a.data,
     )
     report(res, a.large)
     if a.mainshocks:
