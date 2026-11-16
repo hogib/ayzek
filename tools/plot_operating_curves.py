@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Every trigger setting of both detectors: held-out operating curve and quiet-window alarms.
+"""Every trigger setting of both detectors: operating curve on the Mw 6.1 replay and quiet-window alarms.
 
     # 1. one row per setting, from the grids (data/runs/r4: tools/sweep_trigger.py
     #    on the three replays, tools/quiet_sweep.py on the quiet windows)
@@ -10,7 +10,7 @@
         --csv ../ayzek_paper/figures/fig7_operating_curves.csv \\
         --out ../ayzek_paper/figures/fig7_operating_curves
 
-(a) Held-out replay: chance-corrected detections against unmatched alarms for
+(a) Sındırgı Mw 6.1 replay (development data): chance-corrected detections against unmatched alarms for
 all 60 settings of the learned detector and 216 of STA/LTA (off level 1.5),
 with each detector's upper envelope. Post hoc: no setting was chosen on it.
 (b) Quiet windows: alarms per day against chance-corrected detections on the
@@ -102,9 +102,9 @@ def plot(a):
     ax1.set_xticks([0, 2, 5, 10, 20, 50, 100])
     ax1.set_xticklabels(["0", "2", "5", "10", "20", "50", "100"])
     ax1.set_ylim(0, 55)
-    ax1.set_xlabel("unmatched alarms, held-out replay", color=MUTED)
+    ax1.set_xlabel("unmatched alarms, Sındırgı Mw 6.1 replay", color=MUTED)
     ax1.set_ylabel("chance-corrected detections of 66", color=MUTED)
-    ax1.set_title("(a)  Held-out replay (post hoc)", loc="left", fontweight="bold", color=INK)
+    ax1.set_title("(a)  Sındırgı Mw 6.1 replay (post hoc)", loc="left", fontweight="bold", color=INK)
     ax2.set_yscale("log")
     ax2.set_ylim(FLOOR * 0.9, 300)
     ax2.set_yticks([FLOOR, 1, 3, 10, 30, 100])
